@@ -1,0 +1,8 @@
+{
+    "uuid": "${UUID}",
+    "name": "${NAME}",
+    "description": "${DESCRIPTION}",
+    "shell-version": ${SHELL_VERSIONS},
+    "settings-schema": "${SCHEMA_ID}",
+    "url": "${URL}"
+}

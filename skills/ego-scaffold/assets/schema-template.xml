@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schemalist>
+  <schema id="${SCHEMA_ID}"
+          path="/org/gnome/shell/extensions/${SCHEMA_SUFFIX}/">
+    <key name="example-setting" type="b">
+      <default>true</default>
+      <summary>Example setting</summary>
+      <description>An example boolean setting for ${NAME}</description>
+    </key>
+  </schema>
+</schemalist>
