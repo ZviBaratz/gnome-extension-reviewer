@@ -105,7 +105,8 @@ def main():
     STANDARD_FIELDS = {
         "uuid", "name", "description", "shell-version",
         "settings-schema", "gettext-domain", "url",
-        "session-modes", "donations",
+        "session-modes", "donations", "original-author",
+        "version",  # deprecated but recognized — flagged separately below
     }
     non_standard = [k for k in meta if k not in STANDARD_FIELDS]
     if non_standard:

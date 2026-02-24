@@ -66,7 +66,8 @@ def check_try_catch_density(ext_dir, js_files):
             # Count function/method definitions
             if re.search(r'\b(function|async\s+function)\s+\w+\s*\(', line):
                 func_count += 1
-            elif re.search(r'\b(async\s+)?\w+\s*\([^)]*\)\s*\{', line):
+            elif (re.search(r'\b(async\s+)?\w+\s*\([^)]*\)\s*\{', line) and
+                  not re.search(r'\b(if|else|for|while|switch|catch|do)\b', line)):
                 func_count += 1
 
             # Count try blocks

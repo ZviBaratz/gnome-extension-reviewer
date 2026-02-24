@@ -285,7 +285,6 @@ if [[ -f "$EXT_DIR/eslint.config.mjs" ]] && [[ -x "$EXT_DIR/node_modules/.bin/es
         print_result "WARN" "eslint" "ESLint configuration error (exit code 2)"
     else
         # Parse stylish format summary line: "X problems (Y errors, Z warnings)"
-        local errors warnings
         errors=$(echo "$eslint_output" | grep -oP '\d+ error' | grep -oP '\d+' | tail -1)
         warnings=$(echo "$eslint_output" | grep -oP '\d+ warning' | grep -oP '\d+' | tail -1)
         errors="${errors:-0}"
