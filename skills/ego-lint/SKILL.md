@@ -21,8 +21,10 @@ Automated EGO compliance checker for GNOME Shell extensions.
 | Schema | ID matches metadata, path format, compilation | FAIL |
 | Imports | GTK in extension.js, Shell libs in prefs.js | FAIL |
 | Logging | console.log() usage (console.debug is OK) | FAIL |
-| Deprecated | Mainloop, Lang, ByteArray imports | FAIL |
-| Web APIs | setTimeout, setInterval, fetch | FAIL |
+| Deprecated | Mainloop, Lang, ByteArray, ExtensionUtils, Tweener imports | FAIL |
+| Web APIs | setTimeout, setInterval, fetch, XMLHttpRequest, DOM APIs, require() | FAIL |
+| Pattern Rules | Additional checks from `rules/patterns.yaml` (web APIs, deprecated APIs, AI slop signals) | FAIL/WARN |
+| Quality | Heuristic code quality checks (try-catch density, empty catches, mutable state) | WARN |
 | Files | extension.js/metadata.json exist, LICENSE present | FAIL/WARN |
 | CSS | Unscoped class names in stylesheet.css | WARN |
 | ESLint | eslint-config-gnome violations | FAIL/WARN |
@@ -62,6 +64,38 @@ The script exits with code 0 if no FAILs, 1 if any FAIL.
 | UUID mismatch | Ensure metadata.json `uuid` matches directory name exactly |
 | Missing shell-version 48 | Add `"48"` to the `shell-version` array |
 | session-modes ["user"] | Remove the key entirely (it is the EGO default) |
+
+## Check Tiers
+
+### Tier 1: Pattern Rules
+
+Additional lint rules are defined declaratively in `rules/patterns.yaml` and processed
+by `scripts/apply-patterns.py`. Each pattern rule specifies a regex, the file globs to
+match against, a severity level, and a human-readable message. This makes it easy to
+add new checks without writing shell or Python code.
+
+Pattern rules currently cover:
+- **Extended Web API detection** — XMLHttpRequest, requestAnimationFrame, DOM APIs
+  (`document.*`), `window` object usage, localStorage, and `require()` (Node.js)
+- **Extended deprecated API detection** — `ExtensionUtils` (removed in GNOME 45+),
+  `Tweener` (removed), and `imports.misc.convenience` (removed in GNOME 45+)
+- **AI slop signals** — TypeScript-style JSDoc annotations (`@param {Type}`,
+  `@returns {Type}`), deprecated `version` field in metadata, and non-standard
+  metadata fields (`version-name`, `homepage`, `bug-report-url`) that often appear
+  in AI-generated extensions
+
+### Tier 2: Quality Heuristics
+
+`scripts/check-quality.py` runs heuristic code quality checks that detect patterns
+commonly seen in AI-generated or over-engineered extensions. These are advisory-only
+(WARN severity) and do not block submission, but they flag code that EGO reviewers
+are likely to question:
+
+- Excessive try-catch density (wrapping every few lines in try/catch)
+- Impossible state checks (`isLocked` without `unlock-dialog` session-mode)
+- Over-engineered async coordination patterns (`_pendingDestroy`, `_initializing`)
+- Module-level mutable state (variables outside class scope)
+- Empty catch blocks (silencing errors without handling them)
 
 ## Fallback
 

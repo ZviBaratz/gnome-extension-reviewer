@@ -419,3 +419,227 @@ Rules for stylesheet.css styling practices.
 - **Rule**: If the extension styles GNOME Shell built-in classes (e.g., `.popup-menu-item`, `.panel-button`), the selectors should be scoped under an extension-specific parent class.
 - **Rationale**: Unscoped overrides of built-in Shell classes affect the entire desktop, not just the extension's UI. This can break other extensions or Shell elements.
 - **Fix**: Wrap your UI in a container with a unique class and scope all built-in class overrides under it: `.myext-panel .popup-menu-item { ... }`.
+
+---
+
+## Web APIs — Extended (R-WEB, continued)
+
+Additional web/browser API rules detected by pattern matching.
+
+### R-WEB-04: No XMLHttpRequest
+- **Severity**: blocking
+- **Checked by**: apply-patterns.py
+- **Rule**: Extension code must not use `XMLHttpRequest`.
+- **Rationale**: `XMLHttpRequest` is a browser API not available in GJS. Extensions must use `Soup.Session` for HTTP requests.
+- **Fix**: Replace with `Soup.Session` and `Soup.Message` for HTTP requests, or `Gio.File` for local file I/O.
+
+### R-WEB-05: No requestAnimationFrame()
+- **Severity**: blocking
+- **Checked by**: apply-patterns.py
+- **Rule**: Extension code must not use `requestAnimationFrame()`.
+- **Rationale**: `requestAnimationFrame` is a browser rendering API. GNOME Shell uses Clutter's animation framework instead.
+- **Fix**: Use Clutter animation APIs such as `Clutter.Timeline`, `St.Adjustment`, or property transitions via `ease()`.
+
+### R-WEB-06: No DOM APIs (document.*)
+- **Severity**: blocking
+- **Checked by**: apply-patterns.py
+- **Rule**: Extension code must not use `document.createElement`, `document.getElementById`, `document.querySelector`, or similar DOM APIs.
+- **Rationale**: There is no DOM in GNOME Shell. The UI is built with Clutter/St actors, not HTML elements.
+- **Fix**: Use `St.Widget` subclasses (`St.BoxLayout`, `St.Label`, `St.Button`, etc.) to build UI elements.
+
+### R-WEB-07: No window object usage
+- **Severity**: blocking
+- **Checked by**: apply-patterns.py
+- **Rule**: Extension code must not reference the `window` global object (e.g., `window.setTimeout`, `window.location`).
+- **Rationale**: The `window` global does not exist in GJS. Any reference to it indicates browser-targeted code that will fail at runtime.
+- **Fix**: Remove `window.` references. Use the appropriate GJS/GNOME API for the intended functionality.
+
+### R-WEB-08: No localStorage
+- **Severity**: blocking
+- **Checked by**: apply-patterns.py
+- **Rule**: Extension code must not use `localStorage` or `sessionStorage`.
+- **Rationale**: Web Storage APIs are not available in GJS. Extensions must use GSettings for persistent configuration.
+- **Fix**: Use `Gio.Settings` (via `this.getSettings()` in the Extension class) for persistent key-value storage.
+
+### R-WEB-09: No require() (Node.js)
+- **Severity**: blocking
+- **Checked by**: apply-patterns.py
+- **Rule**: Extension code must not use `require()` to load modules.
+- **Rationale**: `require()` is a Node.js/CommonJS API. GJS uses ESM `import` syntax (GNOME 45+) or the legacy `imports.*` system.
+- **Fix**: Replace `require('module')` with `import ... from 'gi://Module'` or the appropriate GJS import syntax.
+
+---
+
+## Deprecated APIs — Extended (R-DEPR, continued)
+
+Additional deprecated API rules detected by pattern matching.
+
+### R-DEPR-05: No ExtensionUtils (removed in GNOME 45+)
+- **Severity**: blocking
+- **Checked by**: apply-patterns.py
+- **Rule**: Extension code must not import or use `ExtensionUtils`.
+- **Rationale**: `ExtensionUtils` was removed in GNOME 45 when extensions migrated to ESM. Its functionality is now provided by the `Extension` base class.
+- **Fix**: Replace `ExtensionUtils.getCurrentExtension()` with `this` (inside the Extension class). Replace `ExtensionUtils.getSettings()` with `this.getSettings()`. Replace `ExtensionUtils.initTranslations()` with the Extension class's built-in translation support.
+
+### R-DEPR-06: No Tweener (removed)
+- **Severity**: blocking
+- **Checked by**: apply-patterns.py
+- **Rule**: Extension code must not import or use `Tweener`.
+- **Rationale**: `Tweener` was GNOME Shell's legacy animation library. It was removed and replaced with Clutter's native property transitions and `ease()` methods.
+- **Fix**: Replace `Tweener.addTween(actor, { ... })` with `actor.ease({ ... })` using Clutter's built-in animation support.
+
+### R-DEPR-07: No imports.misc.convenience (removed in GNOME 45+)
+- **Severity**: blocking
+- **Checked by**: apply-patterns.py
+- **Rule**: Extension code must not import `imports.misc.convenience`.
+- **Rationale**: The `convenience` module was a GNOME Shell internal that provided helper functions like `getSettings()` and `initTranslations()`. It was removed in GNOME 45 along with the legacy import system.
+- **Fix**: Use the `Extension` base class methods: `this.getSettings()` for GSettings access and the built-in translation support for i18n.
+
+---
+
+## AI Slop Signals (R-SLOP)
+
+Rules that detect patterns commonly found in AI-generated extensions. These are advisory signals — they do not necessarily indicate incorrect code, but they correlate strongly with low-quality AI output that EGO reviewers will scrutinize.
+
+### R-SLOP-01: TypeScript-style @param JSDoc
+- **Severity**: advisory
+- **Checked by**: apply-patterns.py
+- **Rule**: JSDoc comments should not use TypeScript-style `@param {Type} name` annotations.
+- **Rationale**: GNOME Shell extensions are plain JavaScript (not TypeScript). JSDoc type annotations in the `{Type}` format are a strong signal that code was generated by an AI trained primarily on TypeScript codebases. EGO reviewers recognize this pattern.
+- **Fix**: Remove type annotations from JSDoc comments, or remove JSDoc entirely if the code is self-documenting. GJS does not process JSDoc types.
+
+### R-SLOP-02: TypeScript-style @returns JSDoc
+- **Severity**: advisory
+- **Checked by**: apply-patterns.py
+- **Rule**: JSDoc comments should not use TypeScript-style `@returns {Type}` annotations.
+- **Rationale**: Same as R-SLOP-01. `@returns {Type}` is a TypeScript convention that has no effect in GJS and signals AI-generated code.
+- **Fix**: Remove `@returns {Type}` annotations from JSDoc comments.
+
+### R-SLOP-03: Deprecated version field in metadata
+- **Severity**: advisory
+- **Checked by**: apply-patterns.py
+- **Rule**: `metadata.json` should not contain a numeric `version` field.
+- **Rationale**: The `version` field in `metadata.json` is deprecated. EGO manages versioning automatically. Including it is harmless but signals unfamiliarity with current EGO practices, often because an AI template included it.
+- **Fix**: Remove the `"version"` key from `metadata.json`. EGO assigns version numbers on upload.
+
+### R-SLOP-04: Non-standard version-name field
+- **Severity**: advisory
+- **Checked by**: apply-patterns.py
+- **Rule**: `metadata.json` should not contain a `version-name` field.
+- **Rationale**: `version-name` is not a recognized `metadata.json` field. It appears in AI-generated extensions that hallucinate npm-style metadata fields.
+- **Fix**: Remove `"version-name"` from `metadata.json`.
+
+### R-SLOP-05: Non-standard homepage field
+- **Severity**: advisory
+- **Checked by**: apply-patterns.py
+- **Rule**: `metadata.json` should not contain a `homepage` field.
+- **Rationale**: The correct field name is `url`, not `homepage`. `homepage` is an npm `package.json` convention that AIs frequently mix up with GNOME metadata.
+- **Fix**: Rename `"homepage"` to `"url"` in `metadata.json`.
+
+### R-SLOP-06: Non-standard bug-report-url field
+- **Severity**: advisory
+- **Checked by**: apply-patterns.py
+- **Rule**: `metadata.json` should not contain a `bug-report-url` field.
+- **Rationale**: `bug-report-url` is not a recognized `metadata.json` field. The standard `url` field should point to the project repository where issues can be filed.
+- **Fix**: Remove `"bug-report-url"` from `metadata.json`. Use the `"url"` field to link to the project repository.
+
+---
+
+## Code Quality Heuristics (R-QUAL)
+
+Heuristic rules that detect code patterns commonly seen in AI-generated or over-engineered extensions. These are advisory-only — they flag code that EGO reviewers are likely to question but do not block submission.
+
+### R-QUAL-01: Excessive try-catch density
+- **Severity**: advisory
+- **Checked by**: check-quality.py
+- **Rule**: Extension code should not wrap every few lines in try-catch blocks.
+- **Rationale**: Excessive try-catch usage is a hallmark of AI-generated code that defensively wraps everything. It obscures control flow, hides bugs, and makes the code harder to review. Well-structured GNOME extensions use try-catch sparingly for specific error-prone operations (file I/O, DBus calls).
+- **Fix**: Remove unnecessary try-catch blocks. Let errors propagate naturally and handle them at appropriate boundaries. Use try-catch only around operations that can legitimately fail (network, file system, DBus).
+
+### R-QUAL-02: Impossible state checks
+- **Severity**: advisory
+- **Checked by**: check-quality.py
+- **Rule**: Extension code should not check for states that are impossible given its configuration. For example, checking `Main.sessionMode.isLocked` without declaring `unlock-dialog` in `session-modes`.
+- **Rationale**: If the extension does not declare `unlock-dialog` in `session-modes`, it is never active on the lock screen, so checking lock state is dead code. This pattern is common in AI-generated extensions that copy-paste lock-screen handling without understanding when it applies.
+- **Fix**: Either add `"unlock-dialog"` to `session-modes` in `metadata.json` (if lock-screen support is intended) or remove the lock-state checking code.
+
+### R-QUAL-03: Over-engineered async coordination
+- **Severity**: advisory
+- **Checked by**: check-quality.py
+- **Rule**: Extension code should not use patterns like `_pendingDestroy` combined with `_initializing` flags for async lifecycle coordination.
+- **Rationale**: This pattern appears in AI-generated extensions that over-engineer enable/disable lifecycle management. GNOME Shell guarantees that `disable()` runs after `enable()` completes, so complex coordination flags are unnecessary and indicate misunderstanding of the extension lifecycle.
+- **Fix**: Remove coordination flags. Trust the GNOME Shell extension lifecycle: `enable()` and `disable()` are called sequentially. If async operations need cleanup, use `GLib.Source.remove()` or `Gio.Cancellable`.
+
+### R-QUAL-04: Module-level mutable state
+- **Severity**: advisory
+- **Checked by**: check-quality.py
+- **Rule**: Extension code should avoid declaring mutable variables (`let` or `var`) at module scope (outside any class or function).
+- **Rationale**: Module-level mutable state persists across enable/disable cycles, leading to subtle bugs. GNOME Shell extensions should keep all mutable state inside the `Extension` class instance, which is created fresh on each enable cycle.
+- **Fix**: Move mutable state into the Extension class as instance properties. Use `const` for module-level declarations that are truly constant (imports, enums, configuration).
+
+### R-QUAL-05: Empty catch blocks
+- **Severity**: advisory
+- **Checked by**: check-quality.py
+- **Rule**: Extension code should not have empty `catch` blocks that silently swallow errors.
+- **Rationale**: Empty catch blocks hide bugs and make debugging impossible. If an error occurs, it disappears silently. At minimum, errors should be logged with `console.debug()` or `console.error()`.
+- **Fix**: Add error logging to catch blocks: `catch (e) { console.debug('Operation failed:', e.message); }`. If the error is truly expected and ignorable, add a comment explaining why.
+
+---
+
+## Metadata — Extended (R-META, continued)
+
+Additional metadata rules from enhanced check-metadata.py checks.
+
+### R-META-13: UUID must contain @
+- **Severity**: blocking
+- **Checked by**: check-metadata.py
+- **Rule**: The `uuid` field in `metadata.json` must contain an `@` character.
+- **Rationale**: The standard UUID format for GNOME Shell extensions is `extension-name@domain`. While the `@` is not strictly enforced by GNOME Shell itself, EGO requires it and reviewers will reject UUIDs without it.
+- **Fix**: Add an `@` and domain to the UUID: `my-extension@example.com`.
+
+### R-META-14: Non-standard metadata fields
+- **Severity**: advisory
+- **Checked by**: check-metadata.py
+- **Rule**: `metadata.json` should only contain recognized fields (`uuid`, `name`, `description`, `shell-version`, `session-modes`, `settings-schema`, `url`, `version`, `gettext-domain`, `original-author`, `donations`).
+- **Rationale**: Non-standard fields are ignored by GNOME Shell and EGO. Their presence often indicates AI-generated metadata that hallucinated npm or other ecosystem conventions. Reviewers may question unfamiliar fields.
+- **Fix**: Remove any fields not in the recognized set. Use `url` instead of `homepage`, and remove fields like `author`, `license`, `version-name`, or `bug-report-url`.
+
+### R-META-15: Deprecated version field
+- **Severity**: advisory
+- **Checked by**: check-metadata.py
+- **Rule**: `metadata.json` should not contain a `version` field.
+- **Rationale**: The `version` field is deprecated. EGO manages extension versioning automatically and increments it on each upload. Including a manual version number is harmless but unnecessary and may confuse contributors.
+- **Fix**: Remove `"version"` from `metadata.json`.
+
+---
+
+## Package — Extended (R-PKG, continued)
+
+Additional package validation rules.
+
+### R-PKG-10: No nested zip structure
+- **Severity**: blocking
+- **Checked by**: check-package.sh
+- **Rule**: The zip archive must have `extension.js` and `metadata.json` at the archive root, not nested inside a subdirectory.
+- **Rationale**: GNOME Shell extracts the zip directly into the extensions directory. If files are nested inside a subdirectory (e.g., `my-extension/extension.js`), the extension will fail to load because GNOME Shell expects files at the top level.
+- **Fix**: Create the zip from inside the extension directory: `cd my-extension && zip -r ../my-extension.zip .` instead of `zip -r my-extension.zip my-extension/`.
+
+### R-PKG-11: Missing compiled schemas
+- **Severity**: blocking
+- **Checked by**: check-package.sh
+- **Rule**: If the extension includes `.gschema.xml` files in `schemas/`, the compiled `schemas/gschemas.compiled` file must also be present in the zip.
+- **Rationale**: GNOME Shell loads GSettings schemas from the compiled binary, not the XML source. If the compiled file is missing, the extension's settings will fail to load at runtime.
+- **Fix**: Run `glib-compile-schemas schemas/` before packaging to generate `schemas/gschemas.compiled`. Include it in the zip.
+
+---
+
+## Schema — Extended (R-SCHEMA, continued)
+
+Additional GSettings schema validation rules.
+
+### R-SCHEMA-06: Schema path must end with trailing slash
+- **Severity**: blocking
+- **Checked by**: check-schema.sh
+- **Rule**: The `path` attribute of the `<schema>` element must end with a `/` character.
+- **Rationale**: dconf paths are directory-like and must end with a trailing slash. A missing trailing slash causes GSettings to fail to locate the schema path at runtime.
+- **Fix**: Add a trailing slash to the schema path: `path="/org/gnome/shell/extensions/my-extension/"`.
