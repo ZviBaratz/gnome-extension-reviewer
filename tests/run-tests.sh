@@ -127,6 +127,14 @@ assert_output_contains "warns on non-standard fields" "\[WARN\].*metadata/non-st
 assert_output_contains "warns on deprecated version" "\[WARN\].*metadata/deprecated-version"
 echo ""
 
+# --- bad-package ---
+echo "=== bad-package ==="
+run_lint "bad-package"
+assert_exit_code "exits with 1 (has failures)" 1
+assert_output_contains "fails on nested structure" "\[FAIL\].*package/nested-structure"
+assert_output_contains "fails on missing compiled schemas" "\[FAIL\].*package/compiled-schemas"
+echo ""
+
 # --- Summary ---
 echo "============================================"
 echo "  Results: $PASS_COUNT passed, $FAIL_COUNT failed"

@@ -45,14 +45,37 @@ fi
 # ---------------------------------------------------------------------------
 
 forbidden_patterns=(
+    # Version control and AI tool artifacts
     "node_modules/"
     ".git/"
     ".claude/"
     "CLAUDE.md"
+    ".cursorrules"
+    ".cursor/"
+    ".windsurf/"
+    ".aider"
+    "cline_docs/"
+    ".github/copilot-instructions.md"
+    # Build artifacts
     ".pot"
     ".pyc"
     "__pycache__/"
+    # Secrets
     ".env"
+    # Development files
+    ".gitignore"
+    "package.json"
+    "package-lock.json"
+    "eslint.config.mjs"
+    ".eslintrc"
+    "Makefile"
+    ".editorconfig"
+    ".prettierrc"
+    ".vscode/"
+    ".idea/"
+    # Documentation (not needed at runtime)
+    "CONTRIBUTING.md"
+    "README.md"
 )
 
 forbidden_found=0
@@ -103,3 +126,26 @@ for req in "${required_files[@]}"; do
         missing_required=$((missing_required + 1))
     fi
 done
+
+# ---------------------------------------------------------------------------
+# Check for nested directory structure
+# ---------------------------------------------------------------------------
+
+# extension.js should be at root, not inside a subdirectory
+if echo "$zip_contents" | grep -qE "^[^/]+/extension\.js$"; then
+    if ! echo "$zip_contents" | grep -qE "^extension\.js$"; then
+        echo "FAIL|package/nested-structure|extension.js is inside a subdirectory — files must be at zip root"
+    fi
+fi
+
+# ---------------------------------------------------------------------------
+# Check for compiled schemas
+# ---------------------------------------------------------------------------
+
+if echo "$zip_contents" | grep -qE "\.gschema\.xml$"; then
+    if echo "$zip_contents" | grep -qF "gschemas.compiled"; then
+        echo "PASS|package/compiled-schemas|gschemas.compiled found"
+    else
+        echo "FAIL|package/compiled-schemas|Schema XML found but gschemas.compiled missing — run glib-compile-schemas"
+    fi
+fi
