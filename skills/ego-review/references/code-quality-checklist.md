@@ -303,3 +303,104 @@ export default class MyPrefs extends ExtensionPreferences {
     }
 }
 ```
+
+## Signal Connection Patterns
+
+### connectObject (Preferred — Auto-Cleanup)
+
+GNOME Shell provides `connectObject()` which automatically disconnects signals when the source object is destroyed:
+
+```js
+enable() {
+    Main.overview.connectObject(
+        'showing', () => this._onOverviewShowing(),
+        'hiding', () => this._onOverviewHiding(),
+        this // tie lifetime to this extension
+    );
+}
+
+disable() {
+    Main.overview.disconnectObject(this);
+}
+```
+
+**Why preferred:** No manual signal ID tracking. Signals are automatically disconnected when the owner object is destroyed or when `disconnectObject()` is called.
+
+### Manual connect with stored ID (Acceptable)
+
+```js
+enable() {
+    this._overviewShowingId = Main.overview.connect('showing', () => {
+        this._onOverviewShowing();
+    });
+}
+
+disable() {
+    if (this._overviewShowingId) {
+        Main.overview.disconnect(this._overviewShowingId);
+        this._overviewShowingId = null;
+    }
+}
+```
+
+**Why acceptable:** Correctly stores and disconnects signal IDs. Works but is more verbose and error-prone than connectObject.
+
+### Untracked connect (Red Flag)
+
+```js
+enable() {
+    // BUG: Signal ID is not stored — cannot disconnect in disable()
+    Main.overview.connect('showing', () => {
+        this._onOverviewShowing();
+    });
+}
+```
+
+**Why problematic:** Signal persists after disable(), causing the callback to fire on a partially-destroyed extension. This leads to crashes, memory leaks, or undefined behavior.
+
+## Timeout Return Values
+
+### GLib.SOURCE_REMOVE vs GLib.SOURCE_CONTINUE
+
+GLib timeout callbacks MUST return a value to indicate whether the timeout should continue:
+
+```js
+// One-shot timeout (runs once, then stops)
+this._timeoutId = GLib.timeout_add_seconds(GLib.PRIORITY_DEFAULT, 5, () => {
+    this._doSomething();
+    return GLib.SOURCE_REMOVE; // Required: stops the timer
+});
+
+// Repeating timeout (runs every N seconds)
+this._intervalId = GLib.timeout_add_seconds(GLib.PRIORITY_DEFAULT, 10, () => {
+    this._poll();
+    return GLib.SOURCE_CONTINUE; // Required: keeps the timer running
+});
+```
+
+### Missing return value (Bug)
+
+```js
+// BUG: No return value — GLib defaults to SOURCE_CONTINUE, creating an infinite timer
+this._timeoutId = GLib.timeout_add_seconds(GLib.PRIORITY_DEFAULT, 5, () => {
+    this._doSomething();
+    // Missing: return GLib.SOURCE_REMOVE;
+});
+```
+
+**Consequence:** Without an explicit return, the callback runs repeatedly forever. This is a common AI-generated bug — LLMs model GLib timeouts after browser `setTimeout` which doesn't need a return value.
+
+### Cleanup in disable()
+
+All timeout IDs must be cleared in `disable()`:
+
+```js
+disable() {
+    if (this._timeoutId) {
+        GLib.source_remove(this._timeoutId);
+        this._timeoutId = null;
+    }
+}
+```
+
+**Common mistake:** Forgetting to clear timeouts in disable(), leaving them running after the extension is disabled.
