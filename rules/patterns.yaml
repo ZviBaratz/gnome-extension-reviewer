@@ -1,0 +1,150 @@
+# rules/patterns.yaml — Tier 1 pattern rules for ego-lint
+#
+# Format:
+#   - id: R-XXXX-NN           # Unique rule ID
+#     pattern: "regex"         # Python re syntax
+#     scope: ["*.js"]          # Glob patterns relative to extension dir
+#     severity: blocking       # blocking | advisory
+#     message: "explanation"   # Human-readable message
+#     category: category-name  # For grouping
+#     fix: "how to fix"        # Optional
+#
+# Add new rules by appending to this file. See CONTRIBUTING.md for details.
+
+# --- Web APIs (blocking) ---
+# These browser APIs are not available in GJS.
+
+- id: R-WEB-01
+  pattern: "\\bsetTimeout\\s*\\("
+  scope: ["*.js"]
+  severity: blocking
+  message: "setTimeout is a browser API; use GLib.timeout_add() or GLib.timeout_add_seconds()"
+  category: web-apis
+  fix: "GLib.timeout_add_seconds(GLib.PRIORITY_DEFAULT, seconds, callback)"
+
+- id: R-WEB-02
+  pattern: "\\bsetInterval\\s*\\("
+  scope: ["*.js"]
+  severity: blocking
+  message: "setInterval is a browser API; use GLib.timeout_add() with GLib.SOURCE_CONTINUE"
+  category: web-apis
+  fix: "GLib.timeout_add_seconds(GLib.PRIORITY_DEFAULT, seconds, () => { ...; return GLib.SOURCE_CONTINUE; })"
+
+- id: R-WEB-03
+  pattern: "\\bfetch\\s*\\("
+  scope: ["*.js"]
+  severity: blocking
+  message: "fetch is a browser API; use Soup.Session for HTTP requests"
+  category: web-apis
+  fix: "Import Soup from 'gi://Soup?version=3.0' and use Soup.Session"
+
+- id: R-WEB-04
+  pattern: "\\bXMLHttpRequest\\b"
+  scope: ["*.js"]
+  severity: blocking
+  message: "XMLHttpRequest is a browser API; use Soup.Session"
+  category: web-apis
+
+- id: R-WEB-05
+  pattern: "\\brequestAnimationFrame\\b"
+  scope: ["*.js"]
+  severity: blocking
+  message: "requestAnimationFrame is a browser API; use Clutter animation framework"
+  category: web-apis
+
+- id: R-WEB-06
+  pattern: "\\bdocument\\."
+  scope: ["*.js"]
+  severity: blocking
+  message: "DOM APIs (document.*) are not available in GJS"
+  category: web-apis
+
+- id: R-WEB-07
+  pattern: "\\bwindow\\."
+  scope: ["*.js"]
+  severity: blocking
+  message: "window object is not available in GJS"
+  category: web-apis
+
+- id: R-WEB-08
+  pattern: "\\blocalStorage\\b"
+  scope: ["*.js"]
+  severity: blocking
+  message: "localStorage is a browser API; use GSettings for persistent storage"
+  category: web-apis
+
+- id: R-WEB-09
+  pattern: "\\brequire\\s*\\("
+  scope: ["*.js"]
+  severity: blocking
+  message: "require() is Node.js; use ESM imports (import ... from ...)"
+  category: web-apis
+
+# --- Deprecated APIs (blocking) ---
+
+- id: R-DEPR-05
+  pattern: "\\bExtensionUtils\\b"
+  scope: ["*.js"]
+  severity: blocking
+  message: "ExtensionUtils removed in GNOME 45+; use Extension/ExtensionPreferences class methods"
+  category: deprecated
+  fix: "Use this.getSettings(), this.gettext(), this.path, etc. from the Extension base class"
+
+- id: R-DEPR-06
+  pattern: "\\bTweener\\b"
+  scope: ["*.js"]
+  severity: blocking
+  message: "Tweener is removed; use Clutter animation framework"
+  category: deprecated
+
+- id: R-DEPR-07
+  pattern: "imports\\.misc\\.convenience"
+  scope: ["*.js"]
+  severity: blocking
+  message: "Convenience module removed in GNOME 45+; use Extension class methods"
+  category: deprecated
+
+# --- AI slop signals (advisory) ---
+# These patterns are not wrong per se, but signal unreviewed AI-generated code.
+
+- id: R-SLOP-01
+  pattern: "@param\\s*\\{\\w+\\}"
+  scope: ["*.js"]
+  severity: advisory
+  message: "TypeScript-style JSDoc (@param {Type}) is unusual in GNOME extensions"
+  category: ai-slop
+
+- id: R-SLOP-02
+  pattern: "@returns\\s*\\{\\w+\\}"
+  scope: ["*.js"]
+  severity: advisory
+  message: "TypeScript-style JSDoc (@returns {Type}) is unusual in GNOME extensions"
+  category: ai-slop
+
+- id: R-SLOP-03
+  pattern: "\"version\":\\s*\\d"
+  scope: ["metadata.json"]
+  severity: advisory
+  message: "version field is deprecated; EGO manages versions for GNOME 45+"
+  category: ai-slop
+
+- id: R-SLOP-04
+  pattern: "\"version-name\""
+  scope: ["metadata.json"]
+  severity: advisory
+  message: "version-name is a non-standard metadata field"
+  category: ai-slop
+
+- id: R-SLOP-05
+  pattern: "\"homepage\""
+  scope: ["metadata.json"]
+  severity: advisory
+  message: "homepage is a non-standard metadata field; use url instead"
+  category: ai-slop
+
+- id: R-SLOP-06
+  pattern: "\"bug-report-url\""
+  scope: ["metadata.json"]
+  severity: advisory
+  message: "bug-report-url is a non-standard metadata field"
+  category: ai-slop
