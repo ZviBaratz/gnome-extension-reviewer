@@ -269,3 +269,139 @@ The `connectObject` pattern is strongly preferred because:
 - No signal ID bookkeeping
 - `disconnectObject(this)` cleans up ALL connections from this owner at once
 - Harder to forget or misorder cleanup
+
+## Real-World Anti-Patterns
+
+These anti-patterns come from real EGO rejections. Each shows rejected code and
+the approved alternative.
+
+### Anti-Pattern: Individual Try-Catch Around Destroy Calls
+
+**Rejected:**
+```js
+disable() {
+    if (this._indicator) {
+        try { this._indicator.destroy(); } catch (e) { console.error(e); }
+    }
+    if (this._label) {
+        try { this._label.destroy(); } catch (e) { console.error(e); }
+    }
+    if (this._button) {
+        try { this._button.destroy(); } catch (e) { console.error(e); }
+    }
+}
+```
+
+**Why rejected:** `.destroy()` on GNOME Shell widgets doesn't throw. Wrapping
+each call in try-catch is defensive programming that signals the author doesn't
+understand the API. If destroy fails, the extension has a fundamental problem
+that catching won't help.
+
+**Approved:**
+```js
+disable() {
+    this._indicator?.destroy();
+    this._indicator = null;
+    // Or if _indicator was added to panel:
+    // this._indicator is auto-destroyed when removed
+}
+```
+
+### Anti-Pattern: Checking isLocked Without Lock Session-Mode
+
+**Rejected:**
+```js
+// metadata.json has no session-modes (defaults to ["user"])
+enable() {
+    if (Main.sessionMode.isLocked)
+        return;
+    this._init();
+}
+```
+
+**Why rejected:** Extensions without `session-modes: ["unlock-dialog"]` in
+metadata.json never run during the lock screen. Checking `isLocked` is an
+impossible state — it can never be true. This signals the code was AI-generated
+without understanding GNOME Shell's session model.
+
+**Approved:**
+```js
+// If extension doesn't need lock screen support:
+enable() {
+    this._init(); // No lock check needed — we only run in "user" mode
+}
+
+// If extension DOES need lock screen support:
+// In metadata.json: "session-modes": ["user", "unlock-dialog"]
+enable() {
+    if (Main.sessionMode.currentMode === 'unlock-dialog') {
+        // Initialize limited UI for lock screen
+    } else {
+        // Full initialization
+    }
+}
+```
+
+### Anti-Pattern: Over-Engineered Async Coordination
+
+**Rejected:**
+```js
+enable() {
+    this._initializing = false;
+    this._pendingDestroy = false;
+    this._initAsync();
+}
+
+async _initAsync() {
+    if (this._initializing) return;
+    this._initializing = true;
+    try {
+        await this._loadData();
+        if (this._pendingDestroy) return;
+        this._createUI();
+    } finally {
+        this._initializing = false;
+        if (this._pendingDestroy) {
+            this._pendingDestroy = false;
+            this._cleanup();
+        }
+    }
+}
+
+disable() {
+    if (this._initializing) {
+        this._pendingDestroy = true;
+        return;
+    }
+    this._cleanup();
+}
+```
+
+**Why rejected:** This is an over-engineered solution to async enable/disable.
+The `_pendingDestroy` + `_initializing` "pendulum" pattern adds complexity
+without benefit. GNOME extensions have a simple lifecycle where `disable()` must
+clean up synchronously.
+
+**Approved:**
+```js
+enable() {
+    this._destroyed = false;
+    this._initAsync();
+}
+
+async _initAsync() {
+    const data = await this._loadData();
+    if (this._destroyed) return; // Check once after each await
+    this._createUI(data);
+}
+
+disable() {
+    this._destroyed = true;
+    this._indicator?.destroy();
+    this._indicator = null;
+}
+```
+
+**Key insight:** The `_destroyed` flag is checked after each `await` point.
+`disable()` cleans up immediately and synchronously. No "pending" coordination
+needed.
