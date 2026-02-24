@@ -135,6 +135,18 @@ assert_output_contains "fails on nested structure" "\[FAIL\].*package/nested-str
 assert_output_contains "fails on missing compiled schemas" "\[FAIL\].*package/compiled-schemas"
 echo ""
 
+# --- ai-slop ---
+echo "=== ai-slop ==="
+run_lint "ai-slop@test"
+assert_exit_code "exits with 0 (warnings only, no failures)" 0
+assert_output_contains "warns on try-catch density" "\[WARN\].*quality.*try-catch"
+assert_output_contains "warns on impossible state" "\[WARN\].*quality/impossible-state"
+assert_output_contains "warns on pendulum pattern" "\[WARN\].*quality/pendulum-pattern"
+assert_output_contains "warns on module state" "\[WARN\].*quality/module-state"
+assert_output_contains "warns on empty catch" "\[WARN\].*quality/empty-catch"
+assert_output_contains "warns on JSDoc" "\[WARN\].*R-SLOP-01"
+echo ""
+
 # --- Summary ---
 echo "============================================"
 echo "  Results: $PASS_COUNT passed, $FAIL_COUNT failed"

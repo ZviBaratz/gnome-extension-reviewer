@@ -1,0 +1,7 @@
+{
+    "uuid": "ai-slop@test",
+    "name": "AI Slop Test",
+    "description": "Tests AI pattern detection heuristics",
+    "shell-version": ["48"],
+    "url": "https://example.com"
+}
