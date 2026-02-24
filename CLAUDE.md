@@ -1,0 +1,77 @@
+# CLAUDE.md
+
+This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+
+## Project Overview
+
+Claude Code plugin for GNOME Shell extension EGO (extensions.gnome.org) review compliance. It provides four skills (`ego-lint`, `ego-review`, `ego-scaffold`, `ego-submit`) and two slash commands (`/ego-submit`, `/ego-scaffold`). This is **not** a GNOME extension itself — it's a set of tools that validate GNOME extensions against EGO submission requirements.
+
+## Testing
+
+```bash
+bash tests/run-tests.sh
+```
+
+There is no separate "run single test" command — the test runner runs ego-lint against each fixture in `tests/fixtures/` and asserts on output patterns and exit codes. To test a specific fixture in isolation:
+
+```bash
+bash skills/ego-lint/scripts/ego-lint.sh tests/fixtures/<fixture-name>
+```
+
+## Architecture
+
+### Plugin structure
+
+- `.claude-plugin/plugin.json` — Plugin manifest pointing to `skills/` and `commands/`
+- `commands/` — Slash command definitions (`/ego-submit`, `/ego-scaffold`) that delegate to skills
+- `skills/` — Four skills, each with a `SKILL.md` (skill definition + instructions for Claude) and supporting files
+
+### Skill hierarchy
+
+`ego-submit` is the top-level orchestrator: it invokes `ego-lint` (automated checks) then `ego-review` (manual code review) then validates packaging. `ego-scaffold` is independent (creates new extensions).
+
+### ego-lint internals
+
+`ego-lint.sh` is the main orchestrator. It runs inline checks (file structure, license, console.log, deprecated modules, web APIs, binary files, CSS scoping, ESLint) then delegates to sub-scripts via `run_subscript`:
+
+- `check-metadata.py` (Python) — JSON validity, required fields, UUID format/match, shell-version, session-modes, settings-schema
+- `check-imports.sh` — Import segregation (no GTK in extension.js, no Shell libs in prefs.js)
+- `check-schema.sh` — GSettings schema ID/path validation, glib-compile-schemas dry-run
+- `check-package.sh` — Zip contents validation (forbidden files, required files)
+
+Sub-scripts output pipe-delimited lines (`STATUS|check-name|detail`) which `ego-lint.sh` parses and reformats.
+
+### ego-review internals
+
+Purely prompt-driven (no scripts). `SKILL.md` defines a 5-phase review process with checklists in `references/` (lifecycle, security, code quality). Claude reads extension source code and applies the checklists.
+
+### ego-scaffold internals
+
+Prompt-driven with templates in `assets/` using `${PLACEHOLDER}` syntax. Claude reads templates, substitutes variables, and writes the scaffolded extension.
+
+## Conventions
+
+### Check output format
+
+All automated checks use: `STATUS|check-name|detail` where STATUS is PASS/FAIL/WARN/SKIP.
+
+### Adding a new lint rule
+
+1. Add the check to the appropriate script in `skills/ego-lint/scripts/` (or inline in `ego-lint.sh`)
+2. Document it in `skills/ego-lint/references/rules-reference.md` using the `R-XXXX-NN` format with severity, rationale, and fix
+3. Add a test fixture in `tests/fixtures/` with minimal files to trigger the check
+4. Add assertions to `tests/run-tests.sh`
+
+### Commit messages
+
+Conventional commits, lowercase, scoped to skill name when applicable:
+```
+feat(ego-lint): add check for unscoped CSS classes
+fix(ego-scaffold): correct schema path in template
+test(ego-lint): add fixture for deprecated ByteArray usage
+```
+
+## Requirements
+
+- **Required**: bash, python3
+- **Optional**: npm/node (ESLint checks), glib-compile-schemas (schema validation), zipinfo/unzip (package checks)
