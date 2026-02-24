@@ -1,0 +1,7 @@
+{
+    "uuid": "deprecated-modules",
+    "name": "Deprecated Modules Extension",
+    "description": "Extension that uses deprecated modules",
+    "shell-version": ["47", "48"],
+    "url": "https://github.com/test/deprecated-modules"
+}

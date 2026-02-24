@@ -1,0 +1,8 @@
+{
+    "uuid": "valid-extension",
+    "name": "Valid Test Extension",
+    "description": "A valid test extension for ego-lint testing",
+    "shell-version": ["47", "48"],
+    "settings-schema": "org.gnome.shell.extensions.valid-test",
+    "url": "https://github.com/test/valid-extension"
+}

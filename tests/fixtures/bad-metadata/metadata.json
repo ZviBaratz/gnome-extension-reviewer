@@ -1,0 +1,6 @@
+{
+    "name": "Bad Metadata Extension",
+    "description": "Extension with invalid metadata",
+    "shell-version": "48",
+    "session-modes": ["user"]
+}

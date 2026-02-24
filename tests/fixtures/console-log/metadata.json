@@ -1,0 +1,7 @@
+{
+    "uuid": "console-log",
+    "name": "Console Log Extension",
+    "description": "Extension that uses console.log",
+    "shell-version": ["47", "48"],
+    "url": "https://github.com/test/console-log"
+}

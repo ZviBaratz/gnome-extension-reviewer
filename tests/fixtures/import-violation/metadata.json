@@ -1,0 +1,7 @@
+{
+    "uuid": "import-violation",
+    "name": "Import Violation Extension",
+    "description": "Extension that imports Gtk in extension.js",
+    "shell-version": ["47", "48"],
+    "url": "https://github.com/test/import-violation"
+}

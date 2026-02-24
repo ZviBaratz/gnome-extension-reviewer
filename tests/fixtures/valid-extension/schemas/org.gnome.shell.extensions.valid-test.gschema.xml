@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schemalist>
+  <schema id="org.gnome.shell.extensions.valid-test"
+          path="/org/gnome/shell/extensions/valid-test/">
+    <key name="example-setting" type="b">
+      <default>true</default>
+      <summary>Example setting</summary>
+      <description>An example boolean setting</description>
+    </key>
+  </schema>
+</schemalist>
