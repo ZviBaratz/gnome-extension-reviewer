@@ -1,30 +1,67 @@
 # Contributing
 
-## Quick Contribution: Adding a Rule
+## Contributing a Rule
 
-To add a new lint rule, append it to `skills/ego-lint/references/rules-reference.md` using this format:
+There are three ways to contribute a new rule, depending on complexity:
 
-```markdown
-### R-XXXX-NN: Rule title
-- **Severity**: blocking | advisory | info
-- **Checked by**: script name or "manual review"
-- **Rule**: What the rule checks
-- **Rationale**: Why this matters
-- **Fix**: How to fix it
+### Option 1: Pattern Rule (Easiest — 4 lines of YAML)
+
+For simple regex-based checks (e.g., "flag usage of X API"), add a rule to `rules/patterns.yaml`:
+
+```yaml
+- id: R-XXXX-NN
+  pattern: "\\bsomeAPI\\s*\\("
+  scope: ["*.js"]
+  severity: blocking
+  message: "someAPI is not available in GJS; use alternative instead"
+  category: category-name
 ```
 
-Choose the appropriate category prefix for the rule ID (e.g., `R-META` for metadata, `R-IMPORT` for imports, `R-SCHEMA` for schema).
+Fields:
+- `id`: Unique rule ID following the `R-CATEGORY-NN` convention (e.g., R-WEB-10, R-DEPR-08)
+- `pattern`: Python `re` regex syntax (double-escape backslashes in YAML)
+- `scope`: Glob patterns for which files to check (e.g., `["*.js"]`, `["metadata.json"]`)
+- `severity`: `blocking` (FAIL) or `advisory` (WARN)
+- `message`: Human-readable explanation shown to the user
+- `category`: Group name for the rule (web-apis, deprecated, ai-slop)
+- `fix`: Optional — how to fix the issue
+
+Then add a test fixture and assertion (see Testing below).
+
+### Option 2: Structural Check (Python/Bash Script)
+
+For checks that need code structure analysis (e.g., "flag excessive try-catch density"), modify the appropriate script in `skills/ego-lint/scripts/`:
+
+- `check-metadata.py` — metadata.json validation
+- `check-quality.py` — code quality heuristics (Tier 2)
+- `check-imports.sh` — import segregation
+- `check-schema.sh` — GSettings schema validation
+- `check-package.sh` — zip package validation
+
+Use the standard output format:
+```
+STATUS|check-name|detail
+```
+Where `STATUS` is one of `PASS`, `FAIL`, `WARN`, or `SKIP`.
+
+### Option 3: Semantic Checklist Item (Markdown — No Code)
+
+For checks that require human judgment (e.g., "does the error handling make sense in context?"), add an item to the appropriate checklist in `skills/ego-review/references/`:
+
+- `ai-slop-checklist.md` — AI-generated code patterns
+- `lifecycle-checklist.md` — enable/disable lifecycle correctness
+- `security-checklist.md` — security concerns
+- `code-quality-checklist.md` — code quality patterns
+
+Use the existing format in each file (Ask / Red flag / Acceptable).
 
 ## Adding an Automated Check
 
-1. Modify the appropriate script in `skills/ego-lint/scripts/` (or create a new one if the check doesn't fit an existing script).
-2. Use the standard output format for each check result:
-   ```
-   STATUS|check-name|detail
-   ```
-   Where `STATUS` is one of `PASS`, `FAIL`, `WARN`, or `SKIP`.
-3. Add a test fixture in `tests/fixtures/` with the minimal files needed to trigger the check.
-4. Update `tests/run-tests.sh` with assertions for the new check.
+This process applies to Option 1 (pattern rules) and Option 2 (structural checks) above. Test fixtures are expected for all automated checks.
+
+1. Add or modify the check in the appropriate location (see Options 1 and 2).
+2. Add a test fixture in `tests/fixtures/` with the minimal files needed to trigger the check.
+3. Update `tests/run-tests.sh` with assertions for the new check.
 
 ## Testing
 
