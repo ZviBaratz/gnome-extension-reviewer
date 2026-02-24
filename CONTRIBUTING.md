@@ -55,6 +55,65 @@ For checks that require human judgment (e.g., "does the error handling make sens
 
 Use the existing format in each file (Ask / Red flag / Acceptable).
 
+## Worked Examples
+
+### Example 1: Adding a Pattern Rule
+
+Suppose you notice that many AI-generated extensions use `Object.freeze()` unnecessarily.
+
+**1. Add the rule:**
+
+```yaml
+# In rules/patterns.yaml
+- id: R-SLOP-08
+  pattern: "Object\\.freeze\\s*\\("
+  scope: ["*.js"]
+  severity: advisory
+  message: "Object.freeze() is unusual in GNOME extensions; may signal over-engineering"
+  category: ai-slop
+  fix: "Remove Object.freeze() — GNOME extensions don't need runtime immutability guards."
+```
+
+**2. Create fixture:** `tests/fixtures/object-freeze@test/extension.js`
+```js
+import {Extension} from 'resource:///org/gnome/shell/extensions/extension.js';
+const CONFIG = Object.freeze({TIMEOUT: 5});
+export default class FreezeExtension extends Extension {
+    enable() {}
+    disable() {}
+}
+```
+
+**3. Add assertion** in `tests/run-tests.sh`:
+```bash
+echo "=== object-freeze ==="
+run_lint "object-freeze@test"
+assert_output_contains "warns on Object.freeze" "\[WARN\].*R-SLOP-08"
+```
+
+**4. Test:** `bash tests/run-tests.sh`
+
+### Example 2: Adding a Structural Check
+
+See `skills/ego-lint/scripts/check-quality.py` for the pattern. Each check is a
+function that takes `(ext_dir, js_files)` and calls `result(status, check, detail)`.
+
+### Example 3: Adding a Semantic Checklist Item
+
+In `skills/ego-review/references/ai-slop-checklist.md`, add:
+
+```markdown
+### CS-5: Excessive constant objects
+
+**Ask**: Are there `Object.freeze()` calls or large constant objects that could be
+simple variables?
+
+**Red flag**: `const CONFIG = Object.freeze({...})` with 20+ properties defined at
+module level.
+
+**Acceptable**: Small frozen objects used as enums across multiple files.
+```
+
 ## Adding an Automated Check
 
 This process applies to Option 1 (pattern rules) and Option 2 (structural checks) above. Test fixtures are expected for all automated checks.
