@@ -1,0 +1,7 @@
+{
+    "uuid": "minified-js@test",
+    "name": "Minified JS Test",
+    "description": "Tests minified JS detection",
+    "shell-version": ["48"],
+    "url": "https://example.com"
+}

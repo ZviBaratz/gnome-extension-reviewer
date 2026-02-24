@@ -1,0 +1,7 @@
+{
+    "uuid": "mock-in-production@test",
+    "name": "Mock In Production Test",
+    "description": "Tests mock code detection",
+    "shell-version": ["48"],
+    "url": "https://example.com"
+}

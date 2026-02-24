@@ -212,6 +212,131 @@ def check_empty_catch(ext_dir, js_files):
                "No empty catch blocks found")
 
 
+def check_destroyed_density(ext_dir, js_files):
+    """R-QUAL-06: Flag excessive _destroyed/_pendingDestroy/_initializing checks."""
+    patterns = ['_destroyed', '_pendingDestroy', '_initializing']
+    total_occurrences = 0
+    total_lines = 0
+    file_counts = {}
+
+    for filepath in js_files:
+        rel = os.path.relpath(filepath, ext_dir)
+        with open(filepath, encoding='utf-8', errors='replace') as f:
+            lines = f.readlines()
+
+        non_blank = sum(1 for l in lines if l.strip())
+        total_lines += non_blank
+        count = 0
+        for line in lines:
+            for pat in patterns:
+                count += line.count(pat)
+        if count > 0:
+            file_counts[rel] = count
+        total_occurrences += count
+
+    if total_occurrences >= 10 and total_lines > 0:
+        ratio = total_occurrences / total_lines
+        if ratio > 0.02:
+            files_summary = ', '.join(
+                f"{f}({c})" for f, c in sorted(
+                    file_counts.items(), key=lambda x: -x[1]
+                )[:3]
+            )
+            result("WARN", "quality/destroyed-density",
+                   f"{total_occurrences} _destroyed/_pendingDestroy/_initializing "
+                   f"checks across {len(file_counts)} files "
+                   f"(ratio: {ratio:.3f}) — top: {files_summary}")
+            return
+
+    result("PASS", "quality/destroyed-density",
+           f"Destroyed-flag density acceptable "
+           f"({total_occurrences} in {total_lines} lines)")
+
+
+def check_mock_in_production(ext_dir, js_files):
+    """R-QUAL-07: Flag mock/test code shipped in production."""
+    mock_files = []
+    mock_triggers = []
+
+    for filepath in js_files:
+        rel = os.path.relpath(filepath, ext_dir)
+        basename = os.path.basename(filepath)
+
+        # Check filename patterns (case-insensitive)
+        lower = basename.lower()
+        if (lower.startswith('mock') or lower.startswith('test') or
+                lower.startswith('spec') or lower.endswith('.test.js') or
+                lower.endswith('.spec.js')):
+            mock_files.append(rel)
+
+        # Check for runtime mock triggers
+        with open(filepath, encoding='utf-8', errors='replace') as f:
+            for lineno, line in enumerate(f, 1):
+                if re.search(r'use_mock|mock_trigger|MOCK_MODE|\.mock\b', line,
+                             re.IGNORECASE):
+                    mock_triggers.append(f"{rel}:{lineno}")
+
+    found = False
+    for mf in mock_files:
+        result("WARN", "quality/mock-in-production",
+               f"{mf}: mock/test file should not ship in production extension")
+        found = True
+    for mt in mock_triggers:
+        result("WARN", "quality/mock-in-production",
+               f"{mt}: runtime mock trigger detected — remove for production")
+        found = True
+
+    if not found:
+        result("PASS", "quality/mock-in-production",
+               "No mock/test code detected in production files")
+
+
+def check_constructor_resources(ext_dir, js_files):
+    """R-QUAL-08: Flag resource allocation inside constructors."""
+    bad_patterns = [
+        (r'this\.getSettings\s*\(', 'this.getSettings()'),
+        (r'\.connect\s*\(', '.connect()'),
+        (r'\.connectObject\s*\(', '.connectObject()'),
+        (r'timeout_add', 'GLib.timeout_add()'),
+        (r'new\s+Gio\.DBusProxy', 'new Gio.DBusProxy()'),
+    ]
+    found = False
+
+    for filepath in js_files:
+        rel = os.path.relpath(filepath, ext_dir)
+        with open(filepath, encoding='utf-8', errors='replace') as f:
+            content = f.read()
+
+        # Find constructor/_init bodies (rough heuristic)
+        for m in re.finditer(
+            r'(?:constructor|_init)\s*\([^)]*\)\s*\{', content
+        ):
+            # Extract the constructor body (find matching brace)
+            start = m.end()
+            depth = 1
+            pos = start
+            while pos < len(content) and depth > 0:
+                if content[pos] == '{':
+                    depth += 1
+                elif content[pos] == '}':
+                    depth -= 1
+                pos += 1
+            body = content[start:pos - 1]
+            body_start_line = content[:m.start()].count('\n') + 1
+
+            for pat, name in bad_patterns:
+                for hit in re.finditer(pat, body):
+                    hit_line = body_start_line + body[:hit.start()].count('\n') + 1
+                    result("WARN", "quality/constructor-resources",
+                           f"{rel}:{hit_line}: {name} in constructor — "
+                           f"move to enable()")
+                    found = True
+
+    if not found:
+        result("PASS", "quality/constructor-resources",
+               "No resource allocation in constructors")
+
+
 def main():
     if len(sys.argv) < 2:
         result("FAIL", "quality/args", "No extension directory provided")
@@ -229,6 +354,9 @@ def main():
     check_pendulum_pattern(ext_dir, js_files)
     check_module_state(ext_dir, js_files)
     check_empty_catch(ext_dir, js_files)
+    check_destroyed_density(ext_dir, js_files)
+    check_mock_in_production(ext_dir, js_files)
+    check_constructor_resources(ext_dir, js_files)
 
 
 if __name__ == '__main__':

@@ -168,6 +168,27 @@ assert_output_contains "warns on log()" "\[WARN\].*R-LOG-02"
 assert_output_contains "warns on print()" "\[WARN\].*R-LOG-03"
 echo ""
 
+# --- destroyed-density ---
+echo "=== destroyed-density ==="
+run_lint "destroyed-density@test"
+assert_exit_code "exits with 0 (warnings only)" 0
+assert_output_contains "warns on _destroyed density" "\[WARN\].*quality/destroyed-density"
+echo ""
+
+# --- mock-in-production ---
+echo "=== mock-in-production ==="
+run_lint "mock-in-production@test"
+assert_exit_code "exits with 0 (warnings only)" 0
+assert_output_contains "warns on MockDevice.js" "\[WARN\].*quality/mock-in-production"
+echo ""
+
+# --- minified-js ---
+echo "=== minified-js ==="
+run_lint "minified-js@test"
+assert_exit_code "exits with 1 (has failures)" 1
+assert_output_contains "fails on minified JS" "\[FAIL\].*minified-js"
+echo ""
+
 # --- Summary ---
 echo "============================================"
 echo "  Results: $PASS_COUNT passed, $FAIL_COUNT failed"

@@ -237,6 +237,46 @@ else
 fi
 
 # ---------------------------------------------------------------------------
+# Minified/bundled JavaScript check
+# ---------------------------------------------------------------------------
+
+minified_files=""
+for f in "$EXT_DIR"/*.js; do
+    [[ -f "$f" ]] || continue
+    rel_path="${f#"$EXT_DIR/"}"
+
+    # Check for webpack boilerplate
+    if grep -q '__webpack_require__' "$f" 2>/dev/null; then
+        minified_files+="  $rel_path (webpack bundle)"$'\n'
+        continue
+    fi
+
+    # Check for any line > 500 chars (strong minification signal)
+    if awk 'length > 500 { found=1; exit } END { exit !found }' "$f" 2>/dev/null; then
+        minified_files+="  $rel_path (lines > 500 chars)"$'\n'
+    fi
+done
+if [[ -d "$EXT_DIR/lib" ]]; then
+    while IFS= read -r -d '' f; do
+        rel_path="${f#"$EXT_DIR/"}"
+        if grep -q '__webpack_require__' "$f" 2>/dev/null; then
+            minified_files+="  $rel_path (webpack bundle)"$'\n'
+            continue
+        fi
+        if awk 'length > 500 { found=1; exit } END { exit !found }' "$f" 2>/dev/null; then
+            minified_files+="  $rel_path (lines > 500 chars)"$'\n'
+        fi
+    done < <(find "$EXT_DIR/lib" -name '*.js' -print0 2>/dev/null)
+fi
+
+if [[ -n "$minified_files" ]]; then
+    hit_count=$(echo -n "$minified_files" | grep -c '.' || true)
+    print_result "FAIL" "minified-js" "Found $hit_count minified/bundled JS file(s) — reviewers cannot review minified code"
+else
+    print_result "PASS" "minified-js" "No minified or bundled JavaScript detected"
+fi
+
+# ---------------------------------------------------------------------------
 # CSS scoping check
 # ---------------------------------------------------------------------------
 

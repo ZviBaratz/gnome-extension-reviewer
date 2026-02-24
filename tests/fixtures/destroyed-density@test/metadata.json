@@ -1,0 +1,7 @@
+{
+    "uuid": "destroyed-density@test",
+    "name": "Destroyed Density Test",
+    "description": "Tests _destroyed density detection",
+    "shell-version": ["48"],
+    "url": "https://example.com"
+}
