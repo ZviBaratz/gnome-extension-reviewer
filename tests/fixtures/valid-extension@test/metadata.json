@@ -1,5 +1,5 @@
 {
-    "uuid": "valid-extension",
+    "uuid": "valid-extension@test",
     "name": "Valid Test Extension",
     "description": "A valid test extension for ego-lint testing",
     "shell-version": ["47", "48"],

@@ -1,0 +1,11 @@
+{
+    "uuid": "non-standard-metadata",
+    "name": "Non-Standard Metadata Test",
+    "description": "Tests metadata validation",
+    "shell-version": ["48"],
+    "version": 1,
+    "version-name": "1.0.0",
+    "homepage": "https://example.com",
+    "bug-report-url": "https://example.com/issues",
+    "author": "Test Author"
+}

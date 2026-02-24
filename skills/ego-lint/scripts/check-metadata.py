@@ -94,6 +94,33 @@ def main():
         else:
             result("FAIL", "metadata/settings-schema", f"settings-schema should start with org.gnome.shell.extensions., got: {schema}")
 
+    # --- UUID must contain @ ---
+    if uuid and "@" not in uuid:
+        result("FAIL", "metadata/uuid-at-sign",
+               f"UUID must contain @ (e.g., my-extension@username), got: {uuid}")
+    elif uuid:
+        result("PASS", "metadata/uuid-at-sign", "UUID contains @")
+
+    # --- Non-standard fields ---
+    STANDARD_FIELDS = {
+        "uuid", "name", "description", "shell-version",
+        "settings-schema", "gettext-domain", "url",
+        "session-modes", "donations",
+    }
+    non_standard = [k for k in meta if k not in STANDARD_FIELDS]
+    if non_standard:
+        for field in non_standard:
+            result("WARN", "metadata/non-standard-field",
+                   f"'{field}' is not a standard metadata field")
+    else:
+        result("PASS", "metadata/non-standard-field",
+               "No non-standard metadata fields")
+
+    # --- Deprecated version field ---
+    if "version" in meta:
+        result("WARN", "metadata/deprecated-version",
+               "version field is ignored by EGO for GNOME 45+; consider removing")
+
 
 if __name__ == "__main__":
     main()

@@ -59,7 +59,7 @@ echo ""
 
 # --- valid-extension ---
 echo "=== valid-extension ==="
-run_lint "valid-extension"
+run_lint "valid-extension@test"
 assert_exit_code "exits with 0 (no failures)" 0
 assert_output_not_contains "no FAIL results" "\[FAIL\]"
 assert_output_contains "metadata passes" "\[PASS\].*metadata/valid-json"
@@ -116,6 +116,15 @@ run_lint "deprecated-imports"
 assert_exit_code "exits with 1 (has failures)" 1
 assert_output_contains "fails on ExtensionUtils" "\[FAIL\].*R-DEPR-05"
 assert_output_contains "fails on Tweener" "\[FAIL\].*R-DEPR-06"
+echo ""
+
+# --- non-standard-metadata ---
+echo "=== non-standard-metadata ==="
+run_lint "non-standard-metadata"
+assert_exit_code "exits with 1 (has failures)" 1
+assert_output_contains "fails on UUID missing @" "\[FAIL\].*metadata/uuid-at-sign"
+assert_output_contains "warns on non-standard fields" "\[WARN\].*metadata/non-standard-field"
+assert_output_contains "warns on deprecated version" "\[WARN\].*metadata/deprecated-version"
 echo ""
 
 # --- Summary ---
