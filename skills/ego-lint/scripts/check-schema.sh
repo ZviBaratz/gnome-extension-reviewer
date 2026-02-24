@@ -67,6 +67,12 @@ for schema_file in "${schema_files[@]}"; do
         else
             echo "FAIL|schema/path|Schema path should start with /org/gnome/shell/extensions/, got: $schema_path"
         fi
+        # Path must end with /
+        if [[ "$schema_path" != */ ]]; then
+            echo "FAIL|schema/path-trailing-slash|Schema path must end with /, got: $schema_path"
+        else
+            echo "PASS|schema/path-trailing-slash|Schema path ends with /"
+        fi
     fi
 done
 
