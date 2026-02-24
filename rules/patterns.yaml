@@ -60,10 +60,10 @@
   category: web-apis
 
 - id: R-WEB-07
-  pattern: "\\bwindow\\."
+  pattern: "\\bwindow\\.(document|location|navigator|localStorage|sessionStorage|alert|confirm|prompt|history|performance)"
   scope: ["*.js"]
   severity: blocking
-  message: "window object is not available in GJS"
+  message: "Browser window properties are not available in GJS (window is a GTK widget in prefs.js)"
   category: web-apis
 
 - id: R-WEB-08

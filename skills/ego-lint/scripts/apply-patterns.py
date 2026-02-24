@@ -123,10 +123,15 @@ def main():
             matches = glob.glob(os.path.join(ext_dir, '**', scope), recursive=True)
             # Also check files directly in ext_dir
             matches += glob.glob(os.path.join(ext_dir, scope))
-            # Deduplicate
+            # Deduplicate and skip non-extension directories
             seen = set()
+            skip_dirs = ('node_modules', '.git', '__pycache__')
             for filepath in matches:
                 if filepath in seen or not os.path.isfile(filepath):
+                    continue
+                # Skip files inside non-extension directories
+                rel = os.path.relpath(filepath, ext_dir)
+                if any(part in skip_dirs for part in rel.split(os.sep)):
                     continue
                 seen.add(filepath)
                 try:

@@ -24,9 +24,11 @@ def result(status, check, detail):
 
 
 def find_js_files(ext_dir):
-    """Find all JS files in extension directory."""
+    """Find all JS files in extension directory, excluding node_modules."""
+    skip_dirs = {'node_modules', '.git', '__pycache__'}
     files = []
-    for root, _dirs, filenames in os.walk(ext_dir):
+    for root, dirs, filenames in os.walk(ext_dir):
+        dirs[:] = [d for d in dirs if d not in skip_dirs]
         for name in filenames:
             if name.endswith('.js'):
                 files.append(os.path.join(root, name))
