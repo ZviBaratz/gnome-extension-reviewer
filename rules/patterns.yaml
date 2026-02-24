@@ -44,6 +44,7 @@
   severity: blocking
   message: "XMLHttpRequest is a browser API; use Soup.Session"
   category: web-apis
+  fix: "Import Soup from 'gi://Soup?version=3.0' and use Soup.Session."
 
 - id: R-WEB-05
   pattern: "\\brequestAnimationFrame\\b"
@@ -51,6 +52,7 @@
   severity: blocking
   message: "requestAnimationFrame is a browser API; use Clutter animation framework"
   category: web-apis
+  fix: "Use Clutter.Timeline or actor.ease() for animations."
 
 - id: R-WEB-06
   pattern: "\\bdocument\\."
@@ -58,6 +60,7 @@
   severity: blocking
   message: "DOM APIs (document.*) are not available in GJS"
   category: web-apis
+  fix: "GJS has no DOM. Use GObject/Clutter/St/GTK widgets instead."
 
 - id: R-WEB-07
   pattern: "\\bwindow\\.(document|location|navigator|localStorage|sessionStorage|alert|confirm|prompt|history|performance)"
@@ -65,6 +68,7 @@
   severity: blocking
   message: "Browser window properties are not available in GJS (window is a GTK widget in prefs.js)"
   category: web-apis
+  fix: "In prefs.js, use the GTK widget directly. In extension.js, there is no window object."
 
 - id: R-WEB-08
   pattern: "\\blocalStorage\\b"
@@ -72,6 +76,7 @@
   severity: blocking
   message: "localStorage is a browser API; use GSettings for persistent storage"
   category: web-apis
+  fix: "Use GSettings (this.getSettings()) for persistent key-value storage."
 
 - id: R-WEB-09
   pattern: "\\brequire\\s*\\("
@@ -79,6 +84,7 @@
   severity: blocking
   message: "require() is Node.js; use ESM imports (import ... from ...)"
   category: web-apis
+  fix: "Use ESM: import X from 'gi://X' or import {Y} from 'resource:///path/to/module.js'."
 
 # --- Deprecated APIs (blocking) ---
 
@@ -96,6 +102,7 @@
   severity: blocking
   message: "Tweener is removed; use Clutter animation framework"
   category: deprecated
+  fix: "Use actor.ease({property: value, duration: ms, mode: Clutter.AnimationMode.EASE_OUT_QUAD})."
 
 - id: R-DEPR-07
   pattern: "imports\\.misc\\.convenience"
@@ -103,6 +110,7 @@
   severity: blocking
   message: "Convenience module removed in GNOME 45+; use Extension class methods"
   category: deprecated
+  fix: "Use this.getSettings() from the Extension base class."
 
 # --- AI slop signals (advisory) ---
 # These patterns are not wrong per se, but signal unreviewed AI-generated code.
@@ -113,6 +121,7 @@
   severity: advisory
   message: "TypeScript-style JSDoc (@param {Type}) is unusual in GNOME extensions"
   category: ai-slop
+  fix: "Remove @param {Type} annotations; GNOME extensions don't use TypeScript-style JSDoc."
 
 - id: R-SLOP-02
   pattern: "@returns\\s*\\{\\w+\\}"
@@ -120,6 +129,7 @@
   severity: advisory
   message: "TypeScript-style JSDoc (@returns {Type}) is unusual in GNOME extensions"
   category: ai-slop
+  fix: "Remove @returns {Type} annotations; GNOME extensions don't use TypeScript-style JSDoc."
 
 - id: R-SLOP-03
   pattern: "\"version\":\\s*\\d"
@@ -127,6 +137,7 @@
   severity: advisory
   message: "version field is deprecated; EGO manages versions for GNOME 45+"
   category: ai-slop
+  fix: "Remove the version field from metadata.json; EGO manages versions automatically."
 
 - id: R-SLOP-04
   pattern: "\"version-name\""
@@ -134,6 +145,7 @@
   severity: advisory
   message: "version-name is a non-standard metadata field"
   category: ai-slop
+  fix: "Remove the version-name field; it is not a standard EGO metadata field."
 
 - id: R-SLOP-05
   pattern: "\"homepage\""
@@ -141,6 +153,7 @@
   severity: advisory
   message: "homepage is a non-standard metadata field; use url instead"
   category: ai-slop
+  fix: "Rename homepage to url in metadata.json."
 
 - id: R-SLOP-06
   pattern: "\"bug-report-url\""
@@ -148,3 +161,121 @@
   severity: advisory
   message: "bug-report-url is a non-standard metadata field"
   category: ai-slop
+  fix: "Remove bug-report-url; use the url field for your project URL."
+
+# --- Security (blocking) ---
+# These patterns indicate security risks that will cause EGO rejection.
+
+- id: R-SEC-01
+  pattern: "\\beval\\s*\\("
+  scope: ["*.js"]
+  severity: blocking
+  message: "eval() is a security risk; never execute dynamic code"
+  category: security
+  fix: "Remove eval() entirely. If parsing JSON, use JSON.parse(). If computing values, use a lookup table."
+
+- id: R-SEC-02
+  pattern: "\\bnew\\s+Function\\s*\\("
+  scope: ["*.js"]
+  severity: blocking
+  message: "new Function() is equivalent to eval(); avoid dynamic code execution"
+  category: security
+  fix: "Replace with a direct function definition or a lookup table."
+
+- id: R-SEC-03
+  pattern: "http://(?!localhost|127\\.0\\.0\\.1|\\[::1\\])"
+  scope: ["*.js"]
+  severity: advisory
+  message: "Use HTTPS instead of HTTP for network requests"
+  category: security
+  fix: "Change http:// to https://."
+
+- id: R-SEC-04
+  pattern: "\\bpkexec\\b|\\bsudo\\b"
+  scope: ["*.js", "*.sh"]
+  severity: blocking
+  message: "pkexec/sudo requires explicit EGO reviewer justification; prefer udev rules for hardware access"
+  category: security
+  fix: "Use a udev rule to grant write access to sysfs files, or a systemd service with capabilities."
+
+- id: R-SEC-05
+  pattern: "Subprocess.*'/bin/sh'.*'-c'"
+  scope: ["*.js"]
+  severity: advisory
+  message: "Subprocess with /bin/sh -c risks command injection; use explicit argv array"
+  category: security
+  fix: "Pass command and arguments as separate argv array elements instead of a shell string."
+
+# --- Browser APIs (blocking, continued) ---
+
+- id: R-WEB-10
+  pattern: "\\bclearTimeout\\s*\\("
+  scope: ["*.js"]
+  severity: blocking
+  message: "clearTimeout is a browser API; use GLib.Source.remove(sourceId)"
+  category: web-apis
+  fix: "Store the return value of GLib.timeout_add() and pass it to GLib.Source.remove()."
+
+- id: R-WEB-11
+  pattern: "\\bclearInterval\\s*\\("
+  scope: ["*.js"]
+  severity: blocking
+  message: "clearInterval is a browser API; use GLib.Source.remove(sourceId)"
+  category: web-apis
+  fix: "Store the return value of GLib.timeout_add() and pass it to GLib.Source.remove()."
+
+# --- Logging (advisory) ---
+
+- id: R-LOG-02
+  pattern: "(?<![.\\w])log\\s*\\("
+  scope: ["*.js"]
+  severity: advisory
+  message: "Legacy log() function; use console.debug() instead"
+  category: logging
+  fix: "Replace log(...) with console.debug(...)."
+
+- id: R-LOG-03
+  pattern: "\\b(print|printerr)\\s*\\("
+  scope: ["*.js"]
+  severity: advisory
+  message: "print()/printerr() should not be used in production; use console.debug()"
+  category: logging
+  fix: "Replace print()/printerr() with console.debug() or console.error()."
+
+# --- Deprecated APIs (continued) ---
+
+- id: R-DEPR-04
+  pattern: "\\bimports\\.(ui|gi|misc)\\."
+  scope: ["*.js"]
+  severity: advisory
+  message: "Legacy imports.* syntax; use ESM imports for GNOME 45+"
+  category: deprecated
+  fix: "Replace 'const X = imports.ui.main' with 'import * as Main from \"resource:///org/gnome/shell/ui/main.js\"'."
+
+- id: R-DEPR-08
+  pattern: "\\bspawn_command_line_sync\\b"
+  scope: ["*.js"]
+  severity: advisory
+  message: "GLib.spawn_command_line_sync is deprecated; use Gio.Subprocess"
+  category: deprecated
+  fix: "Use new Gio.Subprocess({argv: [...], flags: ...}) instead."
+
+# --- Import segregation (blocking) ---
+
+- id: R-IMPORT-08
+  pattern: "resource:///org/gnome/shell/ui/"
+  scope: ["prefs.js"]
+  severity: blocking
+  message: "GNOME Shell UI modules are not available in the preferences process"
+  category: imports
+  fix: "Preferences must only use GTK/Adw/Gio/GLib. Shell UI modules run in a different process."
+
+# --- AI slop signals (advisory, continued) ---
+
+- id: R-SLOP-07
+  pattern: "\\.get_button\\(\\)\\s*===?\\s*[123]"
+  scope: ["*.js"]
+  severity: advisory
+  message: "Use Clutter.BUTTON_PRIMARY/SECONDARY/MIDDLE instead of magic numbers"
+  category: ai-slop
+  fix: "Replace 1 with Clutter.BUTTON_PRIMARY, 2 with Clutter.BUTTON_MIDDLE, 3 with Clutter.BUTTON_SECONDARY."
