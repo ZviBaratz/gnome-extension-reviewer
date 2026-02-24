@@ -5,6 +5,8 @@ export default class WebApisExtension extends Extension {
         setTimeout(() => {}, 100);
         const xhr = new XMLHttpRequest();
         document.querySelector('.foo');
+        clearTimeout(this._timer);
+        clearInterval(this._interval);
     }
 
     disable() {}

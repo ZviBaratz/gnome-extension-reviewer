@@ -108,6 +108,8 @@ assert_exit_code "exits with 1 (has failures)" 1
 assert_output_contains "fails on setTimeout" "\[FAIL\].*R-WEB-01"
 assert_output_contains "fails on XMLHttpRequest" "\[FAIL\].*R-WEB-04"
 assert_output_contains "fails on document.*" "\[FAIL\].*R-WEB-06"
+assert_output_contains "fails on clearTimeout" "\[FAIL\].*R-WEB-10"
+assert_output_contains "fails on clearInterval" "\[FAIL\].*R-WEB-11"
 echo ""
 
 # --- deprecated-imports ---
@@ -116,6 +118,7 @@ run_lint "deprecated-imports"
 assert_exit_code "exits with 1 (has failures)" 1
 assert_output_contains "fails on ExtensionUtils" "\[FAIL\].*R-DEPR-05"
 assert_output_contains "fails on Tweener" "\[FAIL\].*R-DEPR-06"
+assert_output_contains "warns on legacy imports.*" "\[WARN\].*R-DEPR-04"
 echo ""
 
 # --- non-standard-metadata ---
@@ -145,6 +148,24 @@ assert_output_contains "warns on pendulum pattern" "\[WARN\].*quality/pendulum-p
 assert_output_contains "warns on module state" "\[WARN\].*quality/module-state"
 assert_output_contains "warns on empty catch" "\[WARN\].*quality/empty-catch"
 assert_output_contains "warns on JSDoc" "\[WARN\].*R-SLOP-01"
+echo ""
+
+# --- security-patterns ---
+echo "=== security-patterns ==="
+run_lint "security-patterns@test"
+assert_exit_code "exits with 1 (has failures)" 1
+assert_output_contains "fails on eval()" "\[FAIL\].*R-SEC-01"
+assert_output_contains "fails on new Function()" "\[FAIL\].*R-SEC-02"
+assert_output_contains "warns on http://" "\[WARN\].*R-SEC-03"
+assert_output_contains "warns on shell -c" "\[WARN\].*R-SEC-05"
+echo ""
+
+# --- logging-patterns ---
+echo "=== logging-patterns ==="
+run_lint "logging-patterns@test"
+assert_exit_code "exits with 0 (advisory only)" 0
+assert_output_contains "warns on log()" "\[WARN\].*R-LOG-02"
+assert_output_contains "warns on print()" "\[WARN\].*R-LOG-03"
 echo ""
 
 # --- Summary ---

@@ -1,0 +1,7 @@
+{
+    "uuid": "logging-patterns@test",
+    "name": "Logging Patterns Test",
+    "description": "Tests logging pattern detection",
+    "shell-version": ["48"],
+    "url": "https://example.com"
+}
