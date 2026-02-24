@@ -1,0 +1,7 @@
+{
+    "uuid": "deprecated-imports",
+    "name": "Deprecated Imports Test",
+    "description": "Tests deprecated API detection",
+    "shell-version": ["48"],
+    "url": "https://example.com"
+}

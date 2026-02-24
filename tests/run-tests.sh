@@ -101,6 +101,23 @@ assert_exit_code "exits with 1 (has failures)" 1
 assert_output_contains "fails on deprecated module" "\[FAIL\].*no-deprecated-modules"
 echo ""
 
+# --- web-apis ---
+echo "=== web-apis ==="
+run_lint "web-apis"
+assert_exit_code "exits with 1 (has failures)" 1
+assert_output_contains "fails on setTimeout" "\[FAIL\].*R-WEB-01"
+assert_output_contains "fails on XMLHttpRequest" "\[FAIL\].*R-WEB-04"
+assert_output_contains "fails on document.*" "\[FAIL\].*R-WEB-06"
+echo ""
+
+# --- deprecated-imports ---
+echo "=== deprecated-imports ==="
+run_lint "deprecated-imports"
+assert_exit_code "exits with 1 (has failures)" 1
+assert_output_contains "fails on ExtensionUtils" "\[FAIL\].*R-DEPR-05"
+assert_output_contains "fails on Tweener" "\[FAIL\].*R-DEPR-06"
+echo ""
+
 # --- Summary ---
 echo "============================================"
 echo "  Results: $PASS_COUNT passed, $FAIL_COUNT failed"
