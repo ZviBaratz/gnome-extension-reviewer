@@ -1,0 +1,5 @@
+node_modules/
+*.zip
+.claude/
+CLAUDE.md
+tests/fixtures/*/node_modules/
