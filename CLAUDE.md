@@ -32,14 +32,23 @@ bash skills/ego-lint/scripts/ego-lint.sh tests/fixtures/<fixture-name>
 
 ### ego-lint internals
 
-`ego-lint.sh` is the main orchestrator. It runs inline checks (file structure, license, console.log, deprecated modules, web APIs, binary files, CSS scoping, ESLint) then delegates to sub-scripts via `run_subscript`:
+`ego-lint.sh` is the main orchestrator. It uses a three-tier rule system (pattern → structural → semantic) and delegates to sub-scripts via `run_subscript`:
 
-- `check-metadata.py` (Python) — JSON validity, required fields, UUID format/match, shell-version, session-modes, settings-schema
+- `rules/patterns.yaml` — Tier 1 pattern rules (regex-based, declarative)
+- `apply-patterns.py` — Tier 1 pattern engine (inline YAML parser, no PyYAML dependency)
+- `check-quality.py` — Tier 2 heuristic AI slop detection (try-catch density, impossible states, pendulum patterns, empty catches)
+- `check-metadata.py` — JSON validity, required fields, UUID format/match, shell-version, session-modes, settings-schema
 - `check-imports.sh` — Import segregation (no GTK in extension.js, no Shell libs in prefs.js)
 - `check-schema.sh` — GSettings schema ID/path validation, glib-compile-schemas dry-run
 - `check-package.sh` — Zip contents validation (forbidden files, required files)
 
 Sub-scripts output pipe-delimited lines (`STATUS|check-name|detail`) which `ego-lint.sh` parses and reformats.
+
+### Three-tier rule system
+
+- **Tier 1 (patterns.yaml)**: Simple regex rules in YAML, processed by `apply-patterns.py`. Covers web APIs, deprecated APIs, AI slop signals. Add new rules by editing `rules/patterns.yaml`.
+- **Tier 2 (scripts)**: Structural heuristic checks in Python/bash sub-scripts. `check-quality.py` analyzes try-catch density, impossible state checks, pendulum patterns, module-level state, empty catch blocks.
+- **Tier 3 (checklists)**: Semantic review checklists in `skills/ego-review/references/`. `ai-slop-checklist.md` provides 18-item AI pattern detection checklist with scoring model. Applied by Claude during `ego-review` Phase 5a.
 
 ### ego-review internals
 
@@ -57,10 +66,17 @@ All automated checks use: `STATUS|check-name|detail` where STATUS is PASS/FAIL/W
 
 ### Adding a new lint rule
 
-1. Add the check to the appropriate script in `skills/ego-lint/scripts/` (or inline in `ego-lint.sh`)
-2. Document it in `skills/ego-lint/references/rules-reference.md` using the `R-XXXX-NN` format with severity, rationale, and fix
-3. Add a test fixture in `tests/fixtures/` with minimal files to trigger the check
-4. Add assertions to `tests/run-tests.sh`
+Choose the appropriate tier:
+
+- **Tier 1 (regex pattern)**: Add an entry to `rules/patterns.yaml` — no code changes needed
+- **Tier 2 (structural heuristic)**: Add logic to `check-quality.py` or a new sub-script in `skills/ego-lint/scripts/`
+- **Tier 3 (semantic checklist)**: Add items to checklists in `skills/ego-review/references/`
+
+Then for Tier 1 and 2:
+
+1. Document it in `skills/ego-lint/references/rules-reference.md` using the `R-XXXX-NN` format with severity, rationale, and fix
+2. Add a test fixture in `tests/fixtures/` with minimal files to trigger the check
+3. Add assertions to `tests/run-tests.sh`
 
 ### Commit messages
 
