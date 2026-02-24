@@ -69,6 +69,36 @@ run_subscript() {
     done <<< "$output"
 }
 
+# Run Tier 1 pattern rules from rules/patterns.yaml
+run_pattern_rules() {
+    local rules_file="$SCRIPT_DIR/../../../rules/patterns.yaml"
+    local helper="$SCRIPT_DIR/apply-patterns.py"
+
+    if [[ ! -f "$rules_file" ]]; then
+        print_result "SKIP" "pattern-rules" "rules/patterns.yaml not found"
+        return
+    fi
+
+    if ! command -v python3 > /dev/null 2>&1; then
+        print_result "SKIP" "pattern-rules" "python3 not available"
+        return
+    fi
+
+    local output
+    output="$(python3 "$helper" "$rules_file" "$EXT_DIR" 2>&1)" || true
+
+    while IFS='|' read -r status check detail; do
+        [[ -z "$status" ]] && continue
+        status="${status#"${status%%[![:space:]]*}"}"
+        status="${status%"${status##*[![:space:]]}"}"
+        check="${check#"${check%%[![:space:]]*}"}"
+        check="${check%"${check##*[![:space:]]}"}"
+        detail="${detail#"${detail%%[![:space:]]*}"}"
+        detail="${detail%"${detail##*[![:space:]]}"}"
+        print_result "$status" "$check" "$detail"
+    done <<< "$output"
+}
+
 # ---------------------------------------------------------------------------
 # Header
 # ---------------------------------------------------------------------------
@@ -190,47 +220,6 @@ else
 fi
 
 # ---------------------------------------------------------------------------
-# Web API usage check
-# ---------------------------------------------------------------------------
-
-web_api_hits=""
-if compgen -G "$EXT_DIR/*.js" > /dev/null 2>&1 || \
-   compgen -G "$EXT_DIR/lib/**/*.js" > /dev/null 2>&1; then
-
-    js_files=()
-    for f in "$EXT_DIR"/*.js; do
-        [[ -f "$f" ]] && js_files+=("$f")
-    done
-    if [[ -d "$EXT_DIR/lib" ]]; then
-        while IFS= read -r -d '' f; do
-            js_files+=("$f")
-        done < <(find "$EXT_DIR/lib" -name '*.js' -print0 2>/dev/null)
-    fi
-
-    web_api_pattern="(setTimeout\(|setInterval\(|fetch\()"
-
-    for f in "${js_files[@]}"; do
-        while IFS= read -r line; do
-            # Strip leading whitespace for comment detection
-            stripped="${line#"${line%%[![:space:]]*}"}"
-            # Skip single-line comments
-            [[ "$stripped" == //* ]] && continue
-            # Skip block comment continuation lines
-            [[ "$stripped" == \** ]] && continue
-            rel_path="${f#"$EXT_DIR/"}"
-            web_api_hits+="  $rel_path: $stripped"$'\n'
-        done < <(grep -nE "$web_api_pattern" "$f" 2>/dev/null || true)
-    done
-fi
-
-if [[ -n "$web_api_hits" ]]; then
-    hit_count=$(echo -n "$web_api_hits" | grep -c '.' || true)
-    print_result "FAIL" "no-web-apis" "Found $hit_count Web API usage(s) (setTimeout/setInterval/fetch)"
-else
-    print_result "PASS" "no-web-apis" "No Web API usage found"
-fi
-
-# ---------------------------------------------------------------------------
 # Binary files check
 # ---------------------------------------------------------------------------
 
@@ -274,6 +263,12 @@ if [[ -f "$EXT_DIR/stylesheet.css" ]]; then
 else
     print_result "SKIP" "css-scoping" "No stylesheet.css found"
 fi
+
+# ---------------------------------------------------------------------------
+# Tier 1: Pattern rules
+# ---------------------------------------------------------------------------
+
+run_pattern_rules
 
 # ---------------------------------------------------------------------------
 # ESLint check
@@ -323,6 +318,11 @@ run_subscript "$SCRIPT_DIR/check-schema.sh"
 
 # check-imports.sh
 run_subscript "$SCRIPT_DIR/check-imports.sh"
+
+# check-quality.py (Tier 2 heuristics)
+if [[ -f "$SCRIPT_DIR/check-quality.py" ]]; then
+    run_subscript "$SCRIPT_DIR/check-quality.py"
+fi
 
 # check-package.sh
 run_subscript "$SCRIPT_DIR/check-package.sh"
