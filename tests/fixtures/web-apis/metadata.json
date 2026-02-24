@@ -1,0 +1,7 @@
+{
+    "uuid": "web-apis",
+    "name": "Web APIs Test",
+    "description": "Tests web API detection",
+    "shell-version": ["48"],
+    "url": "https://example.com"
+}
