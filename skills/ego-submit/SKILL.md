@@ -69,6 +69,12 @@ Generate a final report:
 ### Code Review
 - X blocking, Y advisory, Z info
 
+### AI Pattern Analysis
+- Items checked: N
+- Items triggered: N
+  - [triggered item descriptions]
+- Assessment: PASS | ADVISORY | BLOCKING
+
 ### Package
 - Valid | Not created | Issues found
 

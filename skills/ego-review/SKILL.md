@@ -66,6 +66,19 @@ Using [code-quality-checklist.md](references/code-quality-checklist.md):
 5. Verify private API usage is documented
 6. Check error handling patterns
 
+### Phase 5a: AI Pattern Analysis
+
+Using [ai-slop-checklist.md](references/ai-slop-checklist.md):
+
+1. For each checklist item, search the extension source for the described pattern
+2. Record whether it triggers, with file:line references
+3. Note whether the pattern is justified by context
+4. Apply the scoring model:
+   - 1-2 triggered: ADVISORY — note them, extension may still pass
+   - 3-5 triggered: BLOCKING — suggests insufficient code review
+   - 6+ triggered: BLOCKING — likely unreviewed AI output
+5. Include count, category breakdown, and assessment in the report
+
 ## Output Format
 
 ```
