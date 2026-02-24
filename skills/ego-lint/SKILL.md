@@ -76,13 +76,19 @@ add new checks without writing shell or Python code.
 
 Pattern rules currently cover:
 - **Extended Web API detection** — XMLHttpRequest, requestAnimationFrame, DOM APIs
-  (`document.*`), `window` object usage, localStorage, and `require()` (Node.js)
+  (`document.*`), `window` object usage, localStorage, `require()` (Node.js),
+  `clearTimeout()`, and `clearInterval()`
 - **Extended deprecated API detection** — `ExtensionUtils` (removed in GNOME 45+),
-  `Tweener` (removed), and `imports.misc.convenience` (removed in GNOME 45+)
+  `Tweener` (removed), `imports.misc.convenience` (removed in GNOME 45+),
+  legacy `imports.*` syntax, and `spawn_command_line_sync`
+- **Security patterns** — `eval()`, `new Function()`, HTTP (non-HTTPS) URLs,
+  `pkexec`/`sudo` privilege escalation, and shell injection via `/bin/sh -c`
+- **Import segregation** — Shell UI modules in `prefs.js`
+- **Logging patterns** — Legacy `log()` function, `print()`/`printerr()`
 - **AI slop signals** — TypeScript-style JSDoc annotations (`@param {Type}`,
-  `@returns {Type}`), deprecated `version` field in metadata, and non-standard
-  metadata fields (`version-name`, `homepage`, `bug-report-url`) that often appear
-  in AI-generated extensions
+  `@returns {Type}`), deprecated `version` field in metadata, non-standard
+  metadata fields (`version-name`, `homepage`, `bug-report-url`), and magic
+  button numbers instead of Clutter constants
 
 ### Tier 2: Quality Heuristics
 
@@ -96,6 +102,15 @@ are likely to question:
 - Over-engineered async coordination patterns (`_pendingDestroy`, `_initializing`)
 - Module-level mutable state (variables outside class scope)
 - Empty catch blocks (silencing errors without handling them)
+- Excessive `_destroyed` flag density (over-defensive lifecycle checks)
+- Mock/test code in production (MockDevice.js, test files, MOCK_MODE triggers)
+- Constructor resource allocation (getSettings, connect, timeout_add in constructors)
+
+### Minified/Bundled JavaScript Detection
+
+`ego-lint.sh` checks for minified or bundled JavaScript files that cannot be
+reviewed. Files with lines over 500 characters or webpack boilerplate
+(`__webpack_require__`) are flagged as blocking failures.
 
 ## Fallback
 

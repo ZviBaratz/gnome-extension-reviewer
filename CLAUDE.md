@@ -36,7 +36,7 @@ bash skills/ego-lint/scripts/ego-lint.sh tests/fixtures/<fixture-name>
 
 - `rules/patterns.yaml` — Tier 1 pattern rules (regex-based, declarative)
 - `apply-patterns.py` — Tier 1 pattern engine (inline YAML parser, no PyYAML dependency)
-- `check-quality.py` — Tier 2 heuristic AI slop detection (try-catch density, impossible states, pendulum patterns, empty catches)
+- `check-quality.py` — Tier 2 heuristic AI slop detection (try-catch density, impossible states, pendulum patterns, empty catches, _destroyed density, mock detection, constructor resources)
 - `check-metadata.py` — JSON validity, required fields, UUID format/match, shell-version, session-modes, settings-schema
 - `check-imports.sh` — Import segregation (no GTK in extension.js, no Shell libs in prefs.js)
 - `check-schema.sh` — GSettings schema ID/path validation, glib-compile-schemas dry-run
@@ -44,10 +44,14 @@ bash skills/ego-lint/scripts/ego-lint.sh tests/fixtures/<fixture-name>
 
 Sub-scripts output pipe-delimited lines (`STATUS|check-name|detail`) which `ego-lint.sh` parses and reformats.
 
+Additional tooling:
+- `rules/README.md` — 5-minute contributor guide for adding pattern rules
+- `scripts/validate-rule.sh` — Helper for rule authors to test individual rules against fixtures
+
 ### Three-tier rule system
 
-- **Tier 1 (patterns.yaml)**: Simple regex rules in YAML, processed by `apply-patterns.py`. Covers web APIs, deprecated APIs, AI slop signals. Add new rules by editing `rules/patterns.yaml`.
-- **Tier 2 (scripts)**: Structural heuristic checks in Python/bash sub-scripts. `check-quality.py` analyzes try-catch density, impossible state checks, pendulum patterns, module-level state, empty catch blocks.
+- **Tier 1 (patterns.yaml)**: Simple regex rules in YAML, processed by `apply-patterns.py`. Covers web APIs, deprecated APIs, security, logging, import segregation, AI slop signals. Add new rules by editing `rules/patterns.yaml`.
+- **Tier 2 (scripts)**: Structural heuristic checks in Python/bash sub-scripts. `check-quality.py` analyzes try-catch density, impossible state checks, pendulum patterns, module-level state, empty catch blocks, _destroyed density, mock-in-production, and constructor resources. `ego-lint.sh` also has an inline minified JS check.
 - **Tier 3 (checklists)**: Semantic review checklists in `skills/ego-review/references/`. `ai-slop-checklist.md` provides 18-item AI pattern detection checklist with scoring model. Applied by Claude during `ego-review` Phase 5a.
 
 ### ego-review internals

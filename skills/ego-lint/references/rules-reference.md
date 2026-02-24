@@ -210,17 +210,19 @@ Rules for logging practices in GNOME Shell extensions.
 
 ### R-LOG-02: No log() global function
 - **Severity**: advisory
-- **Checked by**: manual review
+- **Checked by**: apply-patterns.py
 - **Rule**: Extension code should not use the global `log()` function.
 - **Rationale**: The global `log()` function is a legacy GJS API. Modern extensions should use `console.debug()` or `console.error()` for structured logging.
 - **Fix**: Replace `log(msg)` with `console.debug(msg)`.
+- **Tested by**: `tests/fixtures/logging-patterns@test/`
 
 ### R-LOG-03: No print() for debugging
 - **Severity**: advisory
-- **Checked by**: manual review
+- **Checked by**: apply-patterns.py
 - **Rule**: Extension code should not use `print()` or `printerr()` for logging.
 - **Rationale**: `print()` writes directly to stdout, which is not captured by the journal in typical GNOME Shell setups. It is a sign of leftover debug code.
 - **Fix**: Replace with `console.debug()` or remove entirely.
+- **Tested by**: `tests/fixtures/logging-patterns@test/`
 
 ### R-LOG-04: console.debug() is acceptable for operational messages
 - **Severity**: info
@@ -258,10 +260,18 @@ Rules for deprecated GJS/GNOME APIs that must not be used in modern extensions.
 
 ### R-DEPR-04: No imports.* legacy import style
 - **Severity**: advisory
-- **Checked by**: manual review
+- **Checked by**: apply-patterns.py
 - **Rule**: Extension code should use ESM `import` syntax, not the legacy `imports.*` style.
 - **Rationale**: GNOME 45+ requires ESM modules. The legacy `imports.*` style will not work on GNOME 45 and later. While older extensions may still use it for backward compatibility, new submissions should use ESM.
 - **Fix**: Convert `const { Foo } = imports.gi.Foo` to `import Foo from 'gi://Foo'`. Convert `const ExtMe = imports.misc.extensionUtils` to `import { Extension } from 'resource:///org/gnome/shell/extensions/extension.js'`.
+- **Tested by**: `tests/fixtures/deprecated-imports/`
+
+### R-DEPR-08: No spawn_command_line_sync
+- **Severity**: advisory
+- **Checked by**: apply-patterns.py
+- **Rule**: Extension code should not use `GLib.spawn_command_line_sync()`.
+- **Rationale**: `spawn_command_line_sync` is deprecated in favor of `Gio.Subprocess`, which provides better error handling, cancellation support, and does not block the main loop.
+- **Fix**: Use `new Gio.Subprocess({argv: [...], flags: ...})` instead.
 
 ---
 
@@ -468,6 +478,22 @@ Additional web/browser API rules detected by pattern matching.
 - **Rationale**: `require()` is a Node.js/CommonJS API. GJS uses ESM `import` syntax (GNOME 45+) or the legacy `imports.*` system.
 - **Fix**: Replace `require('module')` with `import ... from 'gi://Module'` or the appropriate GJS import syntax.
 
+### R-WEB-10: No clearTimeout()
+- **Severity**: blocking
+- **Checked by**: apply-patterns.py
+- **Rule**: Extension code must not use `clearTimeout()`.
+- **Rationale**: `clearTimeout` is a browser API not available in GJS. GLib timer sources are removed with `GLib.Source.remove()`.
+- **Fix**: Store the return value of `GLib.timeout_add()` and pass it to `GLib.Source.remove(sourceId)`.
+- **Tested by**: `tests/fixtures/web-apis/`
+
+### R-WEB-11: No clearInterval()
+- **Severity**: blocking
+- **Checked by**: apply-patterns.py
+- **Rule**: Extension code must not use `clearInterval()`.
+- **Rationale**: Same as R-WEB-10. `clearInterval` is a browser API. Use `GLib.Source.remove()`.
+- **Fix**: Store the return value of `GLib.timeout_add()` and pass it to `GLib.Source.remove(sourceId)`.
+- **Tested by**: `tests/fixtures/web-apis/`
+
 ---
 
 ## Deprecated APIs — Extended (R-DEPR, continued)
@@ -643,3 +669,110 @@ Additional GSettings schema validation rules.
 - **Rule**: The `path` attribute of the `<schema>` element must end with a `/` character.
 - **Rationale**: dconf paths are directory-like and must end with a trailing slash. A missing trailing slash causes GSettings to fail to locate the schema path at runtime.
 - **Fix**: Add a trailing slash to the schema path: `path="/org/gnome/shell/extensions/my-extension/"`.
+
+---
+
+## Security (R-SEC)
+
+Rules for security-sensitive patterns that will cause EGO rejection.
+
+### R-SEC-01: No eval()
+- **Severity**: blocking
+- **Checked by**: apply-patterns.py
+- **Rule**: Extension code must not use `eval()`.
+- **Rationale**: `eval()` executes arbitrary code strings, creating a code injection attack surface. No legitimate GNOME extension use case requires it.
+- **Fix**: Remove `eval()`. Use `JSON.parse()` for data parsing, lookup tables for dynamic dispatch.
+- **Tested by**: `tests/fixtures/security-patterns@test/`
+
+### R-SEC-02: No new Function()
+- **Severity**: blocking
+- **Checked by**: apply-patterns.py
+- **Rule**: Extension code must not use `new Function()`.
+- **Rationale**: `new Function()` is equivalent to `eval()` — it creates a function from a code string, enabling code injection.
+- **Fix**: Replace with a direct function definition or a lookup table.
+- **Tested by**: `tests/fixtures/security-patterns@test/`
+
+### R-SEC-03: Use HTTPS instead of HTTP
+- **Severity**: advisory
+- **Checked by**: apply-patterns.py
+- **Rule**: Network URLs should use HTTPS, not HTTP (except localhost/127.0.0.1/[::1]).
+- **Rationale**: HTTP traffic is unencrypted and vulnerable to man-in-the-middle attacks. EGO reviewers expect HTTPS for any external network communication.
+- **Fix**: Change `http://` to `https://`.
+- **Tested by**: `tests/fixtures/security-patterns@test/`
+
+### R-SEC-04: No pkexec/sudo
+- **Severity**: blocking
+- **Checked by**: apply-patterns.py
+- **Rule**: Extension code must not use `pkexec` or `sudo` for privilege escalation.
+- **Rationale**: Privilege escalation is a near-instant rejection from EGO reviewers. Extensions should not require root access. Hardware access can be achieved through udev rules or systemd services with capabilities.
+- **Fix**: Use a udev rule to grant write access to sysfs files, or a systemd service with capabilities.
+- **Tested by**: `tests/fixtures/security-patterns@test/` (fixture does not include pkexec, but rule matches in hara-hachi-bu)
+
+### R-SEC-05: No shell injection via /bin/sh -c
+- **Severity**: advisory
+- **Checked by**: apply-patterns.py
+- **Rule**: Subprocess calls should not use `/bin/sh -c` to execute shell strings.
+- **Rationale**: Passing commands through a shell interpreter risks command injection if any part of the command is derived from user input or external data. Using an explicit argv array avoids this risk.
+- **Fix**: Pass command and arguments as separate argv array elements instead of a shell string.
+- **Tested by**: `tests/fixtures/security-patterns@test/`
+
+---
+
+## Imports — Extended (R-IMPORT, continued)
+
+### R-IMPORT-08: No Shell UI modules in prefs.js
+- **Severity**: blocking
+- **Checked by**: apply-patterns.py
+- **Rule**: `prefs.js` must not import Shell UI modules via `resource:///org/gnome/shell/ui/`.
+- **Rationale**: The preferences window runs in a separate GTK process that does not have access to GNOME Shell's UI modules. Importing them will cause an error when opening preferences.
+- **Fix**: Use only GTK/Adw/Gio/GLib in preferences code. Shell UI modules are only available in the extension runtime.
+
+---
+
+## Code Quality Heuristics — Extended (R-QUAL, continued)
+
+### R-QUAL-06: Excessive _destroyed flag density
+- **Severity**: advisory
+- **Checked by**: check-quality.py
+- **Rule**: Extension code should not have an excessive density of `_destroyed`, `_pendingDestroy`, or `_initializing` checks (ratio > 0.02 with >= 10 occurrences).
+- **Rationale**: High density of destroyed-flag checks indicates over-defensive coding, typically from AI-generated code that inserts guards after every operation. This makes code harder to read and maintain.
+- **Fix**: Trust the GNOME Shell extension lifecycle. Use a single `_destroyed` check at the entry point of async callbacks, not between every line.
+- **Tested by**: `tests/fixtures/destroyed-density@test/`
+
+### R-QUAL-07: No mock/test code in production
+- **Severity**: advisory
+- **Checked by**: check-quality.py
+- **Rule**: Extension submissions should not contain mock or test files (MockDevice.js, test*.js, *.spec.js) or runtime mock triggers (MOCK_MODE, use_mock).
+- **Rationale**: Mock and test code is for development only. Shipping it in a production extension wastes space, confuses reviewers, and suggests an unclean build process.
+- **Fix**: Remove mock/test files from the extension directory. Add them to `.gitignore` or a separate `tests/` directory excluded from packaging.
+- **Tested by**: `tests/fixtures/mock-in-production@test/`
+
+### R-QUAL-08: No resource allocation in constructors
+- **Severity**: advisory
+- **Checked by**: check-quality.py
+- **Rule**: Constructors should not call `this.getSettings()`, `.connect()`, `.connectObject()`, `timeout_add`, or `new Gio.DBusProxy()`.
+- **Rationale**: GNOME Shell extensions should perform resource allocation in `enable()` and cleanup in `disable()`. Allocating resources in constructors means they persist across enable/disable cycles, leading to resource leaks and zombie signal handlers.
+- **Fix**: Move resource allocation from `constructor()`/`_init()` to `enable()`. Move cleanup to `disable()`.
+
+---
+
+## Files — Extended (R-FILE, continued)
+
+### R-FILE-06: No minified or bundled JavaScript
+- **Severity**: blocking
+- **Checked by**: ego-lint.sh
+- **Rule**: Extension code must not be minified or bundled (webpack, rollup, etc.).
+- **Rationale**: EGO reviewers must be able to read and audit all code. Minified code (lines > 500 chars) or bundled code (webpack boilerplate) cannot be reviewed and will be rejected.
+- **Fix**: Submit readable, unminified source code. Do not use bundlers for GNOME extensions — GJS supports ESM imports natively.
+- **Tested by**: `tests/fixtures/minified-js@test/`
+
+---
+
+## AI Slop Signals — Extended (R-SLOP, continued)
+
+### R-SLOP-07: Magic button numbers
+- **Severity**: advisory
+- **Checked by**: apply-patterns.py
+- **Rule**: Extension code should use `Clutter.BUTTON_PRIMARY`, `Clutter.BUTTON_MIDDLE`, and `Clutter.BUTTON_SECONDARY` instead of magic numbers 1, 2, 3.
+- **Rationale**: Magic button numbers are a common AI-generated code pattern. Using Clutter constants is more readable and follows GNOME coding conventions.
+- **Fix**: Replace `.get_button() === 1` with `.get_button() === Clutter.BUTTON_PRIMARY`, 2 with `Clutter.BUTTON_MIDDLE`, 3 with `Clutter.BUTTON_SECONDARY`.
