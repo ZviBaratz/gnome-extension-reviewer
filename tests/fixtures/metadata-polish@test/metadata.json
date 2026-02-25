@@ -1,0 +1,6 @@
+{
+    "uuid": "metadata-polish@test",
+    "name": "Metadata Polish Test",
+    "description": "Tests metadata edge cases",
+    "shell-version": ["48", "99"]
+}

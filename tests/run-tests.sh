@@ -247,6 +247,14 @@ assert_output_contains "warns on typeof super.destroy" "\[WARN\].*R-SLOP-12"
 assert_output_contains "warns on this instanceof" "\[WARN\].*R-SLOP-13"
 echo ""
 
+# --- metadata-polish ---
+echo "=== metadata-polish ==="
+run_lint "metadata-polish@test"
+assert_exit_code "exits with 0 (warnings only)" 0
+assert_output_contains "warns on missing gettext-domain" "\[WARN\].*metadata/missing-gettext-domain"
+assert_output_contains "warns on future shell-version" "\[WARN\].*metadata/future-shell-version"
+echo ""
+
 # --- Summary ---
 echo "============================================"
 echo "  Results: $PASS_COUNT passed, $FAIL_COUNT failed"
