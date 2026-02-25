@@ -404,3 +404,24 @@ disable() {
 ```
 
 **Common mistake:** Forgetting to clear timeouts in disable(), leaving them running after the extension is disabled.
+
+## Hallucinated API Reference
+
+LLMs frequently call methods that don't exist. Common confusions:
+
+| Hallucinated API | Correct Alternative | Why LLMs Get It Wrong |
+|---|---|---|
+| `Meta.Screen` | `global.display` or `Meta.Display` | Older GNOME versions or X11 docs |
+| `Meta.Cursor` | `global.display.get_cursor_tracker()` | GTK/Qt confusion |
+| `Shell.WindowTracker.get_default().get_active_window()` | `global.display.focus_window` | Method doesn't exist |
+| `Shell.ActionMode.ALL` | `Shell.ActionMode.NORMAL` | Enum value doesn't exist |
+| `St.Button.set_label('text')` | `button.label = 'text'` | GTK setter style |
+| `St.Label.set_text('text')` | `label.text = 'text'` | GTK setter style |
+| `Clutter.Actor.show_all()` | `actor.show()` | GTK method |
+| `Clutter.Actor.hide_all()` | `actor.hide()` | GTK method |
+| `Clutter.Actor.set_position(x, y)` | `actor.set({x, y})` | GTK method |
+| `GLib.timeout_add_seconds_full(...)` | `GLib.timeout_add_seconds(...)` | Full variant not in GJS bindings |
+| `GLib.source_remove(id)` | `GLib.Source.remove(id)` | Wrong capitalization/namespace |
+
+When reviewing, verify each imported API method actually exists by checking
+https://gjs-docs.gnome.org against the declared `shell-version`.
