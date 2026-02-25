@@ -1,0 +1,1 @@
+{"uuid": "logging-volume@test", "name": "Logging Volume Test", "description": "Tests total console.* call volume", "shell-version": ["48"], "url": "https://github.com/test/logging-volume"}

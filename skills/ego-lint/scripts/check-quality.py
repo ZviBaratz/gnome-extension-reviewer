@@ -418,13 +418,34 @@ def check_debug_volume(ext_dir, js_files):
                     continue
                 total += len(re.findall(r'console\.debug\(', line))
 
-    if total > 20:
+    if total > 15:
         result("WARN", "quality/debug-volume",
                f"{total} console.debug() calls — excessive for production; "
                f"remove or reduce debug logging before submission")
     else:
         result("PASS", "quality/debug-volume",
                f"Debug logging volume OK ({total} calls)")
+
+
+def check_logging_volume(ext_dir, js_files):
+    """R-QUAL-17: Flag excessive total console.* calls."""
+    total = 0
+    for filepath in js_files:
+        with open(filepath, encoding='utf-8', errors='replace') as f:
+            for line in f:
+                stripped = line.lstrip()
+                if stripped.startswith('//') or stripped.startswith('*'):
+                    continue
+                total += len(re.findall(
+                    r'console\.(debug|warn|error|info)\(', line))
+
+    if total > 30:
+        result("WARN", "quality/logging-volume",
+               f"{total} total console.* calls — excessive logging may cause "
+               f"rejection; keep only essential error/warning messages")
+    else:
+        result("PASS", "quality/logging-volume",
+               f"Total logging volume OK ({total} calls)")
 
 
 def check_notification_volume(ext_dir, js_files):
@@ -440,8 +461,8 @@ def check_notification_volume(ext_dir, js_files):
 
     if total > 3:
         result("WARN", "quality/notification-volume",
-               f"{total} Main.notify() call sites — excessive notifications "
-               f"frustrate users and reviewers")
+               f"{total} Main.notify() call sites — reviewers consider excessive "
+               f"notifications a rejection risk; keep 2-3 essential (errors, one-time setup)")
     else:
         result("PASS", "quality/notification-volume",
                f"Notification volume OK ({total} call sites)")
@@ -577,6 +598,7 @@ def main():
     check_comment_density(ext_dir, js_files)
     check_file_complexity(ext_dir, js_files)
     check_debug_volume(ext_dir, js_files)
+    check_logging_volume(ext_dir, js_files)
     check_notification_volume(ext_dir, js_files)
     check_private_api(ext_dir, js_files)
     check_gettext_pattern(ext_dir, js_files)

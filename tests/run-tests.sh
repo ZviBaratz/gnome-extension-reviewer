@@ -496,6 +496,13 @@ assert_exit_code "exits with 0 (warnings only)" 0
 assert_output_contains "warns on compiled schemas in dir" "\[WARN\].*compiled-schemas-dir"
 echo ""
 
+# --- logging-volume ---
+echo "=== logging-volume ==="
+run_lint "logging-volume@test"
+assert_exit_code "exits with 0 (warnings only)" 0
+assert_output_contains "warns on total logging volume" "\[WARN\].*quality/logging-volume"
+echo ""
+
 # --- Summary ---
 echo "============================================"
 echo "  Results: $PASS_COUNT passed, $FAIL_COUNT failed"
