@@ -1,0 +1,6 @@
+{
+  "uuid": "async-no-cancel@test",
+  "name": "Async No Cancel Test",
+  "description": "Tests async safety and cancellation checks",
+  "shell-version": ["48"]
+}

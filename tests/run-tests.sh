@@ -533,6 +533,13 @@ run_lint "shell-concat@test"
 assert_output_contains "Should detect subprocess string concatenation" "\[WARN\].*R-SEC-13"
 echo ""
 
+# --- async-no-cancel ---
+echo "=== async-no-cancel ==="
+run_lint "async-no-cancel@test"
+assert_output_contains "detects missing Gio.Cancellable" "async/no-cancellable"
+assert_output_contains "detects disable without cancel" "async/disable-no-cancel"
+echo ""
+
 # --- gobject-patterns ---
 echo "=== gobject-patterns ==="
 run_lint "gobject-patterns@test"

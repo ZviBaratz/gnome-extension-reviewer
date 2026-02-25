@@ -436,6 +436,11 @@ if [[ -f "$SCRIPT_DIR/check-gobject.py" ]]; then
     run_subscript "$SCRIPT_DIR/check-gobject.py"
 fi
 
+# check-async.py (async safety and cancellation)
+if [[ -f "$SCRIPT_DIR/check-async.py" ]]; then
+    run_subscript "$SCRIPT_DIR/check-async.py"
+fi
+
 # check-prefs.py (prefs.js validation)
 if [[ -f "$SCRIPT_DIR/check-prefs.py" ]]; then
     run_subscript "$SCRIPT_DIR/check-prefs.py"
