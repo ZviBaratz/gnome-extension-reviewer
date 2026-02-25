@@ -279,3 +279,30 @@
   message: "Use Clutter.BUTTON_PRIMARY/SECONDARY/MIDDLE instead of magic numbers"
   category: ai-slop
   fix: "Replace 1 with Clutter.BUTTON_PRIMARY, 2 with Clutter.BUTTON_MIDDLE, 3 with Clutter.BUTTON_SECONDARY."
+
+# --- Package installation bans (blocking) ---
+# Extensions MUST NOT automatically install packages.
+
+- id: R-SEC-10
+  pattern: "\\bpip\\s+install\\b"
+  scope: ["*.js", "*.sh"]
+  severity: blocking
+  message: "Automatic pip install is banned; extensions must not install packages without explicit user action"
+  category: security
+  fix: "Remove automatic pip install. If a Python dependency is needed, document manual installation steps."
+
+- id: R-SEC-11
+  pattern: "\\bnpm\\s+install\\b"
+  scope: ["*.js", "*.sh"]
+  severity: blocking
+  message: "Automatic npm install is banned; extensions must not install packages without explicit user action"
+  category: security
+  fix: "Remove automatic npm install. If a Node dependency is needed, document manual installation steps."
+
+- id: R-SEC-12
+  pattern: "\\b(apt|apt-get|dnf|yum|pacman|zypper)\\s+(install|-S)\\b"
+  scope: ["*.js", "*.sh"]
+  severity: blocking
+  message: "Automatic system package installation is banned; extensions must not install packages without explicit user action"
+  category: security
+  fix: "Remove automatic package installation. Document manual installation steps for required system packages."

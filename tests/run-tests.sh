@@ -189,6 +189,15 @@ assert_exit_code "exits with 1 (has failures)" 1
 assert_output_contains "fails on minified JS" "\[FAIL\].*minified-js"
 echo ""
 
+# --- auto-install ---
+echo "=== auto-install ==="
+run_lint "auto-install@test"
+assert_exit_code "exits with 1 (has failures)" 1
+assert_output_contains "fails on pip install" "\[FAIL\].*R-SEC-10"
+assert_output_contains "fails on npm install" "\[FAIL\].*R-SEC-11"
+assert_output_contains "fails on apt install" "\[FAIL\].*R-SEC-12"
+echo ""
+
 # --- Summary ---
 echo "============================================"
 echo "  Results: $PASS_COUNT passed, $FAIL_COUNT failed"

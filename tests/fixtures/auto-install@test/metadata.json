@@ -1,0 +1,7 @@
+{
+    "uuid": "auto-install@test",
+    "name": "Auto Install Test",
+    "description": "Tests detection of automatic package installation commands",
+    "shell-version": ["48"],
+    "url": "https://github.com/test/auto-install"
+}
