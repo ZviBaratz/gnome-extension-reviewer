@@ -241,6 +241,7 @@ def main():
     check_url_field(meta)
     check_shell_version_dev_limit(meta)
     check_esm_version_floor(meta, ext_dir)
+    check_session_modes_consistency(meta, ext_dir)
 
 
 CURRENT_STABLE = 48
@@ -275,6 +276,43 @@ def check_shell_version_dev_limit(meta):
     else:
         result("PASS", "metadata/shell-version-dev-limit",
                "shell-version has at most 1 development release")
+
+
+def check_session_modes_consistency(meta, ext_dir):
+    """Warn if code references sessionMode but metadata doesn't declare unlock-dialog."""
+    sm = meta.get("session-modes")
+    if isinstance(sm, list) and "unlock-dialog" in sm:
+        result("PASS", "metadata/session-modes-consistency",
+               "session-modes includes 'unlock-dialog'")
+        return
+
+    session_mode_re = re.compile(r"sessionMode\.(currentMode|isLocked)")
+    found = []
+    for root, _dirs, files in os.walk(ext_dir):
+        for fname in files:
+            if not fname.endswith(".js"):
+                continue
+            fpath = os.path.join(root, fname)
+            rel = os.path.relpath(fpath, ext_dir)
+            try:
+                with open(fpath, encoding="utf-8", errors="replace") as f:
+                    for lineno, line in enumerate(f, 1):
+                        stripped = line.lstrip()
+                        if stripped.startswith("//") or stripped.startswith("*"):
+                            continue
+                        if session_mode_re.search(line):
+                            found.append(f"{rel}:{lineno}")
+            except OSError:
+                continue
+
+    if found:
+        for loc in found:
+            result("WARN", "metadata/session-modes-consistency",
+                   f"{loc}: references sessionMode but metadata.json does not "
+                   "declare session-modes with 'unlock-dialog'")
+    else:
+        result("PASS", "metadata/session-modes-consistency",
+               "No sessionMode references without matching declaration")
 
 
 def check_esm_version_floor(meta, ext_dir):

@@ -1,0 +1,7 @@
+{
+    "uuid": "session-modes-inconsistent@test",
+    "name": "Session Modes Inconsistent Test",
+    "description": "Uses Main.sessionMode without declaring session-modes",
+    "shell-version": ["48"],
+    "url": "https://github.com/test/session-modes-inconsistent"
+}

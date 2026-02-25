@@ -454,6 +454,13 @@ assert_exit_code "exits with 0 (warnings only)" 0
 assert_output_contains "warns on private API access" "\[WARN\].*quality/private-api"
 echo ""
 
+# --- session-modes-inconsistent ---
+echo "=== session-modes-inconsistent ==="
+run_lint "session-modes-inconsistent@test"
+assert_exit_code "exits with 0 (warnings only)" 0
+assert_output_contains "warns on session-modes inconsistency" "\[WARN\].*metadata/session-modes-consistency"
+echo ""
+
 # --- Summary ---
 echo "============================================"
 echo "  Results: $PASS_COUNT passed, $FAIL_COUNT failed"
