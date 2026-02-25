@@ -189,6 +189,7 @@ assert_exit_code "exits with 1 (has failures)" 1
 assert_output_contains "fails on minified JS" "\[FAIL\].*minified-js"
 echo ""
 
+<<<<<<< HEAD
 # --- lifecycle-imbalance ---
 echo "=== lifecycle-imbalance ==="
 run_lint "lifecycle-imbalance@test"
@@ -338,6 +339,15 @@ echo "=== keybinding-leak ==="
 run_lint "keybinding-leak@test"
 assert_exit_code "exits with 1 (has failures)" 1
 assert_output_contains "fails on missing removeKeybinding" "\[FAIL\].*lifecycle/keybinding-cleanup"
+echo ""
+
+# --- auto-install ---
+echo "=== auto-install ==="
+run_lint "auto-install@test"
+assert_exit_code "exits with 1 (has failures)" 1
+assert_output_contains "fails on pip install" "\[FAIL\].*R-SEC-10"
+assert_output_contains "fails on npm install" "\[FAIL\].*R-SEC-11"
+assert_output_contains "fails on apt install" "\[FAIL\].*R-SEC-12"
 echo ""
 
 # --- Summary ---
