@@ -203,6 +203,20 @@ assert_exit_code "exits with 1 (has failures)" 1
 assert_output_contains "fails on multiple dev releases" "\[FAIL\].*metadata/shell-version-dev-limit"
 echo ""
 
+# --- donations-empty ---
+echo "=== donations-empty ==="
+run_lint "donations-empty@test"
+assert_exit_code "exits with 1 (has failures)" 1
+assert_output_contains "fails on empty donations" "\[FAIL\].*metadata/donations-empty"
+echo ""
+
+# --- esm-version-floor ---
+echo "=== esm-version-floor ==="
+run_lint "esm-version-floor@test"
+assert_exit_code "exits with 1 (has failures)" 1
+assert_output_contains "fails on pre-ESM shell-version" "\[FAIL\].*metadata/shell-version-esm-floor"
+echo ""
+
 # --- Summary ---
 echo "============================================"
 echo "  Results: $PASS_COUNT passed, $FAIL_COUNT failed"

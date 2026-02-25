@@ -1,0 +1,8 @@
+{
+    "uuid": "donations-empty@test",
+    "name": "Donations Empty Test",
+    "description": "Tests that empty donations object is rejected",
+    "shell-version": ["48"],
+    "url": "https://github.com/test/donations-empty",
+    "donations": {}
+}

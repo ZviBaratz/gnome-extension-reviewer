@@ -125,8 +125,14 @@ def main():
     # --- url field ---
     check_url_field(meta)
 
+    # --- Donations ---
+    check_donations(meta)
+
     # --- Shell-version dev release limit ---
     check_shell_version_dev_limit(meta)
+
+    # --- ESM version floor ---
+    check_esm_version_floor(meta, ext_dir)
 
 
 def check_url_field(meta):
@@ -161,6 +167,45 @@ def check_shell_version_dev_limit(meta):
     else:
         result("PASS", "metadata/shell-version-dev-limit",
                "shell-version has at most 1 development release")
+
+
+def check_donations(meta):
+    """Check donations field validity."""
+    if "donations" not in meta:
+        return
+    donations = meta["donations"]
+    if not isinstance(donations, dict):
+        result("FAIL", "metadata/donations-type",
+               f"donations must be an object, got {type(donations).__name__}")
+        return
+    if not donations:
+        result("FAIL", "metadata/donations-empty",
+               "donations object is empty; drop the field entirely if unused")
+
+
+def check_esm_version_floor(meta, ext_dir):
+    """FAIL if shell-version contains pre-45 versions but extension uses ESM imports."""
+    sv = meta.get("shell-version", [])
+    if not isinstance(sv, list):
+        return
+    pre_esm = []
+    for v in sv:
+        try:
+            major = int(str(v).split(".")[0])
+            if 40 <= major < 45:
+                pre_esm.append(v)
+        except ValueError:
+            pass
+    if not pre_esm:
+        return
+    ext_js = os.path.join(ext_dir, "extension.js")
+    if os.path.isfile(ext_js):
+        with open(ext_js, encoding="utf-8", errors="replace") as f:
+            content = f.read()
+        if "import " in content and "from " in content:
+            result("FAIL", "metadata/shell-version-esm-floor",
+                   f"shell-version includes pre-ESM version(s) ({', '.join(pre_esm)}) "
+                   "but extension uses ESM imports (GNOME 45+ only)")
 
 
 if __name__ == "__main__":
