@@ -86,6 +86,51 @@ def _unescape_yaml_double(s):
     return ''.join(result)
 
 
+def _read_shell_versions(ext_dir):
+    """Read shell-version from metadata.json, return list of int major versions."""
+    import json as _json
+    metadata_path = os.path.join(ext_dir, 'metadata.json')
+    if not os.path.isfile(metadata_path):
+        return []
+    try:
+        with open(metadata_path, encoding='utf-8') as f:
+            meta = _json.load(f)
+        sv = meta.get('shell-version', [])
+        if not isinstance(sv, list):
+            return []
+        versions = []
+        for v in sv:
+            try:
+                versions.append(int(str(v).split('.')[0]))
+            except ValueError:
+                pass
+        return versions
+    except (_json.JSONDecodeError, OSError):
+        return []
+
+
+def _version_applies(shell_versions, rule_min, rule_max):
+    """Check if a version-specific rule applies given the extension's shell-versions.
+
+    rule_min: rule applies to extensions targeting this version or newer
+    rule_max: rule applies to extensions targeting this version or older
+    """
+    if not shell_versions:
+        return True  # Can't determine version, apply rule as safety default
+    try:
+        if rule_min:
+            min_v = int(rule_min)
+            if not any(v >= min_v for v in shell_versions):
+                return False
+        if rule_max:
+            max_v = int(rule_max)
+            if not any(v <= max_v for v in shell_versions):
+                return False
+    except ValueError:
+        return True
+    return True
+
+
 def main():
     if len(sys.argv) < 3:
         print("Usage: apply-patterns.py RULES_YAML EXTENSION_DIR", file=sys.stderr)
@@ -93,6 +138,9 @@ def main():
 
     rules_file = sys.argv[1]
     ext_dir = os.path.realpath(sys.argv[2])
+
+    # Read shell-version from metadata.json for version-aware rules
+    shell_versions = _read_shell_versions(ext_dir)
 
     if not os.path.isfile(rules_file):
         return
@@ -105,6 +153,14 @@ def main():
         scopes = rule.get('scope', ['*.js'])
         severity = rule.get('severity', 'advisory')
         message = rule.get('message', rid)
+
+        # Version filtering for version-specific rules
+        rule_min = rule.get('min-version', '')
+        rule_max = rule.get('max-version', '')
+        if rule_min or rule_max:
+            if not _version_applies(shell_versions, rule_min, rule_max):
+                print(f"SKIP|{rid}|Not applicable for declared shell-version")
+                continue
 
         if isinstance(scopes, str):
             scopes = [scopes]
