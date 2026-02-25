@@ -53,6 +53,11 @@ Review the metadata and suggest improvements:
    - Private API usage
    - Network access
    - Clipboard access
+5. **Disclosure cross-reference**: Compare what the code actually does against what the description declares:
+   - Does code use `pkexec`/`Subprocess`? → Must be disclosed
+   - Does code access clipboard (`St.Clipboard`)? → Must be disclosed
+   - Does code make network requests (`Soup.Session`)? → Must be disclosed
+   - Does code read/write files outside GSettings? → Must be disclosed
 
 ### Phase 5: Readiness Report
 
@@ -65,6 +70,11 @@ Generate a final report:
 
 ### Automated Checks
 - X passed, Y failed, Z warnings
+
+### Code Metrics
+- Total JS files: N
+- Total non-blank lines: N
+- Largest file: filename (N lines)
 
 ### Code Review
 - X blocking, Y advisory, Z info
