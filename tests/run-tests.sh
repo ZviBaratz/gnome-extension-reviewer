@@ -461,6 +461,13 @@ assert_exit_code "exits with 0 (warnings only)" 0
 assert_output_contains "warns on session-modes inconsistency" "\[WARN\].*metadata/session-modes-consistency"
 echo ""
 
+# --- gettext-direct ---
+echo "=== gettext-direct ==="
+run_lint "gettext-direct@test"
+assert_exit_code "exits with 0 (warnings only)" 0
+assert_output_contains "warns on direct dgettext" "\[WARN\].*quality/gettext-pattern"
+echo ""
+
 # --- Summary ---
 echo "============================================"
 echo "  Results: $PASS_COUNT passed, $FAIL_COUNT failed"

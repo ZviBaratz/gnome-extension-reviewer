@@ -1,0 +1,8 @@
+{
+    "uuid": "gettext-direct@test",
+    "name": "Gettext Direct Test",
+    "description": "Tests direct Gettext.dgettext usage warning",
+    "shell-version": ["48"],
+    "gettext-domain": "gettext-direct",
+    "url": "https://github.com/test/gettext-direct"
+}

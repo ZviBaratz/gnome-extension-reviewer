@@ -447,6 +447,30 @@ def check_private_api(ext_dir, js_files):
                "No private GNOME Shell API access detected")
 
 
+def check_gettext_pattern(ext_dir, js_files):
+    """R-QUAL-16: Flag direct Gettext.dgettext() usage."""
+    locations = []
+
+    for filepath in js_files:
+        rel = os.path.relpath(filepath, ext_dir)
+        with open(filepath, encoding='utf-8', errors='replace') as f:
+            for lineno, line in enumerate(f, 1):
+                stripped = line.lstrip()
+                if stripped.startswith('//') or stripped.startswith('*'):
+                    continue
+                if re.search(r'Gettext\.dgettext\s*\(', line):
+                    locations.append(f"{rel}:{lineno}")
+
+    if locations:
+        locs = ', '.join(locations[:5])
+        result("WARN", "quality/gettext-pattern",
+               f"Uses Gettext.dgettext() directly ({locs}) — "
+               f"prefer this.gettext() from Extension/ExtensionPreferences base class")
+    else:
+        result("PASS", "quality/gettext-pattern",
+               "Gettext usage follows recommended pattern")
+
+
 def check_comment_density(ext_dir, js_files):
     """R-QUAL-11: Flag excessive comment-to-code ratio."""
     for filepath in js_files:
@@ -518,6 +542,7 @@ def main():
     check_debug_volume(ext_dir, js_files)
     check_notification_volume(ext_dir, js_files)
     check_private_api(ext_dir, js_files)
+    check_gettext_pattern(ext_dir, js_files)
 
 
 if __name__ == '__main__':
