@@ -231,6 +231,14 @@ assert_exit_code "exits with 0 (advisory only)" 0
 assert_output_contains "warns on run_dispose" "\[WARN\].*R-SEC-06"
 echo ""
 
+# --- structural-issues ---
+echo "=== structural-issues ==="
+run_lint "structural-issues@test"
+assert_exit_code "exits with 1 (has failures)" 1
+assert_output_contains "warns on missing default export" "\[WARN\].*lifecycle/default-export"
+assert_output_contains "fails on console.log in prefs.js" "\[FAIL\].*no-console-log"
+echo ""
+
 # --- Summary ---
 echo "============================================"
 echo "  Results: $PASS_COUNT passed, $FAIL_COUNT failed"

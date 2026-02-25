@@ -1,0 +1,6 @@
+{
+    "uuid": "structural-issues@test",
+    "name": "Structural Issues Test",
+    "description": "Tests structural problems",
+    "shell-version": ["48"]
+}
