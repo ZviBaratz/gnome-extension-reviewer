@@ -432,6 +432,13 @@ assert_output_not_contains "no GNOME 48 rule failures" "\[FAIL\].*R-VER48"
 assert_output_not_contains "no GNOME 49 rule failures" "\[FAIL\].*R-VER49"
 echo ""
 
+# --- large-file ---
+echo "=== large-file ==="
+run_lint "large-file@test"
+assert_exit_code "exits with 0 (warnings only)" 0
+assert_output_contains "warns on per-file complexity" "\[WARN\].*quality/file-complexity"
+echo ""
+
 # --- Summary ---
 echo "============================================"
 echo "  Results: $PASS_COUNT passed, $FAIL_COUNT failed"

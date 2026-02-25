@@ -355,6 +355,21 @@ def check_code_volume(ext_dir, js_files):
                f"Code volume OK ({total_lines} non-blank lines)")
 
 
+def check_file_complexity(ext_dir, js_files):
+    """R-QUAL-12: Flag individual files with excessive non-blank lines."""
+    for filepath in js_files:
+        rel = os.path.relpath(filepath, ext_dir)
+        with open(filepath, encoding='utf-8', errors='replace') as f:
+            count = sum(1 for line in f if line.strip())
+        if count > 1000:
+            result("WARN", "quality/file-complexity",
+                   f"{rel}: {count} non-blank lines — consider splitting into modules")
+            return
+
+    result("PASS", "quality/file-complexity",
+           "No individual files exceed 1000 non-blank lines")
+
+
 def check_comment_density(ext_dir, js_files):
     """R-QUAL-11: Flag excessive comment-to-code ratio."""
     for filepath in js_files:
@@ -422,6 +437,7 @@ def main():
     check_constructor_resources(ext_dir, js_files)
     check_code_volume(ext_dir, js_files)
     check_comment_density(ext_dir, js_files)
+    check_file_complexity(ext_dir, js_files)
 
 
 if __name__ == '__main__':
