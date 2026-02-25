@@ -566,6 +566,11 @@ if [[ -f "$ASSERTIONS_DIR/phase2-ai-slop.sh" ]]; then
     source "$ASSERTIONS_DIR/phase2-ai-slop.sh"
 fi
 
+# Cross-file resource tracking assertions
+if [[ -f "$ASSERTIONS_DIR/cross-file-resources.sh" ]]; then
+    source "$ASSERTIONS_DIR/cross-file-resources.sh"
+fi
+
 # --- Summary ---
 echo "============================================"
 echo "  Results: $PASS_COUNT passed, $FAIL_COUNT failed"

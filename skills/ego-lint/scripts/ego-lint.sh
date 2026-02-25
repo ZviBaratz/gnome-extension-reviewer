@@ -459,6 +459,11 @@ if [[ -f "$SCRIPT_DIR/check-init.py" ]]; then
     run_subscript "$SCRIPT_DIR/check-init.py"
 fi
 
+# check-resources.py (cross-file resource tracking)
+if [[ -f "$SCRIPT_DIR/check-resources.py" ]]; then
+    run_subscript "$SCRIPT_DIR/check-resources.py"
+fi
+
 # check-package.sh
 run_subscript "$SCRIPT_DIR/check-package.sh"
 
