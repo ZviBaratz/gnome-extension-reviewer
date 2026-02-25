@@ -63,6 +63,16 @@ def main():
     else:
         result("PASS", "prefs/default-export", "prefs.js has default export class")
 
+    # Check extends ExtensionPreferences
+    if re.search(r'\bexport\s+default\s+class\b', content):
+        if not re.search(r'\bextends\s+ExtensionPreferences\b', content):
+            result("WARN", "prefs/extends-base",
+                   "prefs.js default class does not extend ExtensionPreferences — "
+                   "required for GNOME 45+")
+        else:
+            result("PASS", "prefs/extends-base",
+                   "prefs.js extends ExtensionPreferences")
+
     # Resource path capitalization
     # prefs.js should use resource:///org/gnome/Shell/Extensions/js/ (capitalized)
     # NOT resource:///org/gnome/shell/ui/ (lowercase, for extension.js only)
