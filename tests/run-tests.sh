@@ -197,6 +197,13 @@ assert_output_contains "fails on add_actor" "\[FAIL\].*R-VER46-01"
 assert_output_contains "fails on remove_actor" "\[FAIL\].*R-VER46-02"
 echo ""
 
+# --- gnome47-compat ---
+echo "=== gnome47-compat ==="
+run_lint "gnome47-compat@test"
+assert_exit_code "exits with 1 (has failures)" 1
+assert_output_contains "fails on Clutter.Color" "\[FAIL\].*R-VER47-01"
+echo ""
+
 # --- Summary ---
 echo "============================================"
 echo "  Results: $PASS_COUNT passed, $FAIL_COUNT failed"

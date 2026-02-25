@@ -326,3 +326,14 @@
   category: version-compat
   fix: "Use ACTIVE, INACTIVE, ENABLING, DISABLING instead"
   min-version: 46
+
+# --- GNOME 47 removed APIs (blocking, version-gated) ---
+
+- id: R-VER47-01
+  pattern: "\\bClutter\\.Color\\b"
+  scope: ["*.js"]
+  severity: blocking
+  message: "Clutter.Color removed in GNOME 47; use Cogl.Color()"
+  category: version-compat
+  fix: "Import Cogl from 'gi://Cogl' and use new Cogl.Color() instead"
+  min-version: 47

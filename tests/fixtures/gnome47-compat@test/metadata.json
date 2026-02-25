@@ -1,0 +1,7 @@
+{
+    "uuid": "gnome47-compat@test",
+    "name": "GNOME 47 Compat Test",
+    "description": "Tests detection of APIs removed in GNOME 47",
+    "shell-version": ["47", "48"],
+    "url": "https://github.com/test/gnome47-compat"
+}
