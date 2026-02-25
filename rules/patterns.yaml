@@ -569,3 +569,41 @@
   category: version-compat
   fix: "Use tracker.inhibit_cursor_visibility() / uninhibit_cursor_visibility()"
   min-version: 49
+
+# --- GNOME 44-48 gap rules ---
+
+- id: R-VER44-01
+  pattern: "\\bMeta\\.later_add\\b"
+  scope: ["*.js"]
+  severity: blocking
+  message: "Meta.later_add() removed in GNOME 44; use global.compositor.get_laters().addLater()"
+  category: version-compat
+  fix: "Use global.compositor.get_laters().addLater(Meta.LaterType.BEFORE_REDRAW, callback)"
+  min-version: 44
+
+- id: R-VER44-02
+  pattern: "\\bMeta\\.later_remove\\b"
+  scope: ["*.js"]
+  severity: blocking
+  message: "Meta.later_remove() removed in GNOME 44; use global.compositor.get_laters().removeLater()"
+  category: version-compat
+  fix: "Use global.compositor.get_laters().removeLater(id)"
+  min-version: 44
+
+- id: R-VER46-06
+  pattern: "\\bBlurEffect[^;]*\\.sigma\\b|\\bBlurEffect\\s*\\(\\s*\\{[^}]*sigma"
+  scope: ["*.js"]
+  severity: blocking
+  message: "Shell.BlurEffect.sigma replaced by .radius in GNOME 46 (radius = sigma * 2.0)"
+  category: version-compat
+  fix: "Use .radius instead of .sigma (radius = sigma * 2.0)"
+  min-version: 46
+
+- id: R-VER48-04
+  pattern: "\\.vertical\\s*="
+  scope: ["*.js"]
+  severity: advisory
+  message: "St.Widget.vertical property deprecated in GNOME 48; use orientation: Clutter.Orientation.VERTICAL"
+  category: version-compat
+  fix: "Use {orientation: Clutter.Orientation.VERTICAL} instead of {vertical: true}"
+  min-version: 48

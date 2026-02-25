@@ -1,0 +1,7 @@
+{
+    "uuid": "gnome46-extras@test",
+    "name": "GNOME 46 Extras Test",
+    "description": "Tests additional GNOME 46 removed APIs",
+    "shell-version": ["46"],
+    "url": "https://github.com/test/gnome46-extras"
+}
