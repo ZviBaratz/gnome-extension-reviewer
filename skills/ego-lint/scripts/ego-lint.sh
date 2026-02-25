@@ -224,14 +224,32 @@ fi
 # ---------------------------------------------------------------------------
 
 binary_files=""
+# Check by file extension
 while IFS= read -r -d '' f; do
     rel_path="${f#"$EXT_DIR/"}"
     binary_files+="  $rel_path"$'\n'
-done < <(find "$EXT_DIR" -type f \( -name '*.so' -o -name '*.o' -o -name '*.exe' -o -name '*.bin' \) -print0 2>/dev/null)
+done < <(find "$EXT_DIR" -type f \( \
+    -name '*.so' -o -name '*.o' -o -name '*.a' -o \
+    -name '*.exe' -o -name '*.bin' -o -name '*.dll' -o \
+    -name '*.dylib' -o -name '*.wasm' \
+    \) -not -path '*/node_modules/*' -not -path '*/.git/*' -print0 2>/dev/null)
+
+# Check for ELF binaries without known extensions
+while IFS= read -r -d '' f; do
+    rel_path="${f#"$EXT_DIR/"}"
+    # Skip files already caught by extension
+    case "$rel_path" in
+        *.so|*.o|*.a|*.exe|*.bin|*.dll|*.dylib|*.wasm) continue ;;
+    esac
+    # Check ELF magic bytes
+    if head -c4 "$f" 2>/dev/null | grep -q $'\x7fELF'; then
+        binary_files+="  $rel_path (ELF binary)"$'\n'
+    fi
+done < <(find "$EXT_DIR" -type f -not -path '*/node_modules/*' -not -path '*/.git/*' -not -name '*.js' -not -name '*.json' -not -name '*.xml' -not -name '*.css' -not -name '*.mo' -not -name '*.po' -not -name '*.pot' -not -name '*.md' -not -name '*.txt' -not -name '*.yml' -not -name '*.yaml' -not -name '*.sh' -not -name '*.py' -not -name '*.svg' -not -name '*.png' -not -name '*.jpg' -not -name '*.zip' -not -name '*.ui' -not -name '*.policy' -not -name '*.rules' -not -name 'LICENSE' -not -name 'COPYING' -print0 2>/dev/null)
 
 if [[ -n "$binary_files" ]]; then
     hit_count=$(echo -n "$binary_files" | grep -c '.' || true)
-    print_result "FAIL" "no-binary-files" "Found $hit_count binary file(s)"
+    print_result "FAIL" "no-binary-files" "Found $hit_count binary file(s) — extensions MUST NOT include binaries"
 else
     print_result "PASS" "no-binary-files" "No binary files found"
 fi

@@ -475,6 +475,13 @@ assert_exit_code "exits with 0 (warnings only)" 0
 assert_output_contains "warns on polkit files" "\[WARN\].*polkit-files"
 echo ""
 
+# --- binary-files ---
+echo "=== binary-files ==="
+run_lint "binary-files@test"
+assert_exit_code "exits with 1 (has failures)" 1
+assert_output_contains "fails on binary files" "\[FAIL\].*no-binary-files"
+echo ""
+
 # --- Summary ---
 echo "============================================"
 echo "  Results: $PASS_COUNT passed, $FAIL_COUNT failed"
