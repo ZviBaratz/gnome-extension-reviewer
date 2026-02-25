@@ -555,6 +555,13 @@ assert_output_contains "detects unscoped CSS classes" "css/unscoped-class"
 assert_output_contains "detects !important usage" "css/important"
 echo ""
 
+# --- init-modification ---
+echo "=== init-modification ==="
+run_lint "init-modification@test"
+assert_exit_code "exits with 1 (has failures)" 1
+assert_output_contains "detects init-time Shell modification" "\[FAIL\].*init/shell-modification"
+echo ""
+
 # --- Summary ---
 echo "============================================"
 echo "  Results: $PASS_COUNT passed, $FAIL_COUNT failed"

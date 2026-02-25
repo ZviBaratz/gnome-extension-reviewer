@@ -428,6 +428,11 @@ if [[ -f "$SCRIPT_DIR/check-prefs.py" ]]; then
     run_subscript "$SCRIPT_DIR/check-prefs.py"
 fi
 
+# check-init.py (init-time Shell modification detection)
+if [[ -f "$SCRIPT_DIR/check-init.py" ]]; then
+    run_subscript "$SCRIPT_DIR/check-init.py"
+fi
+
 # check-package.sh
 run_subscript "$SCRIPT_DIR/check-package.sh"
 
