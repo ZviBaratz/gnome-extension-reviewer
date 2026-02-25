@@ -1,0 +1,6 @@
+{
+  "uuid": "gnome48-extras@test",
+  "name": "GNOME 48 Extras Test",
+  "description": "Tests GNOME 48 extra removals",
+  "shell-version": ["48"]
+}

@@ -329,14 +329,6 @@
 
 # --- AI slop (continued) ---
 
-- id: R-SLOP-12
-  pattern: "typeof\\s+super\\.destroy\\s*===?\\s*['\"]function['\"]"
-  scope: ["*.js"]
-  severity: advisory
-  message: "typeof super.destroy check is unnecessary — super.destroy() always exists on GObject classes"
-  category: ai-slop
-  fix: "Remove the typeof check and call super.destroy() directly."
-
 - id: R-SLOP-13
   pattern: "\\bthis\\s+instanceof\\s+\\w+"
   scope: ["*.js"]
@@ -607,3 +599,54 @@
   category: version-compat
   fix: "Use {orientation: Clutter.Orientation.VERTICAL} instead of {vertical: true}"
   min-version: 48
+
+# --- GNOME 48 extra removals ---
+
+- id: R-VER48-05
+  pattern: "\\bShell\\.SnippetHook\\b"
+  scope: ["*.js"]
+  severity: blocking
+  message: "Shell.SnippetHook removed in GNOME 48"
+  category: version-compat
+  fix: "Shell.SnippetHook was removed without replacement in GNOME 48"
+  min-version: 48
+
+- id: R-VER48-06
+  pattern: "\\.get_key_focus\\s*\\("
+  scope: ["*.js"]
+  severity: advisory
+  message: "Clutter.Stage.get_key_focus() returns null on Wayland in GNOME 48; track focus via signals instead"
+  category: version-compat
+  fix: "get_key_focus() returns null on Wayland in GNOME 48; track focus via 'key-focus-in' signal"
+  min-version: 48
+
+# --- GNOME 46 gap fill ---
+
+- id: R-VER46-07
+  pattern: "\\bClutter\\.Container\\b"
+  scope: ["*.js"]
+  severity: blocking
+  message: "Clutter.Container interface removed in GNOME 46; use Clutter.Actor methods directly"
+  category: version-compat
+  fix: "Use Clutter.Actor add_child/remove_child instead of Container interface methods"
+  min-version: 46
+
+# --- AI slop (generalized typeof super) ---
+
+- id: R-SLOP-17
+  pattern: "typeof\\s+super\\.\\w+\\s*===?\\s*['\"]function['\"]"
+  scope: ["*.js"]
+  severity: advisory
+  message: "typeof super.method === 'function' is unnecessary on GObject classes; methods always exist"
+  category: ai-slop
+  fix: "Remove the typeof check and call super.method() directly"
+
+# --- Security (subprocess shell concatenation) ---
+
+- id: R-SEC-13
+  pattern: "Subprocess[^;]*['\"]\\s*\\+|\\+\\s*['\"][^;]*Subprocess"
+  scope: ["*.js"]
+  severity: advisory
+  message: "Subprocess with string concatenation risks command injection; use explicit argv array"
+  category: security
+  fix: "Pass command and arguments as separate argv array elements instead of concatenating strings"

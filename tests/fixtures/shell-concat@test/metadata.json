@@ -1,0 +1,6 @@
+{
+  "uuid": "shell-concat@test",
+  "name": "Shell Concat Test",
+  "description": "Tests subprocess shell string concatenation",
+  "shell-version": ["48"]
+}

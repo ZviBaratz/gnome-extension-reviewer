@@ -220,7 +220,7 @@ assert_output_contains "warns on Meta.Screen" "\[WARN\].*R-SLOP-08"
 assert_output_contains "warns on St setter" "\[WARN\].*R-SLOP-09"
 assert_output_contains "warns on Clutter.Actor.show_all" "\[WARN\].*R-SLOP-10"
 assert_output_contains "warns on GLib.source_remove" "\[WARN\].*R-SLOP-11"
-assert_output_contains "warns on typeof super.destroy" "\[WARN\].*R-SLOP-12"
+assert_output_contains "warns on typeof super.destroy" "\[WARN\].*R-SLOP-17"
 assert_output_contains "warns on this instanceof" "\[WARN\].*R-SLOP-13"
 echo ""
 
@@ -243,7 +243,7 @@ echo ""
 echo "=== quality-signals ==="
 run_lint "quality-signals@test"
 assert_exit_code "exits with 0 (advisories only)" 0
-assert_output_contains "warns on typeof super.destroy" "\[WARN\].*R-SLOP-12"
+assert_output_contains "warns on typeof super.destroy" "\[WARN\].*R-SLOP-17"
 assert_output_contains "warns on this instanceof" "\[WARN\].*R-SLOP-13"
 echo ""
 
@@ -510,6 +510,26 @@ assert_exit_code "exits with 1 (has failures)" 1
 assert_output_contains "fails on .po in zip" "\[FAIL\].*package/no-forbidden.*\.po"
 assert_output_contains "fails on Makefile in zip" "\[FAIL\].*package/no-forbidden.*Makefile"
 assert_output_contains "fails on tsconfig.json in zip" "\[FAIL\].*package/no-forbidden.*tsconfig\.json"
+echo ""
+
+# --- gnome48-extras ---
+echo "=== gnome48-extras ==="
+run_lint "gnome48-extras@test"
+assert_output_contains "Should detect Shell.SnippetHook" "\[FAIL\].*R-VER48-05"
+assert_output_contains "Should detect get_key_focus" "\[WARN\].*R-VER48-06"
+assert_exit_code "exits with 1 (has failures)" 1
+echo ""
+
+# --- typeof-super ---
+echo "=== typeof-super ==="
+run_lint "typeof-super@test"
+assert_output_contains "Should detect typeof super method check" "\[WARN\].*R-SLOP-17"
+echo ""
+
+# --- shell-concat ---
+echo "=== shell-concat ==="
+run_lint "shell-concat@test"
+assert_output_contains "Should detect subprocess string concatenation" "\[WARN\].*R-SEC-13"
 echo ""
 
 # --- Summary ---

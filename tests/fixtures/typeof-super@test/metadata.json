@@ -1,0 +1,6 @@
+{
+  "uuid": "typeof-super@test",
+  "name": "Typeof Super Test",
+  "description": "Tests typeof super method check",
+  "shell-version": ["48"]
+}
