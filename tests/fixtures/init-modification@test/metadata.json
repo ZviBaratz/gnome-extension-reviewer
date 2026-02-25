@@ -1,0 +1,7 @@
+{
+    "uuid": "init-modification@test",
+    "name": "Init Modification Test",
+    "description": "Tests init-time Shell modification detection",
+    "shell-version": ["47"],
+    "url": "https://github.com/test/init-modification"
+}
