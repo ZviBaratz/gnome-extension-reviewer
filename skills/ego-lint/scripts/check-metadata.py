@@ -125,6 +125,9 @@ def main():
     # --- url field ---
     check_url_field(meta)
 
+    # --- Shell-version dev release limit ---
+    check_shell_version_dev_limit(meta)
+
 
 def check_url_field(meta):
     """WARN if url field is missing from metadata."""
@@ -133,6 +136,31 @@ def check_url_field(meta):
                "metadata.json has no url field; consider adding a project homepage")
     else:
         result("PASS", "metadata/missing-url", "url field is present")
+
+
+CURRENT_STABLE = 48
+
+
+def check_shell_version_dev_limit(meta):
+    """FAIL if shell-version contains more than one development release."""
+    sv = meta.get("shell-version", [])
+    if not isinstance(sv, list):
+        return
+    dev_versions = []
+    for v in sv:
+        try:
+            major = int(str(v).split(".")[0])
+            if major > CURRENT_STABLE:
+                dev_versions.append(v)
+        except ValueError:
+            pass
+    if len(dev_versions) > 1:
+        result("FAIL", "metadata/shell-version-dev-limit",
+               f"shell-version has {len(dev_versions)} development releases "
+               f"({', '.join(dev_versions)}); at most 1 allowed")
+    else:
+        result("PASS", "metadata/shell-version-dev-limit",
+               "shell-version has at most 1 development release")
 
 
 if __name__ == "__main__":

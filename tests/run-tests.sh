@@ -196,6 +196,13 @@ assert_exit_code "exits with 0 (warning only)" 0
 assert_output_contains "warns on missing url" "\[WARN\].*metadata/missing-url"
 echo ""
 
+# --- multi-dev-version ---
+echo "=== multi-dev-version ==="
+run_lint "multi-dev-version@test"
+assert_exit_code "exits with 1 (has failures)" 1
+assert_output_contains "fails on multiple dev releases" "\[FAIL\].*metadata/shell-version-dev-limit"
+echo ""
+
 # --- Summary ---
 echo "============================================"
 echo "  Results: $PASS_COUNT passed, $FAIL_COUNT failed"
