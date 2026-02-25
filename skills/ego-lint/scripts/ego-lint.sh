@@ -14,8 +14,25 @@ set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
-EXT_DIR="${1:-.}"
+VERBOSE=false
+EXT_DIR=""
+while [[ $# -gt 0 ]]; do
+    case "$1" in
+        --verbose|-v)
+            VERBOSE=true
+            shift
+            ;;
+        *)
+            EXT_DIR="$1"
+            shift
+            ;;
+    esac
+done
+EXT_DIR="${EXT_DIR:-.}"
 EXT_DIR="$(cd "$EXT_DIR" && pwd)"
+
+RESULTS_FILE="$(mktemp)"
+trap 'rm -f "$RESULTS_FILE"' EXIT
 
 FAIL_COUNT=0
 WARN_COUNT=0
@@ -33,6 +50,7 @@ print_result() {
 
     # Fixed-width formatting: [STATUS] check-name  detail
     printf "[%-4s] %-38s %s\n" "$status" "$check" "$detail"
+    echo "${status}|${check}|${detail}" >> "$RESULTS_FILE"
 
     case "$status" in
         FAIL) FAIL_COUNT=$((FAIL_COUNT + 1)) ;;
@@ -453,6 +471,39 @@ echo "----------------------------------------------------------------"
 TOTAL=$((PASS_COUNT + FAIL_COUNT + WARN_COUNT + SKIP_COUNT))
 echo "  Results: $TOTAL checks — $PASS_COUNT passed, $FAIL_COUNT failed, $WARN_COUNT warnings, $SKIP_COUNT skipped"
 echo "----------------------------------------------------------------"
+
+if [[ "$VERBOSE" == true ]]; then
+    echo ""
+    echo "================================================================"
+    echo "  VERBOSE REPORT"
+    echo "================================================================"
+
+    # Group by severity
+    echo ""
+    echo "--- BLOCKING ISSUES (FAIL) ---"
+    grep "^FAIL|" "$RESULTS_FILE" | while IFS='|' read -r _ check detail; do
+        echo "  ✗ $check: $detail"
+    done || true
+
+    echo ""
+    echo "--- WARNINGS ---"
+    grep "^WARN|" "$RESULTS_FILE" | while IFS='|' read -r _ check detail; do
+        echo "  ⚠ $check: $detail"
+    done || true
+
+    echo ""
+    echo "--- VERDICT ---"
+    if [[ $FAIL_COUNT -gt 0 ]]; then
+        echo "  WILL BE REJECTED: $FAIL_COUNT blocking issue(s) found"
+    elif [[ $WARN_COUNT -gt 5 ]]; then
+        echo "  LIKELY REJECTED: $WARN_COUNT warnings suggest quality concerns"
+    elif [[ $WARN_COUNT -gt 0 ]]; then
+        echo "  MAY PASS WITH COMMENTS: $WARN_COUNT advisory warning(s)"
+    else
+        echo "  LIKELY TO PASS: No issues found"
+    fi
+    echo "================================================================"
+fi
 
 if [[ $FAIL_COUNT -gt 0 ]]; then
     exit 1
