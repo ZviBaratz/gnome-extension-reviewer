@@ -421,6 +421,7 @@ echo "=== gnome46-extras ==="
 run_lint "gnome46-extras@test"
 assert_exit_code "exits with 1 (has failures)" 1
 assert_output_contains "fails on BlurEffect sigma" "\[FAIL\].*R-VER46-06"
+assert_output_contains "fails on Clutter.Container" "\[FAIL\].*R-VER46-07"
 echo ""
 
 # --- gnome45-only ---
