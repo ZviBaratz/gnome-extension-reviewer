@@ -555,51 +555,16 @@ assert_output_contains "detects unscoped CSS classes" "css/unscoped-class"
 assert_output_contains "detects !important usage" "css/important"
 echo ""
 
-# --- gtk3-prefs ---
-echo "=== gtk3-prefs ==="
-run_lint "gtk3-prefs@test"
-assert_output_contains "detects GTK3 widgets in prefs.js" "\[WARN\].*R-PREFS-04"
-echo ""
+# Phase 1: Detection completeness assertions
+ASSERTIONS_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/assertions"
+if [[ -f "$ASSERTIONS_DIR/phase1-detection.sh" ]]; then
+    source "$ASSERTIONS_DIR/phase1-detection.sh"
+fi
 
-# --- injection-leak ---
-echo "=== injection-leak ==="
-run_lint "injection-leak@test"
-assert_exit_code "exits with 1 (has failures)" 1
-assert_output_contains "detects missing InjectionManager.clear()" "\[FAIL\].*lifecycle/injection-cleanup"
-echo ""
-
-# --- lockscreen-signals ---
-echo "=== lockscreen-signals ==="
-run_lint "lockscreen-signals@test"
-assert_exit_code "exits with 1 (has failures)" 1
-assert_output_contains "detects unguarded keyboard signals" "\[FAIL\].*lifecycle/lockscreen-signals"
-echo ""
-
-# --- ai-slop-comments ---
-echo "=== ai-slop-comments ==="
-run_lint "ai-slop-comments@test"
-assert_output_contains "detects LLM prompt comments" "\[WARN\].*R-SLOP-18"
-echo ""
-
-# --- ai-slop-rethrow ---
-echo "=== ai-slop-rethrow ==="
-run_lint "ai-slop-rethrow@test"
-assert_output_contains "detects catch-log-rethrow" "\[WARN\].*R-SLOP-22"
-echo ""
-
-# --- ai-slop-cleanup ---
-echo "=== ai-slop-cleanup ==="
-run_lint "ai-slop-cleanup@test"
-assert_output_contains "detects redundant cleanup" "\[WARN\].*quality/redundant-cleanup"
-echo ""
-
-# --- init-modification ---
-echo "=== init-modification ==="
-run_lint "init-modification@test"
-assert_exit_code "exits with 1 (has failures)" 1
-assert_output_contains "detects init-time Shell modification" "\[FAIL\].*init/shell-modification.*extension.js"
-assert_output_contains "detects init-time GObject constructor" "\[FAIL\].*init/shell-modification.*helper.js"
-echo ""
+# Phase 2: AI slop assertions
+if [[ -f "$ASSERTIONS_DIR/phase2-ai-slop.sh" ]]; then
+    source "$ASSERTIONS_DIR/phase2-ai-slop.sh"
+fi
 
 # --- Summary ---
 echo "============================================"
