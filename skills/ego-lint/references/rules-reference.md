@@ -1799,3 +1799,56 @@ Rules for APIs removed or changed in specific GNOME Shell versions. These rules 
 - **Rule**: Detects `.policy` and `.rules` files in the extension directory.
 - **Rationale**: Polkit policy files grant privilege escalation capabilities and require careful security review. Reviewers pay special attention to extensions shipping polkit rules.
 - **Fix**: Document why polkit access is necessary. Ensure policy defaults use `auth_admin_keep` (not `yes`). Include reviewer notes explaining the privilege escalation model.
+
+---
+
+## Cross-File Resource Tracking (check-resources.py)
+
+### resource-tracking/orphan-signal
+- **Severity**: advisory
+- **Checked by**: check-resources.py → build-resource-graph.py
+- **Rule**: Signal connected in a child module but never disconnected in its destroy chain.
+- **Rationale**: The parent owns this module but the signal will leak after disable().
+- **Fix**: Add `.disconnect(handlerId)` or `.disconnectObject(this)` in the module's `destroy()` method.
+
+### resource-tracking/orphan-timeout
+- **Severity**: advisory
+- **Checked by**: check-resources.py → build-resource-graph.py
+- **Rule**: Timeout/idle source created in a child module without `GLib.Source.remove()` in destroy chain.
+- **Fix**: Store the source ID and call `GLib.Source.remove(id)` in `destroy()`.
+
+### resource-tracking/orphan-widget
+- **Severity**: advisory
+- **Checked by**: check-resources.py → build-resource-graph.py
+- **Rule**: Widget created in a child module without `.destroy()` in destroy chain.
+- **Fix**: Call `widget.destroy()` then null the reference in `destroy()`.
+
+### resource-tracking/orphan-filemonitor
+- **Severity**: advisory
+- **Checked by**: check-resources.py → build-resource-graph.py
+- **Rule**: File monitor created without `.cancel()` in destroy chain.
+- **Fix**: Call `monitor.cancel()` then null the reference in `destroy()`.
+
+### resource-tracking/orphan-dbus
+- **Severity**: advisory
+- **Checked by**: check-resources.py → build-resource-graph.py
+- **Rule**: D-Bus proxy signals not disconnected in destroy chain.
+- **Fix**: Disconnect all signal handlers from the proxy in `destroy()`.
+
+### resource-tracking/orphan-gsettings
+- **Severity**: advisory
+- **Checked by**: check-resources.py → build-resource-graph.py
+- **Rule**: GSettings connections not disconnected in destroy chain.
+- **Fix**: Call `settings.disconnectObject(this)` or manual `.disconnect(id)` in `destroy()`.
+
+### resource-tracking/no-destroy-method
+- **Severity**: advisory
+- **Checked by**: check-resources.py → build-resource-graph.py
+- **Rule**: Module creates resources but has no `destroy()` or `disable()` method for cleanup.
+- **Fix**: Add a `destroy()` method that cleans up all resources.
+
+### resource-tracking/destroy-not-called
+- **Severity**: advisory
+- **Checked by**: check-resources.py → build-resource-graph.py
+- **Rule**: Module has a `destroy()` method but its parent/owner never calls it.
+- **Fix**: Call `this._ref.destroy()` in the parent's `disable()` or `destroy()` method.
