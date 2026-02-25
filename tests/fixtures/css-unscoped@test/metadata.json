@@ -1,0 +1,6 @@
+{
+  "uuid": "css-unscoped@test",
+  "name": "CSS Unscoped Test",
+  "description": "Tests CSS class scoping",
+  "shell-version": ["48"]
+}

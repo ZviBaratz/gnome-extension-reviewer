@@ -340,31 +340,13 @@ else
 fi
 
 # ---------------------------------------------------------------------------
-# CSS scoping check
+# CSS scoping check (delegated to check-css.py)
 # ---------------------------------------------------------------------------
 
-if [[ -f "$EXT_DIR/stylesheet.css" ]]; then
-    # Extract class names that appear as the FIRST (leftmost/top-level) class in a
-    # CSS selector. Descendant classes (e.g., .my-scope .subtitle) are ignored since
-    # they reference existing classes, not define new ones.
-    # A "scoped" class contains a hyphen or underscore (namespace prefix).
-    unscoped_classes=""
-    while IFS= read -r classname; do
-        # Classes with a hyphen or underscore are likely namespaced
-        if [[ "$classname" != *-* ]] && [[ "$classname" != *_* ]]; then
-            unscoped_classes+="  .$classname"$'\n'
-        fi
-    done < <(sed 's|/\*[^*]*\*\+\([^/*][^*]*\*\+\)*/||g; /\/\*/,/\*\//d' "$EXT_DIR/stylesheet.css" 2>/dev/null | \
-             grep -oE '^\s*\.[a-zA-Z][a-zA-Z0-9_-]*' | sed 's/^[[:space:]]*\.//; s/[[:space:]]*$//' | sort -u)
-
-    if [[ -n "$unscoped_classes" ]]; then
-        hit_count=$(echo -n "$unscoped_classes" | grep -c '.' || true)
-        print_result "WARN" "css-scoping" "Found $hit_count potentially unscoped CSS class(es)"
-    else
-        print_result "PASS" "css-scoping" "CSS classes appear properly scoped"
-    fi
+if [[ -f "$SCRIPT_DIR/check-css.py" ]]; then
+    run_subscript "$SCRIPT_DIR/check-css.py"
 else
-    print_result "SKIP" "css-scoping" "No stylesheet.css found"
+    print_result "SKIP" "css-scoping" "check-css.py not found"
 fi
 
 # ---------------------------------------------------------------------------

@@ -1,0 +1,19 @@
+/* Unscoped bare class */
+.container {
+    padding: 10px;
+}
+
+/* Scoped class (has hyphen) */
+.my-ext-panel {
+    background: transparent;
+}
+
+/* !important usage */
+.my-ext-label {
+    color: white !important;
+}
+
+/* Bare generic without scope */
+.button {
+    margin: 5px;
+}

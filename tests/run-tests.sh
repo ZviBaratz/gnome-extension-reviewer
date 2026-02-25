@@ -548,6 +548,13 @@ assert_output_contains "detects missing super._init" "gobject/missing-super-init
 assert_output_contains "detects missing cr.\$dispose" "gobject/cairo-dispose"
 echo ""
 
+# --- css-unscoped ---
+echo "=== css-unscoped ==="
+run_lint "css-unscoped@test"
+assert_output_contains "detects unscoped CSS classes" "css/unscoped-class"
+assert_output_contains "detects !important usage" "css/important"
+echo ""
+
 # --- Summary ---
 echo "============================================"
 echo "  Results: $PASS_COUNT passed, $FAIL_COUNT failed"
