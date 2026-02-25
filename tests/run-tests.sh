@@ -559,7 +559,8 @@ echo ""
 echo "=== init-modification ==="
 run_lint "init-modification@test"
 assert_exit_code "exits with 1 (has failures)" 1
-assert_output_contains "detects init-time Shell modification" "\[FAIL\].*init/shell-modification"
+assert_output_contains "detects init-time Shell modification" "\[FAIL\].*init/shell-modification.*extension.js"
+assert_output_contains "detects init-time GObject constructor" "\[FAIL\].*init/shell-modification.*helper.js"
 echo ""
 
 # --- Summary ---
