@@ -189,6 +189,14 @@ assert_exit_code "exits with 1 (has failures)" 1
 assert_output_contains "fails on minified JS" "\[FAIL\].*minified-js"
 echo ""
 
+# --- gnome46-compat ---
+echo "=== gnome46-compat ==="
+run_lint "gnome46-compat@test"
+assert_exit_code "exits with 1 (has failures)" 1
+assert_output_contains "fails on add_actor" "\[FAIL\].*R-VER46-01"
+assert_output_contains "fails on remove_actor" "\[FAIL\].*R-VER46-02"
+echo ""
+
 # --- Summary ---
 echo "============================================"
 echo "  Results: $PASS_COUNT passed, $FAIL_COUNT failed"

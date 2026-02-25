@@ -10,6 +10,7 @@ Requires only Python stdlib (no PyYAML dependency).
 """
 
 import glob
+import json
 import os
 import re
 import sys
@@ -86,6 +87,63 @@ def _unescape_yaml_double(s):
     return ''.join(result)
 
 
+def _get_shell_versions(ext_dir):
+    """Read shell-version from metadata.json and return as list of ints."""
+    metadata_path = os.path.join(ext_dir, 'metadata.json')
+    if not os.path.isfile(metadata_path):
+        return []
+    try:
+        with open(metadata_path, encoding='utf-8') as f:
+            meta = json.load(f)
+        versions = meta.get('shell-version', [])
+        if not isinstance(versions, list):
+            return []
+        result = []
+        for v in versions:
+            # Extract leading integer from version strings like "46", "47.1", etc.
+            m = re.match(r'^(\d+)', str(v))
+            if m:
+                result.append(int(m.group(1)))
+        return result
+    except (json.JSONDecodeError, OSError):
+        return []
+
+
+def _version_gate_applies(rule, shell_versions):
+    """Check if a version-gated rule should apply given the shell versions.
+
+    A rule with min-version fires only if at least one declared shell-version
+    is >= min-version. A rule with max-version fires only if at least one
+    declared shell-version is <= max-version. If no shell versions are known,
+    version-gated rules are skipped (fail-safe: don't flag if we can't confirm).
+    """
+    min_ver = rule.get('min-version')
+    max_ver = rule.get('max-version')
+
+    # No version gate — always applies
+    if min_ver is None and max_ver is None:
+        return True
+
+    # Version-gated but no shell versions known — skip
+    if not shell_versions:
+        return False
+
+    # Parse version values as integers
+    try:
+        if min_ver is not None:
+            min_ver = int(min_ver)
+            if not any(v >= min_ver for v in shell_versions):
+                return False
+        if max_ver is not None:
+            max_ver = int(max_ver)
+            if not any(v <= max_ver for v in shell_versions):
+                return False
+    except (ValueError, TypeError):
+        return False
+
+    return True
+
+
 def main():
     if len(sys.argv) < 3:
         print("Usage: apply-patterns.py RULES_YAML EXTENSION_DIR", file=sys.stderr)
@@ -98,6 +156,7 @@ def main():
         return
 
     rules = parse_rules(rules_file)
+    shell_versions = _get_shell_versions(ext_dir)
 
     for rule in rules:
         rid = rule.get('id', '?')
@@ -105,6 +164,11 @@ def main():
         scopes = rule.get('scope', ['*.js'])
         severity = rule.get('severity', 'advisory')
         message = rule.get('message', rid)
+
+        # Version gating: skip rules that don't apply to declared shell versions
+        if not _version_gate_applies(rule, shell_versions):
+            print(f"SKIP|{rid}|Not applicable for declared shell-version(s)")
+            continue
 
         if isinstance(scopes, str):
             scopes = [scopes]

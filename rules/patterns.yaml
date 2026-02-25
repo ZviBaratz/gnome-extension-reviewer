@@ -279,3 +279,50 @@
   message: "Use Clutter.BUTTON_PRIMARY/SECONDARY/MIDDLE instead of magic numbers"
   category: ai-slop
   fix: "Replace 1 with Clutter.BUTTON_PRIMARY, 2 with Clutter.BUTTON_MIDDLE, 3 with Clutter.BUTTON_SECONDARY."
+
+# --- GNOME 46 removed APIs (blocking, version-gated) ---
+
+- id: R-VER46-01
+  pattern: "\\.add_actor\\s*\\("
+  scope: ["*.js"]
+  severity: blocking
+  message: "Clutter.Container.add_actor() removed in GNOME 46; use add_child()"
+  category: version-compat
+  fix: "Replace .add_actor(child) with .add_child(child)"
+  min-version: 46
+
+- id: R-VER46-02
+  pattern: "\\.remove_actor\\s*\\("
+  scope: ["*.js"]
+  severity: blocking
+  message: "Clutter.Container.remove_actor() removed in GNOME 46; use remove_child()"
+  category: version-compat
+  fix: "Replace .remove_actor(child) with .remove_child(child)"
+  min-version: 46
+
+- id: R-VER46-03
+  pattern: "\\bClutter\\.cairo_set_source_color\\b"
+  scope: ["*.js"]
+  severity: blocking
+  message: "Clutter.cairo_set_source_color() removed in GNOME 46; use cairo.Context.setSourceColor()"
+  category: version-compat
+  fix: "Use cr.setSourceColor(color) instead"
+  min-version: 46
+
+- id: R-VER46-04
+  pattern: "\\bGio\\.UnixInputStream\\b"
+  scope: ["*.js"]
+  severity: blocking
+  message: "Gio.UnixInputStream moved to GioUnix.InputStream in GNOME 46"
+  category: version-compat
+  fix: "Import GioUnix from 'gi://GioUnix' and use GioUnix.InputStream"
+  min-version: 46
+
+- id: R-VER46-05
+  pattern: "\\bExtensionState\\.(ENABLED|DISABLED|INITIALIZED|DEACTIVATING|ACTIVATING)\\b"
+  scope: ["*.js"]
+  severity: blocking
+  message: "ExtensionState enum renamed in GNOME 46: ENABLED->ACTIVE, DISABLED->INACTIVE, etc."
+  category: version-compat
+  fix: "Use ACTIVE, INACTIVE, ENABLING, DISABLING instead"
+  min-version: 46
