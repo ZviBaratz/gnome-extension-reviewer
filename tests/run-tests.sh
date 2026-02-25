@@ -212,6 +212,14 @@ assert_output_contains "fails on Clutter.Image" "\[FAIL\].*R-VER48-01"
 assert_output_contains "fails on Meta.disable_unredirect" "\[FAIL\].*R-VER48-02"
 echo ""
 
+# --- gnome45-only ---
+echo "=== gnome45-only ==="
+run_lint "gnome45-only@test"
+assert_output_not_contains "no GNOME 46 rule failures" "\[FAIL\].*R-VER46"
+assert_output_not_contains "no GNOME 47 rule failures" "\[FAIL\].*R-VER47"
+assert_output_not_contains "no GNOME 48 rule failures" "\[FAIL\].*R-VER48"
+echo ""
+
 # --- Summary ---
 echo "============================================"
 echo "  Results: $PASS_COUNT passed, $FAIL_COUNT failed"
