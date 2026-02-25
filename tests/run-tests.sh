@@ -189,6 +189,13 @@ assert_exit_code "exits with 1 (has failures)" 1
 assert_output_contains "fails on minified JS" "\[FAIL\].*minified-js"
 echo ""
 
+# --- schema-filename ---
+echo "=== schema-filename ==="
+run_lint "schema-filename@test"
+assert_exit_code "exits with 0 (warnings only)" 0
+assert_output_contains "warns on schema filename" "\[WARN\].*schema/filename-convention"
+echo ""
+
 # --- Summary ---
 echo "============================================"
 echo "  Results: $PASS_COUNT passed, $FAIL_COUNT failed"

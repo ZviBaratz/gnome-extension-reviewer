@@ -58,6 +58,20 @@ if [[ "$has_settings_schema" == true ]]; then
     done
 fi
 
+# Validate schema filename convention: <schema-id>.gschema.xml
+for schema_file in "${schema_files[@]}"; do
+    schema_id="$(grep -oP 'id="[^"]*"' "$schema_file" | head -1 | sed 's/id="//;s/"//')"
+    if [[ -n "$schema_id" ]]; then
+        expected_filename="${schema_id}.gschema.xml"
+        actual_filename="$(basename "$schema_file")"
+        if [[ "$actual_filename" == "$expected_filename" ]]; then
+            echo "PASS|schema/filename-convention|Schema filename matches ID: $actual_filename"
+        else
+            echo "WARN|schema/filename-convention|Schema filename '$actual_filename' should be '$expected_filename'"
+        fi
+    fi
+done
+
 # Validate schema path
 for schema_file in "${schema_files[@]}"; do
     schema_path="$(grep -oP 'path="[^"]*"' "$schema_file" | head -1 | sed 's/path="//;s/"//')"
