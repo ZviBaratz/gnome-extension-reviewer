@@ -1110,6 +1110,30 @@ Rules for extension lifecycle management: enable/disable hooks, signal cleanup, 
 - **Rationale**: Large packages slow down review and may contain unnecessary files.
 - **Fix**: Remove unnecessary files (build artifacts, documentation, test fixtures) from the package.
 
+### R-PKG-13: No binary files
+- **Severity**: blocking
+- **Checked by**: ego-lint.sh
+- **Rule**: Extensions must not include binary executables or shared libraries (`.so`, `.a`, `.o`, `.dll`, `.dylib`, `.wasm`, or ELF binaries).
+- **Rationale**: "Extensions MUST NOT include binary executables or libraries" — EGO Review Guidelines.
+- **Fix**: Remove all binary files. If native code is needed, provide build instructions or use GJS alternatives.
+- **Test fixture**: `binary-files@test`
+
+### R-PKG-14: No non-GJS scripts
+- **Severity**: advisory
+- **Checked by**: ego-lint.sh
+- **Rule**: Non-JavaScript scripts (`.py`, `.sh`, `.rb`, `.pl`) should not be shipped unless absolutely necessary.
+- **Rationale**: "Scripts MUST be written in GJS, unless required functionality is only available in another scripting language" — EGO Review Guidelines.
+- **Fix**: Rewrite scripts in GJS if possible. If a non-GJS script is required (e.g., polkit helper), document the justification.
+- **Test fixture**: `non-gjs-scripts@test`
+
+### R-PKG-15: No compiled schemas in directory
+- **Severity**: advisory
+- **Checked by**: ego-lint.sh
+- **Rule**: `schemas/gschemas.compiled` should not be present in the extension directory.
+- **Rationale**: GNOME Shell 44+ automatically compiles schemas on installation. Shipping compiled schemas is unnecessary and adds bloat.
+- **Fix**: Remove `schemas/gschemas.compiled` from the extension and exclude it from packaging.
+- **Test fixture**: `compiled-schemas-dir@test`
+
 ---
 
 ## Preferences (R-PREFS)
@@ -1293,7 +1317,7 @@ Rules for APIs removed or changed in specific GNOME Shell versions. These rules 
 ### quality/debug-volume: Excessive console.debug() calls
 - **Severity**: advisory
 - **Checked by**: check-quality.py
-- **Rule**: Warns if more than 20 `console.debug()` calls are found across the codebase.
+- **Rule**: Warns if more than 15 `console.debug()` calls are found across the codebase.
 - **Rationale**: While `console.debug()` is acceptable (unlike `console.log()`), excessive debug logging clutters the system journal and signals unfinished development.
 - **Fix**: Remove or reduce debug logging to essential messages before submission.
 
@@ -1317,6 +1341,14 @@ Rules for APIs removed or changed in specific GNOME Shell versions. These rules 
 - **Rule**: Warns when `Gettext.dgettext()` is used directly instead of the Extension API.
 - **Rationale**: The `Extension` and `ExtensionPreferences` base classes provide `this.gettext()` which automatically uses the correct domain. Direct `dgettext` hardcodes the domain string.
 - **Fix**: Use `this.gettext('string')` from the Extension base class instead of `Gettext.dgettext('domain', 'string')`.
+
+### R-QUAL-17: Total logging volume
+- **Severity**: advisory
+- **Checked by**: check-quality.py
+- **Rule**: Extensions should not have more than 30 total `console.*` calls (debug, warn, error, info combined).
+- **Rationale**: "Extension MUST NOT print excessively to the log" — EGO Review Guidelines. Reviewers reject extensions with excessive logging.
+- **Fix**: Remove verbose logging. Keep only essential error messages and critical state transitions.
+- **Test fixture**: `logging-volume@test`
 
 ---
 
