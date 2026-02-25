@@ -555,6 +555,12 @@ assert_output_contains "detects unscoped CSS classes" "css/unscoped-class"
 assert_output_contains "detects !important usage" "css/important"
 echo ""
 
+# --- gtk3-prefs ---
+echo "=== gtk3-prefs ==="
+run_lint "gtk3-prefs@test"
+assert_output_contains "detects GTK3 widgets in prefs.js" "\[WARN\].*R-PREFS-04"
+echo ""
+
 # --- injection-leak ---
 echo "=== injection-leak ==="
 run_lint "injection-leak@test"

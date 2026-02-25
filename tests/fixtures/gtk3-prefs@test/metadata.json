@@ -1,0 +1,7 @@
+{
+    "uuid": "gtk3-prefs@test",
+    "name": "GTK3 Prefs Test",
+    "description": "GTK3 widget usage in prefs.js",
+    "shell-version": ["47"],
+    "url": "https://github.com/test/gtk3-prefs"
+}

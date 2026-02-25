@@ -650,3 +650,13 @@
   message: "Subprocess with string concatenation risks command injection; use explicit argv array"
   category: security
   fix: "Pass command and arguments as separate argv array elements instead of concatenating strings"
+
+# --- Prefs.js GTK3 widget detection ---
+
+- id: R-PREFS-04
+  pattern: "\\bnew\\s+Gtk\\.(Box|Label|Switch|Button|Entry|Grid|ListBox|ScrolledWindow|Frame|Separator|SpinButton|ComboBoxText|CheckButton|RadioButton|ToggleButton|Notebook|Stack|Revealer|Expander|FlowBox|Overlay|Paned|HeaderBar|ActionBar|InfoBar|ProgressBar|Scale|LevelBar|SearchEntry|SearchBar|DropDown)\\b"
+  scope: ["prefs.js"]
+  severity: advisory
+  message: "Raw GTK widget in prefs.js — prefer Adwaita (Adw) widgets for GNOME 45+"
+  category: prefs
+  fix: "Use Adw.PreferencesPage, Adw.PreferencesGroup, Adw.ActionRow, Adw.SwitchRow, Adw.ComboRow"
