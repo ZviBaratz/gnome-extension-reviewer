@@ -189,6 +189,29 @@ assert_exit_code "exits with 1 (has failures)" 1
 assert_output_contains "fails on minified JS" "\[FAIL\].*minified-js"
 echo ""
 
+# --- lifecycle-imbalance ---
+echo "=== lifecycle-imbalance ==="
+run_lint "lifecycle-imbalance@test"
+assert_exit_code "exits with 0 (warnings only)" 0
+assert_output_contains "warns on signal imbalance" "\[WARN\].*lifecycle/signal-balance"
+assert_output_contains "warns on untracked timeout" "\[WARN\].*lifecycle/untracked-timeout"
+echo ""
+
+# --- missing-disable ---
+echo "=== missing-disable ==="
+run_lint "missing-disable@test"
+assert_exit_code "exits with 1 (has failures)" 1
+assert_output_contains "fails on missing disable" "\[FAIL\].*lifecycle/disable-method"
+echo ""
+
+# --- lifecycle-clean ---
+echo "=== lifecycle-clean ==="
+run_lint "lifecycle-clean@test"
+assert_exit_code "exits with 0 (no failures)" 0
+assert_output_contains "lifecycle checks pass" "\[PASS\].*lifecycle/enable-disable"
+assert_output_contains "signal balance OK" "\[PASS\].*lifecycle/signal-balance"
+echo ""
+
 # --- Summary ---
 echo "============================================"
 echo "  Results: $PASS_COUNT passed, $FAIL_COUNT failed"
