@@ -212,6 +212,25 @@ assert_output_contains "lifecycle checks pass" "\[PASS\].*lifecycle/enable-disab
 assert_output_contains "signal balance OK" "\[PASS\].*lifecycle/signal-balance"
 echo ""
 
+# --- hallucinated-apis ---
+echo "=== hallucinated-apis ==="
+run_lint "hallucinated-apis@test"
+assert_exit_code "exits with 0 (advisories only)" 0
+assert_output_contains "warns on Meta.Screen" "\[WARN\].*R-SLOP-08"
+assert_output_contains "warns on St setter" "\[WARN\].*R-SLOP-09"
+assert_output_contains "warns on Clutter.Actor.show_all" "\[WARN\].*R-SLOP-10"
+assert_output_contains "warns on GLib.source_remove" "\[WARN\].*R-SLOP-11"
+assert_output_contains "warns on typeof super.destroy" "\[WARN\].*R-SLOP-12"
+assert_output_contains "warns on this instanceof" "\[WARN\].*R-SLOP-13"
+echo ""
+
+# --- run-dispose ---
+echo "=== run-dispose ==="
+run_lint "run-dispose@test"
+assert_exit_code "exits with 0 (advisory only)" 0
+assert_output_contains "warns on run_dispose" "\[WARN\].*R-SEC-06"
+echo ""
+
 # --- Summary ---
 echo "============================================"
 echo "  Results: $PASS_COUNT passed, $FAIL_COUNT failed"
