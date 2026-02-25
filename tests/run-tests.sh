@@ -447,6 +447,13 @@ assert_output_contains "warns on console.debug volume" "\[WARN\].*quality/debug-
 assert_output_contains "warns on notification volume" "\[WARN\].*quality/notification-volume"
 echo ""
 
+# --- private-api ---
+echo "=== private-api ==="
+run_lint "private-api@test"
+assert_exit_code "exits with 0 (warnings only)" 0
+assert_output_contains "warns on private API access" "\[WARN\].*quality/private-api"
+echo ""
+
 # --- Summary ---
 echo "============================================"
 echo "  Results: $PASS_COUNT passed, $FAIL_COUNT failed"

@@ -1,0 +1,1 @@
+{"uuid": "private-api@test", "name": "Private API Test", "description": "Tests private GNOME Shell API detection", "shell-version": ["48"], "url": "https://github.com/test/private-api"}

@@ -410,6 +410,43 @@ def check_notification_volume(ext_dir, js_files):
                f"Notification volume OK ({total} call sites)")
 
 
+def check_private_api(ext_dir, js_files):
+    """R-QUAL-15: Flag access to private underscore-prefixed GNOME Shell APIs."""
+    patterns = [
+        (r'Main\.panel[^;]*\._\w+', 'Main.panel private API access'),
+        (r'statusArea[^;]*\._\w+', 'statusArea private API access'),
+        (r'quickSettings[^;]*\._\w+', 'quickSettings private API access'),
+        (r'Main\.overview[^;]*\._\w+', 'Main.overview private API access'),
+        (r'Main\.layoutManager[^;]*\._\w+', 'Main.layoutManager private API access'),
+        (r'Main\.wm[^;]*\._\w+', 'Main.wm private API access'),
+    ]
+    matches = []
+
+    for filepath in js_files:
+        rel = os.path.relpath(filepath, ext_dir)
+        with open(filepath, encoding='utf-8', errors='replace') as f:
+            for lineno, line in enumerate(f, 1):
+                stripped = line.lstrip()
+                if stripped.startswith('//') or stripped.startswith('*'):
+                    continue
+                for pat, desc in patterns:
+                    if re.search(pat, line):
+                        matches.append((rel, lineno, desc))
+
+    if matches:
+        for rel, lineno, desc in matches[:5]:
+            result("WARN", "quality/private-api",
+                   f"{rel}:{lineno}: {desc} — requires reviewer justification "
+                   f"and version pinning")
+        remaining = len(matches) - 5
+        if remaining > 0:
+            result("WARN", "quality/private-api",
+                   f"...and {remaining} more private API access(es)")
+    else:
+        result("PASS", "quality/private-api",
+               "No private GNOME Shell API access detected")
+
+
 def check_comment_density(ext_dir, js_files):
     """R-QUAL-11: Flag excessive comment-to-code ratio."""
     for filepath in js_files:
@@ -480,6 +517,7 @@ def main():
     check_file_complexity(ext_dir, js_files)
     check_debug_volume(ext_dir, js_files)
     check_notification_volume(ext_dir, js_files)
+    check_private_api(ext_dir, js_files)
 
 
 if __name__ == '__main__':
