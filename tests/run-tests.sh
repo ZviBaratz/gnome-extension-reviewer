@@ -204,6 +204,14 @@ assert_exit_code "exits with 1 (has failures)" 1
 assert_output_contains "fails on Clutter.Color" "\[FAIL\].*R-VER47-01"
 echo ""
 
+# --- gnome48-compat ---
+echo "=== gnome48-compat ==="
+run_lint "gnome48-compat@test"
+assert_exit_code "exits with 1 (has failures)" 1
+assert_output_contains "fails on Clutter.Image" "\[FAIL\].*R-VER48-01"
+assert_output_contains "fails on Meta.disable_unredirect" "\[FAIL\].*R-VER48-02"
+echo ""
+
 # --- Summary ---
 echo "============================================"
 echo "  Results: $PASS_COUNT passed, $FAIL_COUNT failed"

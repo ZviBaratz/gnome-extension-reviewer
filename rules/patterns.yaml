@@ -337,3 +337,32 @@
   category: version-compat
   fix: "Import Cogl from 'gi://Cogl' and use new Cogl.Color() instead"
   min-version: 47
+
+# --- GNOME 48 removed APIs (blocking, version-gated) ---
+
+- id: R-VER48-01
+  pattern: "\\bClutter\\.Image\\b"
+  scope: ["*.js"]
+  severity: blocking
+  message: "Clutter.Image removed in GNOME 48; use St.ImageContent"
+  category: version-compat
+  fix: "Use St.ImageContent instead of Clutter.Image"
+  min-version: 48
+
+- id: R-VER48-02
+  pattern: "\\bMeta\\.(disable_unredirect_for_display|enable_unredirect_for_display|get_window_actors|get_window_group_for_display|get_top_window_group_for_display)\\b"
+  scope: ["*.js"]
+  severity: blocking
+  message: "Meta display functions moved to Meta.Compositor in GNOME 48; use global.compositor"
+  category: version-compat
+  fix: "Access via global.compositor instead of Meta directly"
+  min-version: 48
+
+- id: R-VER48-03
+  pattern: "\\bCursorTracker\\.get_for_display\\b"
+  scope: ["*.js"]
+  severity: blocking
+  message: "Meta.CursorTracker.get_for_display() changed in GNOME 48; use global.backend.get_cursor_tracker()"
+  category: version-compat
+  fix: "Use global.backend.get_cursor_tracker() instead"
+  min-version: 48
