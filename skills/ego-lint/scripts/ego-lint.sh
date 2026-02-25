@@ -363,6 +363,11 @@ if [[ -f "$SCRIPT_DIR/check-quality.py" ]]; then
     run_subscript "$SCRIPT_DIR/check-quality.py"
 fi
 
+# check-lifecycle.py (Tier 2 lifecycle heuristics)
+if [[ -f "$SCRIPT_DIR/check-lifecycle.py" ]]; then
+    run_subscript "$SCRIPT_DIR/check-lifecycle.py"
+fi
+
 # check-package.sh
 run_subscript "$SCRIPT_DIR/check-package.sh"
 
