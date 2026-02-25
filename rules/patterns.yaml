@@ -279,3 +279,66 @@
   message: "Use Clutter.BUTTON_PRIMARY/SECONDARY/MIDDLE instead of magic numbers"
   category: ai-slop
   fix: "Replace 1 with Clutter.BUTTON_PRIMARY, 2 with Clutter.BUTTON_MIDDLE, 3 with Clutter.BUTTON_SECONDARY."
+
+# --- Hallucinated APIs (advisory) ---
+# LLMs frequently call methods that don't exist in GJS/GNOME Shell.
+
+- id: R-SLOP-08
+  pattern: "\\b(Meta\\.Screen|Meta\\.Cursor|Shell\\.ActionMode\\.ALL|Shell\\.WindowTracker\\.get_default\\(\\)\\.get_active_window)"
+  scope: ["*.js"]
+  severity: advisory
+  message: "Likely hallucinated API — Meta.Screen, Meta.Cursor, Shell.ActionMode.ALL do not exist"
+  category: ai-slop
+  fix: "Check the GJS API docs: https://gjs-docs.gnome.org. Use Meta.Display, global.display, etc."
+
+- id: R-SLOP-09
+  pattern: "\\bSt\\.(Button|Label|Widget)\\.(set_label|set_text|set_icon_name)\\s*\\("
+  scope: ["*.js"]
+  severity: advisory
+  message: "St widgets use GObject properties, not setter methods (set_label, set_text)"
+  category: ai-slop
+  fix: "Use property assignment: this.label = 'text' instead of this.set_label('text')."
+
+- id: R-SLOP-10
+  pattern: "\\bClutter\\.Actor\\.(show_all|hide_all|set_position|set_size)\\s*\\("
+  scope: ["*.js"]
+  severity: advisory
+  message: "Hallucinated Clutter method — show_all/hide_all/set_position/set_size are GTK, not Clutter"
+  category: ai-slop
+  fix: "Use actor.show()/hide() for visibility. Use actor.set({x, y, width, height}) for geometry."
+
+- id: R-SLOP-11
+  pattern: "\\bGLib\\.(timeout_add_seconds_full|source_remove)\\b"
+  scope: ["*.js"]
+  severity: advisory
+  message: "Non-existent GLib method — use GLib.timeout_add_seconds() and GLib.Source.remove()"
+  category: ai-slop
+  fix: "GLib.timeout_add_seconds_full → GLib.timeout_add_seconds. GLib.source_remove → GLib.Source.remove."
+
+# --- Security (continued) ---
+
+- id: R-SEC-06
+  pattern: "\\.run_dispose\\s*\\("
+  scope: ["*.js"]
+  severity: advisory
+  message: "GObject.run_dispose() should not be used unless absolutely necessary"
+  category: security
+  fix: "Remove run_dispose() call. If genuinely needed, add a comment explaining why."
+
+# --- AI slop (continued) ---
+
+- id: R-SLOP-12
+  pattern: "typeof\\s+super\\.destroy\\s*===?\\s*['\"]function['\"]"
+  scope: ["*.js"]
+  severity: advisory
+  message: "typeof super.destroy check is unnecessary — super.destroy() always exists on GObject classes"
+  category: ai-slop
+  fix: "Remove the typeof check and call super.destroy() directly."
+
+- id: R-SLOP-13
+  pattern: "\\bthis\\s+instanceof\\s+\\w+"
+  scope: ["*.js"]
+  severity: advisory
+  message: "this instanceof check inside a class method is always true"
+  category: ai-slop
+  fix: "Remove the redundant instanceof check."
