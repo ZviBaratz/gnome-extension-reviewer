@@ -60,23 +60,32 @@ Using [lifecycle-checklist.md](references/lifecycle-checklist.md):
 
 1. Read `extension.js` — verify enable/disable symmetry
 2. Check constructor constraints (no resource allocation in constructor)
-3. **Build a resource tracking table** as you read the code:
+3. **Run the resource graph builder** to get deterministic cross-file data:
+   ```bash
+   python3 <plugin-dir>/skills/ego-lint/scripts/build-resource-graph.py <extension-dir>
+   ```
+4. **Review the graph summary**: files scanned, total creates/destroys, orphan count,
+   ownership depth. Present this to ground the review.
+5. **For each orphan in the graph**:
+   - Read the cited file:line to verify it's a true leak
+   - Classify as: TRUE LEAK (blocking) | JUSTIFIED (note why) | FALSE POSITIVE (skip)
+   - For true leaks, include the fix in the report
+6. **For each ownership chain** (from the `ownership` JSON field):
+   - Verify parent calls child's `destroy()` in its own `disable()`/`destroy()`
+   - Verify destroy order is reverse of creation
+   - Verify child's `destroy()` cleans up all its own resources
+7. **Build the resource tracking table** from graph data:
 
-   | Resource | Created in (file:line) | Destroyed in (file:line) | Verified? |
-   |----------|----------------------|------------------------|-----------|
+   | Resource | File:Line (create) | File:Line (destroy) | Owner | Status |
+   |----------|-------------------|--------------------|---------|----|
 
-4. **Signal inventory**: List every `.connect()` and `.connectObject()` call. For each, identify where the corresponding disconnect occurs. Flag any unmatched connections.
-5. **Timeout inventory**: List every `timeout_add`/`idle_add` call. Verify each has a stored ID and a `GLib.Source.remove()` in the disable/destroy path.
-6. **Async guard verification**: For every `await` in enable-path code, verify a `_destroyed` check follows the resume point.
-7. Verify cleanup ordering (reverse order of creation)
-8. Check for _destroyed flag pattern in async operations
-9. Verify session mode handling if applicable
-10. **Cross-module resource tracing**: For each resource created in a lib/ module:
-    - Identify which parent owns the module instance
-    - Trace the ownership chain: extension.js → manager → controller
-    - Verify the destroy/cleanup propagates through the entire chain
-    - Flag any module that creates resources but has no destroy/cleanup method
-    - Flag any module whose destroy is never called from its parent
+8. **If the graph reports 0 orphans and complete ownership chains**: abbreviate
+   this phase — focus on async guards and cleanup ordering below
+9. **Async guard verification**: For every `await` in enable-path code, verify
+   a `_destroyed` check follows the resume point
+10. Verify cleanup ordering (reverse order of creation)
+11. Check for _destroyed flag pattern in async operations
+12. Verify session mode handling if applicable
 
 ### Phase 3: Signal & Resource Audit
 
