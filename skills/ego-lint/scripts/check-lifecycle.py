@@ -41,13 +41,22 @@ def read_file(path):
         return f.read()
 
 
+def strip_comments(content):
+    """Remove single-line and block comments from JS content."""
+    # Remove block comments
+    content = re.sub(r'/\*.*?\*/', '', content, flags=re.DOTALL)
+    # Remove single-line comments
+    content = re.sub(r'//.*$', '', content, flags=re.MULTILINE)
+    return content
+
+
 def check_enable_disable(ext_dir):
     """R-LIFE-03: extension.js must define enable() and disable()."""
     ext_js = os.path.join(ext_dir, 'extension.js')
     if not os.path.isfile(ext_js):
         return  # file-structure check handles this
 
-    content = read_file(ext_js)
+    content = strip_comments(read_file(ext_js))
 
     has_enable = bool(re.search(r'\benable\s*\(', content))
     has_disable = bool(re.search(r'\bdisable\s*\(', content))

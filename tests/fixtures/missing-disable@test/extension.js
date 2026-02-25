@@ -4,5 +4,5 @@ export default class MissingDisableExtension extends Extension {
     enable() {
         this._active = true;
     }
-    // No disable() method
+    // Missing cleanup method
 }
