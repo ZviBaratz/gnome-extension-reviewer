@@ -131,9 +131,17 @@ fi
 # ---------------------------------------------------------------------------
 
 if [[ -f "$EXT_DIR/LICENSE" ]] || [[ -f "$EXT_DIR/COPYING" ]]; then
-    print_result "PASS" "license" "License file found"
+    license_file=""
+    [[ -f "$EXT_DIR/LICENSE" ]] && license_file="$EXT_DIR/LICENSE"
+    [[ -f "$EXT_DIR/COPYING" ]] && license_file="$EXT_DIR/COPYING"
+    head_content=$(head -5 "$license_file" 2>/dev/null || true)
+    if echo "$head_content" | grep -qiE '(GPL|LGPL|MIT|BSD|Apache|MPL|ISC|Artistic)'; then
+        print_result "PASS" "license" "License file found (appears GPL-compatible)"
+    else
+        print_result "WARN" "license" "License file found but could not confirm GPL-compatibility"
+    fi
 else
-    print_result "WARN" "license" "No LICENSE or COPYING file found"
+    print_result "FAIL" "license" "No LICENSE or COPYING file — MUST use GPL-compatible license"
 fi
 
 # ---------------------------------------------------------------------------
