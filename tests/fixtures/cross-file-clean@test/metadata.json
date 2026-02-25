@@ -1,0 +1,7 @@
+{
+    "uuid": "cross-file-clean@test",
+    "name": "Cross File Clean Test",
+    "description": "Tests cross-file resource tracking with proper cleanup",
+    "shell-version": ["47", "48"],
+    "url": "https://github.com/test/cross-file-clean"
+}

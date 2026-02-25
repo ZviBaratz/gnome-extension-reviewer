@@ -1,0 +1,7 @@
+{
+    "uuid": "cross-file-leak@test",
+    "name": "Cross File Leak Test",
+    "description": "Tests cross-file resource tracking",
+    "shell-version": ["47", "48"],
+    "url": "https://github.com/test/cross-file-leak"
+}
