@@ -439,6 +439,14 @@ assert_exit_code "exits with 0 (warnings only)" 0
 assert_output_contains "warns on per-file complexity" "\[WARN\].*quality/file-complexity"
 echo ""
 
+# --- debug-volume ---
+echo "=== debug-volume ==="
+run_lint "debug-volume@test"
+assert_exit_code "exits with 0 (warnings only)" 0
+assert_output_contains "warns on console.debug volume" "\[WARN\].*quality/debug-volume"
+assert_output_contains "warns on notification volume" "\[WARN\].*quality/notification-volume"
+echo ""
+
 # --- Summary ---
 echo "============================================"
 echo "  Results: $PASS_COUNT passed, $FAIL_COUNT failed"

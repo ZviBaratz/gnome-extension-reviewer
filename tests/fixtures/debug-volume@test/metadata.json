@@ -1,0 +1,1 @@
+{"uuid": "debug-volume@test", "name": "Debug Volume Test", "description": "Tests excessive debug and notification warnings", "shell-version": ["48"], "url": "https://github.com/test/debug-volume"}

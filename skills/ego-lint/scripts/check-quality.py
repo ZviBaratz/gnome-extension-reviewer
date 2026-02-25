@@ -370,6 +370,46 @@ def check_file_complexity(ext_dir, js_files):
            "No individual files exceed 1000 non-blank lines")
 
 
+def check_debug_volume(ext_dir, js_files):
+    """R-QUAL-13: Flag excessive console.debug() calls."""
+    total = 0
+    for filepath in js_files:
+        with open(filepath, encoding='utf-8', errors='replace') as f:
+            for line in f:
+                stripped = line.lstrip()
+                if stripped.startswith('//') or stripped.startswith('*'):
+                    continue
+                total += len(re.findall(r'console\.debug\(', line))
+
+    if total > 20:
+        result("WARN", "quality/debug-volume",
+               f"{total} console.debug() calls — excessive for production; "
+               f"remove or reduce debug logging before submission")
+    else:
+        result("PASS", "quality/debug-volume",
+               f"Debug logging volume OK ({total} calls)")
+
+
+def check_notification_volume(ext_dir, js_files):
+    """R-QUAL-14: Flag excessive Main.notify() calls."""
+    total = 0
+    for filepath in js_files:
+        with open(filepath, encoding='utf-8', errors='replace') as f:
+            for line in f:
+                stripped = line.lstrip()
+                if stripped.startswith('//') or stripped.startswith('*'):
+                    continue
+                total += len(re.findall(r'Main\.notify\s*\(', line))
+
+    if total > 3:
+        result("WARN", "quality/notification-volume",
+               f"{total} Main.notify() call sites — excessive notifications "
+               f"frustrate users and reviewers")
+    else:
+        result("PASS", "quality/notification-volume",
+               f"Notification volume OK ({total} call sites)")
+
+
 def check_comment_density(ext_dir, js_files):
     """R-QUAL-11: Flag excessive comment-to-code ratio."""
     for filepath in js_files:
@@ -438,6 +478,8 @@ def main():
     check_code_volume(ext_dir, js_files)
     check_comment_density(ext_dir, js_files)
     check_file_complexity(ext_dir, js_files)
+    check_debug_volume(ext_dir, js_files)
+    check_notification_volume(ext_dir, js_files)
 
 
 if __name__ == '__main__':
