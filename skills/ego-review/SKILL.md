@@ -18,6 +18,17 @@ from real submissions.
 
 ## Review Phases
 
+## Reviewer Context
+
+Understanding the real EGO review process helps calibrate review severity:
+
+- **Primary reviewer** processes 15,000+ lines of code per day across many extensions
+- **Review priority order**: Security → Stability (resource leaks) → Code readability → Lifecycle correctness → API correctness → Metadata → AI pattern detection
+- **Lifecycle cleanup is the #1 rejection cause** — not security, not metadata
+- **AI slop triggers deeper scrutiny**: When a reviewer spots one AI-generated pattern, they examine the entire extension more carefully. A clean extension with one `pkexec` usage gets more leeway than one with `typeof super.destroy === 'function'` guards everywhere
+- **The domino effect**: Bad patterns in published extensions get copied. Reviewers are stricter on patterns they've seen spread (excessive try-catch, empty catches, TypeScript JSDoc)
+- **Developer understanding matters**: When asked to explain code, developers who respond with more AI-generated text are immediately flagged. Extensions where the developer clearly understands the code get more benefit of the doubt
+
 ### Phase 0: Automated Baseline
 
 1. Run ego-lint on the extension directory (invoke the ego-lint skill)
@@ -33,6 +44,15 @@ from real submissions.
 2. Glob all `.js` files -- identify extension.js, prefs.js, lib/ modules
 3. Check for helper scripts, polkit rules, or other resources
 4. Note the extension's purpose and complexity level
+
+### Phase 1b: Licensing & Legal
+
+Using [licensing-checklist.md](references/licensing-checklist.md):
+
+1. Verify LICENSE/COPYING file exists and is GPL-compatible
+2. Check for code that appears borrowed from other extensions (attribution needed)
+3. Verify no copyrighted/trademarked content without permission
+4. Check extension name, description, and UI text for CoC compliance
 
 ### Phase 2: Lifecycle Audit
 

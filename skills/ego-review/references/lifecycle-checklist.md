@@ -575,3 +575,31 @@ disable() {
     this._settings.disconnectObject(this);
 }
 ```
+
+## Search Provider Lifecycle
+
+| Phase | Action |
+|-------|--------|
+| enable() | `Main.overview.searchController.addProvider(this._provider)` |
+| disable() | `Main.overview.searchController.removeProvider(this._provider)` then `this._provider = null` |
+
+- Search provider MUST be registered in `enable()` and unregistered in `disable()`
+- Provider class must implement `getResultMetas()`, `activateResult()`, and `getInitialResultSet()`
+
+## Notification Source Lifecycle
+
+| Phase | Action |
+|-------|--------|
+| enable() | `this._source = new MessageTray.Source(...)` then `Main.messageTray.add(this._source)` |
+| disable() | `this._source.destroy()` then `this._source = null` |
+
+- Custom notification sources MUST handle the `destroy` signal
+- Sources are auto-removed from the message tray on destroy
+- Connect to `this._source.connect('destroy', ...)` to handle user-initiated dismissal
+
+## Async Cancellation Patterns
+
+For operations that may outlive the enable/disable cycle:
+- Use `Gio.Cancellable` for cancellable async operations
+- Cancel the cancellable in `disable()`: `this._cancellable.cancel()`
+- Alternatively, use the `_destroyed` flag pattern after each `await`

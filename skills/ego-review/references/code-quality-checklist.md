@@ -474,3 +474,25 @@ LLMs frequently call methods that don't exist. Common confusions:
 
 When reviewing, verify each imported API method actually exists by checking
 https://gjs-docs.gnome.org against the declared `shell-version`.
+
+## connectObject Migration Advisory
+
+When reviewing signal connection patterns:
+- If 3+ manual `.connect()` / `.disconnect()` pairs exist in the same class, suggest migration to `connectObject()` / `disconnectObject(this)` pattern
+- `connectObject()` auto-disconnects all signals when the object is destroyed
+- Available since GNOME 42, recommended pattern for GNOME 45+
+
+## Gio._promisify at Module Scope
+
+- `Gio._promisify()` mutates shared prototypes globally and CANNOT be undone on disable()
+- When found at module scope (outside enable/disable), warn that it modifies the GJS environment permanently
+- Acceptable: calling `_promisify` is idempotent (safe to call multiple times), but reviewers note it as a prototype mutation
+- On GNOME 47+, check if native async alternatives exist
+
+## Prefs.js GTK4/Adwaita Idioms
+
+When reviewing prefs.js:
+- Verify `fillPreferencesWindow()` is used (not `getPreferencesWidget()` for GNOME 45+)
+- Check for proper Adwaita widget usage: `Adw.PreferencesPage`, `Adw.PreferencesGroup`, `Adw.ActionRow`, `Adw.SwitchRow`
+- Verify no GTK3 patterns: `Gtk.Box`, `Gtk.Grid` when Adwaita equivalents exist
+- Check resource path: prefs.js uses `resource:///org/gnome/Shell/Extensions/js/` (capital S)
