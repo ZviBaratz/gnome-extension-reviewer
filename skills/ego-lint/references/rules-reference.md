@@ -691,6 +691,13 @@ Additional GSettings schema validation rules.
 - **Rationale**: dconf paths are directory-like and must end with a trailing slash. A missing trailing slash causes GSettings to fail to locate the schema path at runtime.
 - **Fix**: Add a trailing slash to the schema path: `path="/org/gnome/shell/extensions/my-extension/"`.
 
+### R-SCHEMA-07: Schema filename should match schema ID
+- **Severity**: advisory
+- **Checked by**: check-schema.sh
+- **Rule**: The schema filename should follow the convention `<schema-id>.gschema.xml` (e.g., `org.gnome.shell.extensions.my-ext.gschema.xml` for schema ID `org.gnome.shell.extensions.my-ext`).
+- **Rationale**: While GNOME Shell does not enforce a filename convention, mismatched filenames cause confusion during review and maintenance. EGO reviewers expect the filename to match the schema ID for clarity.
+- **Fix**: Rename the schema file to match its ID: `mv schemas/old-name.gschema.xml schemas/org.gnome.shell.extensions.your-extension.gschema.xml`.
+
 ---
 
 ## Security (R-SEC)
@@ -975,6 +982,27 @@ Rules for extension lifecycle management: enable/disable hooks, signal cleanup, 
 - **Rationale**: Interfering with the extension system (enabling, disabling, or inspecting other extensions) is discouraged and requires explicit justification during EGO review.
 - **Fix**: Avoid interacting with other extensions unless absolutely necessary. If needed, document the justification clearly in the EGO submission.
 
+### R-SEC-10: No pip install
+- **Severity**: blocking
+- **Checked by**: apply-patterns.py
+- **Rule**: Extension code and scripts must not run `pip install`.
+- **Rationale**: GNOME extensions must not automatically install packages. Automatic package installation is a security risk and a policy violation that will cause immediate EGO rejection. Extensions should be self-contained or document manual dependency installation steps.
+- **Fix**: Remove automatic `pip install` commands. If a Python dependency is needed, document the manual installation steps in the extension description or README.
+
+### R-SEC-11: No npm install
+- **Severity**: blocking
+- **Checked by**: apply-patterns.py
+- **Rule**: Extension code and scripts must not run `npm install`.
+- **Rationale**: Same as R-SEC-10. Automatic package installation is banned. Extensions must not install npm packages at runtime or during setup scripts that run without explicit user action.
+- **Fix**: Remove automatic `npm install` commands. If a Node.js dependency is needed, document the manual installation steps.
+
+### R-SEC-12: No system package installation (apt/dnf/yum/pacman/zypper)
+- **Severity**: blocking
+- **Checked by**: apply-patterns.py
+- **Rule**: Extension code and scripts must not run system package managers (`apt`, `apt-get`, `dnf`, `yum`, `pacman`, `zypper`).
+- **Rationale**: Same as R-SEC-10. Automatic system package installation requires root access and is a severe security risk. EGO reviewers will reject any extension that attempts to install system packages.
+- **Fix**: Remove automatic package installation commands. Document any required system packages in the extension description so users can install them manually.
+
 ---
 
 ## Code Quality Heuristics — Extended (R-QUAL, continued)
@@ -1043,6 +1071,34 @@ Rules for extension lifecycle management: enable/disable hooks, signal cleanup, 
 - **Rationale**: GNOME Shell validates version strings at install time. Invalid entries (empty strings, non-numeric values, trailing dots) will prevent the extension from loading.
 - **Fix**: Use valid version strings like `"45"`, `"46"`, `"47"`, `"48"`, or `"3.38"` for legacy versions.
 
+### R-META-22: Missing url field
+- **Severity**: advisory
+- **Checked by**: check-metadata.py
+- **Rule**: `metadata.json` should contain a `url` field.
+- **Rationale**: The `url` field is displayed on the EGO listing page and helps users find the project homepage, documentation, and issue tracker. Its absence makes the extension harder for users to evaluate and for reviewers to verify.
+- **Fix**: Add `"url": "https://github.com/your-username/your-extension"` to `metadata.json`.
+
+### R-META-23: Too many development shell-version entries
+- **Severity**: blocking
+- **Checked by**: check-metadata.py
+- **Rule**: The `shell-version` array must not contain more than one development (unreleased) GNOME version.
+- **Rationale**: Development versions are versions newer than the current stable release (48). Listing multiple development versions is a strong indicator of AI-hallucinated metadata, since only one GNOME development version exists at any time. EGO will reject such submissions.
+- **Fix**: Remove extra development versions from `shell-version`. At most one development version (the current GNOME development branch) should be listed, and only if you have actually tested against it.
+
+### R-META-24: Empty donations field
+- **Severity**: blocking
+- **Checked by**: check-metadata.py
+- **Rule**: If the `donations` field is present in `metadata.json`, it must not be an empty object.
+- **Rationale**: An empty `donations` object (`"donations": {}`) serves no purpose and will be flagged by EGO validation. It is typically a leftover from AI-generated metadata templates.
+- **Fix**: Either add valid donation links (e.g., `"donations": {"github": "your-username"}`) or remove the `donations` field entirely.
+
+### R-META-25: ESM imports with pre-45 shell-version
+- **Severity**: blocking
+- **Checked by**: check-metadata.py
+- **Rule**: If `extension.js` uses ESM imports (`import ... from ...`), the `shell-version` array must not include GNOME versions before 45 (e.g., `"40"`, `"41"`, `"42"`, `"43"`, `"44"`).
+- **Rationale**: ESM modules were introduced in GNOME 45. Extensions using ESM syntax cannot run on GNOME 40-44, which used the legacy `imports.*` module system. Listing pre-45 versions with ESM code is contradictory and indicates untested compatibility claims.
+- **Fix**: Remove pre-45 versions from `shell-version` if your extension uses ESM imports. If you need to support older GNOME versions, you must use the legacy `imports.*` module system (or maintain separate branches).
+
 ---
 
 ## Package — Extended (R-PKG, continued)
@@ -1080,3 +1136,78 @@ Rules for `prefs.js` validation and EGO compliance.
 - **Rule**: `prefs.js` must not import modules via `resource:///org/gnome/shell/ui/` paths.
 - **Rationale**: The preferences window runs in a separate GTK process that does not have access to GNOME Shell's UI modules. Importing Shell UI modules (e.g., `Main`, `PanelMenu`, `PopupMenu`) in `prefs.js` will cause an import error when the user opens preferences.
 - **Fix**: Use only GTK/Adw/Gio/GLib imports in `prefs.js`. Shell UI modules are only available in `extension.js` and its runtime imports.
+
+---
+
+## Version Compatibility (R-VER)
+
+Rules for APIs removed or changed in specific GNOME Shell versions. These rules are **version-gated**: they only fire when the extension's `shell-version` in `metadata.json` targets the relevant GNOME version or newer. For example, R-VER46-01 only triggers if the extension lists GNOME 46 or later in `shell-version`.
+
+### GNOME 46 (R-VER46)
+
+### R-VER46-01: add_actor() removed
+- **Severity**: blocking
+- **Checked by**: apply-patterns.py (version-gated, min-version: 46)
+- **Rule**: Extension code must not use `.add_actor()` when targeting GNOME 46+.
+- **Rationale**: `Clutter.Container.add_actor()` was removed in GNOME 46. It was the legacy method for adding child actors to containers. The replacement `add_child()` has been available since GNOME 3.x and is the standard method.
+- **Fix**: Replace `.add_actor(child)` with `.add_child(child)`.
+
+### R-VER46-02: remove_actor() removed
+- **Severity**: blocking
+- **Checked by**: apply-patterns.py (version-gated, min-version: 46)
+- **Rule**: Extension code must not use `.remove_actor()` when targeting GNOME 46+.
+- **Rationale**: `Clutter.Container.remove_actor()` was removed in GNOME 46 alongside `add_actor()`. The replacement `remove_child()` has been available since GNOME 3.x.
+- **Fix**: Replace `.remove_actor(child)` with `.remove_child(child)`.
+
+### R-VER46-03: Clutter.cairo_set_source_color removed
+- **Severity**: blocking
+- **Checked by**: apply-patterns.py (version-gated, min-version: 46)
+- **Rule**: Extension code must not use `Clutter.cairo_set_source_color()` when targeting GNOME 46+.
+- **Rationale**: The `Clutter.cairo_set_source_color()` helper function was removed in GNOME 46. Cairo color operations should use the cairo context's own methods instead.
+- **Fix**: Replace `Clutter.cairo_set_source_color(cr, color)` with `cr.setSourceColor(color)`.
+
+### R-VER46-04: Gio.UnixInputStream moved
+- **Severity**: blocking
+- **Checked by**: apply-patterns.py (version-gated, min-version: 46)
+- **Rule**: Extension code must not use `Gio.UnixInputStream` when targeting GNOME 46+.
+- **Rationale**: In GNOME 46, Unix-specific I/O classes were moved from `Gio` to a separate `GioUnix` namespace. `Gio.UnixInputStream` no longer exists; it was relocated to `GioUnix.InputStream`.
+- **Fix**: Replace `import Gio from 'gi://Gio'` with `import GioUnix from 'gi://GioUnix'` and use `GioUnix.InputStream` instead of `Gio.UnixInputStream`.
+
+### R-VER46-05: ExtensionState enum renamed
+- **Severity**: blocking
+- **Checked by**: apply-patterns.py (version-gated, min-version: 46)
+- **Rule**: Extension code must not use the old `ExtensionState` enum values (`ENABLED`, `DISABLED`, `INITIALIZED`, `DEACTIVATING`, `ACTIVATING`) when targeting GNOME 46+.
+- **Rationale**: The `ExtensionState` enum values were renamed in GNOME 46 to better reflect their meaning: `ENABLED` became `ACTIVE`, `DISABLED` became `INACTIVE`, `ACTIVATING` became `ENABLING`, and `DEACTIVATING` became `DISABLING`.
+- **Fix**: Replace `ExtensionState.ENABLED` with `ExtensionState.ACTIVE`, `DISABLED` with `INACTIVE`, `ACTIVATING` with `ENABLING`, and `DEACTIVATING` with `DISABLING`.
+
+### GNOME 47 (R-VER47)
+
+### R-VER47-01: Clutter.Color removed
+- **Severity**: blocking
+- **Checked by**: apply-patterns.py (version-gated, min-version: 47)
+- **Rule**: Extension code must not use `Clutter.Color` when targeting GNOME 47+.
+- **Rationale**: `Clutter.Color` was removed in GNOME 47. Color handling was moved to the Cogl library, which is the underlying graphics layer.
+- **Fix**: Replace `Clutter.Color` with `Cogl.Color`. Import Cogl with `import Cogl from 'gi://Cogl'` and use `new Cogl.Color()`.
+
+### GNOME 48 (R-VER48)
+
+### R-VER48-01: Clutter.Image removed
+- **Severity**: blocking
+- **Checked by**: apply-patterns.py (version-gated, min-version: 48)
+- **Rule**: Extension code must not use `Clutter.Image` when targeting GNOME 48+.
+- **Rationale**: `Clutter.Image` was removed in GNOME 48. Image content handling was moved to St (Shell Toolkit), which provides `St.ImageContent` as the replacement.
+- **Fix**: Replace `Clutter.Image` with `St.ImageContent`. St is already available in extension runtime, so no additional imports are needed.
+
+### R-VER48-02: Meta display functions moved to Meta.Compositor
+- **Severity**: blocking
+- **Checked by**: apply-patterns.py (version-gated, min-version: 48)
+- **Rule**: Extension code must not call `Meta.disable_unredirect_for_display()`, `Meta.enable_unredirect_for_display()`, `Meta.get_window_actors()`, `Meta.get_window_group_for_display()`, or `Meta.get_top_window_group_for_display()` when targeting GNOME 48+.
+- **Rationale**: These display management functions were moved from the `Meta` namespace to `Meta.Compositor` in GNOME 48. They are now accessible via `global.compositor`.
+- **Fix**: Access these functions via `global.compositor` instead of `Meta` directly. For example, replace `Meta.get_window_actors()` with `global.compositor.get_window_actors()`.
+
+### R-VER48-03: CursorTracker.get_for_display changed
+- **Severity**: blocking
+- **Checked by**: apply-patterns.py (version-gated, min-version: 48)
+- **Rule**: Extension code must not use `CursorTracker.get_for_display()` when targeting GNOME 48+.
+- **Rationale**: `Meta.CursorTracker.get_for_display()` was changed in GNOME 48. The cursor tracker is now accessed through the backend object instead of the display.
+- **Fix**: Replace `Meta.CursorTracker.get_for_display(global.display)` with `global.backend.get_cursor_tracker()`.
