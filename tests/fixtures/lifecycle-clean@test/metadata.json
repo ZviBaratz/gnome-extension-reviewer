@@ -1,0 +1,6 @@
+{
+    "uuid": "lifecycle-clean@test",
+    "name": "Lifecycle Clean Test",
+    "description": "Tests clean lifecycle patterns",
+    "shell-version": ["48"]
+}

@@ -1,0 +1,6 @@
+{
+    "uuid": "missing-disable@test",
+    "name": "Missing Disable Test",
+    "description": "Tests missing disable method",
+    "shell-version": ["48"]
+}
