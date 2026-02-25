@@ -29,6 +29,15 @@ zip_name="$(basename "$zip_file")"
 
 echo "PASS|package/exists|Found package: $zip_name"
 
+# Check zip file size
+zip_size=$(stat -c%s "$zip_file" 2>/dev/null || stat -f%z "$zip_file" 2>/dev/null || echo 0)
+if [[ "$zip_size" -gt 5242880 ]]; then
+    size_mb=$(echo "scale=1; $zip_size / 1048576" | bc 2>/dev/null || echo "?")
+    echo "WARN|package/size|Package is ${size_mb}MB — consider reducing (recommended: under 5MB)"
+else
+    echo "PASS|package/size|Package size OK"
+fi
+
 # Get zip contents
 zip_contents=""
 if command -v zipinfo > /dev/null 2>&1; then

@@ -337,6 +337,69 @@ def check_constructor_resources(ext_dir, js_files):
                "No resource allocation in constructors")
 
 
+def check_code_volume(ext_dir, js_files):
+    """R-QUAL-10: Flag large codebases that are harder to review."""
+    total_lines = 0
+    for filepath in js_files:
+        with open(filepath, encoding='utf-8', errors='replace') as f:
+            for line in f:
+                if line.strip():
+                    total_lines += 1
+
+    if total_lines > 8000:
+        result("WARN", "quality/code-volume",
+               f"{total_lines} non-blank JS lines — large codebase; "
+               f"ensure all code is necessary and manually reviewed")
+    else:
+        result("PASS", "quality/code-volume",
+               f"Code volume OK ({total_lines} non-blank lines)")
+
+
+def check_comment_density(ext_dir, js_files):
+    """R-QUAL-11: Flag excessive comment-to-code ratio."""
+    for filepath in js_files:
+        rel = os.path.relpath(filepath, ext_dir)
+        with open(filepath, encoding='utf-8', errors='replace') as f:
+            lines = f.readlines()
+
+        if len(lines) < 50:
+            continue
+
+        # Skip license header (first 10 lines)
+        check_lines = lines[10:]
+        comment_lines = 0
+        code_lines = 0
+        in_block_comment = False
+
+        for line in check_lines:
+            stripped = line.strip()
+            if not stripped:
+                continue
+            if in_block_comment:
+                comment_lines += 1
+                if '*/' in stripped:
+                    in_block_comment = False
+                continue
+            if stripped.startswith('/*'):
+                comment_lines += 1
+                if '*/' not in stripped:
+                    in_block_comment = True
+                continue
+            if stripped.startswith('//') or stripped.startswith('*'):
+                comment_lines += 1
+            else:
+                code_lines += 1
+
+        total = comment_lines + code_lines
+        if total > 0 and comment_lines / total > 0.4:
+            result("WARN", "quality/comment-density",
+                   f"{rel}: {comment_lines}/{total} lines are comments "
+                   f"({comment_lines * 100 // total}%) — may indicate AI-generated verbose comments")
+            return  # one warning is enough
+
+    result("PASS", "quality/comment-density", "Comment density acceptable")
+
+
 def main():
     if len(sys.argv) < 2:
         result("FAIL", "quality/args", "No extension directory provided")
@@ -357,6 +420,8 @@ def main():
     check_destroyed_density(ext_dir, js_files)
     check_mock_in_production(ext_dir, js_files)
     check_constructor_resources(ext_dir, js_files)
+    check_code_volume(ext_dir, js_files)
+    check_comment_density(ext_dir, js_files)
 
 
 if __name__ == '__main__':
