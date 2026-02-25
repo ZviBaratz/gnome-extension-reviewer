@@ -122,6 +122,18 @@ def main():
         result("WARN", "metadata/deprecated-version",
                "version field is ignored by EGO for GNOME 45+; consider removing")
 
+    # --- url field ---
+    check_url_field(meta)
+
+
+def check_url_field(meta):
+    """WARN if url field is missing from metadata."""
+    if "url" not in meta:
+        result("WARN", "metadata/missing-url",
+               "metadata.json has no url field; consider adding a project homepage")
+    else:
+        result("PASS", "metadata/missing-url", "url field is present")
+
 
 if __name__ == "__main__":
     main()

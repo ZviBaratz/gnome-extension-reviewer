@@ -189,6 +189,13 @@ assert_exit_code "exits with 1 (has failures)" 1
 assert_output_contains "fails on minified JS" "\[FAIL\].*minified-js"
 echo ""
 
+# --- missing-url ---
+echo "=== missing-url ==="
+run_lint "missing-url@test"
+assert_exit_code "exits with 0 (warning only)" 0
+assert_output_contains "warns on missing url" "\[WARN\].*metadata/missing-url"
+echo ""
+
 # --- Summary ---
 echo "============================================"
 echo "  Results: $PASS_COUNT passed, $FAIL_COUNT failed"
