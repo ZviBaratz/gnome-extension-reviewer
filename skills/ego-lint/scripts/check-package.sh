@@ -85,6 +85,16 @@ forbidden_patterns=(
     # Documentation (not needed at runtime)
     "CONTRIBUTING.md"
     "README.md"
+    # Additional build/dev artifacts
+    "dist/"
+    "build/"
+    ".npmrc"
+    "yarn.lock"
+    "pnpm-lock.yaml"
+    "tsconfig.json"
+    ".babelrc"
+    # Source maps
+    ".map"
 )
 
 forbidden_found=0
@@ -157,4 +167,13 @@ if echo "$zip_contents" | grep -qE "\.gschema\.xml$"; then
     else
         echo "FAIL|package/compiled-schemas|Schema XML found but gschemas.compiled missing — run glib-compile-schemas"
     fi
+fi
+
+# ---------------------------------------------------------------------------
+# Check for nested zip files
+# ---------------------------------------------------------------------------
+
+nested_zips="$(echo "$zip_contents" | grep -E '\.zip$' || true)"
+if [[ -n "$nested_zips" ]]; then
+    echo "WARN|package/nested-zip|Found nested zip file(s) in package"
 fi

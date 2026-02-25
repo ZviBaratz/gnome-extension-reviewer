@@ -342,3 +342,67 @@
   message: "this instanceof check inside a class method is always true"
   category: ai-slop
   fix: "Remove the redundant instanceof check."
+
+# --- Security (continued) ---
+
+- id: R-SEC-07
+  pattern: "\\bSt\\.Clipboard\\b"
+  scope: ["*.js"]
+  severity: advisory
+  message: "Clipboard access must be disclosed in metadata.json description"
+  category: security
+  fix: "Add clipboard usage disclosure to your extension description on EGO."
+
+- id: R-SEC-08
+  pattern: "\\b(analytics|telemetry|trackEvent|trackPage|GA_TRACKING_ID|gtag)\\b"
+  scope: ["*.js"]
+  severity: advisory
+  message: "Telemetry/analytics is banned in GNOME extensions"
+  category: security
+  fix: "Remove all telemetry/analytics code. EGO explicitly bans user tracking."
+
+- id: R-SEC-09
+  pattern: "\\b(Main\\.extensionManager|ExtensionManager|lookupByUUID)\\b"
+  scope: ["*.js"]
+  severity: advisory
+  message: "Extension system interference is discouraged; modifying other extensions requires justification"
+  category: security
+  fix: "Avoid interacting with other extensions unless absolutely necessary. Document the justification."
+
+# --- Deprecated (continued) ---
+
+- id: R-DEPR-09
+  pattern: "^\\s*var\\s+\\w"
+  scope: ["*.js"]
+  severity: advisory
+  message: "Use const/let instead of var; var has function scope and causes bugs in closures"
+  category: deprecated
+  fix: "Replace var with const (preferred) or let (when reassignment needed)."
+
+- id: R-DEPR-10
+  pattern: "\\bimports\\.format\\b"
+  scope: ["*.js"]
+  severity: blocking
+  message: "imports.format is deprecated; use ES6 template literals"
+  category: deprecated
+  fix: "Replace format() calls with template literals: `my ${variable} string`."
+
+# --- Hallucinated APIs (continued) ---
+
+- id: R-SLOP-16
+  pattern: "\\bGLib\\.file_get_contents\\b"
+  scope: ["*.js"]
+  severity: blocking
+  message: "GLib.file_get_contents() does not exist in GJS; use Gio.File.load_contents()"
+  category: ai-slop
+  fix: "Use: const [ok, contents] = file.load_contents(null); then TextDecoder to decode."
+
+# --- Web APIs (continued) ---
+
+- id: R-WEB-12
+  pattern: "\\bPromise\\.race\\s*\\("
+  scope: ["*.js"]
+  severity: advisory
+  message: "Promise.race() is risky without _destroyed guards; verify async safety"
+  category: web-apis
+  fix: "Ensure _destroyed is checked after the race resolves. Consider simpler alternatives."

@@ -16,6 +16,97 @@ def result(status, check, detail):
     print(f"{status}|{check}|{detail}")
 
 
+def check_donations(meta):
+    """Validate donations field structure and values."""
+    if "donations" not in meta:
+        return
+    donations = meta["donations"]
+    if not isinstance(donations, dict):
+        result("FAIL", "metadata/donations-format", "donations must be an object")
+        return
+    if len(donations) == 0:
+        result("WARN", "metadata/donations-empty", "donations object is empty")
+        return
+    valid_keys = {
+        "buymeacoffee", "custom", "github", "kofi",
+        "liberapay", "opencollective", "patreon", "paypal",
+    }
+    for key in donations:
+        if key not in valid_keys:
+            result("FAIL", "metadata/donations-invalid-key",
+                   f"'{key}' is not a valid donations key; "
+                   f"valid keys: {', '.join(sorted(valid_keys))}")
+            return
+        val = donations[key]
+        if isinstance(val, list):
+            if len(val) > 3:
+                result("FAIL", "metadata/donations-array-length",
+                       f"donations.{key} array has {len(val)} items (max 3)")
+                return
+        elif not isinstance(val, str):
+            result("FAIL", "metadata/donations-value-type",
+                   f"donations.{key} must be a string or array, "
+                   f"got {type(val).__name__}")
+            return
+    result("PASS", "metadata/donations", "donations field is valid")
+
+
+def check_session_modes_values(meta):
+    """Validate that session-modes contains only allowed values."""
+    sm = meta.get("session-modes")
+    if sm is None or not isinstance(sm, list):
+        return
+    valid_values = {"user", "unlock-dialog"}
+    for v in sm:
+        if v not in valid_values:
+            result("FAIL", "metadata/session-modes-invalid",
+                   f"Invalid session-modes value '{v}'; "
+                   f"allowed: {', '.join(sorted(valid_values))}")
+            return
+    result("PASS", "metadata/session-modes-values", "session-modes values are valid")
+
+
+def check_version_name(meta):
+    """Validate version-name format if present."""
+    if "version-name" not in meta:
+        return
+    vn = meta["version-name"]
+    if not isinstance(vn, str):
+        result("FAIL", "metadata/version-name-format",
+               f"version-name must be a string, got {type(vn).__name__}")
+        return
+    if not re.fullmatch(r"(?!^[. ]+$)[a-zA-Z0-9 .]{1,16}", vn):
+        result("FAIL", "metadata/version-name-format",
+               f"version-name '{vn}' is invalid; must be 1-16 alphanumeric/space/dot "
+               "characters and not only dots/spaces")
+        return
+    result("PASS", "metadata/version-name-format", f"version-name '{vn}' is valid")
+
+
+def check_shell_version_entries(meta):
+    """Validate each shell-version entry format."""
+    sv = meta.get("shell-version")
+    if not isinstance(sv, list):
+        return
+    for entry in sv:
+        if not isinstance(entry, str) or not entry or \
+           not re.fullmatch(r"\d+(\.\d+)?", entry):
+            result("FAIL", "metadata/shell-version-entry",
+                   f"Invalid shell-version entry: {entry!r}; "
+                   "expected format like '45' or '3.38'")
+            return
+    result("PASS", "metadata/shell-version-entries",
+           "All shell-version entries are valid")
+
+
+def check_description_length(meta):
+    """Warn on very short descriptions."""
+    desc = meta.get("description")
+    if isinstance(desc, str) and 0 < len(desc) < 20:
+        result("WARN", "metadata/description-short",
+               f"Description is very short ({len(desc)} chars)")
+
+
 def main():
     if len(sys.argv) < 2:
         result("FAIL", "metadata/args", "No extension directory provided")
@@ -141,6 +232,13 @@ def main():
                            f"shell-version '{v}' is newer than current stable ({CURRENT_STABLE})")
             except ValueError:
                 pass
+
+    # --- Additional validations ---
+    check_donations(meta)
+    check_session_modes_values(meta)
+    check_version_name(meta)
+    check_shell_version_entries(meta)
+    check_description_length(meta)
 
 
 if __name__ == "__main__":

@@ -273,6 +273,20 @@ Rules for deprecated GJS/GNOME APIs that must not be used in modern extensions.
 - **Rationale**: `spawn_command_line_sync` is deprecated in favor of `Gio.Subprocess`, which provides better error handling, cancellation support, and does not block the main loop.
 - **Fix**: Use `new Gio.Subprocess({argv: [...], flags: ...})` instead.
 
+### R-DEPR-09: No var declarations
+- **Severity**: advisory
+- **Checked by**: apply-patterns.py
+- **Rule**: Extension code should use `const` or `let` instead of `var`.
+- **Rationale**: `var` has function scope rather than block scope, which causes subtle bugs in closures and loops. Modern JavaScript uses `const` (preferred) and `let` (when reassignment is needed). EGO reviewers view `var` usage as a sign of outdated or AI-generated code.
+- **Fix**: Replace `var` with `const` (preferred) or `let` (when reassignment is needed).
+
+### R-DEPR-10: No imports.format
+- **Severity**: blocking
+- **Checked by**: apply-patterns.py
+- **Rule**: Extension code must not use `imports.format`.
+- **Rationale**: The `imports.format` module is deprecated and was removed in modern GJS. It provided a `format()` string method that is superseded by ES6 template literals.
+- **Fix**: Replace `format()` calls with template literals: `` `my ${variable} string` ``.
+
 ---
 
 ## Web APIs (R-WEB)
@@ -493,6 +507,13 @@ Additional web/browser API rules detected by pattern matching.
 - **Rationale**: Same as R-WEB-10. `clearInterval` is a browser API. Use `GLib.Source.remove()`.
 - **Fix**: Store the return value of `GLib.timeout_add()` and pass it to `GLib.Source.remove(sourceId)`.
 - **Tested by**: `tests/fixtures/web-apis/`
+
+### R-WEB-12: Promise.race() without destroyed guards
+- **Severity**: advisory
+- **Checked by**: apply-patterns.py
+- **Rule**: Extension code should avoid `Promise.race()` without `_destroyed` guards.
+- **Rationale**: `Promise.race()` resolves when the first promise completes, but the losing promises continue executing. In GNOME extensions, this can cause callbacks to run after `disable()` has been called, leading to use-after-free errors or acting on stale state.
+- **Fix**: Ensure `_destroyed` is checked after the race resolves. Consider whether a simpler alternative (e.g., `Gio.Cancellable`) would be safer.
 
 ---
 
@@ -815,6 +836,41 @@ Rules for extension lifecycle management: enable/disable hooks, signal cleanup, 
 - **Fix**: Migrate manual connect/disconnect pairs to `connectObject()` with `this` as the last argument.
 - **Tested by**: `tests/fixtures/lifecycle-basic@test/`
 
+### R-LIFE-05: Async/await without _destroyed guard
+- **Severity**: advisory
+- **Checked by**: check-lifecycle.py
+- **Rule**: Extensions using `async`/`await` should have a `_destroyed` or `_isDestroyed` flag to guard against acting on stale state after `disable()`.
+- **Rationale**: When an async function suspends at `await`, the extension may be disabled before the promise resolves. Without a `_destroyed` guard, the resumed code will operate on a torn-down extension, causing errors or zombie behavior.
+- **Fix**: Add a `_destroyed = false` flag in `enable()`, set it to `true` in `disable()`, and check it after each `await`: `if (this._destroyed) return;`.
+
+### R-LIFE-06: Timeout callback missing SOURCE_REMOVE/SOURCE_CONTINUE
+- **Severity**: advisory
+- **Checked by**: check-lifecycle.py
+- **Rule**: Callbacks passed to `GLib.timeout_add()` or `GLib.idle_add()` should explicitly return `GLib.SOURCE_REMOVE` or `GLib.SOURCE_CONTINUE`.
+- **Rationale**: If a timeout callback does not return `GLib.SOURCE_REMOVE` (or `false`), the default return value of `undefined` is falsy and the timeout is removed — but this is implicit and confusing. If the intent is to repeat, forgetting `SOURCE_CONTINUE` silently breaks the timer. Explicit return values make the intent clear and are expected by EGO reviewers.
+- **Fix**: Add `return GLib.SOURCE_REMOVE;` for one-shot timeouts or `return GLib.SOURCE_CONTINUE;` for repeating timeouts at the end of the callback.
+
+### R-LIFE-07: D-Bus proxy without signal disconnect
+- **Severity**: advisory
+- **Checked by**: check-lifecycle.py
+- **Rule**: Extensions that create D-Bus proxies (`Gio.DBusProxy`, `makeProxyWrapper`) should disconnect their signal handlers in `disable()`.
+- **Rationale**: D-Bus proxy signals persist across enable/disable cycles if not explicitly disconnected. This causes leaked signal handlers that fire callbacks on a disabled extension, leading to errors and resource leaks.
+- **Fix**: Call `.disconnect()` or `.disconnectObject()` on the proxy in `disable()` to clean up signal handlers.
+
+### R-LIFE-08: File monitor without cancel
+- **Severity**: advisory
+- **Checked by**: check-lifecycle.py
+- **Rule**: Extensions that create file monitors (`monitor_file()`, `monitor_directory()`, `monitor_children()`) must call `.cancel()` in `disable()`.
+- **Rationale**: File monitors continue to fire `changed` signals after the extension is disabled if not cancelled. This causes callbacks to run on torn-down state, leading to errors.
+- **Fix**: Store the monitor reference and call `this._monitor.cancel()` in `disable()`.
+
+### R-LIFE-09: Keybinding add without remove
+- **Severity**: blocking
+- **Checked by**: check-lifecycle.py
+- **Rule**: Every `Main.wm.addKeybinding()` call must have a matching `Main.wm.removeKeybinding()` call.
+- **Rationale**: Keybindings that are not removed in `disable()` persist after the extension is disabled. They continue to intercept key events, potentially conflicting with other extensions or GNOME Shell itself. This is a common cause of EGO rejection.
+- **Fix**: Call `Main.wm.removeKeybinding('keybinding-name')` in `disable()` for each keybinding added in `enable()`.
+
 ---
 
 ## Files — Extended (R-FILE, continued)
@@ -879,6 +935,13 @@ Rules for extension lifecycle management: enable/disable hooks, signal cleanup, 
 - **Fix**: Remove the redundant instanceof check.
 - **Tested by**: `tests/fixtures/hallucinated-apis@test/`
 
+### R-SLOP-16: Hallucinated GLib.file_get_contents
+- **Severity**: blocking
+- **Checked by**: apply-patterns.py
+- **Rule**: Extension code must not use `GLib.file_get_contents()`.
+- **Rationale**: `GLib.file_get_contents()` does not exist in GJS. LLMs hallucinate this from the C API (`g_file_get_contents`), but GJS does not expose it. The correct approach is to use `Gio.File` methods.
+- **Fix**: Use `const file = Gio.File.new_for_path(path); const [ok, contents] = file.load_contents(null);` then `new TextDecoder().decode(contents)` to get a string.
+
 ---
 
 ## Security — Extended (R-SEC, continued)
@@ -890,6 +953,27 @@ Rules for extension lifecycle management: enable/disable hooks, signal cleanup, 
 - **Rationale**: `run_dispose()` forcefully disposes GObject resources and can cause issues if not used carefully.
 - **Fix**: Remove `run_dispose()` call. If genuinely needed, add a comment explaining why.
 - **Tested by**: `tests/fixtures/hallucinated-apis@test/`
+
+### R-SEC-07: Clipboard access disclosure
+- **Severity**: advisory
+- **Checked by**: apply-patterns.py
+- **Rule**: Extensions using `St.Clipboard` must disclose clipboard access in the `metadata.json` description.
+- **Rationale**: Clipboard access is a sensitive permission. EGO reviewers expect the extension description to mention it so users can make an informed decision before installing.
+- **Fix**: Add clipboard usage disclosure to your extension description on EGO (e.g., "This extension reads/writes the system clipboard").
+
+### R-SEC-08: No telemetry or analytics
+- **Severity**: advisory
+- **Checked by**: apply-patterns.py
+- **Rule**: Extension code must not contain telemetry, analytics, or user tracking code (`analytics`, `telemetry`, `trackEvent`, `trackPage`, `GA_TRACKING_ID`, `gtag`).
+- **Rationale**: Telemetry and analytics are explicitly banned in GNOME extensions. EGO reviewers will reject any extension that tracks user behavior.
+- **Fix**: Remove all telemetry/analytics code. EGO explicitly bans user tracking.
+
+### R-SEC-09: Extension system interference
+- **Severity**: advisory
+- **Checked by**: apply-patterns.py
+- **Rule**: Extension code should not use `Main.extensionManager`, `ExtensionManager`, or `lookupByUUID` to interact with or modify other extensions.
+- **Rationale**: Interfering with the extension system (enabling, disabling, or inspecting other extensions) is discouraged and requires explicit justification during EGO review.
+- **Fix**: Avoid interacting with other extensions unless absolutely necessary. If needed, document the justification clearly in the EGO submission.
 
 ---
 
@@ -931,6 +1015,34 @@ Rules for extension lifecycle management: enable/disable hooks, signal cleanup, 
 - **Fix**: Only list shell versions that have been tested.
 - **Tested by**: `tests/fixtures/metadata-polish@test/`
 
+### R-META-18: Invalid donations field keys
+- **Severity**: blocking
+- **Checked by**: check-metadata.py
+- **Rule**: The `donations` field in `metadata.json` must only contain keys from the allowlist: `buymeacoffee`, `custom`, `github`, `kofi`, `liberapay`, `opencollective`, `patreon`, `paypal`.
+- **Rationale**: EGO validates the `donations` field and rejects extensions with unrecognized donation platform keys. Using an invalid key will prevent submission.
+- **Fix**: Use only the allowed keys. Remove any keys not in the allowlist (e.g., remove `"stripe"` or `"venmo"`).
+
+### R-META-19: Invalid session-modes value
+- **Severity**: blocking
+- **Checked by**: check-metadata.py
+- **Rule**: Each entry in the `session-modes` array must be either `"user"` or `"unlock-dialog"`.
+- **Rationale**: GNOME Shell only recognizes these two session modes. Any other value will be silently ignored or cause validation failure on EGO.
+- **Fix**: Remove invalid session-modes entries. Use `"user"` for normal desktop mode and `"unlock-dialog"` for lock screen access.
+
+### R-META-20: version-name format
+- **Severity**: blocking
+- **Checked by**: check-metadata.py
+- **Rule**: If present, the `version-name` field must be 1-16 characters, containing only alphanumeric characters, spaces, and dots, and must not consist entirely of dots or spaces.
+- **Rationale**: EGO validates the `version-name` format on upload. Values that are too long, contain special characters, or are blank will cause submission failure.
+- **Fix**: Use a short version label like `"1.0"`, `"2.1 beta"`, or `"v3"`. Remove the field entirely if not needed.
+
+### R-META-21: Invalid shell-version entry
+- **Severity**: blocking
+- **Checked by**: check-metadata.py
+- **Rule**: Each entry in the `shell-version` array must be a valid version string matching the format `"NN"` (e.g., `"45"`) or `"NN.NN"` (e.g., `"3.38"`).
+- **Rationale**: GNOME Shell validates version strings at install time. Invalid entries (empty strings, non-numeric values, trailing dots) will prevent the extension from loading.
+- **Fix**: Use valid version strings like `"45"`, `"46"`, `"47"`, `"48"`, or `"3.38"` for legacy versions.
+
 ---
 
 ## Package — Extended (R-PKG, continued)
@@ -941,3 +1053,30 @@ Rules for extension lifecycle management: enable/disable hooks, signal cleanup, 
 - **Rule**: Zip file exceeds 5MB.
 - **Rationale**: Large packages slow down review and may contain unnecessary files.
 - **Fix**: Remove unnecessary files (build artifacts, documentation, test fixtures) from the package.
+
+---
+
+## Preferences (R-PREFS)
+
+Rules for `prefs.js` validation and EGO compliance.
+
+### R-PREFS-01: Dual prefs pattern
+- **Severity**: blocking
+- **Checked by**: check-prefs.py
+- **Rule**: `prefs.js` must not define both `getPreferencesWidget()` and `fillPreferencesWindow()`.
+- **Rationale**: These are mutually exclusive preference APIs. `getPreferencesWidget()` creates a standalone widget, while `fillPreferencesWindow()` populates an existing `Adw.PreferencesWindow`. Defining both indicates confusion about the prefs API and will cause unpredictable behavior. GNOME 45+ uses `fillPreferencesWindow()`.
+- **Fix**: Remove one of the two methods. For GNOME 45+, use `fillPreferencesWindow(window)` and add pages/groups to the provided window. For older versions, use `getPreferencesWidget()`.
+
+### R-PREFS-02: Missing default export
+- **Severity**: advisory
+- **Checked by**: check-prefs.py
+- **Rule**: `prefs.js` should use `export default class` extending `ExtensionPreferences`.
+- **Rationale**: GNOME 45 switched to ESM modules. The preferences entry point must use `export default class` extending `ExtensionPreferences` for the extension system to load it correctly.
+- **Fix**: Use `export default class MyPrefs extends ExtensionPreferences { ... }` pattern.
+
+### R-PREFS-03: Shell UI resource paths in prefs
+- **Severity**: blocking
+- **Checked by**: check-prefs.py
+- **Rule**: `prefs.js` must not import modules via `resource:///org/gnome/shell/ui/` paths.
+- **Rationale**: The preferences window runs in a separate GTK process that does not have access to GNOME Shell's UI modules. Importing Shell UI modules (e.g., `Main`, `PanelMenu`, `PopupMenu`) in `prefs.js` will cause an import error when the user opens preferences.
+- **Fix**: Use only GTK/Adw/Gio/GLib imports in `prefs.js`. Shell UI modules are only available in `extension.js` and its runtime imports.

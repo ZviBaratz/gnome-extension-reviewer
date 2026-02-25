@@ -304,6 +304,53 @@ export default class MyPrefs extends ExtensionPreferences {
 }
 ```
 
+### Prefs.js resource path difference
+
+The resource path for extension.js and prefs.js differ in capitalization:
+
+| Context | Resource Path |
+|---|---|
+| extension.js | `resource:///org/gnome/shell/extensions/extension.js` (lowercase) |
+| prefs.js | `resource:///org/gnome/Shell/Extensions/js/extensions/prefs.js` (capitalized) |
+
+AI-generated code frequently gets this wrong, using the lowercase extension.js
+path in prefs.js.
+
+## Variable Declarations
+
+Always use `const` (default) or `let` (when reassignment is needed). Never use
+`var` — it has function scope instead of block scope and causes subtle bugs in
+closures and loops.
+
+```javascript
+// WRONG
+var count = 0;
+for (var i = 0; i < 10; i++) { ... }
+
+// CORRECT
+let count = 0;
+for (let i = 0; i < 10; i++) { ... }
+const FIXED_VALUE = 42;
+```
+
+## Import Ordering Convention
+
+Follow the GJS style guide for import ordering:
+
+```javascript
+// 1. GI library imports
+import GLib from 'gi://GLib';
+import Gio from 'gi://Gio';
+import St from 'gi://St';
+
+// 2. GNOME Shell resource imports
+import * as Main from 'resource:///org/gnome/shell/ui/main.js';
+import * as PanelMenu from 'resource:///org/gnome/shell/ui/panelMenu.js';
+
+// 3. Extension imports
+import {Extension} from 'resource:///org/gnome/shell/extensions/extension.js';
+```
+
 ## Signal Connection Patterns
 
 ### connectObject (Preferred — Auto-Cleanup)
@@ -422,6 +469,8 @@ LLMs frequently call methods that don't exist. Common confusions:
 | `Clutter.Actor.set_position(x, y)` | `actor.set({x, y})` | GTK method |
 | `GLib.timeout_add_seconds_full(...)` | `GLib.timeout_add_seconds(...)` | Full variant not in GJS bindings |
 | `GLib.source_remove(id)` | `GLib.Source.remove(id)` | Wrong capitalization/namespace |
+| `GLib.file_get_contents()` | `Gio.File.new_for_path(p).load_contents(null)` | Doesn't exist in GJS bindings |
+| `Clutter.Actor.set_size(w, h)` | `actor.width = w; actor.height = h` | GTK-style setter |
 
 When reviewing, verify each imported API method actually exists by checking
 https://gjs-docs.gnome.org against the declared `shell-version`.

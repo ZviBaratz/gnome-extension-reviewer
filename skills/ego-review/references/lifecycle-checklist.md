@@ -177,6 +177,134 @@ disable() {
 - Destroy child widgets BEFORE destroying parent containers
 - Disconnect D-Bus proxy signals BEFORE nulling the proxy
 
+## D-Bus Proxy Cleanup Sequence
+
+D-Bus proxies manage signal connections to external services. Cleanup must
+follow a specific order:
+
+```javascript
+// In enable() or init
+this._proxy = new SomeDBusProxy(Gio.DBus.system, 'org.service.Name',
+    '/org/service/path');
+this._proxy.connectObject(
+    'g-properties-changed', () => this._onPropsChanged(),
+    this
+);
+
+// In disable()
+this._proxy.disconnectObject(this);  // 1. Disconnect signals first
+this._proxy = null;                   // 2. Then null the reference
+```
+
+> *EGO reviewer feedback: "Destroy and null out in disable: `this._label.destroy();
+> this._label = null; this._settings = null;`"*
+
+## File Monitor Cleanup Sequence
+
+File monitors must be cancelled before signal disconnection:
+
+```javascript
+// In enable()
+const file = Gio.File.new_for_path('/some/path');
+this._monitor = file.monitor_file(Gio.FileMonitorFlags.NONE, null);
+this._monitor.connectObject('changed', (m, f, o, type) => {
+    this._onFileChanged(f, type);
+}, this);
+
+// In disable()
+this._monitor.cancel();                 // 1. Cancel monitoring first
+this._monitor.disconnectObject(this);   // 2. Then disconnect signals
+this._monitor = null;                   // 3. Then null reference
+```
+
+## Keybinding Cleanup
+
+Every `addKeybinding` must have a matching `removeKeybinding` in disable():
+
+```javascript
+enable() {
+    Main.wm.addKeybinding('my-shortcut', this.getSettings(),
+        Meta.KeyBindingFlags.IGNORE_AUTOREPEAT,
+        Shell.ActionMode.NORMAL,
+        () => this._onShortcut());
+}
+
+disable() {
+    Main.wm.removeKeybinding('my-shortcut');
+}
+```
+
+## GSettings Change Handler Cleanup
+
+GSettings `changed::` handlers are the most commonly leaked signal:
+
+```javascript
+// PREFERRED: connectObject
+enable() {
+    this._settings = this.getSettings();
+    this._settings.connectObject(
+        'changed::my-key', () => this._onKeyChanged(),
+        this
+    );
+}
+disable() {
+    this._settings.disconnectObject(this);
+    this._settings = null;
+}
+
+// ACCEPTABLE: manual tracking
+enable() {
+    this._settings = this.getSettings();
+    this._settingsId = this._settings.connect('changed::my-key',
+        () => this._onKeyChanged());
+}
+disable() {
+    this._settings.disconnect(this._settingsId);
+    this._settingsId = null;
+    this._settings = null;
+}
+```
+
+## Cairo Context Disposal
+
+Drawing callbacks must dispose the Cairo context to prevent memory leaks:
+
+```javascript
+vfunc_repaint() {
+    const cr = this.get_context();
+    // ... draw operations ...
+    cr.$dispose();  // Required: prevents Cairo context leak
+}
+```
+
+## Gio.Cancellable for Async Operations
+
+Long-running async operations should accept a `Gio.Cancellable` and cancel it
+in disable():
+
+```javascript
+enable() {
+    this._cancellable = new Gio.Cancellable();
+    this._loadDataAsync();
+}
+
+async _loadDataAsync() {
+    try {
+        const [ok, contents] = await this._file.load_contents_async(
+            this._cancellable);
+        // process
+    } catch (e) {
+        if (!e.matches(Gio.IOErrorEnum, Gio.IOErrorEnum.CANCELLED))
+            console.error('Load failed:', e.message);
+    }
+}
+
+disable() {
+    this._cancellable.cancel();
+    this._cancellable = null;
+}
+```
+
 ## Common Lifecycle Mistakes
 
 ### Forgetting to null references

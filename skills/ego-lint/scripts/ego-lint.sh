@@ -368,6 +368,11 @@ if [[ -f "$SCRIPT_DIR/check-lifecycle.py" ]]; then
     run_subscript "$SCRIPT_DIR/check-lifecycle.py"
 fi
 
+# check-prefs.py (prefs.js validation)
+if [[ -f "$SCRIPT_DIR/check-prefs.py" ]]; then
+    run_subscript "$SCRIPT_DIR/check-prefs.py"
+fi
+
 # check-package.sh
 run_subscript "$SCRIPT_DIR/check-package.sh"
 

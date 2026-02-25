@@ -18,6 +18,15 @@ from real submissions.
 
 ## Review Phases
 
+### Phase 0: Automated Baseline
+
+1. Run ego-lint on the extension directory (invoke the ego-lint skill)
+2. Capture all FAIL/WARN/PASS results
+3. For each FAIL/WARN, note the check name — Phases 2-5 should NOT re-report
+   issues already caught by ego-lint (avoid duplication)
+4. Focus manual review on issues ego-lint CANNOT detect (semantic, cross-file,
+   design-level)
+
 ### Phase 1: Discovery
 
 1. Read `metadata.json` -- note UUID, shell-version, settings-schema, any session-modes
@@ -42,6 +51,12 @@ Using [lifecycle-checklist.md](references/lifecycle-checklist.md):
 7. Verify cleanup ordering (reverse order of creation)
 8. Check for _destroyed flag pattern in async operations
 9. Verify session mode handling if applicable
+10. **Cross-module resource tracing**: For each resource created in a lib/ module:
+    - Identify which parent owns the module instance
+    - Trace the ownership chain: extension.js → manager → controller
+    - Verify the destroy/cleanup propagates through the entire chain
+    - Flag any module that creates resources but has no destroy/cleanup method
+    - Flag any module whose destroy is never called from its parent
 
 ### Phase 3: Signal & Resource Audit
 
@@ -74,6 +89,14 @@ Using [security-checklist.md](references/security-checklist.md):
 3. Check clipboard operations and disclosure
 4. Check for network access
 5. Verify file path handling (no traversal)
+6. Check for telemetry/analytics patterns (banned by EGO)
+7. Check clipboard access and disclosure requirements
+8. Check for extension system interference (ExtensionManager usage)
+
+**Reviewer perspective notes:**
+- When a reviewer sees `pkexec`, they immediately check the helper script for input validation
+- When a reviewer sees network access, they check if it's disclosed in the description
+- When a reviewer sees clipboard access, they check if the user initiated it
 
 ### Phase 5: Code Quality
 
@@ -88,6 +111,14 @@ Using [code-quality-checklist.md](references/code-quality-checklist.md):
 7. **Hallucinated API cross-reference**: Verify that every API method called actually exists in the declared `shell-version` range. Common hallucinations: `Meta.Screen`, `St.Button.set_label()`, `GLib.source_remove()`, `Clutter.Actor.show_all()`
 8. **GObject pattern verification**: Check that `registerClass` calls have `GTypeName`, that `destroy()` chains to `super.destroy()`, that GObject properties emit `notify`
 9. **Prefs.js specific checks**: Verify `fillPreferencesWindow()` exists, GTK4/Adwaita patterns used correctly, no deprecated GTK3 patterns, no Shell imports
+10. Check for `var` declarations (should use const/let)
+11. Check import ordering (GI → resource → extension)
+12. Check for `console.log()` (banned — only debug/warn/error allowed)
+
+**Reviewer perspective notes:**
+- When a reviewer sees `console.log()`, they think "developer forgot to clean up debug logging"
+- When a reviewer sees module-level `let`, they think "will this persist across enable/disable cycles?"
+- When a reviewer sees `try { super.destroy() } catch`, they think "AI-generated code"
 
 ### Phase 5a: AI Pattern Analysis
 
@@ -106,22 +137,99 @@ Using [ai-slop-checklist.md](references/ai-slop-checklist.md) (21-item checklist
 ## Output Format
 
 ```
-## EGO Review Report
+## EGO Review Report — [Extension Name] v[version]
 
-### BLOCKING Issues
-- [B1] description (file:line)
+### Verdict: [LIKELY APPROVED | NEEDS REVISION | LIKELY REJECTED]
 
-### ADVISORY Issues
-- [A1] description (file:line)
+**Rejection Risk**: [LOW | MEDIUM | HIGH | VERY HIGH]
 
-### INFO
-- [I1] observation (file:line)
+---
 
-### Summary
-- X blocking issues (must fix before submission)
-- Y advisory issues (may cause reviewer questions)
-- Z informational observations
+### Section 1: Blocking Issues (Must Fix)
+
+#### [B1] Issue title (category)
+**File**: path/to/file.js:line
+**What**: Description of the issue
+**Why reviewers reject this**: Explanation with reviewer perspective
+**Fix**:
+```js
+// BEFORE
+old code
+
+// AFTER
+fixed code
 ```
+
+---
+
+### Section 2: Justification Required
+
+Items that are acceptable IF properly documented:
+
+#### [J1] pkexec usage
+**File**: path/to/file.js:line
+**Status**: Requires reviewer justification
+**Template**: [Include pkexec justification template from security checklist]
+
+---
+
+### Section 3: Advisory Issues (May Cause Questions)
+
+#### [A1] Issue title
+**File**: path/to/file.js:line
+**What**: Description
+**Reviewer perspective**: What the reviewer thinks when they see this
+**Suggestion**: How to fix
+
+---
+
+### Section 4: Automated Check Summary (from ego-lint)
+
+| Category | Pass | Fail | Warn |
+|----------|------|------|------|
+| Metadata | N | N | N |
+| Security | N | N | N |
+| Lifecycle | N | N | N |
+| Quality | N | N | N |
+
+---
+
+### Section 5: AI Pattern Analysis
+
+**Score**: N/27 triggered — [ADVISORY | BLOCKING]
+**Triggered items**: list with file:line
+**Assessment**: interpretation
+
+---
+
+### Section 6: Submission Readiness
+
+**Ready to submit?** [YES | NO] — N blocking issues remain
+
+**Action items (priority order)**:
+1. [ ] First thing to fix
+2. [ ] Second thing to fix
+```
+
+## Rejection-Risk Scoring Model
+
+Calculate based on findings:
+
+| Finding | Risk Points |
+|---------|-------------|
+| Each BLOCKING lifecycle issue | +3 |
+| Each BLOCKING security issue | +4 |
+| Each BLOCKING API hallucination | +5 (indicates AI) |
+| AI slop score >= 3 | +5 |
+| AI slop score >= 6 | +10 |
+| Each ADVISORY issue | +1 |
+| Justified advisory (with docs) | +0 |
+
+**Verdict thresholds:**
+- 0-2 points: **LIKELY APPROVED** — minor or no issues
+- 3-6 points: **NEEDS REVISION** — fixable, resubmit after changes
+- 7-12 points: **LIKELY REJECTED** — significant issues
+- 13+ points: **LIKELY REJECTED** — fundamental problems or AI-generated
 
 ## When to Use
 

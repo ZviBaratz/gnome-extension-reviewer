@@ -1,0 +1,1 @@
+{"uuid": "shell-version-garbage@test", "name": "Test", "description": "Test shell-version entry validation", "shell-version": ["abc", "", "48"]}

@@ -1,0 +1,1 @@
+{"uuid": "donations-invalid@test", "name": "Test", "description": "Test donations validation", "shell-version": ["48"], "donations": {"venmo": "user123", "paypal": "valid@email.com"}}

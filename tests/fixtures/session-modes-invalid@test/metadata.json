@@ -1,0 +1,1 @@
+{"uuid": "session-modes-invalid@test", "name": "Test", "description": "Test session-modes validation", "shell-version": ["48"], "session-modes": ["user", "lock-screen"]}

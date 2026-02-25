@@ -189,3 +189,69 @@ or EGO submission notes:
 | Network access | Yes | Description |
 | File system writes (outside GSettings) | Yes | Submission notes |
 | Session mode usage | Yes | Submission notes |
+
+## Telemetry Ban
+
+Extensions MUST NOT use any telemetry or analytics tools. This is an explicit
+EGO requirement — any form of user tracking will be rejected.
+
+Search for: `analytics`, `telemetry`, `tracking`, `trackEvent`, `trackPage`,
+`GA_TRACKING_ID`, `gtag`, `Matomo`, `Plausible`, `amplitude`.
+
+## Extension System Interference
+
+Extensions that modify, reload, or interact with other extensions or the
+extension system are generally discouraged. Using `Main.extensionManager`,
+`Extension.lookupByUUID`, or programmatically enabling/disabling other
+extensions will receive extra scrutiny.
+
+If interference is necessary, document the justification in EGO submission notes.
+
+## Lock Screen Security Model
+
+Objects remaining in global scope after `disable()` are a security risk because
+signal callbacks can be triggered while the extension is disabled on the lock
+screen. This is WHY complete cleanup in `disable()` is mandatory.
+
+> *EGO reviewer: "When settings are filled in global scope, they won't be null
+> after disabling the extension, objects remain unnecessarily, callbacks for
+> signals can be triggered while the extension is disabled, and this creates a
+> security risk since extensions are disabled on the lock screen."*
+
+## Binary Executable Ban
+
+Extensions MUST NOT include binary executables or libraries (`.so`, `.dll`, ELF
+binaries). Scripts MUST be written in GJS unless absolutely necessary. Any
+non-GJS scripts must carry an OSI-approved license.
+
+## Module Installation Ban
+
+Extensions MUST NOT automatically install packages. Commands like `pip install`,
+`npm install`, or `apt install` must NOT run without explicit user action and
+consent.
+
+## Network Request Disclosure
+
+If the extension makes network requests (using `Soup.Session` or any other
+mechanism), this MUST be disclosed in the extension description on EGO. All
+connections must use HTTPS. No user-identifying data may be sent without
+explicit consent.
+
+## pkexec Justification Template
+
+When `R-SEC-04` triggers (pkexec/sudo usage), include this in your EGO
+submission notes:
+
+````
+### pkexec Justification
+
+1. **Why elevated privileges are needed**: [e.g., "Writing to sysfs battery
+   threshold requires root"]
+2. **What the helper script does**: [e.g., "Validates input is integer 1-100,
+   writes to /sys/class/power_supply/BAT0/charge_control_end_threshold"]
+3. **Input validation**: [e.g., "Whitelist validation: only accepts integers,
+   rejects all other input"]
+4. **Script location**: [must NOT be user-writable, e.g., /usr/local/bin/]
+5. **Polkit policy scope**: [e.g., "Only allows org.freedesktop.policykit.exec
+   for the specific helper path"]
+````

@@ -255,6 +255,91 @@ assert_output_contains "warns on missing gettext-domain" "\[WARN\].*metadata/mis
 assert_output_contains "warns on future shell-version" "\[WARN\].*metadata/future-shell-version"
 echo ""
 
+# --- clipboard-access ---
+echo "=== clipboard-access ==="
+run_lint "clipboard-access@test"
+assert_exit_code "exits with 0 (advisory only)" 0
+assert_output_contains "warns on St.Clipboard" "\[WARN\].*R-SEC-07"
+echo ""
+
+# --- telemetry-patterns ---
+echo "=== telemetry-patterns ==="
+run_lint "telemetry-patterns@test"
+assert_exit_code "exits with 0 (advisory only)" 0
+assert_output_contains "warns on telemetry" "\[WARN\].*R-SEC-08"
+echo ""
+
+# --- extension-interference ---
+echo "=== extension-interference ==="
+run_lint "extension-interference@test"
+assert_exit_code "exits with 0 (advisory only)" 0
+assert_output_contains "warns on extensionManager" "\[WARN\].*R-SEC-09"
+echo ""
+
+# --- var-declarations ---
+echo "=== var-declarations ==="
+run_lint "var-declarations@test"
+assert_exit_code "exits with 0 (advisory only)" 0
+assert_output_contains "warns on var" "\[WARN\].*R-DEPR-09"
+echo ""
+
+# --- donations-invalid ---
+echo "=== donations-invalid ==="
+run_lint "donations-invalid@test"
+assert_exit_code "exits with 1 (has failures)" 1
+assert_output_contains "fails on invalid donations key" "\[FAIL\].*metadata/donations-invalid-key"
+echo ""
+
+# --- session-modes-invalid ---
+echo "=== session-modes-invalid ==="
+run_lint "session-modes-invalid@test"
+assert_exit_code "exits with 1 (has failures)" 1
+assert_output_contains "fails on invalid session-modes" "\[FAIL\].*metadata/session-modes-invalid"
+echo ""
+
+# --- version-name-invalid ---
+echo "=== version-name-invalid ==="
+run_lint "version-name-invalid@test"
+assert_exit_code "exits with 1 (has failures)" 1
+assert_output_contains "fails on version-name format" "\[FAIL\].*metadata/version-name-format"
+echo ""
+
+# --- shell-version-garbage ---
+echo "=== shell-version-garbage ==="
+run_lint "shell-version-garbage@test"
+assert_exit_code "exits with 1 (has failures)" 1
+assert_output_contains "fails on invalid shell-version entry" "\[FAIL\].*metadata/shell-version-entry"
+echo ""
+
+# --- prefs-issues ---
+echo "=== prefs-issues ==="
+run_lint "prefs-issues@test"
+assert_exit_code "exits with 1 (has failures)" 1
+assert_output_contains "fails on dual prefs pattern" "\[FAIL\].*prefs/dual-prefs-pattern"
+assert_output_contains "warns on missing prefs default export" "\[WARN\].*prefs/default-export"
+echo ""
+
+# --- async-no-destroyed ---
+echo "=== async-no-destroyed ==="
+run_lint "async-no-destroyed@test"
+assert_exit_code "exits with 0 (warnings only)" 0
+assert_output_contains "warns on missing destroyed guard" "\[WARN\].*lifecycle/async-destroyed-guard"
+echo ""
+
+# --- timeout-no-return ---
+echo "=== timeout-no-return ==="
+run_lint "timeout-no-return@test"
+assert_exit_code "exits with 0 (warnings only)" 0
+assert_output_contains "warns on missing timeout return" "\[WARN\].*lifecycle/timeout-return-value"
+echo ""
+
+# --- keybinding-leak ---
+echo "=== keybinding-leak ==="
+run_lint "keybinding-leak@test"
+assert_exit_code "exits with 1 (has failures)" 1
+assert_output_contains "fails on missing removeKeybinding" "\[FAIL\].*lifecycle/keybinding-cleanup"
+echo ""
+
 # --- Summary ---
 echo "============================================"
 echo "  Results: $PASS_COUNT passed, $FAIL_COUNT failed"

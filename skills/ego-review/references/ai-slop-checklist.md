@@ -456,15 +456,73 @@ Comments explaining obvious code on nearly every line.
 - **Acceptable:** Comments explaining non-obvious logic, API quirks, or
   workarounds for known bugs
 
+### 22. console.log instead of console.debug
+
+Using `console.log()` in production code.
+
+- **Red flag:** `console.log()` anywhere in extension code
+- **Acceptable:** `console.debug()`, `console.warn()`, `console.error()`
+- **Note:** `console.log()` is explicitly banned by EGO reviewers. AI defaults
+  to it from browser JavaScript habits.
+
+### 23. var declarations
+
+Using `var` instead of `const`/`let`.
+
+- **Red flag:** `var` declarations in GNOME 45+ extension code
+- **Acceptable:** `const` for immutable bindings, `let` for mutable ones
+- **Note:** AI-generated code frequently uses `var` because training data
+  includes older JavaScript.
+
+### 24. Wrong resource path in prefs.js
+
+Using the extension.js resource path in prefs.js.
+
+- **Red flag:** `resource:///org/gnome/shell/` (lowercase) in prefs.js
+- **Acceptable:** `resource:///org/gnome/Shell/Extensions/js/` (capitalized)
+- **Note:** AI models don't know about the capitalization difference between
+  extension.js and prefs.js resource paths.
+
+### 25. Missing SOURCE_REMOVE return in timeout
+
+Timeout callbacks without explicit return value.
+
+- **Red flag:** `GLib.timeout_add(..., () => { doStuff(); })` with no return
+- **Acceptable:** `GLib.timeout_add(..., () => { doStuff(); return GLib.SOURCE_REMOVE; })`
+- **Note:** AI models browser `setTimeout` patterns where no return is needed.
+  In GLib, missing return causes infinite repetition.
+
+### 26. Both getPreferencesWidget and fillPreferencesWindow
+
+Defining both prefs methods in prefs.js.
+
+- **Red flag:** Both methods defined in the same prefs.js file
+- **Acceptable:** Only `fillPreferencesWindow()` for GNOME 45+
+- **Note:** AI hedges by implementing both methods, not understanding they're
+  mutually exclusive.
+
+### 27. Generic extension name in UUID
+
+Using template-like names in the UUID.
+
+- **Red flag:** UUID like `my-extension@user`, `gnome-tool@dev`, `extension@test`
+- **Acceptable:** Descriptive, unique UUID like `hara-hachi-bu@ZviBaratz`
+- **Note:** AI-generated scaffolds often use generic placeholder UUIDs.
+
 ## Scoring Model
 
-Count the number of triggered items out of the 21 above.
+Count the number of triggered items out of the 27 above.
 
 ```
 1-2 triggered:  ADVISORY  -- note them, extension may still pass
 3-5 triggered:  BLOCKING  -- suggests insufficient code review
 6+  triggered:  BLOCKING  -- likely unreviewed AI output
 ```
+
+**Independently blocking items:** Regardless of total count, any hallucinated
+API (items 11, 17) or impossible state check (item 5) is independently blocking
+because it demonstrates the code was not tested against a real GNOME Shell
+instance.
 
 ## Verdict Guide
 
