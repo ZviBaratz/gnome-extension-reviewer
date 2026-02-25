@@ -384,6 +384,37 @@ assert_exit_code "exits with 0 (warnings only)" 0
 assert_output_contains "warns on schema filename" "\[WARN\].*schema/filename-convention"
 echo ""
 
+# --- gnome46-compat ---
+echo "=== gnome46-compat ==="
+run_lint "gnome46-compat@test"
+assert_exit_code "exits with 1 (has failures)" 1
+assert_output_contains "fails on add_actor" "\[FAIL\].*R-VER46-01"
+assert_output_contains "fails on remove_actor" "\[FAIL\].*R-VER46-02"
+echo ""
+
+# --- gnome47-compat ---
+echo "=== gnome47-compat ==="
+run_lint "gnome47-compat@test"
+assert_exit_code "exits with 1 (has failures)" 1
+assert_output_contains "fails on Clutter.Color" "\[FAIL\].*R-VER47-01"
+echo ""
+
+# --- gnome48-compat ---
+echo "=== gnome48-compat ==="
+run_lint "gnome48-compat@test"
+assert_exit_code "exits with 1 (has failures)" 1
+assert_output_contains "fails on Clutter.Image" "\[FAIL\].*R-VER48-01"
+assert_output_contains "fails on Meta.disable_unredirect" "\[FAIL\].*R-VER48-02"
+echo ""
+
+# --- gnome45-only ---
+echo "=== gnome45-only ==="
+run_lint "gnome45-only@test"
+assert_output_not_contains "no GNOME 46 rule failures" "\[FAIL\].*R-VER46"
+assert_output_not_contains "no GNOME 47 rule failures" "\[FAIL\].*R-VER47"
+assert_output_not_contains "no GNOME 48 rule failures" "\[FAIL\].*R-VER48"
+echo ""
+
 # --- Summary ---
 echo "============================================"
 echo "  Results: $PASS_COUNT passed, $FAIL_COUNT failed"

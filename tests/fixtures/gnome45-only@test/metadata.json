@@ -1,0 +1,7 @@
+{
+    "uuid": "gnome45-only@test",
+    "name": "GNOME 45 Only Test",
+    "description": "Tests that version-gated rules are skipped for GNOME 45-only extensions",
+    "shell-version": ["45"],
+    "url": "https://github.com/test/gnome45-only"
+}
