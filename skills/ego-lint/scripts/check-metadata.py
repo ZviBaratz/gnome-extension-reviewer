@@ -122,6 +122,26 @@ def main():
         result("WARN", "metadata/deprecated-version",
                "version field is ignored by EGO for GNOME 45+; consider removing")
 
+    # --- Missing gettext-domain with locale/ ---
+    locale_dir = os.path.join(ext_dir, 'locale')
+    if os.path.isdir(locale_dir) and 'gettext-domain' not in meta:
+        result("WARN", "metadata/missing-gettext-domain",
+               "locale/ directory exists but gettext-domain not set in metadata.json")
+    elif os.path.isdir(locale_dir):
+        result("PASS", "metadata/gettext-domain", "gettext-domain set with locale/ directory")
+
+    # --- Future shell-version ---
+    CURRENT_STABLE = 48
+    sv = meta.get('shell-version', [])
+    if isinstance(sv, list):
+        for v in sv:
+            try:
+                if int(v) > CURRENT_STABLE:
+                    result("WARN", "metadata/future-shell-version",
+                           f"shell-version '{v}' is newer than current stable ({CURRENT_STABLE})")
+            except ValueError:
+                pass
+
 
 if __name__ == "__main__":
     main()
