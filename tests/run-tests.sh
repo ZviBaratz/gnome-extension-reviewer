@@ -482,6 +482,13 @@ assert_exit_code "exits with 1 (has failures)" 1
 assert_output_contains "fails on binary files" "\[FAIL\].*no-binary-files"
 echo ""
 
+# --- non-gjs-scripts ---
+echo "=== non-gjs-scripts ==="
+run_lint "non-gjs-scripts@test"
+assert_exit_code "exits with 0 (warnings only)" 0
+assert_output_contains "warns on non-GJS scripts" "\[WARN\].*non-gjs-scripts"
+echo ""
+
 # --- Summary ---
 echo "============================================"
 echo "  Results: $PASS_COUNT passed, $FAIL_COUNT failed"

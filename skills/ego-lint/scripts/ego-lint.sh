@@ -255,6 +255,24 @@ else
 fi
 
 # ---------------------------------------------------------------------------
+# Non-GJS script detection
+# ---------------------------------------------------------------------------
+
+non_gjs_scripts=""
+while IFS= read -r -d '' f; do
+    rel_path="${f#"$EXT_DIR/"}"
+    non_gjs_scripts+="  $rel_path"$'\n'
+done < <(find "$EXT_DIR" -type f \( -name '*.py' -o -name '*.sh' -o -name '*.rb' -o -name '*.pl' \) \
+    -not -path '*/node_modules/*' -not -path '*/.git/*' -print0 2>/dev/null)
+
+if [[ -n "$non_gjs_scripts" ]]; then
+    hit_count=$(echo -n "$non_gjs_scripts" | grep -c '.' || true)
+    print_result "WARN" "non-gjs-scripts" "Found $hit_count non-GJS script(s) — scripts MUST be written in GJS unless absolutely necessary"
+else
+    print_result "PASS" "non-gjs-scripts" "No non-GJS scripts found"
+fi
+
+# ---------------------------------------------------------------------------
 # Polkit policy file check
 # ---------------------------------------------------------------------------
 
