@@ -1,0 +1,6 @@
+{
+    "uuid": "quality-signals@test",
+    "name": "Quality Signals Test",
+    "description": "Tests AI quality signal detection",
+    "shell-version": ["48"]
+}

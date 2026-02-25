@@ -239,6 +239,14 @@ assert_output_contains "warns on missing default export" "\[WARN\].*lifecycle/de
 assert_output_contains "fails on console.log in prefs.js" "\[FAIL\].*no-console-log"
 echo ""
 
+# --- quality-signals ---
+echo "=== quality-signals ==="
+run_lint "quality-signals@test"
+assert_exit_code "exits with 0 (advisories only)" 0
+assert_output_contains "warns on typeof super.destroy" "\[WARN\].*R-SLOP-12"
+assert_output_contains "warns on this instanceof" "\[WARN\].*R-SLOP-13"
+echo ""
+
 # --- Summary ---
 echo "============================================"
 echo "  Results: $PASS_COUNT passed, $FAIL_COUNT failed"
