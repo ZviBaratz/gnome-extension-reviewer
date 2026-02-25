@@ -9,6 +9,8 @@ and the correct replacements.
 These legacy modules are banned in GNOME 45+ extensions. Any use will be
 rejected.
 
+> **Reviewer says:** "Your extension uses `Mainloop`/`Lang`/`ByteArray` which are deprecated and removed in modern GJS. Please migrate to the current APIs — this is a rejection reason."
+
 | Deprecated | Replacement | Removed In |
 |---|---|---|
 | `Mainloop` | `GLib.timeout_add()` / `GLib.Source.remove()` | GNOME 45 |
@@ -36,6 +38,8 @@ import { Extension } from 'resource:///org/gnome/shell/extensions/extension.js';
 ```
 
 ## Web API Ban List
+
+> **Reviewer says:** "Your extension uses `setTimeout`/`fetch`/`XMLHttpRequest` which are browser APIs and don't exist in GJS. Please use the GLib/Soup equivalents."
 
 GJS is not a browser. These web APIs do not exist or behave incorrectly:
 
@@ -91,6 +95,8 @@ Common hallucination patterns:
 
 ### AI code telltale signs
 
+> **Reviewer says:** "This pattern is commonly seen in AI-generated code — excessive JSDoc type annotations, try-catch around every line, and methods that don't exist in GJS. Please review the code carefully and ensure all APIs actually exist."
+
 - Overly verbose comments explaining obvious code (`// Loop through the array`)
 - TypeScript-style JSDoc type annotations (`@param {string} name`)
 - Methods that don't exist on GJS objects but exist in web APIs
@@ -126,6 +132,8 @@ const indicators = Main.panel.statusArea.quickSettings._indicators;
 | `_menus` | PopupMenu submenu access | `menu.box.get_children()` (partial) |
 
 ## Excessive Logging
+
+> **Reviewer says:** "Extension MUST NOT print excessively to the log. Please remove `console.log()` calls and reduce logging to essential error messages only. Use `console.debug()` for operational messages if needed."
 
 EGO reviewers reject extensions with noisy logging. GNOME Shell's journal is
 shared by all extensions and the shell itself.
@@ -200,6 +208,8 @@ _getProfile() {
 ```
 
 ### Never swallow errors silently
+
+> **Reviewer says:** "Empty catch blocks hide bugs. At minimum, log the error with `console.error()`. If the error is expected and safe to ignore, add a comment explaining why."
 
 ```javascript
 // WRONG: silent catch
@@ -280,6 +290,8 @@ someObject.disconnectObject(this);
 
 ## Preferences (prefs.js) Constraints
 
+> **Reviewer says:** "Your prefs.js imports Shell/Meta/St/Clutter which are not available in the preferences process. The prefs window runs in a separate GTK process — only GTK4 and Adwaita imports are allowed."
+
 The preferences window runs in a separate process with a GTK4 context, not
 the GNOME Shell process. This means:
 
@@ -317,6 +329,8 @@ AI-generated code frequently gets this wrong, using the lowercase extension.js
 path in prefs.js.
 
 ## Variable Declarations
+
+> **Reviewer says:** "Please replace `var` with `const` or `let`. Using `var` is a sign of outdated code style and causes scoping issues."
 
 Always use `const` (default) or `let` (when reassignment is needed). Never use
 `var` — it has function scope instead of block scope and causes subtle bugs in
@@ -394,6 +408,8 @@ disable() {
 
 ### Untracked connect (Red Flag)
 
+> **Reviewer says:** "I see `.connect()` calls without storing the signal ID. Without the ID, you cannot disconnect the signal in disable(). This is a rejection reason — all signals must be tracked and disconnected."
+
 ```js
 enable() {
     // BUG: Signal ID is not stored — cannot disconnect in disable()
@@ -426,6 +442,8 @@ this._intervalId = GLib.timeout_add_seconds(GLib.PRIORITY_DEFAULT, 10, () => {
 ```
 
 ### Missing return value (Bug)
+
+> **Reviewer says:** "Your timeout callback doesn't return `GLib.SOURCE_REMOVE` or `GLib.SOURCE_CONTINUE`. Please add an explicit return value — without it the behavior is undefined and confusing."
 
 ```js
 // BUG: No return value — GLib defaults to SOURCE_CONTINUE, creating an infinite timer

@@ -9,6 +9,8 @@ resource created during `enable()` must be destroyed during `disable()`.
 |---|---|---|---|
 | Widgets / UI elements | `new St.Widget()`, `new PopupMenu.PopupMenuItem()` | `widget.destroy()` then `= null` | Destroy removes from parent and frees |
 | GObject signal connections | `obj.connect('signal', handler)` | `obj.disconnect(id)` then `id = null` | Store returned ID for later disconnect |
+
+> **Reviewer says:** "Destroy and null out in disable: `this._label.destroy(); this._label = null; this._settings = null;`"
 | GObject signal connections (auto) | `obj.connectObject('signal', handler, this)` | `obj.disconnectObject(this)` | Preferred pattern; auto-cleanup by owner |
 | GLib timeouts | `GLib.timeout_add(prio, ms, cb)` | `GLib.Source.remove(id)` then `id = null` | Always remove before nulling |
 | GLib timeout (seconds) | `GLib.timeout_add_seconds(prio, s, cb)` | `GLib.Source.remove(id)` then `id = null` | Same cleanup as timeout_add |
@@ -37,6 +39,8 @@ resources that need cleanup.
 - D-Bus proxy initialization
 - UI element creation
 - Any operation that would need cleanup in destroy/disable
+
+> **Reviewer says:** "Resources should be created in enable() and cleaned up in disable(), not in the constructor. The constructor runs once but enable/disable can be called multiple times."
 
 **Why:** The constructor runs once, but `enable()`/`disable()` can be called
 multiple times during the extension's lifetime (lock screen, suspend, extension
@@ -117,6 +121,8 @@ class MyController {
 - Check `_destroyed` in every `.then()` and `.catch()` callback
 - Check `_destroyed` in timeout callbacks that might fire during cleanup
 
+> **Reviewer says:** "Your extension has async operations but I don't see a `_destroyed` flag check after the await points. If the extension is disabled during the async call, the callback will act on torn-down state."
+
 ## Session Mode Handling
 
 If `metadata.json` declares `session-modes` (e.g., `["user", "unlock-dialog"]`),
@@ -142,6 +148,8 @@ at any time.
 **Caution:** If `session-modes` is `["user"]` or omitted entirely, EGO
 reviewers expect that the extension does NOT set this field. Setting
 `session-modes: ["user"]` explicitly is flagged as unnecessary.
+
+> **Reviewer says:** "You don't need `session-modes: ['user']` in your metadata — that's the default. Only set session-modes if you need `unlock-dialog` support."
 
 ## Cleanup Ordering
 
@@ -176,6 +184,8 @@ disable() {
 - Remove timeouts BEFORE nulling the objects they reference
 - Destroy child widgets BEFORE destroying parent containers
 - Disconnect D-Bus proxy signals BEFORE nulling the proxy
+
+> **Reviewer says:** "Your disable() destroys objects in the wrong order. Resources must be destroyed in reverse order of creation — disconnect signals first, then destroy widgets, then null references."
 
 ## D-Bus Proxy Cleanup Sequence
 
@@ -308,6 +318,9 @@ disable() {
 ## Common Lifecycle Mistakes
 
 ### Forgetting to null references
+
+> **Reviewer says:** "After destroying an object, set the reference to null. Otherwise the variable still points to a destroyed object, which is a common source of use-after-free bugs."
+
 ```javascript
 // WRONG: object destroyed but reference kept
 disable() {
@@ -323,6 +336,9 @@ disable() {
 ```
 
 ### Missing timeout cleanup
+
+> **Reviewer says:** "I see a `timeout_add` in enable() but no matching `GLib.Source.remove()` in disable(). All timeouts must be removed when the extension is disabled, otherwise the callback fires on a destroyed extension."
+
 ```javascript
 // WRONG: timeout fires after disable
 enable() {
@@ -372,6 +388,9 @@ disable() {
 ```
 
 ### connectObject vs manual connect
+
+> **Reviewer says:** "Please use `connectObject()` instead of manual signal tracking. It's less error-prone and `disconnectObject(this)` cleans up everything at once."
+
 ```javascript
 // ACCEPTABLE but error-prone: manual connect with stored ID
 enable() {
@@ -535,6 +554,8 @@ disable() {
 needed.
 
 ## Signal Balance Verification
+
+> **Reviewer says:** "Your extension creates signals in enable() but I don't see matching disconnects in disable(). All signals must be cleaned up when the extension is disabled."
 
 When reviewing, build an explicit inventory:
 

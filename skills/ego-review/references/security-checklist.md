@@ -18,12 +18,16 @@ there is no D-Bus or GLib/Gio API alternative:
 
 ### Subprocess execution rules
 
+> **Reviewer says:** "I see you're using subprocess execution. Is there a D-Bus API or Gio method that can do this instead? Subprocess calls are a red flag and need strong justification."
+
 - **Never** execute user-provided strings as commands
 - **Never** use shell expansion or eval (`/bin/sh -c "user_input"`)
 - Use `Gio.Subprocess` with explicit argv arrays, not shell strings
 - Use `GLib.spawn_command_line_async` only for simple, fixed commands
 - Validate all arguments before passing to any subprocess
 - Set a timeout on long-running commands to prevent hangs
+
+> **Reviewer says:** "Never pass user input through `/bin/sh -c`. Use `Gio.Subprocess` with an explicit argv array to avoid command injection."
 
 ```javascript
 // WRONG: shell string with interpolation
@@ -44,6 +48,8 @@ const proc = Gio.Subprocess.new(
 Extensions that use `pkexec` receive extra scrutiny. Reviewers verify:
 
 ### Helper script requirements
+
+> **Reviewer says:** "Your pkexec helper script needs input validation. Every argument must be whitelisted — reject anything that isn't an explicitly known-good value. This is a rejection reason."
 
 1. **Validate ALL inputs** -- every argument must be checked
 2. **Whitelist, don't blacklist** -- only accept known-good values
@@ -92,6 +98,8 @@ polkit.addRule(function(action, subject) {
 
 ## Clipboard Operations
 
+> **Reviewer says:** "I see clipboard access in your extension but it's not mentioned in the description. Per the review guidelines, clipboard access must be disclosed."
+
 Clipboard access must be disclosed and user-initiated:
 
 - **Must disclose** clipboard access in `metadata.json` description
@@ -116,6 +124,8 @@ enable() {
 ```
 
 ## Network Access
+
+> **Reviewer says:** "Your extension makes network requests but this is not disclosed in the description. All network access must be mentioned so users can make an informed decision."
 
 Network access is heavily scrutinized and must be disclosed:
 
@@ -192,6 +202,8 @@ or EGO submission notes:
 
 ## Telemetry Ban
 
+> **Reviewer says:** "Any form of telemetry or analytics is explicitly banned. This is an immediate rejection. Please remove all tracking code."
+
 Extensions MUST NOT use any telemetry or analytics tools. This is an explicit
 EGO requirement — any form of user tracking will be rejected.
 
@@ -209,6 +221,8 @@ If interference is necessary, document the justification in EGO submission notes
 
 ## Lock Screen Security Model
 
+> **Reviewer says:** "When settings are filled in global scope, they won't be null after disabling the extension, objects remain unnecessarily, callbacks for signals can be triggered while the extension is disabled, and this creates a security risk since extensions are disabled on the lock screen."
+
 Objects remaining in global scope after `disable()` are a security risk because
 signal callbacks can be triggered while the extension is disabled on the lock
 screen. This is WHY complete cleanup in `disable()` is mandatory.
@@ -220,11 +234,15 @@ screen. This is WHY complete cleanup in `disable()` is mandatory.
 
 ## Binary Executable Ban
 
+> **Reviewer says:** "Extensions must not include binary executables or libraries. All code must be reviewable source. Please remove the binary files and provide build instructions if native code is needed."
+
 Extensions MUST NOT include binary executables or libraries (`.so`, `.dll`, ELF
 binaries). Scripts MUST be written in GJS unless absolutely necessary. Any
 non-GJS scripts must carry an OSI-approved license.
 
 ## Module Installation Ban
+
+> **Reviewer says:** "Extensions must not automatically install packages. This is a security risk and policy violation that will cause immediate rejection. Document any dependencies for manual installation instead."
 
 Extensions MUST NOT automatically install packages. Commands like `pip install`,
 `npm install`, or `apt install` must NOT run without explicit user action and
