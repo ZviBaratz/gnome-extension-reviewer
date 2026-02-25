@@ -137,6 +137,16 @@ else
 fi
 
 # ---------------------------------------------------------------------------
+# Compiled schemas in directory check
+# ---------------------------------------------------------------------------
+
+if [[ -f "$EXT_DIR/schemas/gschemas.compiled" ]]; then
+    print_result "WARN" "compiled-schemas-dir" "schemas/gschemas.compiled found — unnecessary for GNOME 44+ (auto-compiled by Shell); remove from distribution"
+else
+    print_result "PASS" "compiled-schemas-dir" "No unnecessary compiled schemas in directory"
+fi
+
+# ---------------------------------------------------------------------------
 # console.log check
 # ---------------------------------------------------------------------------
 

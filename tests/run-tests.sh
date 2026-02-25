@@ -489,6 +489,13 @@ assert_exit_code "exits with 0 (warnings only)" 0
 assert_output_contains "warns on non-GJS scripts" "\[WARN\].*non-gjs-scripts"
 echo ""
 
+# --- compiled-schemas-dir ---
+echo "=== compiled-schemas-dir ==="
+run_lint "compiled-schemas-dir@test"
+assert_exit_code "exits with 0 (warnings only)" 0
+assert_output_contains "warns on compiled schemas in dir" "\[WARN\].*compiled-schemas-dir"
+echo ""
+
 # --- Summary ---
 echo "============================================"
 echo "  Results: $PASS_COUNT passed, $FAIL_COUNT failed"
