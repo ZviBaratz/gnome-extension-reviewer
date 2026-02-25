@@ -522,3 +522,50 @@
   category: version-compat
   fix: "Use global.backend.get_cursor_tracker() instead"
   min-version: 48
+
+# --- GNOME 49 removed APIs (blocking, version-gated) ---
+
+- id: R-VER49-01
+  pattern: "\\bMeta\\.Rectangle\\b"
+  scope: ["*.js"]
+  severity: blocking
+  message: "Meta.Rectangle removed in GNOME 49; use Mtk.Rectangle"
+  category: version-compat
+  fix: "Import Mtk from 'gi://Mtk' and use Mtk.Rectangle instead"
+  min-version: 49
+
+- id: R-VER49-02
+  pattern: "\\bClutter\\.ClickAction\\b"
+  scope: ["*.js"]
+  severity: blocking
+  message: "Clutter.ClickAction removed in GNOME 49; use Clutter.ClickGesture"
+  category: version-compat
+  fix: "Use new Clutter.ClickGesture() instead"
+  min-version: 49
+
+- id: R-VER49-03
+  pattern: "\\bClutter\\.TapAction\\b"
+  scope: ["*.js"]
+  severity: blocking
+  message: "Clutter.TapAction removed in GNOME 49; use Clutter.LongPressGesture"
+  category: version-compat
+  fix: "Use new Clutter.LongPressGesture() instead"
+  min-version: 49
+
+- id: R-VER49-04
+  pattern: "\\bMeta\\.Window\\.get_maximized\\b"
+  scope: ["*.js"]
+  severity: blocking
+  message: "Meta.Window.get_maximized() removed in GNOME 49; use is_maximized()"
+  category: version-compat
+  fix: "Use window.is_maximized() instead of window.get_maximized()"
+  min-version: 49
+
+- id: R-VER49-05
+  pattern: "\\bCursorTracker\\.set_pointer_visible\\b"
+  scope: ["*.js"]
+  severity: blocking
+  message: "CursorTracker.set_pointer_visible() removed in GNOME 49; use inhibit/uninhibit_cursor_visibility()"
+  category: version-compat
+  fix: "Use tracker.inhibit_cursor_visibility() / uninhibit_cursor_visibility()"
+  min-version: 49

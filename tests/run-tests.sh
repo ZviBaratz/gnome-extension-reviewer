@@ -407,12 +407,22 @@ assert_output_contains "fails on Clutter.Image" "\[FAIL\].*R-VER48-01"
 assert_output_contains "fails on Meta.disable_unredirect" "\[FAIL\].*R-VER48-02"
 echo ""
 
+# --- gnome49-compat ---
+echo "=== gnome49-compat ==="
+run_lint "gnome49-compat@test"
+assert_exit_code "exits with 1 (has failures)" 1
+assert_output_contains "fails on Meta.Rectangle" "\[FAIL\].*R-VER49-01"
+assert_output_contains "fails on Clutter.ClickAction" "\[FAIL\].*R-VER49-02"
+assert_output_contains "fails on Clutter.TapAction" "\[FAIL\].*R-VER49-03"
+echo ""
+
 # --- gnome45-only ---
 echo "=== gnome45-only ==="
 run_lint "gnome45-only@test"
 assert_output_not_contains "no GNOME 46 rule failures" "\[FAIL\].*R-VER46"
 assert_output_not_contains "no GNOME 47 rule failures" "\[FAIL\].*R-VER47"
 assert_output_not_contains "no GNOME 48 rule failures" "\[FAIL\].*R-VER48"
+assert_output_not_contains "no GNOME 49 rule failures" "\[FAIL\].*R-VER49"
 echo ""
 
 # --- Summary ---
