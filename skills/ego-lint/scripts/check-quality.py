@@ -575,6 +575,88 @@ def check_comment_density(ext_dir, js_files):
     result("PASS", "quality/comment-density", "Comment density acceptable")
 
 
+def check_redundant_cleanup(ext_dir, js_files):
+    """R-QUAL-18: Flag verbose destroy/cleanup vs idiomatic optional chaining."""
+    verbose_count = 0
+    idiomatic_count = 0
+
+    for filepath in js_files:
+        with open(filepath, encoding='utf-8', errors='replace') as f:
+            content = f.read()
+
+        # Verbose pattern: if (this._x) { this._x.destroy(); this._x = null; }
+        verbose_count += len(re.findall(
+            r'if\s*\(this\._\w+\)\s*\{[^}]*\.destroy\(\)', content))
+
+        # Idiomatic pattern: this._x?.destroy()
+        idiomatic_count += len(re.findall(r'\?\.\s*destroy\s*\(', content))
+
+    total = verbose_count + idiomatic_count
+    if total >= 4 and verbose_count / max(total, 1) > 0.6:
+        result("WARN", "quality/redundant-cleanup",
+               f"{verbose_count} verbose destroy guards vs {idiomatic_count} idiomatic "
+               f"'?.destroy()' — prefer optional chaining for cleanup")
+    else:
+        result("PASS", "quality/redundant-cleanup",
+               f"Cleanup pattern balance OK (verbose: {verbose_count}, idiomatic: {idiomatic_count})")
+
+
+def check_comment_prompt_density(ext_dir, js_files):
+    """R-QUAL-19: Flag imperative instructional comments (LLM prompt style)."""
+    prompt_re = re.compile(
+        r'//\s*(Important|Note|Remember|TODO|FIXME):\s*'
+        r'(Make sure|Ensure|Always|Don\'t forget|Handle|Never|Check|Verify)',
+        re.IGNORECASE
+    )
+
+    for filepath in js_files:
+        rel = os.path.relpath(filepath, ext_dir)
+        count = 0
+        with open(filepath, encoding='utf-8', errors='replace') as f:
+            for line in f:
+                if prompt_re.search(line):
+                    count += 1
+
+        if count > 5:
+            result("WARN", "quality/comment-prompt-density",
+                   f"{rel}: {count} imperative instructional comments — "
+                   f"reads like LLM prompts; explain 'why' not 'what to do'")
+            return
+
+    result("PASS", "quality/comment-prompt-density",
+           "No excessive instructional comment patterns")
+
+
+def check_error_message_verbosity(ext_dir, js_files):
+    """R-QUAL-20: Flag overly verbose error message strings."""
+    lengths = []
+
+    for filepath in js_files:
+        with open(filepath, encoding='utf-8', errors='replace') as f:
+            for line in f:
+                stripped = line.lstrip()
+                if stripped.startswith('//') or stripped.startswith('*'):
+                    continue
+                # Find console.error/warn string arguments
+                for m in re.finditer(
+                    r'console\.(error|warn)\s*\([\'"`]([^\'"`]*)[\'"`]', line
+                ):
+                    msg = m.group(2)
+                    if len(msg) > 10:  # skip trivially short messages
+                        lengths.append(len(msg))
+
+    if len(lengths) >= 3:
+        avg = sum(lengths) / len(lengths)
+        if avg > 50:
+            result("WARN", "quality/error-message-verbosity",
+                   f"{len(lengths)} error/warn messages with avg length {avg:.0f} chars — "
+                   f"prefer terse error strings")
+            return
+
+    result("PASS", "quality/error-message-verbosity",
+           "Error message verbosity acceptable")
+
+
 def main():
     if len(sys.argv) < 2:
         result("FAIL", "quality/args", "No extension directory provided")
@@ -603,6 +685,9 @@ def main():
     check_notification_volume(ext_dir, js_files)
     check_private_api(ext_dir, js_files)
     check_gettext_pattern(ext_dir, js_files)
+    check_redundant_cleanup(ext_dir, js_files)
+    check_comment_prompt_density(ext_dir, js_files)
+    check_error_message_verbosity(ext_dir, js_files)
 
 
 if __name__ == '__main__':

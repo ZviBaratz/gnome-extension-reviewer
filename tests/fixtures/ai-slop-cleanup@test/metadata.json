@@ -1,0 +1,7 @@
+{
+    "uuid": "ai-slop-cleanup@test",
+    "name": "AI Slop Cleanup Test",
+    "description": "Tests redundant destruction guard detection",
+    "shell-version": ["47"],
+    "url": "https://github.com/test/ai-slop-cleanup"
+}
