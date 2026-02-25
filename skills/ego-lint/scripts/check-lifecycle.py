@@ -75,7 +75,7 @@ def check_default_export(ext_dir):
     if not os.path.isfile(ext_js):
         return
 
-    content = read_file(ext_js)
+    content = strip_comments(read_file(ext_js))
     if not re.search(r'\bexport\s+default\s+class\b', content):
         result("WARN", "lifecycle/default-export",
                "extension.js missing 'export default class' — required for GNOME 45+")
