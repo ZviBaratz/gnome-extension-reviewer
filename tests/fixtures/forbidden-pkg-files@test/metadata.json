@@ -1,0 +1,1 @@
+{"uuid": "forbidden-pkg-files@test", "name": "Forbidden Pkg Files Test", "description": "Tests forbidden file detection in zip", "shell-version": ["48"], "url": "https://github.com/test/forbidden-pkg-files"}

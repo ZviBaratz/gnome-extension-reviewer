@@ -436,6 +436,7 @@ def check_logging_volume(ext_dir, js_files):
                 stripped = line.lstrip()
                 if stripped.startswith('//') or stripped.startswith('*'):
                     continue
+                # console.log excluded — already a hard FAIL in ego-lint.sh
                 total += len(re.findall(
                     r'console\.(debug|warn|error|info)\(', line))
 

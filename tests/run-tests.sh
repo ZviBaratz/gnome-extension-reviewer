@@ -503,6 +503,15 @@ assert_exit_code "exits with 0 (warnings only)" 0
 assert_output_contains "warns on total logging volume" "\[WARN\].*quality/logging-volume"
 echo ""
 
+# --- forbidden-pkg-files ---
+echo "=== forbidden-pkg-files ==="
+run_lint "forbidden-pkg-files@test"
+assert_exit_code "exits with 1 (has failures)" 1
+assert_output_contains "fails on .po in zip" "\[FAIL\].*package/no-forbidden.*\.po"
+assert_output_contains "fails on Makefile in zip" "\[FAIL\].*package/no-forbidden.*Makefile"
+assert_output_contains "fails on tsconfig.json in zip" "\[FAIL\].*package/no-forbidden.*tsconfig\.json"
+echo ""
+
 # --- Summary ---
 echo "============================================"
 echo "  Results: $PASS_COUNT passed, $FAIL_COUNT failed"
