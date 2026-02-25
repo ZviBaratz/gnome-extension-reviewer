@@ -135,7 +135,7 @@ echo "=== bad-package ==="
 run_lint "bad-package"
 assert_exit_code "exits with 1 (has failures)" 1
 assert_output_contains "fails on nested structure" "\[FAIL\].*package/nested-structure"
-assert_output_contains "fails on missing compiled schemas" "\[FAIL\].*package/compiled-schemas"
+assert_output_contains "passes on no compiled schemas (GNOME 44+)" "\[PASS\].*package/compiled-schemas"
 echo ""
 
 # --- ai-slop ---

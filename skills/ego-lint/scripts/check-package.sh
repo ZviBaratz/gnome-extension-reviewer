@@ -139,13 +139,13 @@ if echo "$zip_contents" | grep -qE "^[^/]+/extension\.js$"; then
 fi
 
 # ---------------------------------------------------------------------------
-# Check for compiled schemas
+# Check for compiled schemas (unnecessary for GNOME 44+)
 # ---------------------------------------------------------------------------
 
 if echo "$zip_contents" | grep -qE "\.gschema\.xml$"; then
     if echo "$zip_contents" | grep -qF "gschemas.compiled"; then
-        echo "PASS|package/compiled-schemas|gschemas.compiled found"
+        echo "WARN|package/compiled-schemas-unnecessary|gschemas.compiled is unnecessary for GNOME 44+ (auto-compiled by Shell)"
     else
-        echo "FAIL|package/compiled-schemas|Schema XML found but gschemas.compiled missing — run glib-compile-schemas"
+        echo "PASS|package/compiled-schemas|No unnecessary gschemas.compiled"
     fi
 fi
