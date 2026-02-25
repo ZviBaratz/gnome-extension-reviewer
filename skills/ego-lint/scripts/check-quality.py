@@ -292,7 +292,11 @@ def check_mock_in_production(ext_dir, js_files):
 
 
 def check_constructor_resources(ext_dir, js_files):
-    """R-QUAL-08: Flag resource allocation inside constructors."""
+    """R-QUAL-08: Flag resource allocation inside constructors.
+
+    Skip for GObject widget subclasses — their constructors run within the
+    enable/disable lifecycle, so signal connections there are acceptable.
+    """
     bad_patterns = [
         (r'this\.getSettings\s*\(', 'this.getSettings()'),
         (r'\.connect\s*\(', '.connect()'),
@@ -300,6 +304,24 @@ def check_constructor_resources(ext_dir, js_files):
         (r'timeout_add', 'GLib.timeout_add()'),
         (r'new\s+Gio\.DBusProxy', 'new Gio.DBusProxy()'),
     ]
+
+    # GObject widget base classes whose constructors are lifecycle-bounded
+    widget_bases = {
+        'St.Widget', 'St.BoxLayout', 'St.Button', 'St.Label', 'St.Bin',
+        'St.Icon', 'St.Entry', 'St.ScrollView', 'St.Viewport',
+        'Clutter.Actor', 'Clutter.LayoutManager',
+        'GObject.Object',
+        'QuickToggle', 'QuickMenuToggle', 'QuickSlider',
+        'SystemIndicator',
+        'PanelMenu.Button', 'PanelMenu.ButtonBox',
+        'PopupMenu.PopupBaseMenuItem', 'PopupMenu.PopupMenuItem',
+        'PopupMenu.PopupSwitchMenuItem', 'PopupMenu.PopupSubMenuMenuItem',
+        'Adw.PreferencesPage', 'Adw.PreferencesGroup',
+        'Gtk.Widget', 'Gtk.Box', 'Gtk.Button',
+    }
+    # Also match just the short names (e.g., "BoxLayout" from "St.BoxLayout")
+    widget_short_names = {b.split('.')[-1] for b in widget_bases}
+
     found = False
 
     for filepath in js_files:
@@ -311,6 +333,21 @@ def check_constructor_resources(ext_dir, js_files):
         for m in re.finditer(
             r'(?:constructor|_init)\s*\([^)]*\)\s*\{', content
         ):
+            # Determine which class this constructor belongs to
+            # by finding the nearest class declaration before this position
+            is_widget = False
+            last_base = None
+            for cm in re.finditer(r'class\s+(\w+)\s+extends\s+([\w.]+)', content):
+                if cm.start() < m.start():
+                    last_base = cm.group(2)
+
+            if last_base and (last_base in widget_bases or
+                              last_base.split('.')[-1] in widget_short_names):
+                is_widget = True
+
+            if is_widget:
+                continue  # Skip widget constructors
+
             # Extract the constructor body (find matching brace)
             start = m.end()
             depth = 1
