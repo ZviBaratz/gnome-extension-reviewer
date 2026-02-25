@@ -1,0 +1,7 @@
+{
+    "uuid": "ai-slop-rethrow@test",
+    "name": "AI Slop Rethrow Test",
+    "description": "Tests catch-log-rethrow pattern detection",
+    "shell-version": ["47"],
+    "url": "https://github.com/test/ai-slop-rethrow"
+}

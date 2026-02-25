@@ -660,3 +660,43 @@
   message: "Raw GTK widget in prefs.js — prefer Adwaita (Adw) widgets for GNOME 45+"
   category: prefs
   fix: "Use Adw.PreferencesPage, Adw.PreferencesGroup, Adw.ActionRow, Adw.SwitchRow, Adw.ComboRow"
+
+# --- AI slop: LLM prompt comments ---
+
+- id: R-SLOP-18
+  pattern: "^\\s*//\\s*(Important|Note|Remember|TODO):\\s*(Make sure|Ensure|Always|Don't forget|Handle)"
+  scope: ["*.js"]
+  severity: advisory
+  message: "Comment reads like an LLM prompt — reviewers flag these as AI-generated"
+  category: ai-slop
+  fix: "Remove or rewrite to explain 'why', not 'what to do'"
+
+# --- AI slop: verbose template error messages ---
+
+- id: R-SLOP-19
+  pattern: "console\\.(error|warn)\\(`Failed to \\$\\{"
+  scope: ["*.js"]
+  severity: advisory
+  message: "Verbose template error message — prefer terse error strings"
+  category: ai-slop
+  fix: "Simplify to: console.error('ExtName: init failed', e)"
+
+# --- AI slop: catch-log-rethrow ---
+
+- id: R-SLOP-22
+  pattern: "catch\\s*\\(\\w+\\)\\s*\\{[^}]*console\\.(error|warn|log)\\([^)]*\\);?\\s*(throw|rethrow)\\s"
+  scope: ["*.js"]
+  severity: advisory
+  message: "Catch-log-rethrow adds no value — handle or let propagate"
+  category: ai-slop
+  fix: "Remove the try-catch or handle the error meaningfully"
+
+# --- AI slop: dead code after throw ---
+
+- id: R-SLOP-23
+  pattern: "throw\\s+[^;]+;\\s*\\n\\s*return\\s"
+  scope: ["*.js"]
+  severity: advisory
+  message: "Dead code after throw — unreachable return"
+  category: ai-slop
+  fix: "Remove the unreachable return statement"

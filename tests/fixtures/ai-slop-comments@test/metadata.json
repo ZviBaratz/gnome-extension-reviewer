@@ -1,0 +1,7 @@
+{
+    "uuid": "ai-slop-comments@test",
+    "name": "AI Slop Comments Test",
+    "description": "Tests LLM prompt comment detection",
+    "shell-version": ["47"],
+    "url": "https://github.com/test/ai-slop-comments"
+}
