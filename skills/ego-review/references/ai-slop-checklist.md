@@ -509,14 +509,132 @@ Using template-like names in the UUID.
 - **Acceptable:** Descriptive, unique UUID like `hara-hachi-bu@ZviBaratz`
 - **Note:** AI-generated scaffolds often use generic placeholder UUIDs.
 
+### 28. Comments that read like instructions to an AI model
+
+Imperative comments that tell the code what to do rather than explaining why.
+
+- **Red flag:** `// Important: Make sure to always initialize settings before use`,
+  `// Note: Ensure proper cleanup in disable method`,
+  `// Remember: Always handle errors gracefully`
+- **Acceptable:** Comments explaining non-obvious design decisions or API quirks
+
+```javascript
+// RED FLAG: instructing the code
+// Important: Make sure to clean up all resources in disable
+// Note: Ensure the proxy is disconnected before nulling
+// TODO: Don't forget to handle the error case
+
+// ACCEPTABLE: explaining a design choice
+// UPower proxy may outlive the extension on fast enable/disable cycles;
+// check _destroyed before using the cached result.
+```
+
+### 29. Inconsistent code style within the same file
+
+Mixed naming conventions, formatting patterns, or idioms suggesting copy-paste
+from multiple AI sessions.
+
+- **Red flag:** Mix of `camelCase` and `snake_case` for the same kind of
+  identifier, inconsistent brace placement, varying quote styles within one file
+- **Acceptable:** Consistent style throughout, even if it differs from GNOME
+  conventions (style is fixable; inconsistency signals lack of review)
+
+### 30. Overly uniform structure (copy-paste with variations)
+
+Structurally identical code blocks with only variable names changed.
+
+- **Red flag:** 3+ near-identical blocks like `if (this._x) { this._x.destroy(); this._x = null; }` repeated for different fields without using optional chaining or a helper
+- **Acceptable:** Using `this._x?.destroy()` or a cleanup helper function
+
+```javascript
+// RED FLAG: 5 identical blocks
+disable() {
+    if (this._a) { this._a.destroy(); this._a = null; }
+    if (this._b) { this._b.destroy(); this._b = null; }
+    if (this._c) { this._c.destroy(); this._c = null; }
+    if (this._d) { this._d.destroy(); this._d = null; }
+    if (this._e) { this._e.destroy(); this._e = null; }
+}
+
+// ACCEPTABLE: idiomatic cleanup
+disable() {
+    this._a?.destroy();
+    this._b?.destroy();
+    this._c?.destroy();
+    this._d?.destroy();
+    this._e?.destroy();
+    this._a = this._b = this._c = this._d = this._e = null;
+}
+```
+
+### 31. Error handling that adds no value
+
+Catch-and-rethrow or catch-and-log-only patterns.
+
+- **Red flag:** `catch (e) { console.error(e); throw e; }` — logs and rethrows,
+  adding nothing. Or `catch (e) { console.error('Error occurred'); }` that
+  swallows the original error and provides a less useful message.
+- **Acceptable:** Catch that adds context (`console.error('ExtName: failed to init proxy', e)`)
+  or handles the error (retry, fallback, graceful degradation)
+
+```javascript
+// RED FLAG: catch-log-rethrow
+try {
+    await this._proxy.initAsync();
+} catch (e) {
+    console.error(`Failed to initialize proxy: ${e.message}`);
+    throw e;
+}
+
+// ACCEPTABLE: catch with recovery
+try {
+    await this._proxy.initAsync();
+} catch (e) {
+    console.warn('Proxy init failed, using defaults');
+    this._useDefaults = true;
+}
+```
+
+### 32. Methods that exist for "completeness" but are never called
+
+Dead methods that appear to exist because the AI generated a "complete" class.
+
+- **Red flag:** Methods like `toString()`, `toJSON()`, `valueOf()`, `equals()`,
+  or `clone()` that are defined but never referenced anywhere in the extension
+- **Acceptable:** GObject virtual methods (`vfunc_*`) or lifecycle methods
+  that are called by the framework
+
+### 33. Documentation describing what code obviously does
+
+Comments that restate the code rather than explaining intent.
+
+- **Red flag:** `// Set the label text` before `this.label.set_text('Hello')`,
+  `// Create a new button` before `new St.Button()`
+- **Acceptable:** Comments explaining *why* something is done a certain way,
+  API quirks, or non-obvious side effects
+
+```javascript
+// RED FLAG: restating the obvious
+// Create a new BoxLayout with vertical orientation
+const box = new St.BoxLayout({vertical: true});
+// Add the label to the box
+box.add_child(this._label);
+
+// ACCEPTABLE: explaining the 'why'
+// BoxLayout must be vertical so the icon and label stack;
+// horizontal layout clips the label on small panels.
+const box = new St.BoxLayout({vertical: true});
+box.add_child(this._label);
+```
+
 ## Scoring Model
 
-Count the number of triggered items out of the 27 above.
+Count the number of triggered items out of the 33 above.
 
 ```
-1-2 triggered:  ADVISORY  -- note them, extension may still pass
-3-5 triggered:  BLOCKING  -- suggests insufficient code review
-6+  triggered:  BLOCKING  -- likely unreviewed AI output
+1-3 triggered:  ADVISORY  -- note them, extension may still pass
+4-6 triggered:  BLOCKING  -- suggests insufficient code review
+7+  triggered:  BLOCKING  -- likely unreviewed AI output
 ```
 
 **Independently blocking items:** Regardless of total count, any hallucinated
