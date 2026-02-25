@@ -396,9 +396,69 @@ Using `pkexec` or polkit without justification.
 See also: [pkexec and privilege escalation](security-checklist.md#pkexec-and-privilege-escalation)
 in the security checklist.
 
+## Category 7: Additional AI Signals
+
+### 19. typeof super.destroy guard
+
+Checking if `super.destroy` is a function before calling it.
+
+- **Red flag:** `if (typeof super.destroy === 'function') super.destroy()`
+- **Acceptable:** Calling `super.destroy()` directly — it always exists on GObject classes
+
+```javascript
+// RED FLAG: unnecessary type check
+destroy() {
+    try {
+        if (typeof super.destroy === 'function') {
+            super.destroy();
+        }
+    } catch (e) {
+        console.warn(`${e.message}`);
+    }
+}
+
+// ACCEPTABLE: direct call
+destroy() {
+    super.destroy();
+}
+```
+
+This is the canonical example from JustPerfection's AI policy blog post.
+
+### 20. Redundant instanceof this
+
+Checking `this instanceof ClassName` inside a method of that class.
+
+- **Red flag:** `if (this instanceof MyExtension)` inside `MyExtension`'s methods
+- **Acceptable:** `instanceof` checks on external objects or arguments
+
+```javascript
+// RED FLAG: always true
+enable() {
+    if (this instanceof MyExtension) {
+        this._init();
+    }
+}
+
+// ACCEPTABLE: checking external argument
+_processWidget(widget) {
+    if (widget instanceof St.Button)
+        widget.connect('clicked', this._onClick.bind(this));
+}
+```
+
+### 21. Excessive comment density
+
+Comments explaining obvious code on nearly every line.
+
+- **Red flag:** >40% of lines are comments (after first 10 lines), especially
+  comments like `// Set the label` before `this.label = 'text'`
+- **Acceptable:** Comments explaining non-obvious logic, API quirks, or
+  workarounds for known bugs
+
 ## Scoring Model
 
-Count the number of triggered items out of the 18 above.
+Count the number of triggered items out of the 21 above.
 
 ```
 1-2 triggered:  ADVISORY  -- note them, extension may still pass
