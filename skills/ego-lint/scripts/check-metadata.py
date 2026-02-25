@@ -25,7 +25,7 @@ def check_donations(meta):
         result("FAIL", "metadata/donations-format", "donations must be an object")
         return
     if len(donations) == 0:
-        result("WARN", "metadata/donations-empty", "donations object is empty")
+        result("FAIL", "metadata/donations-empty", "donations object is empty; drop the field entirely if unused")
         return
     valid_keys = {
         "buymeacoffee", "custom", "github", "kofi",
@@ -222,7 +222,6 @@ def main():
         result("PASS", "metadata/gettext-domain", "gettext-domain set with locale/ directory")
 
     # --- Future shell-version ---
-    CURRENT_STABLE = 48
     sv = meta.get('shell-version', [])
     if isinstance(sv, list):
         for v in sv:
@@ -239,7 +238,68 @@ def main():
     check_version_name(meta)
     check_shell_version_entries(meta)
     check_description_length(meta)
+    check_url_field(meta)
+    check_shell_version_dev_limit(meta)
+    check_esm_version_floor(meta, ext_dir)
 
+
+CURRENT_STABLE = 48
+
+
+def check_url_field(meta):
+    """WARN if url field is missing from metadata."""
+    if "url" not in meta:
+        result("WARN", "metadata/missing-url",
+               "metadata.json has no url field; consider adding a project homepage")
+    else:
+        result("PASS", "metadata/missing-url", "url field is present")
+
+
+def check_shell_version_dev_limit(meta):
+    """FAIL if shell-version contains more than one development release."""
+    sv = meta.get("shell-version", [])
+    if not isinstance(sv, list):
+        return
+    dev_versions = []
+    for v in sv:
+        try:
+            major = int(str(v).split(".")[0])
+            if major > CURRENT_STABLE:
+                dev_versions.append(v)
+        except ValueError:
+            pass
+    if len(dev_versions) > 1:
+        result("FAIL", "metadata/shell-version-dev-limit",
+               f"shell-version has {len(dev_versions)} development releases "
+               f"({', '.join(dev_versions)}); at most 1 allowed")
+    else:
+        result("PASS", "metadata/shell-version-dev-limit",
+               "shell-version has at most 1 development release")
+
+
+def check_esm_version_floor(meta, ext_dir):
+    """FAIL if shell-version contains pre-45 versions but extension uses ESM imports."""
+    sv = meta.get("shell-version", [])
+    if not isinstance(sv, list):
+        return
+    pre_esm = []
+    for v in sv:
+        try:
+            major = int(str(v).split(".")[0])
+            if 40 <= major < 45:
+                pre_esm.append(v)
+        except ValueError:
+            pass
+    if not pre_esm:
+        return
+    ext_js = os.path.join(ext_dir, "extension.js")
+    if os.path.isfile(ext_js):
+        with open(ext_js, encoding="utf-8", errors="replace") as f:
+            content = f.read()
+        if "import " in content and "from " in content:
+            result("FAIL", "metadata/shell-version-esm-floor",
+                   f"shell-version includes pre-ESM version(s) ({', '.join(pre_esm)}) "
+                   "but extension uses ESM imports (GNOME 45+ only)")
 
 if __name__ == "__main__":
     main()

@@ -189,7 +189,6 @@ assert_exit_code "exits with 1 (has failures)" 1
 assert_output_contains "fails on minified JS" "\[FAIL\].*minified-js"
 echo ""
 
-<<<<<<< HEAD
 # --- lifecycle-imbalance ---
 echo "=== lifecycle-imbalance ==="
 run_lint "lifecycle-imbalance@test"
@@ -348,6 +347,34 @@ assert_exit_code "exits with 1 (has failures)" 1
 assert_output_contains "fails on pip install" "\[FAIL\].*R-SEC-10"
 assert_output_contains "fails on npm install" "\[FAIL\].*R-SEC-11"
 assert_output_contains "fails on apt install" "\[FAIL\].*R-SEC-12"
+echo ""
+
+# --- missing-url ---
+echo "=== missing-url ==="
+run_lint "missing-url@test"
+assert_exit_code "exits with 0 (warning only)" 0
+assert_output_contains "warns on missing url" "\[WARN\].*metadata/missing-url"
+echo ""
+
+# --- multi-dev-version ---
+echo "=== multi-dev-version ==="
+run_lint "multi-dev-version@test"
+assert_exit_code "exits with 1 (has failures)" 1
+assert_output_contains "fails on multiple dev releases" "\[FAIL\].*metadata/shell-version-dev-limit"
+echo ""
+
+# --- donations-empty ---
+echo "=== donations-empty ==="
+run_lint "donations-empty@test"
+assert_exit_code "exits with 1 (has failures)" 1
+assert_output_contains "fails on empty donations" "\[FAIL\].*metadata/donations-empty"
+echo ""
+
+# --- esm-version-floor ---
+echo "=== esm-version-floor ==="
+run_lint "esm-version-floor@test"
+assert_exit_code "exits with 1 (has failures)" 1
+assert_output_contains "fails on pre-ESM shell-version" "\[FAIL\].*metadata/shell-version-esm-floor"
 echo ""
 
 # --- Summary ---

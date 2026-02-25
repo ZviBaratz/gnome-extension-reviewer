@@ -1,0 +1,7 @@
+{
+    "uuid": "esm-version-floor@test",
+    "name": "ESM Version Floor Test",
+    "description": "Tests that pre-45 shell-version is flagged for ESM extensions",
+    "shell-version": ["43", "44", "45"],
+    "url": "https://github.com/test/esm-version-floor"
+}

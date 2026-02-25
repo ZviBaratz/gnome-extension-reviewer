@@ -1,0 +1,6 @@
+{
+    "uuid": "missing-url@test",
+    "name": "Missing URL Test",
+    "description": "Tests detection of missing url field in metadata",
+    "shell-version": ["48"]
+}

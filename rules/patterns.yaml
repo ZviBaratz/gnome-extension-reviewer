@@ -279,7 +279,6 @@
   message: "Use Clutter.BUTTON_PRIMARY/SECONDARY/MIDDLE instead of magic numbers"
   category: ai-slop
   fix: "Replace 1 with Clutter.BUTTON_PRIMARY, 2 with Clutter.BUTTON_MIDDLE, 3 with Clutter.BUTTON_SECONDARY."
-<<<<<<< HEAD
 
 # --- Hallucinated APIs (advisory) ---
 # LLMs frequently call methods that don't exist in GJS/GNOME Shell.
