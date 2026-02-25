@@ -244,12 +244,77 @@ Rules for deprecated GJS/GNOME APIs that must not be used in modern extensions.
 - **Rationale**: `Mainloop` is a deprecated GJS compatibility module. It was removed in recent GJS versions. Extensions using it will fail on current GNOME Shell.
 - **Fix**: Replace `Mainloop.timeout_add(ms, callback)` with `GLib.timeout_add(GLib.PRIORITY_DEFAULT, ms, callback)`. Replace `Mainloop.source_remove(id)` with `GLib.Source.remove(id)`.
 
+#### Example
+
+**Before** (violation):
+```javascript
+const Mainloop = imports.mainloop;
+
+enable() {
+    this._timeoutId = Mainloop.timeout_add(1000, () => {
+        this._refresh();
+        return true;
+    });
+}
+
+disable() {
+    Mainloop.source_remove(this._timeoutId);
+}
+```
+
+**After** (idiomatic):
+```javascript
+import GLib from 'gi://GLib';
+
+enable() {
+    this._timeoutId = GLib.timeout_add(GLib.PRIORITY_DEFAULT, 1000, () => {
+        this._refresh();
+        return GLib.SOURCE_CONTINUE;
+    });
+}
+
+disable() {
+    GLib.Source.remove(this._timeoutId);
+    this._timeoutId = null;
+}
+```
+
 ### R-DEPR-02: No Lang import
 - **Severity**: blocking
 - **Checked by**: ego-lint.sh
 - **Rule**: Extension code must not import or use `Lang`.
 - **Rationale**: `Lang` provided `Lang.Class` and `Lang.bind`, which predate ES6 classes and arrow functions. It is deprecated and signals legacy code that reviewers will reject.
 - **Fix**: Replace `Lang.Class` with ES6 `class` syntax. Replace `Lang.bind(this, fn)` with arrow functions or `.bind(this)`.
+
+#### Example
+
+**Before** (violation):
+```javascript
+const Lang = imports.lang;
+
+const MyIndicator = new Lang.Class({
+    Name: 'MyIndicator',
+    Extends: PanelMenu.Button,
+
+    _init: function() {
+        this.parent(0.0, 'My Indicator');
+        this._settings.connect('changed::key',
+            Lang.bind(this, this._onKeyChanged));
+    },
+});
+```
+
+**After** (idiomatic):
+```javascript
+const MyIndicator = GObject.registerClass(
+class MyIndicator extends PanelMenu.Button {
+    constructor() {
+        super(0.0, 'My Indicator');
+        this._settings.connect('changed::key',
+            () => this._onKeyChanged());
+    }
+});
+```
 
 ### R-DEPR-03: No ByteArray import
 - **Severity**: blocking
@@ -258,6 +323,26 @@ Rules for deprecated GJS/GNOME APIs that must not be used in modern extensions.
 - **Rationale**: `ByteArray` is deprecated in modern GJS. The standard Web APIs `TextEncoder` and `TextDecoder` are now available and preferred.
 - **Fix**: Replace `ByteArray.toString(bytes)` with `new TextDecoder().decode(bytes)`. Replace `ByteArray.fromString(str)` with `new TextEncoder().encode(str)`.
 
+#### Example
+
+**Before** (violation):
+```javascript
+const ByteArray = imports.byteArray;
+
+const [ok, contents] = file.load_contents(null);
+const text = ByteArray.toString(contents);
+
+const bytes = ByteArray.fromString('hello');
+```
+
+**After** (idiomatic):
+```javascript
+const [ok, contents] = file.load_contents(null);
+const text = new TextDecoder().decode(contents);
+
+const bytes = new TextEncoder().encode('hello');
+```
+
 ### R-DEPR-04: No imports.* legacy import style
 - **Severity**: advisory
 - **Checked by**: apply-patterns.py
@@ -265,6 +350,25 @@ Rules for deprecated GJS/GNOME APIs that must not be used in modern extensions.
 - **Rationale**: GNOME 45+ requires ESM modules. The legacy `imports.*` style will not work on GNOME 45 and later. While older extensions may still use it for backward compatibility, new submissions should use ESM.
 - **Fix**: Convert `const { Foo } = imports.gi.Foo` to `import Foo from 'gi://Foo'`. Convert `const ExtMe = imports.misc.extensionUtils` to `import { Extension } from 'resource:///org/gnome/shell/extensions/extension.js'`.
 - **Tested by**: `tests/fixtures/deprecated-imports/`
+
+#### Example
+
+**Before** (violation):
+```javascript
+const { St, Clutter, GLib } = imports.gi;
+const Main = imports.ui.main;
+const ExtensionUtils = imports.misc.extensionUtils;
+const Me = ExtensionUtils.getCurrentExtension();
+```
+
+**After** (idiomatic):
+```javascript
+import St from 'gi://St';
+import Clutter from 'gi://Clutter';
+import GLib from 'gi://GLib';
+import * as Main from 'resource:///org/gnome/shell/ui/main.js';
+import {Extension} from 'resource:///org/gnome/shell/extensions/extension.js';
+```
 
 ### R-DEPR-08: No spawn_command_line_sync
 - **Severity**: advisory
@@ -300,6 +404,34 @@ Rules for browser/Node.js APIs that are not available in GJS.
 - **Rationale**: `setTimeout` is a browser/Node.js API that does not exist in GJS. Some polyfills may add it, but EGO reviewers reject extensions that rely on non-standard globals.
 - **Fix**: Replace `setTimeout(callback, ms)` with `GLib.timeout_add(GLib.PRIORITY_DEFAULT, ms, () => { callback(); return GLib.SOURCE_REMOVE; })`. Remember to store the returned ID and call `GLib.Source.remove(id)` in `destroy()`.
 
+#### Example
+
+**Before** (violation):
+```javascript
+enable() {
+    setTimeout(() => {
+        this._indicator.show();
+    }, 500);
+}
+```
+
+**After** (idiomatic):
+```javascript
+enable() {
+    this._showTimeoutId = GLib.timeout_add(GLib.PRIORITY_DEFAULT, 500, () => {
+        this._indicator.show();
+        return GLib.SOURCE_REMOVE;
+    });
+}
+
+disable() {
+    if (this._showTimeoutId) {
+        GLib.Source.remove(this._showTimeoutId);
+        this._showTimeoutId = null;
+    }
+}
+```
+
 ### R-WEB-02: No setInterval()
 - **Severity**: blocking
 - **Checked by**: ego-lint.sh
@@ -307,12 +439,72 @@ Rules for browser/Node.js APIs that are not available in GJS.
 - **Rationale**: Same as `setTimeout` — it is not a native GJS API.
 - **Fix**: Replace `setInterval(callback, ms)` with `GLib.timeout_add(GLib.PRIORITY_DEFAULT, ms, () => { callback(); return GLib.SOURCE_CONTINUE; })`. Store the ID and remove it in `destroy()`.
 
+#### Example
+
+**Before** (violation):
+```javascript
+enable() {
+    this._intervalId = setInterval(() => {
+        this._pollStatus();
+    }, 10000);
+}
+
+disable() {
+    clearInterval(this._intervalId);
+}
+```
+
+**After** (idiomatic):
+```javascript
+enable() {
+    this._pollId = GLib.timeout_add(GLib.PRIORITY_DEFAULT, 10000, () => {
+        this._pollStatus();
+        return GLib.SOURCE_CONTINUE;
+    });
+}
+
+disable() {
+    if (this._pollId) {
+        GLib.Source.remove(this._pollId);
+        this._pollId = null;
+    }
+}
+```
+
 ### R-WEB-03: No fetch()
 - **Severity**: blocking
 - **Checked by**: ego-lint.sh
 - **Rule**: Extension code must not use `fetch()`.
 - **Rationale**: The Fetch API is not available in GJS. Network requests must use GLib/Gio or Soup APIs.
 - **Fix**: For HTTP requests, use `Soup.Session` with `Soup.Message`. For local file I/O, use `Gio.File`. For simple GET requests, `Soup.Session.send_and_read_async()` is the modern async pattern.
+
+#### Example
+
+**Before** (violation):
+```javascript
+async _loadData() {
+    const response = await fetch('https://api.example.com/data');
+    const data = await response.json();
+    this._processData(data);
+}
+```
+
+**After** (idiomatic):
+```javascript
+import Soup from 'gi://Soup';
+
+async _loadData() {
+    const session = new Soup.Session();
+    const message = Soup.Message.new('GET', 'https://api.example.com/data');
+    const bytes = await session.send_and_read_async(message,
+        GLib.PRIORITY_DEFAULT, this._cancellable);
+    if (message.get_status() !== Soup.Status.OK)
+        throw new Error(`HTTP ${message.get_status()}`);
+    const text = new TextDecoder().decode(bytes.get_data());
+    const data = JSON.parse(text);
+    this._processData(data);
+}
+```
 
 ---
 
@@ -528,12 +720,73 @@ Additional deprecated API rules detected by pattern matching.
 - **Rationale**: `ExtensionUtils` was removed in GNOME 45 when extensions migrated to ESM. Its functionality is now provided by the `Extension` base class.
 - **Fix**: Replace `ExtensionUtils.getCurrentExtension()` with `this` (inside the Extension class). Replace `ExtensionUtils.getSettings()` with `this.getSettings()`. Replace `ExtensionUtils.initTranslations()` with the Extension class's built-in translation support.
 
+#### Example
+
+**Before** (violation):
+```javascript
+const ExtensionUtils = imports.misc.extensionUtils;
+const Me = ExtensionUtils.getCurrentExtension();
+
+function init() {
+    ExtensionUtils.initTranslations();
+}
+
+function enable() {
+    const settings = ExtensionUtils.getSettings();
+    const path = Me.path;
+}
+```
+
+**After** (idiomatic):
+```javascript
+import {Extension} from 'resource:///org/gnome/shell/extensions/extension.js';
+
+export default class MyExtension extends Extension {
+    enable() {
+        const settings = this.getSettings();
+        const path = this.path;
+    }
+
+    disable() {
+        // cleanup
+    }
+}
+```
+
 ### R-DEPR-06: No Tweener (removed)
 - **Severity**: blocking
 - **Checked by**: apply-patterns.py
 - **Rule**: Extension code must not import or use `Tweener`.
 - **Rationale**: `Tweener` was GNOME Shell's legacy animation library. It was removed and replaced with Clutter's native property transitions and `ease()` methods.
 - **Fix**: Replace `Tweener.addTween(actor, { ... })` with `actor.ease({ ... })` using Clutter's built-in animation support.
+
+#### Example
+
+**Before** (violation):
+```javascript
+const Tweener = imports.ui.tweener;
+
+_fadeIn() {
+    Tweener.addTween(this._overlay, {
+        opacity: 255,
+        time: 0.3,
+        transition: 'easeOutQuad',
+        onComplete: () => this._onFadeComplete(),
+    });
+}
+```
+
+**After** (idiomatic):
+```javascript
+_fadeIn() {
+    this._overlay.ease({
+        opacity: 255,
+        duration: 300,
+        mode: Clutter.AnimationMode.EASE_OUT_QUAD,
+        onComplete: () => this._onFadeComplete(),
+    });
+}
+```
 
 ### R-DEPR-07: No imports.misc.convenience (removed in GNOME 45+)
 - **Severity**: blocking
@@ -555,12 +808,55 @@ Rules that detect patterns commonly found in AI-generated extensions. These are 
 - **Rationale**: GNOME Shell extensions are plain JavaScript (not TypeScript). JSDoc type annotations in the `{Type}` format are a strong signal that code was generated by an AI trained primarily on TypeScript codebases. EGO reviewers recognize this pattern.
 - **Fix**: Remove type annotations from JSDoc comments, or remove JSDoc entirely if the code is self-documenting. GJS does not process JSDoc types.
 
+#### Example
+
+**Before** (violation):
+```javascript
+/**
+ * Updates the panel indicator with the current battery status.
+ * @param {number} level - The battery level (0-100)
+ * @param {boolean} charging - Whether the device is charging
+ * @param {string} icon - The icon name to display
+ */
+_updateIndicator(level, charging, icon) {
+    // ...
+}
+```
+
+**After** (idiomatic):
+```javascript
+// Update panel indicator with current battery status
+_updateIndicator(level, charging, icon) {
+    // ...
+}
+```
+
 ### R-SLOP-02: TypeScript-style @returns JSDoc
 - **Severity**: advisory
 - **Checked by**: apply-patterns.py
 - **Rule**: JSDoc comments should not use TypeScript-style `@returns {Type}` annotations.
 - **Rationale**: Same as R-SLOP-01. `@returns {Type}` is a TypeScript convention that has no effect in GJS and signals AI-generated code.
 - **Fix**: Remove `@returns {Type}` annotations from JSDoc comments.
+
+#### Example
+
+**Before** (violation):
+```javascript
+/**
+ * Gets the active workspace index.
+ * @returns {number} The zero-based workspace index
+ */
+_getActiveWorkspace() {
+    return global.workspace_manager.get_active_workspace_index();
+}
+```
+
+**After** (idiomatic):
+```javascript
+_getActiveWorkspace() {
+    return global.workspace_manager.get_active_workspace_index();
+}
+```
 
 ### R-SLOP-03: Deprecated version field in metadata
 - **Severity**: advisory
@@ -819,6 +1115,49 @@ Rules for extension lifecycle management: enable/disable hooks, signal cleanup, 
 - **Fix**: For each `.connect()` call, ensure a matching `.disconnect()` in disable/destroy. Consider using `connectObject()` for automatic cleanup.
 - **Tested by**: `tests/fixtures/lifecycle-basic@test/`
 
+#### Example
+
+**Before** (violation):
+```javascript
+enable() {
+    this._settingsId = this._settings.connect('changed::theme', () => {
+        this._onThemeChanged();
+    });
+    this._displayId = global.display.connect('window-created', (d, w) => {
+        this._onWindowCreated(w);
+    });
+    this._wmId = global.window_manager.connect('map', (wm, actor) => {
+        this._onMap(actor);
+    });
+}
+
+disable() {
+    this._settings.disconnect(this._settingsId);
+    // BUG: displayId and wmId never disconnected — 2 leaked signals
+}
+```
+
+**After** (idiomatic):
+```javascript
+enable() {
+    this._settings.connectObject(
+        'changed::theme', () => this._onThemeChanged(),
+        this);
+    global.display.connectObject(
+        'window-created', (d, w) => this._onWindowCreated(w),
+        this);
+    global.window_manager.connectObject(
+        'map', (wm, actor) => this._onMap(actor),
+        this);
+}
+
+disable() {
+    this._settings.disconnectObject(this);
+    global.display.disconnectObject(this);
+    global.window_manager.disconnectObject(this);
+}
+```
+
 ### R-LIFE-02: Untracked Timeouts
 - **Severity**: advisory
 - **Checked by**: check-lifecycle.py
@@ -827,6 +1166,36 @@ Rules for extension lifecycle management: enable/disable hooks, signal cleanup, 
 - **Fix**: Store the return value: `this._timeoutId = GLib.timeout_add(...)` and call `GLib.Source.remove(this._timeoutId)` in disable().
 - **Tested by**: `tests/fixtures/lifecycle-basic@test/`
 
+#### Example
+
+**Before** (violation):
+```javascript
+enable() {
+    // Return value discarded — no way to cancel this timeout
+    GLib.timeout_add_seconds(GLib.PRIORITY_DEFAULT, 30, () => {
+        this._refresh();
+        return GLib.SOURCE_CONTINUE;
+    });
+}
+```
+
+**After** (idiomatic):
+```javascript
+enable() {
+    this._refreshId = GLib.timeout_add_seconds(GLib.PRIORITY_DEFAULT, 30, () => {
+        this._refresh();
+        return GLib.SOURCE_CONTINUE;
+    });
+}
+
+disable() {
+    if (this._refreshId) {
+        GLib.Source.remove(this._refreshId);
+        this._refreshId = null;
+    }
+}
+```
+
 ### R-LIFE-03: Missing enable/disable
 - **Severity**: blocking
 - **Checked by**: check-lifecycle.py
@@ -834,6 +1203,38 @@ Rules for extension lifecycle management: enable/disable hooks, signal cleanup, 
 - **Rationale**: These are the fundamental lifecycle hooks. Missing either means the extension cannot be properly managed.
 - **Fix**: Add the missing method. `disable()` must reverse everything `enable()` sets up.
 - **Tested by**: `tests/fixtures/lifecycle-basic@test/`
+
+#### Example
+
+**Before** (violation):
+```javascript
+import {Extension} from 'resource:///org/gnome/shell/extensions/extension.js';
+
+export default class MyExtension extends Extension {
+    enable() {
+        this._indicator = new MyIndicator();
+        Main.panel.addToStatusArea('my-ext', this._indicator);
+    }
+    // Missing disable() — indicator is never removed
+}
+```
+
+**After** (idiomatic):
+```javascript
+import {Extension} from 'resource:///org/gnome/shell/extensions/extension.js';
+
+export default class MyExtension extends Extension {
+    enable() {
+        this._indicator = new MyIndicator();
+        Main.panel.addToStatusArea('my-ext', this._indicator);
+    }
+
+    disable() {
+        this._indicator?.destroy();
+        this._indicator = null;
+    }
+}
+```
 
 ### R-LIFE-04: connectObject Migration Advisory
 - **Severity**: advisory
@@ -933,6 +1334,33 @@ Rules for extension lifecycle management: enable/disable hooks, signal cleanup, 
 - **Rationale**: Canonical AI slop signal identified by JustPerfection in the GNOME AI policy blog post.
 - **Fix**: Remove the typeof check and call `super.destroy()` directly.
 - **Tested by**: `tests/fixtures/hallucinated-apis@test/`
+
+#### Example
+
+**Before** (violation):
+```javascript
+destroy() {
+    if (this._timeoutId) {
+        GLib.Source.remove(this._timeoutId);
+        this._timeoutId = null;
+    }
+
+    if (typeof super.destroy === 'function')
+        super.destroy();
+}
+```
+
+**After** (idiomatic):
+```javascript
+destroy() {
+    if (this._timeoutId) {
+        GLib.Source.remove(this._timeoutId);
+        this._timeoutId = null;
+    }
+
+    super.destroy();
+}
+```
 
 ### R-SLOP-13: Redundant instanceof this
 - **Severity**: advisory
