@@ -1211,3 +1211,131 @@ Rules for APIs removed or changed in specific GNOME Shell versions. These rules 
 - **Rule**: Extension code must not use `CursorTracker.get_for_display()` when targeting GNOME 48+.
 - **Rationale**: `Meta.CursorTracker.get_for_display()` was changed in GNOME 48. The cursor tracker is now accessed through the backend object instead of the display.
 - **Fix**: Replace `Meta.CursorTracker.get_for_display(global.display)` with `global.backend.get_cursor_tracker()`.
+
+### R-VER48-04: St.Widget.vertical deprecated
+- **Severity**: advisory
+- **Checked by**: apply-patterns.py (min-version: 48)
+- **Rule**: The `.vertical` property on St widgets is deprecated in GNOME 48.
+- **Rationale**: Will be removed around GNOME 50. Use the orientation property instead.
+- **Fix**: Use `{orientation: Clutter.Orientation.VERTICAL}` instead of `{vertical: true}`.
+
+### GNOME 44 (R-VER44)
+
+### R-VER44-01: Meta.later_add() removed
+- **Severity**: blocking
+- **Checked by**: apply-patterns.py (min-version: 44)
+- **Rule**: `Meta.later_add()` was removed in GNOME 44.
+- **Rationale**: Replaced by the new Laters API accessed via the compositor.
+- **Fix**: Use `global.compositor.get_laters().addLater(Meta.LaterType.BEFORE_REDRAW, callback)`.
+
+### R-VER44-02: Meta.later_remove() removed
+- **Severity**: blocking
+- **Checked by**: apply-patterns.py (min-version: 44)
+- **Rule**: `Meta.later_remove()` was removed in GNOME 44.
+- **Rationale**: Replaced by the new Laters API accessed via the compositor.
+- **Fix**: Use `global.compositor.get_laters().removeLater(id)`.
+
+### R-VER46-06: Shell.BlurEffect.sigma replaced
+- **Severity**: blocking
+- **Checked by**: apply-patterns.py (min-version: 46)
+- **Rule**: `Shell.BlurEffect.sigma` was replaced by `.radius` in GNOME 46.
+- **Rationale**: The blur API was unified. The conversion formula is `radius = sigma * 2.0`.
+- **Fix**: Use `.radius` instead of `.sigma`.
+
+### GNOME 49 (R-VER49)
+
+### R-VER49-01: Meta.Rectangle removed
+- **Severity**: blocking
+- **Checked by**: apply-patterns.py (min-version: 49)
+- **Rule**: `Meta.Rectangle` was completely removed in GNOME 49.
+- **Rationale**: Replaced by the Mtk toolkit rectangle type.
+- **Fix**: Import `Mtk` from `'gi://Mtk'` and use `Mtk.Rectangle` instead.
+
+### R-VER49-02: Clutter.ClickAction removed
+- **Severity**: blocking
+- **Checked by**: apply-patterns.py (min-version: 49)
+- **Rule**: `Clutter.ClickAction` was removed in GNOME 49.
+- **Rationale**: Replaced by the gesture-based input API.
+- **Fix**: Use `new Clutter.ClickGesture()` instead.
+
+### R-VER49-03: Clutter.TapAction removed
+- **Severity**: blocking
+- **Checked by**: apply-patterns.py (min-version: 49)
+- **Rule**: `Clutter.TapAction` was removed in GNOME 49.
+- **Rationale**: Replaced by the gesture-based input API.
+- **Fix**: Use `new Clutter.LongPressGesture()` instead.
+
+### R-VER49-04: Meta.Window.get_maximized() removed
+- **Severity**: blocking
+- **Checked by**: apply-patterns.py (min-version: 49)
+- **Rule**: `Meta.Window.get_maximized()` was removed in GNOME 49.
+- **Rationale**: Simplified window state API.
+- **Fix**: Use `window.is_maximized()` instead.
+
+### R-VER49-05: CursorTracker.set_pointer_visible() removed
+- **Severity**: blocking
+- **Checked by**: apply-patterns.py (min-version: 49)
+- **Rule**: `CursorTracker.set_pointer_visible()` was removed in GNOME 49.
+- **Rationale**: Replaced by inhibit/uninhibit pattern.
+- **Fix**: Use `tracker.inhibit_cursor_visibility()` / `uninhibit_cursor_visibility()`.
+
+---
+
+## Code Quality Heuristics — Extended (R-QUAL, continued)
+
+### quality/file-complexity: Per-file line count
+- **Severity**: advisory
+- **Checked by**: check-quality.py
+- **Rule**: Warns if any single `.js` file exceeds 1000 non-blank lines.
+- **Rationale**: Monolithic files are harder to review and maintain. EGO reviewers often suggest splitting large files into modules.
+- **Fix**: Split large files into focused modules in a `lib/` directory.
+
+### quality/debug-volume: Excessive console.debug() calls
+- **Severity**: advisory
+- **Checked by**: check-quality.py
+- **Rule**: Warns if more than 20 `console.debug()` calls are found across the codebase.
+- **Rationale**: While `console.debug()` is acceptable (unlike `console.log()`), excessive debug logging clutters the system journal and signals unfinished development.
+- **Fix**: Remove or reduce debug logging to essential messages before submission.
+
+### quality/notification-volume: Excessive Main.notify() calls
+- **Severity**: advisory
+- **Checked by**: check-quality.py
+- **Rule**: Warns if more than 3 `Main.notify()` call sites are found.
+- **Rationale**: Excessive system notifications are intrusive to users and reviewers push back on notification-heavy extensions.
+- **Fix**: Reduce notification frequency; consider using the extension's own UI for status updates.
+
+### quality/private-api: Private GNOME Shell API access
+- **Severity**: advisory
+- **Checked by**: check-quality.py
+- **Rule**: Detects access to underscore-prefixed properties on GNOME Shell objects (`Main.panel._*`, `statusArea._*`, `quickSettings._*`, etc.).
+- **Rationale**: Private APIs can break without notice between GNOME versions. Reviewers require justification and version pinning for private API usage.
+- **Fix**: Document why the private API is necessary, which GNOME versions it was tested on, and pin `shell-version` accordingly.
+
+### quality/gettext-pattern: Direct Gettext.dgettext() usage
+- **Severity**: advisory
+- **Checked by**: check-quality.py
+- **Rule**: Warns when `Gettext.dgettext()` is used directly instead of the Extension API.
+- **Rationale**: The `Extension` and `ExtensionPreferences` base classes provide `this.gettext()` which automatically uses the correct domain. Direct `dgettext` hardcodes the domain string.
+- **Fix**: Use `this.gettext('string')` from the Extension base class instead of `Gettext.dgettext('domain', 'string')`.
+
+---
+
+## Metadata — Extended (R-META, continued)
+
+### metadata/session-modes-consistency: SessionMode usage without declaration
+- **Severity**: advisory
+- **Checked by**: check-metadata.py
+- **Rule**: Warns if the extension code references `Main.sessionMode.currentMode` or `sessionMode.isLocked` but `metadata.json` does not declare `session-modes` with `unlock-dialog`.
+- **Rationale**: Code that checks session mode without the proper declaration is either dead code (the extension won't run in lock screen mode) or a misunderstanding of the lifecycle.
+- **Fix**: Either add `"session-modes": ["user", "unlock-dialog"]` to metadata.json, or remove the session mode checks from the code.
+
+---
+
+## Inline Checks (ego-lint.sh)
+
+### polkit-files: Polkit policy/rules file detection
+- **Severity**: advisory
+- **Checked by**: ego-lint.sh
+- **Rule**: Detects `.policy` and `.rules` files in the extension directory.
+- **Rationale**: Polkit policy files grant privilege escalation capabilities and require careful security review. Reviewers pay special attention to extensions shipping polkit rules.
+- **Fix**: Document why polkit access is necessary. Ensure policy defaults use `auth_admin_keep` (not `yes`). Include reviewer notes explaining the privilege escalation model.
