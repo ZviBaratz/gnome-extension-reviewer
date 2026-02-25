@@ -1,0 +1,10 @@
+Regression fixture for AI slop rejection case.
+
+Based on the hara-hachi-bu@ZviBaratz extension, which was rejected
+from extensions.gnome.org for AI-generated code signals.
+
+Key signals reproduced:
+- JSDoc @param/@returns annotations (R-SLOP-01, R-SLOP-02)
+- Verbose template error message (R-SLOP-19)
+- Catch-log-rethrow pattern (R-SLOP-22)
+- LLM prompt comments (R-SLOP-18)

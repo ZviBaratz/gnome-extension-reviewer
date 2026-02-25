@@ -1,0 +1,7 @@
+{
+    "uuid": "regression-001-ai-slop@test",
+    "name": "Regression 001 AI Slop",
+    "description": "Reproduces AI slop signals from hara-hachi-bu rejection",
+    "shell-version": ["47"],
+    "url": "https://github.com/test/regression-001"
+}

@@ -18,3 +18,12 @@ echo "=== ai-slop-cleanup ==="
 run_lint "ai-slop-cleanup@test"
 assert_output_contains "detects redundant cleanup" "\[WARN\].*quality/redundant-cleanup"
 echo ""
+
+# --- regression-001-ai-slop ---
+echo "=== regression-001-ai-slop ==="
+run_lint "regressions/regression-001-ai-slop@test"
+assert_output_contains "detects JSDoc @param" "\[WARN\].*R-SLOP-01"
+assert_output_contains "detects JSDoc @returns" "\[WARN\].*R-SLOP-02"
+assert_output_contains "detects LLM prompt comments" "\[WARN\].*R-SLOP-18"
+assert_output_contains "detects catch-log-rethrow" "\[WARN\].*R-SLOP-22"
+echo ""
