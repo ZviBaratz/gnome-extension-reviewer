@@ -405,3 +405,45 @@ disable() {
 **Key insight:** The `_destroyed` flag is checked after each `await` point.
 `disable()` cleans up immediately and synchronously. No "pending" coordination
 needed.
+
+## Signal Balance Verification
+
+When reviewing, build an explicit inventory:
+
+1. **Grep for all connect calls**: `.connect(`, `.connectObject(`
+2. **Grep for all disconnect calls**: `.disconnect(`, `.disconnectObject(`
+3. **For each `connectObject` call**, verify a matching `disconnectObject(this)` exists in the disable/destroy path
+4. **For each manual `.connect(` call**, verify:
+   - The returned handler ID is stored
+   - A matching `.disconnect(id)` exists in disable/destroy
+   - The ID is nulled after disconnect
+
+### Untracked Timeout Check
+
+1. **Grep for `timeout_add` and `idle_add`**
+2. **For each call**, verify the return value is assigned to a variable
+3. **For each stored ID**, verify `GLib.Source.remove(id)` is called in disable/destroy
+
+### connectObject Migration
+
+If the extension uses 3+ manual connect/disconnect pairs, suggest migrating to
+`connectObject()` for automatic cleanup:
+
+```javascript
+// Before: manual tracking
+enable() {
+    this._id = this._settings.connect('changed::key', () => {});
+}
+disable() {
+    this._settings.disconnect(this._id);
+    this._id = null;
+}
+
+// After: auto-cleanup
+enable() {
+    this._settings.connectObject('changed::key', () => {}, this);
+}
+disable() {
+    this._settings.disconnectObject(this);
+}
+```
