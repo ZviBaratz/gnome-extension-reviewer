@@ -8,6 +8,8 @@
 #     message: "explanation"   # Human-readable message
 #     category: category-name  # For grouping
 #     fix: "how to fix"        # Optional
+#     min-version: 46         # Optional: only check if extension targets this GNOME version or newer
+#     max-version: 45         # Optional: only check if extension targets this version or older
 #
 # Add new rules by appending to this file. See CONTRIBUTING.md for details.
 
