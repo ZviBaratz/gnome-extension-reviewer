@@ -468,6 +468,13 @@ assert_exit_code "exits with 0 (warnings only)" 0
 assert_output_contains "warns on direct dgettext" "\[WARN\].*quality/gettext-pattern"
 echo ""
 
+# --- polkit-files ---
+echo "=== polkit-files ==="
+run_lint "polkit-files@test"
+assert_exit_code "exits with 0 (warnings only)" 0
+assert_output_contains "warns on polkit files" "\[WARN\].*polkit-files"
+echo ""
+
 # --- Summary ---
 echo "============================================"
 echo "  Results: $PASS_COUNT passed, $FAIL_COUNT failed"

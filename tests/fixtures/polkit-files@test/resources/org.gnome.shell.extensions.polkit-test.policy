@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<policyconfig>
+  <action id="org.gnome.shell.extensions.polkit-test.write">
+    <defaults>
+      <allow_active>auth_admin_keep</allow_active>
+    </defaults>
+  </action>
+</policyconfig>

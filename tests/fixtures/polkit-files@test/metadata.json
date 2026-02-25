@@ -1,0 +1,7 @@
+{
+    "uuid": "polkit-files@test",
+    "name": "Polkit Files Test",
+    "description": "Tests polkit policy file detection",
+    "shell-version": ["48"],
+    "url": "https://github.com/test/polkit-files"
+}

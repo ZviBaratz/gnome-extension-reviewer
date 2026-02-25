@@ -237,6 +237,23 @@ else
 fi
 
 # ---------------------------------------------------------------------------
+# Polkit policy file check
+# ---------------------------------------------------------------------------
+
+polkit_files=""
+while IFS= read -r -d '' f; do
+    rel_path="${f#"$EXT_DIR/"}"
+    polkit_files+="  $rel_path"$'\n'
+done < <(find "$EXT_DIR" -type f \( -name '*.policy' -o -name '*.rules' \) -not -path '*/node_modules/*' -not -path '*/.git/*' -print0 2>/dev/null)
+
+if [[ -n "$polkit_files" ]]; then
+    hit_count=$(echo -n "$polkit_files" | grep -c '.' || true)
+    print_result "WARN" "polkit-files" "Found $hit_count polkit policy/rules file(s) — requires security review"
+else
+    print_result "PASS" "polkit-files" "No polkit policy files found"
+fi
+
+# ---------------------------------------------------------------------------
 # Minified/bundled JavaScript check
 # ---------------------------------------------------------------------------
 
