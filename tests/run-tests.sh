@@ -533,6 +533,14 @@ run_lint "shell-concat@test"
 assert_output_contains "Should detect subprocess string concatenation" "\[WARN\].*R-SEC-13"
 echo ""
 
+# --- gobject-patterns ---
+echo "=== gobject-patterns ==="
+run_lint "gobject-patterns@test"
+assert_output_contains "detects missing GTypeName" "gobject/missing-gtypename"
+assert_output_contains "detects missing super._init" "gobject/missing-super-init"
+assert_output_contains "detects missing cr.\$dispose" "gobject/cairo-dispose"
+echo ""
+
 # --- Summary ---
 echo "============================================"
 echo "  Results: $PASS_COUNT passed, $FAIL_COUNT failed"

@@ -1,0 +1,6 @@
+{
+  "uuid": "gobject-patterns@test",
+  "name": "GObject Patterns Test",
+  "description": "Tests GObject pattern validation",
+  "shell-version": ["48"]
+}
