@@ -16,6 +16,19 @@ combining automated checks with manual review in a structured pipeline.
 
 ## Pipeline Phases
 
+### Pre-flight: Review Simulation (optional)
+
+Offer to run `gnome-extension-reviewer:ego-simulate` before the full pipeline.
+This gives the developer a quick reviewer's-eye-view with a pass/fail score
+before investing time in the full validation sequence.
+
+- If the simulation score is **10+**: strongly recommend fixing blocking issues
+  before proceeding with the full pipeline
+- If the simulation score is **5-9**: note the concerns but proceed
+- If the simulation score is **0-4**: proceed normally
+
+The simulation is advisory — it does not block the pipeline.
+
 ### Phase 1: Automated Lint
 
 Invoke `gnome-extension-reviewer:ego-lint` against the extension directory.
