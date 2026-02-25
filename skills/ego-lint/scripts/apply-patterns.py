@@ -201,7 +201,11 @@ def main():
                         for lineno, line in enumerate(f, 1):
                             if compiled.search(line):
                                 rel = os.path.relpath(filepath, ext_dir)
-                                print(f"{status}|{rid}|{rel}:{lineno}: {message}")
+                                fix = rule.get('fix', '')
+                                if fix:
+                                    print(f"{status}|{rid}|{rel}:{lineno}: {message}|fix: {fix}")
+                                else:
+                                    print(f"{status}|{rid}|{rel}:{lineno}: {message}")
                                 found = True
                 except OSError:
                     continue
