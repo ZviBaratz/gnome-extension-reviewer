@@ -2,5 +2,6 @@
     "uuid": "run-dispose@test",
     "name": "Run Dispose Test",
     "description": "Tests run_dispose detection",
-    "shell-version": ["48"]
+    "shell-version": ["48"],
+    "url": "https://github.com/test/run-dispose"
 }

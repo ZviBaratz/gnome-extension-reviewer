@@ -1,1 +1,1 @@
-{"uuid": "async-no-destroyed@test", "name": "Test", "description": "Test async destroyed guard detection", "shell-version": ["48"]}
+{"uuid": "async-no-destroyed@test", "name": "Test", "description": "Test async destroyed guard detection", "shell-version": ["48"], "url": "https://github.com/test/async-no-destroyed"}

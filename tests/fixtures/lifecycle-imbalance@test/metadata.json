@@ -2,5 +2,6 @@
     "uuid": "lifecycle-imbalance@test",
     "name": "Lifecycle Imbalance Test",
     "description": "Tests signal imbalance and untracked timeouts",
-    "shell-version": ["48"]
+    "shell-version": ["48"],
+    "url": "https://github.com/test/lifecycle-imbalance"
 }

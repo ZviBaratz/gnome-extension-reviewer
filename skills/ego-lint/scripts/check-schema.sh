@@ -67,7 +67,7 @@ for schema_file in "${schema_files[@]}"; do
         if [[ "$actual_filename" == "$expected_filename" ]]; then
             echo "PASS|schema/filename-convention|Schema filename matches ID: $actual_filename"
         else
-            echo "WARN|schema/filename-convention|Schema filename '$actual_filename' should be '$expected_filename'"
+            echo "FAIL|schema/filename-convention|Schema filename '$actual_filename' MUST be '$expected_filename'"
         fi
     fi
 done

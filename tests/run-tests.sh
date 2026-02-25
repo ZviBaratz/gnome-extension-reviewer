@@ -250,9 +250,9 @@ echo ""
 # --- metadata-polish ---
 echo "=== metadata-polish ==="
 run_lint "metadata-polish@test"
-assert_exit_code "exits with 0 (warnings only)" 0
+assert_exit_code "exits with 1 (has failures)" 1
 assert_output_contains "warns on missing gettext-domain" "\[WARN\].*metadata/missing-gettext-domain"
-assert_output_contains "warns on future shell-version" "\[WARN\].*metadata/future-shell-version"
+assert_output_contains "fails on future shell-version" "\[FAIL\].*metadata/future-shell-version"
 echo ""
 
 # --- clipboard-access ---
@@ -352,8 +352,8 @@ echo ""
 # --- missing-url ---
 echo "=== missing-url ==="
 run_lint "missing-url@test"
-assert_exit_code "exits with 0 (warning only)" 0
-assert_output_contains "warns on missing url" "\[WARN\].*metadata/missing-url"
+assert_exit_code "exits with 1 (has failures)" 1
+assert_output_contains "fails on missing url" "\[FAIL\].*metadata/missing-url"
 echo ""
 
 # --- multi-dev-version ---
@@ -380,8 +380,8 @@ echo ""
 # --- schema-filename ---
 echo "=== schema-filename ==="
 run_lint "schema-filename@test"
-assert_exit_code "exits with 0 (warnings only)" 0
-assert_output_contains "warns on schema filename" "\[WARN\].*schema/filename-convention"
+assert_exit_code "exits with 1 (has failures)" 1
+assert_output_contains "fails on schema filename" "\[FAIL\].*schema/filename-convention"
 echo ""
 
 # --- gnome46-compat ---

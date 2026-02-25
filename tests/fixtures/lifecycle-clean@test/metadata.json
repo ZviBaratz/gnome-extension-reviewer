@@ -2,5 +2,6 @@
     "uuid": "lifecycle-clean@test",
     "name": "Lifecycle Clean Test",
     "description": "Tests clean lifecycle patterns",
-    "shell-version": ["48"]
+    "shell-version": ["48"],
+    "url": "https://github.com/test/lifecycle-clean"
 }

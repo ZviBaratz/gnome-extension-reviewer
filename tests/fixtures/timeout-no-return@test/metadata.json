@@ -1,1 +1,1 @@
-{"uuid": "timeout-no-return@test", "name": "Test", "description": "Test timeout return value detection", "shell-version": ["48"]}
+{"uuid": "timeout-no-return@test", "name": "Test", "description": "Test timeout return value detection", "shell-version": ["48"], "url": "https://github.com/test/timeout-no-return"}

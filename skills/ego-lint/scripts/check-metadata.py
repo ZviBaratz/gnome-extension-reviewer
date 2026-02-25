@@ -173,7 +173,7 @@ def main():
 
     # --- session-modes ---
     if "session-modes" in meta and meta["session-modes"] == ["user"]:
-        result("WARN", "metadata/session-modes", 'session-modes ["user"] is redundant (EGO default)')
+        result("FAIL", "metadata/session-modes", 'session-modes ["user"] is redundant and MUST be dropped — it is the EGO default')
     else:
         result("PASS", "metadata/session-modes", "No redundant session-modes key")
 
@@ -227,7 +227,7 @@ def main():
         for v in sv:
             try:
                 if int(v) > CURRENT_STABLE:
-                    result("WARN", "metadata/future-shell-version",
+                    result("FAIL", "metadata/future-shell-version",
                            f"shell-version '{v}' is newer than current stable ({CURRENT_STABLE})")
             except ValueError:
                 pass
@@ -250,8 +250,8 @@ CURRENT_STABLE = 48
 def check_url_field(meta):
     """WARN if url field is missing from metadata."""
     if "url" not in meta:
-        result("WARN", "metadata/missing-url",
-               "metadata.json has no url field; consider adding a project homepage")
+        result("FAIL", "metadata/missing-url",
+               "metadata.json has no url field — required for EGO submission")
     else:
         result("PASS", "metadata/missing-url", "url field is present")
 

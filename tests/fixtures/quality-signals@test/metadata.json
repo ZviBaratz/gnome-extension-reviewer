@@ -2,5 +2,6 @@
     "uuid": "quality-signals@test",
     "name": "Quality Signals Test",
     "description": "Tests AI quality signal detection",
-    "shell-version": ["48"]
+    "shell-version": ["48"],
+    "url": "https://github.com/test/quality-signals"
 }

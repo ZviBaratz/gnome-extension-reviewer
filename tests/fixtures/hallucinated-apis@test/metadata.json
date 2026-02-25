@@ -2,5 +2,6 @@
     "uuid": "hallucinated-apis@test",
     "name": "Hallucinated APIs Test",
     "description": "Tests detection of non-existent GJS APIs",
-    "shell-version": ["48"]
+    "shell-version": ["48"],
+    "url": "https://github.com/test/hallucinated-apis"
 }
