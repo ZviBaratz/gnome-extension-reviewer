@@ -776,3 +776,168 @@ Rules for security-sensitive patterns that will cause EGO rejection.
 - **Rule**: Extension code should use `Clutter.BUTTON_PRIMARY`, `Clutter.BUTTON_MIDDLE`, and `Clutter.BUTTON_SECONDARY` instead of magic numbers 1, 2, 3.
 - **Rationale**: Magic button numbers are a common AI-generated code pattern. Using Clutter constants is more readable and follows GNOME coding conventions.
 - **Fix**: Replace `.get_button() === 1` with `.get_button() === Clutter.BUTTON_PRIMARY`, 2 with `Clutter.BUTTON_MIDDLE`, 3 with `Clutter.BUTTON_SECONDARY`.
+
+---
+
+## Lifecycle (R-LIFE)
+
+Rules for extension lifecycle management: enable/disable hooks, signal cleanup, and timeout tracking.
+
+### R-LIFE-01: Signal Balance
+- **Severity**: advisory
+- **Checked by**: check-lifecycle.py
+- **Rule**: Detects imbalance between manual `.connect()` and `.disconnect()` calls (threshold: >2 imbalance).
+- **Rationale**: Unmatched signal connections are the #1 cause of extension rejections. Leaked signals cause memory leaks and crash loops.
+- **Fix**: For each `.connect()` call, ensure a matching `.disconnect()` in disable/destroy. Consider using `connectObject()` for automatic cleanup.
+- **Tested by**: `tests/fixtures/lifecycle-basic@test/`
+
+### R-LIFE-02: Untracked Timeouts
+- **Severity**: advisory
+- **Checked by**: check-lifecycle.py
+- **Rule**: `timeout_add` or `idle_add` call whose return value is not stored.
+- **Rationale**: Without the source ID, the timeout cannot be removed in disable(), causing callbacks after extension teardown.
+- **Fix**: Store the return value: `this._timeoutId = GLib.timeout_add(...)` and call `GLib.Source.remove(this._timeoutId)` in disable().
+- **Tested by**: `tests/fixtures/lifecycle-basic@test/`
+
+### R-LIFE-03: Missing enable/disable
+- **Severity**: blocking
+- **Checked by**: check-lifecycle.py
+- **Rule**: extension.js must define both `enable()` and `disable()` methods.
+- **Rationale**: These are the fundamental lifecycle hooks. Missing either means the extension cannot be properly managed.
+- **Fix**: Add the missing method. `disable()` must reverse everything `enable()` sets up.
+- **Tested by**: `tests/fixtures/lifecycle-basic@test/`
+
+### R-LIFE-04: connectObject Migration Advisory
+- **Severity**: advisory
+- **Checked by**: check-lifecycle.py
+- **Rule**: Suggests `connectObject()` when 3+ manual connect/disconnect pairs exist without any connectObject usage.
+- **Rationale**: `connectObject()` provides automatic cleanup via `disconnectObject(this)`, reducing boilerplate and leak risk.
+- **Fix**: Migrate manual connect/disconnect pairs to `connectObject()` with `this` as the last argument.
+- **Tested by**: `tests/fixtures/lifecycle-basic@test/`
+
+---
+
+## Files — Extended (R-FILE, continued)
+
+### R-FILE-07: Missing Default Export
+- **Severity**: advisory
+- **Checked by**: check-lifecycle.py
+- **Rule**: extension.js missing `export default class` — required for GNOME 45+.
+- **Rationale**: GNOME 45 switched to ESM modules. Extensions must use `export default class` extending `Extension`.
+- **Fix**: Use `export default class MyExtension extends Extension { ... }` pattern.
+- **Tested by**: `tests/fixtures/lifecycle-basic@test/`
+
+---
+
+## AI Slop Signals — Extended (R-SLOP, continued)
+
+### R-SLOP-08: Hallucinated Meta/Shell APIs
+- **Severity**: advisory
+- **Checked by**: apply-patterns.py
+- **Rule**: Detects `Meta.Screen`, `Meta.Cursor`, `Shell.ActionMode.ALL`, `Shell.WindowTracker.get_default().get_active_window`.
+- **Rationale**: These APIs don't exist in GNOME Shell. LLMs hallucinate them from outdated docs or other frameworks.
+- **Fix**: Use `global.display`/`Meta.Display` instead of `Meta.Screen`. Check https://gjs-docs.gnome.org.
+- **Tested by**: `tests/fixtures/hallucinated-apis@test/`
+
+### R-SLOP-09: St Widget Setter Methods
+- **Severity**: advisory
+- **Checked by**: apply-patterns.py
+- **Rule**: `St.Button.set_label()`, `St.Label.set_text()`, `St.Widget.set_icon_name()` — setter methods don't exist.
+- **Rationale**: St widgets use GObject properties, not GTK-style setter methods.
+- **Fix**: Use property assignment: `button.label = 'text'` instead of `button.set_label('text')`.
+- **Tested by**: `tests/fixtures/hallucinated-apis@test/`
+
+### R-SLOP-10: Hallucinated Clutter Methods
+- **Severity**: advisory
+- **Checked by**: apply-patterns.py
+- **Rule**: `Clutter.Actor.show_all()`, `hide_all()`, `set_position()`, `set_size()` are GTK methods, not Clutter.
+- **Rationale**: LLMs confuse GTK and Clutter widget APIs.
+- **Fix**: Use `actor.show()`/`hide()` for visibility. Use `actor.set({x, y, width, height})` for geometry.
+- **Tested by**: `tests/fixtures/hallucinated-apis@test/`
+
+### R-SLOP-11: Non-existent GLib Methods
+- **Severity**: advisory
+- **Checked by**: apply-patterns.py
+- **Rule**: `GLib.timeout_add_seconds_full` and `GLib.source_remove` don't exist in GJS bindings.
+- **Rationale**: LLMs confuse C API names with GJS binding names.
+- **Fix**: Use `GLib.timeout_add_seconds()` and `GLib.Source.remove()`.
+- **Tested by**: `tests/fixtures/hallucinated-apis@test/`
+
+### R-SLOP-12: typeof super.destroy Guard
+- **Severity**: advisory
+- **Checked by**: apply-patterns.py
+- **Rule**: `typeof super.destroy === 'function'` check is unnecessary — super.destroy() always exists on GObject classes.
+- **Rationale**: Canonical AI slop signal identified by JustPerfection in the GNOME AI policy blog post.
+- **Fix**: Remove the typeof check and call `super.destroy()` directly.
+- **Tested by**: `tests/fixtures/hallucinated-apis@test/`
+
+### R-SLOP-13: Redundant instanceof this
+- **Severity**: advisory
+- **Checked by**: apply-patterns.py
+- **Rule**: `this instanceof ClassName` inside a class method is always true.
+- **Rationale**: Classic defensive programming pattern that AI generates unnecessarily.
+- **Fix**: Remove the redundant instanceof check.
+- **Tested by**: `tests/fixtures/hallucinated-apis@test/`
+
+---
+
+## Security — Extended (R-SEC, continued)
+
+### R-SEC-06: run_dispose Usage
+- **Severity**: advisory
+- **Checked by**: apply-patterns.py
+- **Rule**: `GObject.run_dispose()` should not be used unless absolutely necessary.
+- **Rationale**: `run_dispose()` forcefully disposes GObject resources and can cause issues if not used carefully.
+- **Fix**: Remove `run_dispose()` call. If genuinely needed, add a comment explaining why.
+- **Tested by**: `tests/fixtures/hallucinated-apis@test/`
+
+---
+
+## Code Quality Heuristics — Extended (R-QUAL, continued)
+
+### R-QUAL-10: Code Volume
+- **Severity**: advisory
+- **Checked by**: check-quality.py
+- **Rule**: Flags extensions with more than 8000 non-blank JS lines.
+- **Rationale**: Large codebases are harder to review and more likely to contain unreviewed AI-generated code.
+- **Fix**: Ensure all code is necessary and has been manually reviewed.
+- **Tested by**: `tests/fixtures/quality-signals@test/`
+
+### R-QUAL-11: Comment Density
+- **Severity**: advisory
+- **Checked by**: check-quality.py
+- **Rule**: Flags files where >40% of lines (after first 10) are comments.
+- **Rationale**: Excessive comments explaining obvious code is a strong AI slop signal.
+- **Fix**: Remove redundant comments. Only keep comments that explain non-obvious logic or API quirks.
+- **Tested by**: `tests/fixtures/quality-signals@test/`
+
+---
+
+## Metadata — Extended (R-META, continued)
+
+### R-META-16: Missing gettext-domain
+- **Severity**: advisory
+- **Checked by**: check-metadata.py
+- **Rule**: locale/ directory exists but gettext-domain not set in metadata.json.
+- **Rationale**: Without gettext-domain, translations in locale/ won't be used.
+- **Fix**: Add `"gettext-domain": "your-extension-name"` to metadata.json.
+- **Tested by**: `tests/fixtures/metadata-polish@test/`
+
+### R-META-17: Future shell-version
+- **Severity**: advisory
+- **Checked by**: check-metadata.py
+- **Rule**: shell-version entry newer than current stable (48).
+- **Rationale**: Speculative or AI-hallucinated shell versions indicate unreviewed metadata.
+- **Fix**: Only list shell versions that have been tested.
+- **Tested by**: `tests/fixtures/metadata-polish@test/`
+
+---
+
+## Package — Extended (R-PKG, continued)
+
+### R-PKG-12: Package Size
+- **Severity**: advisory
+- **Checked by**: check-package.sh
+- **Rule**: Zip file exceeds 5MB.
+- **Rationale**: Large packages slow down review and may contain unnecessary files.
+- **Fix**: Remove unnecessary files (build artifacts, documentation, test fixtures) from the package.
