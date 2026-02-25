@@ -1,0 +1,7 @@
+{
+    "uuid": "injection-leak@test",
+    "name": "Injection Leak Test",
+    "description": "InjectionManager without cleanup",
+    "shell-version": ["47"],
+    "url": "https://github.com/test/injection-leak"
+}

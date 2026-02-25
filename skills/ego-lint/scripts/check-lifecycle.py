@@ -13,6 +13,7 @@ Checks:
   - R-LIFE-07: DBus proxy creation without disconnect
   - R-LIFE-08: File monitor without cancel
   - R-LIFE-09: Keybinding add without remove
+  - R-LIFE-10: InjectionManager without clear()
   - R-FILE-07: Missing export default class
 
 Output: PIPE-delimited lines: STATUS|check-name|detail
@@ -318,6 +319,31 @@ def check_file_monitor_lifecycle(ext_dir):
     # If no monitors, skip silently
 
 
+def check_injection_manager(ext_dir):
+    """R-LIFE-10: InjectionManager must be cleared in disable()."""
+    js_files = find_js_files(ext_dir, exclude_prefs=True)
+    if not js_files:
+        return
+
+    has_injection = False
+    has_clear = False
+
+    for filepath in js_files:
+        content = strip_comments(read_file(filepath))
+        if re.search(r'new\s+InjectionManager\s*\(', content):
+            has_injection = True
+        if re.search(r'\.clear\s*\(', content):
+            has_clear = True
+
+    if has_injection and not has_clear:
+        result("FAIL", "lifecycle/injection-cleanup",
+               "new InjectionManager() found but no .clear() call — "
+               "injections will persist after disable()")
+    elif has_injection and has_clear:
+        result("PASS", "lifecycle/injection-cleanup",
+               "InjectionManager with .clear() cleanup detected")
+
+
 def main():
     if len(sys.argv) < 2:
         result("FAIL", "lifecycle/args", "No extension directory provided")
@@ -335,6 +361,7 @@ def main():
     check_keybinding_cleanup(ext_dir)
     check_dbus_proxy_lifecycle(ext_dir)
     check_file_monitor_lifecycle(ext_dir)
+    check_injection_manager(ext_dir)
 
 
 if __name__ == '__main__':
