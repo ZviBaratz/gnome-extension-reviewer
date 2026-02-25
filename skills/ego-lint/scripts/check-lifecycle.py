@@ -14,11 +14,13 @@ Checks:
   - R-LIFE-08: File monitor without cancel
   - R-LIFE-09: Keybinding add without remove
   - R-LIFE-10: InjectionManager without clear()
+  - R-LIFE-11: Lock screen signal safety
   - R-FILE-07: Missing export default class
 
 Output: PIPE-delimited lines: STATUS|check-name|detail
 """
 
+import json
 import os
 import re
 import sys
@@ -344,6 +346,52 @@ def check_injection_manager(ext_dir):
                "InjectionManager with .clear() cleanup detected")
 
 
+def check_lockscreen_signals(ext_dir):
+    """R-LIFE-11: Lock screen signal safety — keyboard signals with unlock-dialog mode."""
+    metadata_path = os.path.join(ext_dir, 'metadata.json')
+    if not os.path.isfile(metadata_path):
+        return
+
+    try:
+        with open(metadata_path, encoding='utf-8') as f:
+            metadata = json.load(f)
+    except (json.JSONDecodeError, OSError):
+        return
+
+    session_modes = metadata.get('session-modes', [])
+    if 'unlock-dialog' not in session_modes:
+        return  # Not relevant if extension doesn't run on lock screen
+
+    js_files = find_js_files(ext_dir, exclude_prefs=True)
+    keyboard_signals = ['key-press-event', 'key-release-event', 'captured-event']
+
+    for filepath in js_files:
+        content = strip_comments(read_file(filepath))
+        rel = os.path.relpath(filepath, ext_dir)
+
+        has_keyboard_signal = False
+        for sig in keyboard_signals:
+            if sig in content:
+                has_keyboard_signal = True
+                break
+
+        if has_keyboard_signal:
+            # Check for session mode guard
+            has_guard = bool(
+                re.search(r'(currentMode|sessionMode|unlock-dialog|session-modes)', content)
+            )
+            if not has_guard:
+                result("FAIL", "lifecycle/lockscreen-signals",
+                       f"{rel}: keyboard signal connected but session-modes includes "
+                       f"'unlock-dialog' — must disconnect or guard keyboard signals on lock screen")
+            else:
+                result("PASS", "lifecycle/lockscreen-signals",
+                       f"{rel}: keyboard signal with session mode guard detected")
+            return  # Only report once
+
+    # Has unlock-dialog mode but no keyboard signals — that's fine
+
+
 def main():
     if len(sys.argv) < 2:
         result("FAIL", "lifecycle/args", "No extension directory provided")
@@ -362,6 +410,7 @@ def main():
     check_dbus_proxy_lifecycle(ext_dir)
     check_file_monitor_lifecycle(ext_dir)
     check_injection_manager(ext_dir)
+    check_lockscreen_signals(ext_dir)
 
 
 if __name__ == '__main__':

@@ -1,0 +1,8 @@
+{
+    "uuid": "lockscreen-signals@test",
+    "name": "Lock Screen Signals Test",
+    "description": "Keyboard signals with unlock-dialog",
+    "shell-version": ["47"],
+    "session-modes": ["user", "unlock-dialog"],
+    "url": "https://github.com/test/lockscreen-signals"
+}

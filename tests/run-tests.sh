@@ -562,6 +562,13 @@ assert_exit_code "exits with 1 (has failures)" 1
 assert_output_contains "detects missing InjectionManager.clear()" "\[FAIL\].*lifecycle/injection-cleanup"
 echo ""
 
+# --- lockscreen-signals ---
+echo "=== lockscreen-signals ==="
+run_lint "lockscreen-signals@test"
+assert_exit_code "exits with 1 (has failures)" 1
+assert_output_contains "detects unguarded keyboard signals" "\[FAIL\].*lifecycle/lockscreen-signals"
+echo ""
+
 # --- init-modification ---
 echo "=== init-modification ==="
 run_lint "init-modification@test"
