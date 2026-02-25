@@ -1,0 +1,8 @@
+{
+    "uuid": "schema-filename@test",
+    "name": "Schema Filename Test",
+    "description": "Tests that schema filename matches schema ID convention",
+    "shell-version": ["48"],
+    "settings-schema": "org.gnome.shell.extensions.schema-filename-test",
+    "url": "https://github.com/test/schema-filename"
+}

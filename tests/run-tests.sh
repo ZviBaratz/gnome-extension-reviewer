@@ -135,7 +135,7 @@ echo "=== bad-package ==="
 run_lint "bad-package"
 assert_exit_code "exits with 1 (has failures)" 1
 assert_output_contains "fails on nested structure" "\[FAIL\].*package/nested-structure"
-assert_output_contains "fails on missing compiled schemas" "\[FAIL\].*package/compiled-schemas"
+assert_output_contains "passes on no compiled schemas (GNOME 44+)" "\[PASS\].*package/compiled-schemas"
 echo ""
 
 # --- ai-slop ---
@@ -375,6 +375,13 @@ echo "=== esm-version-floor ==="
 run_lint "esm-version-floor@test"
 assert_exit_code "exits with 1 (has failures)" 1
 assert_output_contains "fails on pre-ESM shell-version" "\[FAIL\].*metadata/shell-version-esm-floor"
+echo ""
+
+# --- schema-filename ---
+echo "=== schema-filename ==="
+run_lint "schema-filename@test"
+assert_exit_code "exits with 0 (warnings only)" 0
+assert_output_contains "warns on schema filename" "\[WARN\].*schema/filename-convention"
 echo ""
 
 # --- Summary ---
