@@ -1,0 +1,7 @@
+{
+    "uuid": "ver49-unmaximize-flags@test",
+    "name": "Unmaximize Flags Test",
+    "description": "Tests MaximizeFlags removed from unmaximize() in GNOME 49",
+    "shell-version": ["49"],
+    "url": "https://example.com"
+}

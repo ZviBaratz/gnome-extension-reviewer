@@ -1,0 +1,7 @@
+{
+    "uuid": "base64-usage@test",
+    "name": "Base64 Usage Test",
+    "description": "Tests atob/btoa detection",
+    "shell-version": ["48"],
+    "url": "https://example.com"
+}

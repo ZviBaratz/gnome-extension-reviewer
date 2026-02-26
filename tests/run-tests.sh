@@ -267,8 +267,8 @@ echo ""
 # --- telemetry-patterns ---
 echo "=== telemetry-patterns ==="
 run_lint "telemetry-patterns@test"
-assert_exit_code "exits with 0 (advisory only)" 0
-assert_output_contains "warns on telemetry" "\[WARN\].*R-SEC-08"
+assert_exit_code "exits with failure (telemetry is blocking)" 1
+assert_output_contains "blocks on telemetry" "\[FAIL\].*R-SEC-08"
 echo ""
 
 # --- extension-interference ---
@@ -633,6 +633,10 @@ fi
 
 if [[ -f "$ASSERTIONS_DIR/severity-corrections.sh" ]]; then
     source "$ASSERTIONS_DIR/severity-corrections.sh"
+fi
+
+if [[ -f "$ASSERTIONS_DIR/version-compat-batch3.sh" ]]; then
+    source "$ASSERTIONS_DIR/version-compat-batch3.sh"
 fi
 
 # Hara-hachi-bu regression (conditional)

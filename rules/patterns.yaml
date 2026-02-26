@@ -360,8 +360,8 @@
 - id: R-SEC-08
   pattern: "\\b(analytics|telemetry|trackEvent|trackPage|GA_TRACKING_ID|gtag)\\b"
   scope: ["*.js"]
-  severity: advisory
-  message: "Telemetry/analytics is banned in GNOME extensions"
+  severity: blocking
+  message: "Telemetry/analytics is banned in GNOME extensions — this will be rejected"
   category: security
   fix: "Remove all telemetry/analytics code. EGO explicitly bans user tracking."
 
@@ -1043,3 +1043,29 @@
   message: "Unnecessary ?version= in gi:// import — this library does not require a version specifier"
   category: code-quality
   fix: "Remove ?version= from the import; only Soup, Gtk, Gdk, and Adw require version specifiers"
+
+- id: R-VER49-10
+  pattern: "\\bDoNotDisturbSwitch\\b"
+  scope: ["*.js"]
+  severity: blocking
+  message: "DoNotDisturbSwitch was removed in GNOME 49 — use DoNotDisturbToggle"
+  category: version-compat
+  min-version: 49
+  fix: "Replace DoNotDisturbSwitch with DoNotDisturbToggle"
+
+- id: R-VER49-11
+  pattern: "\\bunmaximize\\s*\\([^)]*MaximizeFlags"
+  scope: ["*.js"]
+  severity: blocking
+  message: "MaximizeFlags parameter was removed from unmaximize() in GNOME 49"
+  category: version-compat
+  min-version: 49
+  fix: "Call unmaximize() without the MaximizeFlags parameter"
+
+- id: R-SEC-23
+  pattern: "\\b(atob|btoa)\\s*\\("
+  scope: ["*.js"]
+  severity: advisory
+  message: "Base64 encoding/decoding may indicate obfuscated content — reviewer will inspect"
+  category: security
+  fix: "If used legitimately (e.g., data URIs), add a comment explaining the purpose"

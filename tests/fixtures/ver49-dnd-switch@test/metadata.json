@@ -1,0 +1,7 @@
+{
+    "uuid": "ver49-dnd-switch@test",
+    "name": "DND Switch Test",
+    "description": "Tests DoNotDisturbSwitch removed in GNOME 49",
+    "shell-version": ["49"],
+    "url": "https://example.com"
+}
