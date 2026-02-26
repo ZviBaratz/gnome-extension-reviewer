@@ -15,6 +15,7 @@ Checks:
   - R-LIFE-09: Keybinding add without remove
   - R-LIFE-10: InjectionManager without clear()
   - R-LIFE-11: Lock screen signal safety
+  - R-LIFE-12: Stored timeout/idle ID without Source.remove() in disable()
   - R-FILE-07: Missing export default class
 
 Output: PIPE-delimited lines: STATUS|check-name|detail
@@ -392,6 +393,62 @@ def check_lockscreen_signals(ext_dir):
     # Has unlock-dialog mode but no keyboard signals — that's fine
 
 
+def check_timeout_removal_in_disable(ext_dir):
+    """R-LIFE-12: Stored timeout IDs should have Source.remove() in disable()."""
+    ext_js = os.path.join(ext_dir, 'extension.js')
+    if not os.path.isfile(ext_js):
+        return
+
+    content = strip_comments(read_file(ext_js))
+
+    # Find stored timeout IDs: this._foo = ...timeout_add... or this._foo = ...idle_add...
+    stored_ids = set()
+    for m in re.finditer(r'this\.(_\w+)\s*=\s*.*?(timeout_add|idle_add)', content):
+        stored_ids.add(m.group(1))
+
+    if not stored_ids:
+        return  # No stored timeouts to check
+
+    # Extract disable() body
+    disable_match = re.search(r'\bdisable\s*\(\s*\)\s*\{', content)
+    if not disable_match:
+        return  # check_enable_disable handles missing disable()
+
+    # Extract body using brace depth
+    start = disable_match.end()
+    depth = 1
+    pos = start
+    while pos < len(content) and depth > 0:
+        if content[pos] == '{':
+            depth += 1
+        elif content[pos] == '}':
+            depth -= 1
+        pos += 1
+    disable_body = content[start:pos]
+
+    # Check if Source.remove is called in disable() for each stored ID
+    has_remove = bool(re.search(r'(Source\.remove|source_remove)\s*\(', disable_body))
+
+    missing = []
+    for var_name in stored_ids:
+        # Check if this specific ID is passed to Source.remove() or if there's a general remove
+        var_removed = bool(re.search(
+            rf'(Source\.remove|source_remove)\s*\(\s*this\.{re.escape(var_name)}',
+            disable_body
+        ))
+        if not var_removed and not has_remove:
+            missing.append(var_name)
+
+    if missing:
+        for var_name in sorted(missing):
+            result("WARN", "lifecycle/timeout-not-removed",
+                   f"this.{var_name} stores timeout/idle source but no "
+                   f"GLib.Source.remove() call found in disable()")
+    else:
+        result("PASS", "lifecycle/timeout-not-removed",
+               "All stored timeout/idle IDs have Source.remove() in disable()")
+
+
 def main():
     if len(sys.argv) < 2:
         result("FAIL", "lifecycle/args", "No extension directory provided")
@@ -403,6 +460,7 @@ def main():
     check_default_export(ext_dir)
     check_signal_balance(ext_dir)
     check_untracked_timeouts(ext_dir)
+    check_timeout_removal_in_disable(ext_dir)
     check_connect_object_migration(ext_dir)
     check_async_destroyed_guard(ext_dir)
     check_timeout_return_value(ext_dir)
