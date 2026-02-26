@@ -1,0 +1,7 @@
+{
+  "uuid": "clipboard-network@test",
+  "name": "Clipboard Network Test",
+  "description": "Test fixture for clipboard + network cross-reference",
+  "shell-version": ["45"],
+  "url": "https://example.com"
+}

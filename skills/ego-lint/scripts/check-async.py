@@ -82,6 +82,35 @@ def check_cancellable_usage(ext_dir, js_files):
                "Gio.Cancellable used with async operations")
 
 
+def check_async_inline_cancellable(ext_dir, js_files):
+    """GAP-020: Flag individual _async() calls without cancellable on the same line."""
+    missing = []
+
+    for filepath in js_files:
+        rel = os.path.relpath(filepath, ext_dir)
+        with open(filepath, encoding='utf-8', errors='replace') as f:
+            for lineno, line in enumerate(f, 1):
+                stripped = line.lstrip()
+                if stripped.startswith('//') or stripped.startswith('*'):
+                    continue
+                if '_async(' not in stripped:
+                    continue
+                # Skip lines that already have cancellable
+                if 'cancellable' in line.lower():
+                    continue
+                missing.append(f"{rel}:{lineno}")
+
+    if missing:
+        locs = ', '.join(missing[:3])
+        extra = f" (+{len(missing) - 3} more)" if len(missing) > 3 else ""
+        result("WARN", "async/missing-cancellable",
+               f"_async() calls without Gio.Cancellable at {locs}{extra} "
+               f"— async operations may run after disable()")
+    else:
+        result("PASS", "async/missing-cancellable",
+               "All _async() calls have cancellable argument")
+
+
 def check_disable_cancellation(ext_dir, js_files):
     """WARN when extension uses async but disable() has no cancel/abort."""
     ext_js = os.path.join(ext_dir, 'extension.js')
@@ -141,6 +170,7 @@ def main():
         return
 
     check_cancellable_usage(ext_dir, js_files)
+    check_async_inline_cancellable(ext_dir, js_files)
     check_disable_cancellation(ext_dir, js_files)
 
 

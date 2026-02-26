@@ -788,6 +788,36 @@ def check_network_disclosure(ext_dir, js_files):
            "mention network access — reviewers expect disclosure")
 
 
+def check_repeated_settings(ext_dir, js_files):
+    """R-QUAL-28: Flag multiple getSettings()/Gio.Settings instances across extension files."""
+    settings_re = re.compile(r'(\.getSettings\s*\(|new\s+Gio\.Settings\s*\()')
+    total = 0
+    locations = []
+
+    for filepath in js_files:
+        # Exclude prefs.js — multiple getSettings there is normal
+        if os.path.basename(filepath) == 'prefs.js':
+            continue
+        rel = os.path.relpath(filepath, ext_dir)
+        with open(filepath, encoding='utf-8', errors='replace') as f:
+            for lineno, line in enumerate(f, 1):
+                stripped = line.lstrip()
+                if stripped.startswith('//') or stripped.startswith('*'):
+                    continue
+                if settings_re.search(line):
+                    total += 1
+                    locations.append(f"{rel}:{lineno}")
+
+    if total > 2:
+        locs = ', '.join(locations[:5])
+        result("WARN", "quality/repeated-settings",
+               f"{total} getSettings()/Gio.Settings instances across extension files ({locs}) "
+               f"— store a single instance and pass via dependency injection")
+    else:
+        result("PASS", "quality/repeated-settings",
+               f"Settings instances OK ({total} across extension files)")
+
+
 def check_excessive_null_checks(ext_dir, js_files):
     """R-QUAL-24: Flag excessive null/undefined checks instead of optional chaining."""
     total_checks = 0
@@ -858,6 +888,7 @@ def main():
     check_clipboard_disclosure(ext_dir, js_files)
     check_network_disclosure(ext_dir, js_files)
     check_excessive_null_checks(ext_dir, js_files)
+    check_repeated_settings(ext_dir, js_files)
 
 
 if __name__ == '__main__':

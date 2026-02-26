@@ -1,0 +1,7 @@
+{
+  "uuid": "repeated-settings@test",
+  "name": "Repeated Settings Test",
+  "description": "Test fixture for repeated getSettings detection",
+  "shell-version": ["45"],
+  "url": "https://example.com"
+}

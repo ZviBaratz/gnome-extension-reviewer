@@ -1,0 +1,7 @@
+{
+  "uuid": "async-no-cancellable@test",
+  "name": "Async No Cancellable Test",
+  "description": "Test fixture for async without cancellable detection",
+  "shell-version": ["45"],
+  "url": "https://example.com"
+}

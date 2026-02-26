@@ -122,7 +122,7 @@ def check_signal_balance(ext_dir):
 
     # connectObject calls auto-disconnect, so only manual connects need matching disconnects
     imbalance = pure_connects - pure_disconnects
-    if imbalance > 2:
+    if imbalance > 1:
         result("WARN", "lifecycle/signal-balance",
                f"{pure_connects} manual .connect() calls but only {pure_disconnects} "
                f".disconnect() calls — verify all signals are disconnected in disable()")
@@ -821,6 +821,31 @@ def check_subprocess_cancellation(ext_dir):
     # If no subprocess, skip silently
 
 
+def check_clipboard_network(ext_dir):
+    """GAP-025: Clipboard + network access cross-reference."""
+    js_files = find_js_files(ext_dir, exclude_prefs=True)
+    if not js_files:
+        return
+
+    has_clipboard = False
+    has_network = False
+
+    for filepath in js_files:
+        content = strip_comments(read_file(filepath))
+        if re.search(r'St\.Clipboard', content):
+            has_clipboard = True
+        if (re.search(r'Soup\.Session', content) or
+                re.search(r'Gio\.SocketClient', content) or
+                re.search(r'\bfetch\s*\(', content)):
+            has_network = True
+
+    if has_clipboard and has_network:
+        result("WARN", "lifecycle/clipboard-network",
+               "Extension accesses both St.Clipboard and network APIs — "
+               "manual review required to verify clipboard data is not exfiltrated")
+    # Skip silently if no co-occurrence
+
+
 def check_soup_session_abort(ext_dir):
     """R-LIFE-15: Soup.Session should be aborted in disable()/destroy()."""
     js_files = find_js_files(ext_dir, exclude_prefs=True)
@@ -875,6 +900,7 @@ def main():
     check_dbus_export_lifecycle(ext_dir)
     check_timeout_reassignment(ext_dir)
     check_subprocess_cancellation(ext_dir)
+    check_clipboard_network(ext_dir)
     check_soup_session_abort(ext_dir)
     check_destroy_then_null(ext_dir)
 

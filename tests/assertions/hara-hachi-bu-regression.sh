@@ -19,6 +19,7 @@ output="$(bash "$LINT" "$HHB_DIR" 2>&1)" || exit_code=$?
 assert_output_contains "known: R-SEC-20 (pkexec advisory)" "\[WARN\].*R-SEC-20"
 assert_output_contains "known: R-PREFS-04 (GTK widgets)" "\[WARN\].*R-PREFS-04"
 assert_output_contains "known: R-SEC-07 (clipboard)" "\[WARN\].*R-SEC-07"
+assert_output_contains "known: async/missing-cancellable (null cancellables)" "\[WARN\].*async/missing-cancellable"
 
 # New checks MUST NOT produce false positives
 assert_output_not_contains "no init-safety false positive on registerClass" "\[FAIL\].*init/shell-modification"
@@ -51,4 +52,6 @@ assert_output_not_contains "no R-QUAL-27 false positive" "\[WARN\].*R-QUAL-27"
 assert_output_not_contains "no R-I18N-02 false positive" "\[WARN\].*R-I18N-02"
 assert_output_not_contains "no R-QUAL-04b false positive" "\[FAIL\].*R-QUAL-04b"
 assert_output_not_contains "no R-VER50-05 false positive" "\[WARN\].*R-VER50-05"
+assert_output_not_contains "no repeated-settings false positive" "\[WARN\].*quality/repeated-settings"
+assert_output_not_contains "no clipboard-network false positive" "\[WARN\].*lifecycle/clipboard-network"
 echo ""
