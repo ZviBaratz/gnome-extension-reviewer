@@ -87,8 +87,15 @@ Pattern rules currently cover:
 - **Logging patterns** — Legacy `log()` function, `print()`/`printerr()`
 - **AI slop signals** — TypeScript-style JSDoc annotations (`@param {Type}`,
   `@returns {Type}`), deprecated `version` field in metadata, non-standard
-  metadata fields (`version-name`, `homepage`, `bug-report-url`), and magic
-  button numbers instead of Clutter constants
+  metadata fields (`homepage`, `bug-report-url`), magic button numbers instead
+  of Clutter constants, `typeof super.method === 'function'` checks, defensive
+  spread copies, `instanceof Error` checks, empty `destroy()` overrides
+- **Version compatibility** — GNOME 44-50 API changes (removed Clutter classes,
+  Meta API moves, CSS class renames, X11 removal in GNOME 50)
+- **Internationalization** — Template literals and string concatenation inside
+  gettext `_()`, breaking xgettext extraction
+- **Code quality** — Module-scope GObject construction, string-based version
+  comparison, GSettings bind flags confusion, repeated getSettings instances
 
 ### Tier 2: Quality Heuristics
 
@@ -105,6 +112,9 @@ are likely to question:
 - Excessive `_destroyed` flag density (over-defensive lifecycle checks)
 - Mock/test code in production (MockDevice.js, test files, MOCK_MODE triggers)
 - Constructor resource allocation (getSettings, connect, timeout_add in constructors)
+- Repeated getSettings()/Gio.Settings instances across extension files
+- Network disclosure for extensions accessing remote services
+- Clipboard data paired with network access (exfiltration risk)
 
 ### Minified/Bundled JavaScript Detection
 

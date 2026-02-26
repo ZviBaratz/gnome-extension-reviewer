@@ -384,6 +384,13 @@ import {Extension} from 'resource:///org/gnome/shell/extensions/extension.js';
 - **Rationale**: `var` has function scope rather than block scope, which causes subtle bugs in closures and loops. Modern JavaScript uses `const` (preferred) and `let` (when reassignment is needed). EGO reviewers view `var` usage as a sign of outdated or AI-generated code.
 - **Fix**: Replace `var` with `const` (preferred) or `let` (when reassignment is needed).
 
+### R-DEPR-04-legacy: Legacy imports.* syntax (pre-GNOME 45)
+- **Severity**: advisory
+- **Checked by**: apply-patterns.py (max-version: 44)
+- **Rule**: Extensions targeting GNOME 44 and earlier may use `imports.*` syntax, but should prepare for migration.
+- **Rationale**: GNOME 45 requires ESM modules. This advisory-only variant of R-DEPR-04 applies to extensions that still target pre-45 versions, encouraging migration readiness without blocking submission.
+- **Fix**: For GNOME 45+ readiness, replace `const X = imports.ui.main` with `import * as Main from 'resource:///org/gnome/shell/ui/main.js'`.
+
 ### R-DEPR-10: No imports.format
 - **Severity**: blocking
 - **Checked by**: apply-patterns.py
@@ -864,13 +871,6 @@ _getActiveWorkspace() {
 - **Rule**: `metadata.json` should not contain a numeric `version` field.
 - **Rationale**: The `version` field in `metadata.json` is deprecated. EGO manages versioning automatically. Including it is harmless but signals unfamiliarity with current EGO practices, often because an AI template included it.
 - **Fix**: Remove the `"version"` key from `metadata.json`. EGO assigns version numbers on upload.
-
-### R-SLOP-04: Non-standard version-name field
-- **Severity**: advisory
-- **Checked by**: apply-patterns.py
-- **Rule**: `metadata.json` should not contain a `version-name` field.
-- **Rationale**: `version-name` is not a recognized `metadata.json` field. It appears in AI-generated extensions that hallucinate npm-style metadata fields.
-- **Fix**: Remove `"version-name"` from `metadata.json`.
 
 ### R-SLOP-05: Non-standard homepage field
 - **Severity**: advisory
@@ -1698,6 +1698,13 @@ Rules for `prefs.js` validation and EGO compliance.
 - **Rationale**: The GNOME HIG prefers Adwaita widgets (PreferencesPage, PreferencesGroup, ActionRow, SwitchRow, ComboRow) which provide consistent styling and behavior. Raw GTK widgets (Box, Label, Switch, Grid, etc.) work but look inconsistent with other GNOME preferences dialogs.
 - **Fix**: Use `Adw.PreferencesPage`, `Adw.PreferencesGroup`, `Adw.ActionRow`, `Adw.SwitchRow`, `Adw.ComboRow` instead of raw GTK widget constructors.
 
+### R-PREFS-04b: Raw GTK widgets advisory (non-blocking)
+- **Severity**: advisory
+- **Checked by**: apply-patterns.py
+- **Rule**: `prefs.js` uses raw GTK widgets (Label, Button, SpinButton, etc.) instead of Adwaita equivalents.
+- **Rationale**: While R-PREFS-04 blocks on high-impact GTK widgets (ListBox, HeaderBar, StackSwitcher, Notebook, InfoBar) that cause significant visual inconsistency, many other GTK widgets (Label, Button, Switch, Entry, Grid, etc.) are acceptable but could benefit from Adwaita equivalents where available.
+- **Fix**: Consider using `Adw.PreferencesPage`, `Adw.PreferencesGroup`, `Adw.ActionRow`, `Adw.SwitchRow`, `Adw.ComboRow` where suitable.
+
 ### R-PREFS-05: Prefs memory leak (GObject instances without cleanup)
 - **Severity**: advisory
 - **Checked by**: check-prefs.py
@@ -2129,6 +2136,13 @@ Rules for APIs removed or changed in specific GNOME Shell versions. These rules 
 - **Rationale**: The `xgettext` tool that extracts translatable strings cannot parse JavaScript template literals. Strings wrapped in `_(\`...\`)` will not appear in the `.pot` file and will never be translated.
 - **Fix**: Use `_('Found %d items').format(count)` instead of `_(\`Found \${count} items\`)`.
 
+### R-I18N-02: String concatenation inside gettext
+- **Severity**: advisory
+- **Checked by**: apply-patterns.py
+- **Rule**: `_('Hello ' + name)` — string concatenation inside `_()` breaks xgettext extraction.
+- **Rationale**: The `xgettext` tool extracts the concatenated partial string (e.g., `'Hello '`) rather than the full translatable string. Translators see incomplete fragments, and the translations will never match at runtime.
+- **Fix**: Use `_('Hello %s').format(name)` instead of `_('Hello ' + name)`.
+
 ---
 
 ## Version Compatibility (R-VER49) — continued
@@ -2306,3 +2320,68 @@ Rules for APIs removed or changed in specific GNOME Shell versions. These rules 
 - **Rationale**: GNOME 50 dropped X11 support, and restart was only available on X11.
 - **Fix**: Remove the signal connection; restart is no longer available.
 - **Tested by**: `tests/fixtures/gnome50-compat@test/`
+
+### R-VER50-05: One-shot timeout lifecycle trap
+- **Severity**: advisory
+- **Checked by**: apply-patterns.py (min-version: 50)
+- **Rule**: `timeout_add_once()`, `idle_add_once()`, and `timeout_add_seconds_once()` cannot be cancelled with `GLib.Source.remove()`.
+- **Rationale**: GNOME 50 added one-shot timeout variants that fire once and auto-remove. However, they cannot be cancelled before firing, so if the extension is disabled before the callback runs, the callback executes on a destroyed extension. A `_destroyed` guard in the callback is required.
+- **Fix**: Check `if (this._destroyed) return;` at the start of the callback.
+
+---
+
+## Security (R-SEC) — continued
+
+### R-SEC-20: pkexec advisory
+- **Severity**: advisory
+- **Checked by**: apply-patterns.py
+- **Rule**: `pkexec` usage will receive extra reviewer scrutiny.
+- **Rationale**: Extensions that use `pkexec` for privilege escalation require a valid polkit policy file. Reviewers will check that the action ID matches, the helper script validates input, and the target is not user-writable. Hardware extensions (e.g., battery threshold control) legitimately need pkexec.
+- **Fix**: Verify the polkit `.policy` file is present and the action ID matches. Consider udev rules for hardware access.
+
+---
+
+## AI Slop (R-SLOP) — continued
+
+### R-SLOP-30: typeof super.method check
+- **Severity**: blocking
+- **Checked by**: apply-patterns.py
+- **Rule**: `typeof super.method === 'function'` checks are unnecessary in GObject inheritance.
+- **Rationale**: In GObject, parent class methods always exist. Checking `typeof super.destroy === 'function'` before calling it is a hallmark of AI-generated code that applies JavaScript prototype-chain uncertainty to a framework where inheritance is guaranteed by the type system.
+- **Fix**: Remove the `typeof` check and call `super.method()` directly.
+
+---
+
+## Quality (R-QUAL) — continued
+
+### R-QUAL-04b: Module-scope GObject construction
+- **Severity**: blocking
+- **Checked by**: apply-patterns.py
+- **Rule**: `let/var` at column 0 followed by `new St./Gio./GLib./Clutter./Meta./Shell./GObject.` creates a module-scope GObject instance.
+- **Rationale**: Module-scope GObject instances persist across enable/disable cycles. When the extension is disabled and re-enabled, the old instance remains in memory while a new one may be created, causing leaks and undefined behavior.
+- **Fix**: Move the GObject construction into `enable()` and store as an instance property.
+
+### R-QUAL-27: Config.PACKAGE_VERSION string comparison
+- **Severity**: advisory
+- **Checked by**: apply-patterns.py
+- **Rule**: `Config.PACKAGE_VERSION === '47'` uses string comparison on version numbers.
+- **Rationale**: String comparison on version numbers is unreliable — `'9' > '47'` evaluates to `true` in JavaScript because string comparison is lexicographic. This is a common bug in version-gating code.
+- **Fix**: Use `parseInt(Config.PACKAGE_VERSION) >= 45` for numeric comparison.
+
+### R-QUAL-27b: Config.PACKAGE_VERSION.startsWith()
+- **Severity**: advisory
+- **Checked by**: apply-patterns.py
+- **Rule**: `Config.PACKAGE_VERSION.startsWith('45')` is unreliable for version checking.
+- **Rationale**: `startsWith` will match unintended versions (e.g., `'456'` would match `'45'`). Use numeric comparison instead.
+- **Fix**: Use `parseInt(Config.PACKAGE_VERSION) >= 45` instead of `Config.PACKAGE_VERSION.startsWith('45')`.
+
+---
+
+## Version Compatibility (R-VER48) — continued
+
+### R-VER48-04b: vertical property in constructor config
+- **Severity**: advisory
+- **Checked by**: apply-patterns.py (min-version: 48)
+- **Rule**: `vertical: true/false` in constructor configuration objects was removed in GNOME 48.
+- **Rationale**: GNOME 48 removed the `vertical` shorthand property from St.BoxLayout and other container constructors. Extensions targeting GNOME 48+ must use the `orientation` property with `Clutter.Orientation.VERTICAL` or `Clutter.Orientation.HORIZONTAL`.
+- **Fix**: Replace `{vertical: true}` with `{orientation: Clutter.Orientation.VERTICAL}`.

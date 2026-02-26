@@ -29,8 +29,8 @@
 | Guideline Requirement | Severity | Currently Covered? | By Which Rule/Check? | Gap Notes |
 |---|---|---|---|---|
 | Objects/widgets created MUST be destroyed in `disable()` | **MUST** | Partial | R-LIFE-01 (signal balance), R-LIFE-02 (untracked timeouts), R-LIFE-09 (keybinding), check-lifecycle.py | Heuristic checks for signal balance and timeout tracking. No general "widget created in enable() but not destroyed in disable()" check. |
-| All dynamically stored memory MUST be cleared in `disable()` | **MUST** | Tier 3 Only | lifecycle-checklist.md | Checklist covers nulling references. No automated check for missing `= null` after destroy. |
-| If `run_dispose()` is used, MUST include comment explaining why | **MUST** (if used) | Partial | R-SEC-06 (pattern: `.run_dispose(`) | Detects `run_dispose()` usage but does not verify a comment exists explaining the need. |
+| All dynamically stored memory MUST be cleared in `disable()` | **MUST** | Partial | lifecycle-checklist.md, check-lifecycle.py `destroy-no-null` | Checklist covers nulling references. Automated check warns when `.destroy()` is not followed by `= null` on the same variable. Does not cover all memory clearing scenarios. |
+| If `run_dispose()` is used, MUST include comment explaining why | **MUST** (if used) | Covered | R-SEC-06 (pattern: `.run_dispose(`), R-QUAL-21 (check-quality.py `run_dispose-comment`) | Detects `run_dispose()` usage AND verifies a comment exists on the same or preceding line explaining the need. |
 
 ## Section 3: Signal Management
 
@@ -81,7 +81,7 @@
 
 | Guideline Requirement | Severity | Currently Covered? | By Which Rule/Check? | Gap Notes |
 |---|---|---|---|---|
-| Extensions MUST NOT be submitted if primarily AI-generated | **MUST** | Partial | R-SLOP-01 through R-SLOP-29, R-QUAL-01 through R-QUAL-26, ai-slop-checklist.md (40 items) | Multiple heuristic signals (try-catch density, hallucinated APIs, typeof super, comment density, impossible state, pendulum pattern, null check density, spread copies, instanceof Error, empty destroy overrides, custom loggers, dir.get_path). Tier 3 checklist has 40 detailed items. Inherently hard to fully automate. |
+| Extensions MUST NOT be submitted if primarily AI-generated | **MUST** | Partial | R-SLOP-01 through R-SLOP-30, R-QUAL-01 through R-QUAL-28, ai-slop-checklist.md (46 items) | Multiple heuristic signals (try-catch density, hallucinated APIs, typeof super, comment density, impossible state, pendulum pattern, null check density, spread copies, instanceof Error, empty destroy overrides, custom loggers, dir.get_path, repeated getSettings, version string comparison). Tier 3 checklist has 46 detailed items. Inherently hard to fully automate. |
 | Developers MUST be able to justify and explain submitted code | **MUST** | Tier 3 Only | ai-slop-checklist.md | Semantic requirement; only addressable during human/AI code review. |
 
 ## Section 9: Metadata Requirements
@@ -135,7 +135,7 @@
 
 | Guideline Requirement | Severity | Currently Covered? | By Which Rule/Check? | Gap Notes |
 |---|---|---|---|---|
-| Privileged subprocess MUST use `pkexec` (not sudo directly) | **MUST** | Partial | R-SEC-04 (pattern: `pkexec`/`sudo`) | Flags both pkexec and sudo. Does not distinguish between them to enforce pkexec-only. |
+| Privileged subprocess MUST use `pkexec` (not sudo directly) | **MUST** | Covered | R-SEC-04 (sudo detection, blocking), R-SEC-20 (pkexec advisory) | R-SEC-04 now only flags `sudo` (blocking). R-SEC-20 flags `pkexec` as advisory for reviewer scrutiny. Split enforces pkexec-only policy. |
 | Privileged subprocess MUST NOT be user-writable executable or script | **MUST** | Covered | R-SEC-18 (check-lifecycle.py `pkexec-user-writable`) | Checks pkexec target paths for user-writable locations (/home/, /tmp/, ./, ../). |
 | Scripts MUST be written in GJS unless absolutely necessary | **MUST** | Covered | ego-lint.sh `non-gjs-scripts` | FAIL for non-GJS scripts without pkexec justification; WARN with pkexec (privileged helper exception). |
 | MUST NOT include binary executables or libraries | **MUST** | Covered | R-FILE-04, ego-lint.sh `no-binary-files` | |
