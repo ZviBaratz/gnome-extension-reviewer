@@ -81,7 +81,7 @@
 
 | Guideline Requirement | Severity | Currently Covered? | By Which Rule/Check? | Gap Notes |
 |---|---|---|---|---|
-| Extensions MUST NOT be submitted if primarily AI-generated | **MUST** | Partial | R-SLOP-01 through R-SLOP-28, R-QUAL-01 through R-QUAL-24, ai-slop-checklist.md (40 items) | Multiple heuristic signals (try-catch density, hallucinated APIs, typeof super, comment density, impossible state, pendulum pattern, null check density, spread copies, instanceof Error). Tier 3 checklist has 40 detailed items. Inherently hard to fully automate. |
+| Extensions MUST NOT be submitted if primarily AI-generated | **MUST** | Partial | R-SLOP-01 through R-SLOP-29, R-QUAL-01 through R-QUAL-26, ai-slop-checklist.md (40 items) | Multiple heuristic signals (try-catch density, hallucinated APIs, typeof super, comment density, impossible state, pendulum pattern, null check density, spread copies, instanceof Error, empty destroy overrides, custom loggers, dir.get_path). Tier 3 checklist has 40 detailed items. Inherently hard to fully automate. |
 | Developers MUST be able to justify and explain submitted code | **MUST** | Tier 3 Only | ai-slop-checklist.md | Semantic requirement; only addressable during human/AI code review. |
 
 ## Section 9: Metadata Requirements
@@ -182,7 +182,7 @@
 |---|---|---|---|---|
 | MUST extend `ExtensionPreferences` class | **MUST** | Partial | R-PREFS-02 (check-prefs.py `default-export`) | Checks for `export default class` but does NOT verify it extends `ExtensionPreferences`. |
 | MUST implement `fillPreferencesWindow()` or `getPreferencesWidget()` | **MUST** | Covered | R-PREFS-01 (check-prefs.py) | FAIL if neither method is present. Detects dual-prefs pattern conflict. |
-| MUST use GTK4 and Adwaita (not GTK3) | **MUST** | Uncovered | -- | No check for GTK3-specific imports or patterns in prefs.js (e.g., `Gtk.init(null)`, `Gtk.Box.pack_start`, GTK3-only widget names). |
+| MUST use GTK4 and Adwaita (not GTK3) | **MUST** | Partial | R-PREFS-04 (patterns.yaml), R-PREFS-05 (check-prefs.py) | R-PREFS-04 flags raw GTK widgets (Gtk.Box, Gtk.Label, etc.) instead of Adwaita equivalents. R-PREFS-05 detects GObject memory leaks. Does not detect all GTK3-specific patterns (e.g., `Gtk.init(null)`, `Gtk.Box.pack_start`). |
 | MUST NOT import Shell, Clutter, Meta, St in prefs | **MUST** | Covered | R-IMPORT-04 through R-IMPORT-07, check-imports.sh | |
 
 ## Section 22: ESModules Migration (GNOME 45+)
@@ -302,6 +302,19 @@ The following areas are now covered through Tier 3 review checklists:
 | Translation anti-pattern (R-I18N-01) | Template literal inside gettext _() breaks xgettext | patterns.yaml |
 | /tmp path security (R-SEC-17) | Hardcoded /tmp paths instead of XDG dirs | patterns.yaml |
 | GNOME 49 compat (R-VER49-06/07) | Clutter.DragAction, Clutter.SwipeAction removed | patterns.yaml |
+
+## New Coverage Added (2026-02-26) — Batch 1-3 Rules
+
+| Area | New Rules/Checks | Where |
+|---|---|---|
+| Compiled schemas in zip (R-PKG-12) | FAIL for gschemas.compiled in zip when targeting GNOME 45+ | check-package.sh |
+| Soup.Session abort (R-LIFE-15) | WARN when Soup.Session created without abort() in disable() | check-lifecycle.py |
+| Network disclosure (R-SEC-19) | WARN when HTTP/Soup usage detected without metadata description disclosure | check-quality.py |
+| Prefs memory leak (R-PREFS-05) | WARN for GObject instances stored as class properties without cleanup | check-prefs.py |
+| Empty destroy override (R-SLOP-29) | Advisory for `destroy() { super.destroy(); }` — GObject chains automatically | patterns.yaml |
+| dir.get_path() anti-pattern (R-QUAL-25) | Advisory: use this.path instead of this.dir.get_path() | patterns.yaml |
+| Custom Logger class (R-QUAL-26) | Advisory: use console.debug/warn/error instead | patterns.yaml |
+| GNOME 50 compat (R-VER50-01/02/03/04) | Blocking: releaseKeyboard, holdKeyboard, show-restart-message, restart signal removed | patterns.yaml |
 
 ---
 

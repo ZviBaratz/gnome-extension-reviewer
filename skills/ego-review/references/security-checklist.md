@@ -255,6 +255,20 @@ mechanism), this MUST be disclosed in the extension description on EGO. All
 connections must use HTTPS. No user-identifying data may be sent without
 explicit consent.
 
+### Network Service Disclosure
+
+Extensions using `Soup.Session`, HTTP requests, or external APIs MUST disclose
+network usage in the metadata description. This is actively enforced.
+
+- Verify: `metadata.json` `description` contains keywords like "network",
+  "internet", "api", "server", "web", "service", or the name of the service
+- Enforced in 3+ reviews: HakaWaka, All-in-One Clipboard, GitHub Tray
+- If undisclosed: reviewer will request description update before approval
+
+> **Reviewer says:** "Your extension makes network requests but this is not disclosed in the description. All network access must be mentioned so users can make an informed decision."
+
+**Automatically checked by ego-lint (R-SEC-19).**
+
 ## pkexec Justification Template
 
 When `R-SEC-04` triggers (pkexec/sudo usage), include this in your EGO

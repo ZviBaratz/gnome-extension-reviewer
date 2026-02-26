@@ -184,12 +184,45 @@ if echo "$zip_contents" | grep -qE "^[^/]+/extension\.js$"; then
 fi
 
 # ---------------------------------------------------------------------------
-# Check for compiled schemas (unnecessary for GNOME 44+)
+# Check for compiled schemas (unnecessary for GNOME 44+, forbidden for 45+)
 # ---------------------------------------------------------------------------
 
 if echo "$zip_contents" | grep -qE "\.gschema\.xml$"; then
     if echo "$zip_contents" | grep -qF "gschemas.compiled"; then
-        echo "WARN|package/compiled-schemas-unnecessary|gschemas.compiled is unnecessary for GNOME 44+ (auto-compiled by Shell)"
+        # Extract shell-version from zip's metadata.json to determine severity
+        zip_metadata=""
+        if command -v unzip > /dev/null 2>&1; then
+            zip_metadata="$(unzip -p "$zip_file" metadata.json 2>/dev/null)" || true
+        fi
+
+        has_45_plus=false
+        if [[ -n "$zip_metadata" ]]; then
+            # Extract shell-version entries and check if any >= 45
+            shell_versions="$(echo "$zip_metadata" | python3 -c "
+import json, sys
+try:
+    meta = json.load(sys.stdin)
+    for v in meta.get('shell-version', []):
+        print(v)
+except Exception:
+    pass
+" 2>/dev/null)" || true
+
+            while IFS= read -r ver; do
+                # Extract major version number
+                major="${ver%%.*}"
+                if [[ "$major" =~ ^[0-9]+$ ]] && [[ "$major" -ge 45 ]]; then
+                    has_45_plus=true
+                    break
+                fi
+            done <<< "$shell_versions"
+        fi
+
+        if [[ "$has_45_plus" == "true" ]]; then
+            echo "FAIL|package/compiled-schemas-forbidden|gschemas.compiled must not be included for GNOME 45+ (auto-compiled by Shell)"
+        else
+            echo "WARN|package/compiled-schemas-unnecessary|gschemas.compiled is unnecessary for GNOME 44+ (auto-compiled by Shell)"
+        fi
     else
         echo "PASS|package/compiled-schemas|No unnecessary gschemas.compiled"
     fi

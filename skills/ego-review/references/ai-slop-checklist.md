@@ -769,6 +769,74 @@ _getValue() {
 }
 ```
 
+### 41. Empty destroy() override
+
+`destroy() { super.destroy(); }` with no additional cleanup logic.
+
+- **Red flag:** An empty destroy override that only calls `super.destroy()` —
+  GObject chains the parent destroy automatically, making this pure noise
+- **Acceptable:** A destroy override that cleans up resources before calling
+  `super.destroy()`
+
+```javascript
+// RED FLAG: no-op override
+destroy() {
+    super.destroy();
+}
+
+// ACCEPTABLE: actually cleans up resources
+destroy() {
+    if (this._timeoutId) {
+        GLib.Source.remove(this._timeoutId);
+        this._timeoutId = null;
+    }
+    super.destroy();
+}
+```
+
+### 42. Custom Logger class
+
+AI-generated code often includes a custom Logger abstraction wrapping
+`console` methods.
+
+- **Red flag:** A `Logger` or `Log` class/object with methods like `log()`,
+  `warn()`, `error()`, `debug()` that delegate to `console.*`
+- **Acceptable:** Using `console.debug()`, `console.warn()`, `console.error()`
+  directly — GJS has built-in journal integration
+
+```javascript
+// RED FLAG: unnecessary abstraction
+class Logger {
+    static log(msg) { console.log(`[MyExt] ${msg}`); }
+    static error(msg) { console.error(`[MyExt] ${msg}`); }
+}
+
+// ACCEPTABLE: direct console usage
+console.debug('MyExt: initialized');
+console.error('MyExt: failed:', e.message);
+```
+
+### 43. Underscore-prefixed exports
+
+`export { _helper }` pattern suggesting generated code with artificial
+encapsulation.
+
+- **Red flag:** Exporting functions or classes with underscore prefixes
+  (`export { _doSomething }`, `export function _helper()`) — the underscore
+  convention means "private" in GNOME code, contradicting export
+- **Acceptable:** Exporting without underscore prefix, or using underscore
+  for genuinely internal methods that are not exported
+
+```javascript
+// RED FLAG: exporting "private" names
+export function _createWidget() { ... }
+export { _helper, _utils };
+
+// ACCEPTABLE: clean exports
+export function createWidget() { ... }
+export { helper, utils };
+```
+
 ---
 
 ## Real-World AI Detection Intelligence
@@ -787,7 +855,7 @@ The reviewer reported spending "more than 6 hours a day reviewing over 15,000 li
 
 ## Scoring Model
 
-Count the number of triggered items out of the 40 above.
+Count the number of triggered items out of the 43 above.
 
 ```
 1-3 triggered:  ADVISORY  -- note them, extension may still pass

@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schemalist>
+  <schema id="org.gnome.shell.extensions.compiled-schemas-45plus" path="/org/gnome/shell/extensions/compiled-schemas-45plus/">
+    <key name="enabled" type="b">
+      <default>true</default>
+      <summary>Enable extension</summary>
+    </key>
+  </schema>
+</schemalist>

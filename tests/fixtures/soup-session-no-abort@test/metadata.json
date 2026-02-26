@@ -1,0 +1,1 @@
+{"uuid": "soup-session-no-abort@test", "name": "Soup Session No Abort", "description": "Tests missing Soup.Session abort", "shell-version": ["48"], "url": "https://github.com/test/soup-session-no-abort"}

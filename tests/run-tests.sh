@@ -599,6 +599,11 @@ if [[ -f "$ASSERTIONS_DIR/phase6-ai-slop-hardening.sh" ]]; then
     source "$ASSERTIONS_DIR/phase6-ai-slop-hardening.sh"
 fi
 
+# Phase 7: Review quality optimization assertions
+if [[ -f "$ASSERTIONS_DIR/phase7-optimization.sh" ]]; then
+    source "$ASSERTIONS_DIR/phase7-optimization.sh"
+fi
+
 # Hara-hachi-bu regression (conditional)
 if [[ -f "$ASSERTIONS_DIR/hara-hachi-bu-regression.sh" ]]; then
     source "$ASSERTIONS_DIR/hara-hachi-bu-regression.sh"

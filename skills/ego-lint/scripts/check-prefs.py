@@ -7,10 +7,12 @@ Checks:
   - Dual prefs pattern (getPreferencesWidget + fillPreferencesWindow)
   - Missing default export class
   - Resource path capitalization
+  - R-PREFS-05: GObject instances stored as class properties without cleanup
 
 Output: PIPE-delimited lines: STATUS|check-name|detail
 """
 
+import json
 import os
 import re
 import sys
@@ -86,6 +88,37 @@ def main():
                "Shell UI modules are not available in the preferences process")
     else:
         result("PASS", "prefs/resource-path", "Resource paths OK")
+
+    # R-PREFS-05: GObject instances stored as class properties without cleanup
+    check_prefs_memory_leak(ext_dir, content)
+
+
+def check_prefs_memory_leak(ext_dir, content):
+    """Check for GObject instances stored as class properties without cleanup."""
+    gobject_storage = re.findall(
+        r'this\._\w+\s*=\s*new\s+(?:Gtk|Adw|Gio|GLib|GObject)\.\w+',
+        content
+    )
+    if not gobject_storage:
+        result("PASS", "prefs/memory-leak", "No stored GObject instances in prefs.js")
+        return
+
+    cleanup_patterns = [
+        r'\bdestroy\b',
+        r'\bclose-request\b',
+        r'\bdisconnectObject\b',
+        r'\brun_dispose\b',
+    ]
+    has_cleanup = any(re.search(p, content) for p in cleanup_patterns)
+
+    if has_cleanup:
+        result("PASS", "prefs/memory-leak",
+               "Stored GObject instances have cleanup indicators")
+    else:
+        instances = ', '.join(m.split('=')[0].strip() for m in gobject_storage)
+        result("WARN", "prefs/memory-leak",
+               f"GObject instances stored without cleanup: {instances} — "
+               "add destroy/disconnectObject in close-request handler")
 
 
 if __name__ == '__main__':

@@ -729,6 +729,65 @@ def check_error_message_verbosity(ext_dir, js_files):
            "Error message verbosity acceptable")
 
 
+def check_network_disclosure(ext_dir, js_files):
+    """R-SEC-19: Flag network code not mentioned in metadata description."""
+    network_patterns = [
+        r'Soup\.Session',
+        r'Soup\.Message',
+        r'Soup\.URI',
+        r'GLib\.Uri',
+    ]
+
+    has_network = False
+    for filepath in js_files:
+        # Exclude prefs.js — network in prefs is less concerning
+        if os.path.basename(filepath) == 'prefs.js':
+            continue
+        with open(filepath, encoding='utf-8', errors='replace') as f:
+            content = f.read()
+        for pat in network_patterns:
+            if re.search(pat, content):
+                has_network = True
+                break
+        if has_network:
+            break
+
+    if not has_network:
+        result("PASS", "quality/network-disclosure",
+               "No network API usage detected")
+        return
+
+    meta_path = os.path.join(ext_dir, 'metadata.json')
+    if not os.path.isfile(meta_path):
+        result("WARN", "quality/network-disclosure",
+               "Network APIs used but metadata.json not found")
+        return
+
+    try:
+        with open(meta_path) as f:
+            meta = json.load(f)
+    except (json.JSONDecodeError, OSError):
+        result("WARN", "quality/network-disclosure",
+               "Network APIs used but metadata.json could not be read")
+        return
+
+    description = meta.get('description', '').lower()
+    disclosure_keywords = [
+        'network', 'internet', 'http', 'api', 'server',
+        'online', 'fetch', 'request', 'web', 'service',
+    ]
+
+    for keyword in disclosure_keywords:
+        if keyword in description:
+            result("PASS", "quality/network-disclosure",
+                   f"Network API usage disclosed in metadata description (keyword: '{keyword}')")
+            return
+
+    result("WARN", "quality/network-disclosure",
+           "Network APIs used (Soup/GLib.Uri) but metadata description does not "
+           "mention network access — reviewers expect disclosure")
+
+
 def check_excessive_null_checks(ext_dir, js_files):
     """R-QUAL-24: Flag excessive null/undefined checks instead of optional chaining."""
     total_checks = 0
@@ -797,6 +856,7 @@ def main():
     check_error_message_verbosity(ext_dir, js_files)
     check_run_dispose_comment(ext_dir, js_files)
     check_clipboard_disclosure(ext_dir, js_files)
+    check_network_disclosure(ext_dir, js_files)
     check_excessive_null_checks(ext_dir, js_files)
 
 

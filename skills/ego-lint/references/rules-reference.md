@@ -72,10 +72,10 @@ Rules for `metadata.json` validity and EGO requirements.
 - **Fix**: Add `"48"` to the `shell-version` array.
 
 ### R-META-09: No session-modes ["user"]
-- **Severity**: advisory
+- **Severity**: blocking
 - **Checked by**: check-metadata.py
-- **Rule**: If `session-modes` is present and contains only `["user"]`, it should be removed.
-- **Rationale**: `["user"]` is the default value. Including it explicitly is redundant and signals unfamiliarity with the metadata spec. EGO reviewers may flag it.
+- **Rule**: If `session-modes` is present and contains only `["user"]`, it must be removed.
+- **Rationale**: `["user"]` is the default value. Including it explicitly is redundant and a hard reject per EGO review guidelines.
 - **Fix**: Remove the `session-modes` key from `metadata.json` entirely. Only include it if you need `"unlock-dialog"` or other non-default modes.
 
 ### R-META-10: settings-schema prefix must be org.gnome.shell.extensions.*
@@ -371,10 +371,10 @@ import {Extension} from 'resource:///org/gnome/shell/extensions/extension.js';
 ```
 
 ### R-DEPR-08: No spawn_command_line_sync
-- **Severity**: advisory
+- **Severity**: blocking
 - **Checked by**: apply-patterns.py
-- **Rule**: Extension code should not use `GLib.spawn_command_line_sync()`.
-- **Rationale**: `spawn_command_line_sync` is deprecated in favor of `Gio.Subprocess`, which provides better error handling, cancellation support, and does not block the main loop.
+- **Rule**: Extension code must not use `GLib.spawn_command_line_sync()`.
+- **Rationale**: `spawn_command_line_sync` blocks the main loop, freezing the compositor. Wechsel was rejected for this (April 2024). Use `Gio.Subprocess` which provides async execution, better error handling, and cancellation support.
 - **Fix**: Use `new Gio.Subprocess({argv: [...], flags: ...})` instead.
 
 ### R-DEPR-09: No var declarations
@@ -1601,10 +1601,10 @@ destroy() {
 - **Fix**: Use valid version strings like `"45"`, `"46"`, `"47"`, `"48"`, or `"3.38"` for legacy versions.
 
 ### R-META-22: Missing url field
-- **Severity**: advisory
+- **Severity**: blocking
 - **Checked by**: check-metadata.py
-- **Rule**: `metadata.json` should contain a `url` field.
-- **Rationale**: The `url` field is displayed on the EGO listing page and helps users find the project homepage, documentation, and issue tracker. Its absence makes the extension harder for users to evaluate and for reviewers to verify.
+- **Rule**: `metadata.json` must contain a `url` field.
+- **Rationale**: The `url` field is required for EGO submission. It is displayed on the listing page and helps users find the project homepage, documentation, and issue tracker. Missing `url` is a hard reject per EGO review guidelines.
 - **Fix**: Add `"url": "https://github.com/your-username/your-extension"` to `metadata.json`.
 
 ### R-META-23: Too many development shell-version entries
@@ -1632,12 +1632,13 @@ destroy() {
 
 ## Package — Extended (R-PKG, continued)
 
-### R-PKG-12: Package Size
-- **Severity**: advisory
+### R-PKG-12: gschemas.compiled in ZIP (GNOME 45+)
+- **Severity**: blocking
 - **Checked by**: check-package.sh
-- **Rule**: Zip file exceeds 5MB.
-- **Rationale**: Large packages slow down review and may contain unnecessary files.
-- **Fix**: Remove unnecessary files (build artifacts, documentation, test fixtures) from the package.
+- **Rule**: The submission zip must not contain `gschemas.compiled` when targeting GNOME 45+.
+- **Rationale**: Auto-reject: GNOME Shell 45+ automatically compiles schemas on installation. Including `gschemas.compiled` in the zip is unnecessary and indicates a build process issue. For extensions targeting only GNOME 44 or earlier, this is a warning rather than a blocking issue.
+- **Fix**: Remove `gschemas.compiled` from your zip package. Ensure your packaging script excludes it.
+- **Tested by**: `tests/fixtures/compiled-schemas-45plus@test/`
 
 ### R-PKG-13: No binary files
 - **Severity**: blocking
@@ -1696,6 +1697,14 @@ Rules for `prefs.js` validation and EGO compliance.
 - **Rule**: `prefs.js` should use Adwaita (Adw) widgets rather than raw GTK widgets for GNOME 45+.
 - **Rationale**: The GNOME HIG prefers Adwaita widgets (PreferencesPage, PreferencesGroup, ActionRow, SwitchRow, ComboRow) which provide consistent styling and behavior. Raw GTK widgets (Box, Label, Switch, Grid, etc.) work but look inconsistent with other GNOME preferences dialogs.
 - **Fix**: Use `Adw.PreferencesPage`, `Adw.PreferencesGroup`, `Adw.ActionRow`, `Adw.SwitchRow`, `Adw.ComboRow` instead of raw GTK widget constructors.
+
+### R-PREFS-05: Prefs memory leak (GObject instances without cleanup)
+- **Severity**: advisory
+- **Checked by**: check-prefs.py
+- **Rule**: GObject instances stored as class properties in `prefs.js` without cleanup cause memory leaks.
+- **Rationale**: The preferences window can be opened and closed multiple times. GObject instances stored as class properties (e.g., `this._settings = new Gio.Settings(...)`) persist after the window closes, leaking memory on each open/close cycle.
+- **Fix**: Use local variables instead of class properties for GObject instances, or connect to the window's `close-request` signal to clean up stored references.
+- **Tested by**: `tests/fixtures/prefs-memory-leak@test/`
 
 ---
 
@@ -2002,6 +2011,14 @@ Rules for APIs removed or changed in specific GNOME Shell versions. These rules 
 - **Fix**: Add a `//` comment in `disable()` explaining which resources need special handling during lock screen transitions, e.g., `// Disconnect keyboard signals during unlock-dialog to prevent input leakage`.
 - **Tested by**: `tests/fixtures/unlock-no-comment@test/`, `tests/fixtures/unlock-with-comment@test/` (negative)
 
+### R-LIFE-15: Soup.Session.abort() missing in disable()
+- **Severity**: advisory
+- **Checked by**: check-lifecycle.py
+- **Rule**: If `Soup.Session` is created and used for HTTP requests, `session.abort()` should be called in `disable()` to cancel in-flight requests.
+- **Rationale**: In-flight HTTP requests continue after `disable()` if the session is not aborted. Their callbacks will execute on torn-down state, causing errors or zombie behavior.
+- **Fix**: Add `this._session.abort()` before nullifying the session reference in `disable()`.
+- **Tested by**: `tests/fixtures/soup-session-no-abort@test/`
+
 ---
 
 ## Security (R-SEC) — continued
@@ -2182,6 +2199,14 @@ Rules for APIs removed or changed in specific GNOME Shell versions. These rules 
 - **Fix**: Place the helper script in `/usr/local/bin/` or `/usr/lib/` and reference it by absolute path.
 - **Tested by**: `tests/fixtures/pkexec-user-writable@test/`
 
+### R-SEC-19: Network service disclosure
+- **Severity**: advisory
+- **Checked by**: check-quality.py
+- **Rule**: Extensions using HTTP/network requests (Soup.Session, Soup.Message, or similar) must disclose network access in the `metadata.json` description.
+- **Rationale**: EGO reviewers expect transparency about network activity. Extensions that make HTTP requests without disclosing it in the description will be flagged during review.
+- **Fix**: Add a mention of network/API/service usage to the `description` field in `metadata.json`, e.g., "This extension fetches data from [service name]."
+- **Tested by**: `tests/fixtures/network-undisclosed@test/`
+
 ---
 
 ## Quality (New)
@@ -2202,6 +2227,22 @@ Rules for APIs removed or changed in specific GNOME Shell versions. These rules 
 - **Fix**: Replace verbose null guards with `?.` and `??` operators.
 - **Tested by**: `tests/fixtures/excessive-null-checks@test/`
 
+### R-QUAL-25: this.dir.get_path() anti-pattern
+- **Severity**: advisory
+- **Checked by**: apply-patterns.py
+- **Rule**: `this.dir.get_path()` should be replaced with `this.path`.
+- **Rationale**: The `Extension` base class provides `this.path` as a convenience property. Calling `this.dir.get_path()` is unnecessarily verbose and signals unfamiliarity with the Extension API — a common AI-generated pattern.
+- **Fix**: Use `this.path` instead of `this.dir.get_path()`.
+- **Tested by**: `tests/fixtures/dir-get-path@test/`
+
+### R-QUAL-26: Custom Logger class
+- **Severity**: advisory
+- **Checked by**: apply-patterns.py
+- **Rule**: Extensions should not define custom `Logger` classes.
+- **Rationale**: GJS provides `console.debug()`, `console.warn()`, and `console.error()` which integrate with the system journal. Custom logger classes add unnecessary abstraction and are a common AI-generated pattern that wraps the standard console API without adding value.
+- **Fix**: Use `console.debug()`, `console.warn()`, and `console.error()` directly instead of a custom Logger.
+- **Tested by**: `tests/fixtures/custom-logger@test/`
+
 ---
 
 ## AI Slop (New)
@@ -2221,3 +2262,47 @@ Rules for APIs removed or changed in specific GNOME Shell versions. These rules 
 - **Rationale**: In GJS catch blocks, errors are already typed. `instanceof` checks add no value and signal AI-generated over-defensive code.
 - **Fix**: Remove the `instanceof` check and handle the error directly.
 - **Tested by**: `tests/fixtures/slop-error-instanceof@test/`
+
+### R-SLOP-29: Empty destroy() override
+- **Severity**: advisory
+- **Checked by**: apply-patterns.py
+- **Rule**: A `destroy()` method that only calls `super.destroy()` is pointless.
+- **Rationale**: GObject automatically chains `destroy()` to the parent class. An override that does nothing except call super is unnecessary boilerplate, commonly generated by AI that adds "completeness" patterns without understanding the framework.
+- **Fix**: Remove the empty `destroy()` override entirely — GObject chains automatically.
+- **Tested by**: `tests/fixtures/empty-destroy-override@test/`
+
+---
+
+## GNOME 50 (R-VER50)
+
+### R-VER50-01: releaseKeyboard() removed
+- **Severity**: blocking
+- **Checked by**: apply-patterns.py (min-version: 50)
+- **Rule**: `releaseKeyboard()` was removed from `misc/keyboardManager.js` in GNOME 50.
+- **Rationale**: The function no longer has any input-method caller.
+- **Fix**: Remove calls to `releaseKeyboard()`.
+- **Tested by**: `tests/fixtures/gnome50-compat@test/`
+
+### R-VER50-02: holdKeyboard() removed
+- **Severity**: blocking
+- **Checked by**: apply-patterns.py (min-version: 50)
+- **Rule**: `holdKeyboard()` was removed from `misc/keyboardManager.js` in GNOME 50.
+- **Rationale**: The function no longer has any input-method caller.
+- **Fix**: Remove calls to `holdKeyboard()`.
+- **Tested by**: `tests/fixtures/gnome50-compat@test/`
+
+### R-VER50-03: show-restart-message signal removed
+- **Severity**: blocking
+- **Checked by**: apply-patterns.py (min-version: 50)
+- **Rule**: The `show-restart-message` signal was removed from `global.display` in GNOME 50.
+- **Rationale**: GNOME 50 dropped X11 support, and restart was only available on X11.
+- **Fix**: Remove the signal connection; restart is no longer available.
+- **Tested by**: `tests/fixtures/gnome50-compat@test/`
+
+### R-VER50-04: restart signal removed
+- **Severity**: blocking
+- **Checked by**: apply-patterns.py (min-version: 50)
+- **Rule**: The `restart` signal was removed from `global.display` in GNOME 50.
+- **Rationale**: GNOME 50 dropped X11 support, and restart was only available on X11.
+- **Fix**: Remove the signal connection; restart is no longer available.
+- **Tested by**: `tests/fixtures/gnome50-compat@test/`

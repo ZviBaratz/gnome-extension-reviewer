@@ -1,0 +1,1 @@
+{"uuid": "compiled-schemas-45plus@test", "name": "Compiled Schemas 45+", "description": "Tests compiled schemas forbidden for GNOME 45+", "shell-version": ["48"], "url": "https://github.com/test/compiled-schemas-45plus", "settings-schema": "org.gnome.shell.extensions.compiled-schemas-45plus"}

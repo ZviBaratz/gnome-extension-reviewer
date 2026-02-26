@@ -227,6 +227,66 @@ this._monitor.disconnectObject(this);   // 2. Then disconnect signals
 this._monitor = null;                   // 3. Then null reference
 ```
 
+## Soup.Session Cleanup
+
+Extensions using `Soup.Session` for HTTP requests must abort the session in
+`disable()` before nullifying:
+
+```javascript
+enable() {
+    this._session = new Soup.Session();
+}
+
+disable() {
+    this._session.abort();   // Cancel all pending requests
+    this._session = null;
+}
+```
+
+- Verify `session.abort()` is called in `disable()` before nullifying
+- Pattern: `this._session.abort(); this._session = null;`
+- Without `abort()`, in-flight requests continue after disable and callbacks
+  fire on torn-down state
+
+> **Reviewer says:** "Please abort the Soup.Session in disable" — GitHub Tray, HakaWaka (Feb 2026)
+
+**Automatically checked by ego-lint (R-LIFE-15).**
+
+## Preferences Window Cleanup
+
+GObject instances stored as class properties in prefs classes prevent garbage
+collection after the preferences window is closed. The prefs window is a GTK4
+window — it gets destroyed when the user closes it, but `this._settings` and
+other GObject references on the class instance keep objects alive.
+
+```javascript
+// WRONG: GObject instance stored on class, never cleaned up
+export default class MyPrefs extends ExtensionPreferences {
+    fillPreferencesWindow(window) {
+        this._settings = this.getSettings();  // Leaks after window close
+        // ... build UI using this._settings
+    }
+}
+
+// CORRECT: use local variable or connect close-request for cleanup
+export default class MyPrefs extends ExtensionPreferences {
+    fillPreferencesWindow(window) {
+        const settings = this.getSettings();  // Local — GC'd with window
+        // ... build UI using settings
+
+        // Alternative: explicit cleanup
+        window.connect('close-request', () => {
+            this._settings = null;
+        });
+    }
+}
+```
+
+- Anti-pattern: `this._settings = new Gio.Settings(...)` without cleanup handler
+- Verify: `connect('close-request', ...)` or local variables instead of `this._settings`
+
+**Automatically checked by ego-lint (R-PREFS-05).**
+
 ## Keybinding Cleanup
 
 Every `addKeybinding` must have a matching `removeKeybinding` in disable():

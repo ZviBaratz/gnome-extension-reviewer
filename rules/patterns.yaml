@@ -848,3 +848,73 @@
   message: "instanceof Error check is unusual in GNOME extensions"
   category: ai-slop
   fix: "In GJS, catch blocks already have typed errors; instanceof checks are rarely needed"
+
+# --- AI slop: empty destroy override ---
+
+- id: R-SLOP-29
+  pattern: "destroy\\s*\\(\\)\\s*\\{\\s*super\\.destroy\\(\\)\\s*;?\\s*\\}"
+  scope: ["*.js"]
+  severity: advisory
+  message: "Empty destroy() that only calls super.destroy() — remove the override"
+  category: ai-slop
+  fix: "Remove the destroy() override; GObject chains to super automatically"
+
+# --- Quality: dir.get_path() anti-pattern ---
+
+- id: R-QUAL-25
+  pattern: "this\\.dir\\.get_path\\(\\)"
+  scope: ["*.js"]
+  severity: advisory
+  message: "Use this.path instead of this.dir.get_path()"
+  category: quality
+  fix: "Replace this.dir.get_path() with this.path"
+
+# --- Quality: custom logger class ---
+
+- id: R-QUAL-26
+  pattern: "class\\s+Logger\\b"
+  scope: ["*.js"]
+  severity: advisory
+  message: "Custom Logger class is unnecessary — use console.debug/warn/error"
+  category: quality
+  fix: "Remove custom Logger; use console.debug() for messages, console.error() for errors"
+
+# --- GNOME 50 removed APIs ---
+# GNOME 50 removed X11 support and associated APIs.
+# See https://gjs.guide/extensions/upgrading/gnome-shell-50.html
+
+- id: R-VER50-01
+  pattern: "\\breleaseKeyboard\\s*\\("
+  scope: ["*.js"]
+  severity: blocking
+  message: "releaseKeyboard() removed from misc/keyboardManager.js in GNOME 50"
+  category: version-compat
+  fix: "Remove calls to releaseKeyboard(); this function no longer exists in GNOME 50"
+  min-version: 50
+
+- id: R-VER50-02
+  pattern: "\\bholdKeyboard\\s*\\("
+  scope: ["*.js"]
+  severity: blocking
+  message: "holdKeyboard() removed from misc/keyboardManager.js in GNOME 50"
+  category: version-compat
+  fix: "Remove calls to holdKeyboard(); this function no longer exists in GNOME 50"
+  min-version: 50
+
+- id: R-VER50-03
+  pattern: "connect\\s*\\(\\s*['\"]show-restart-message['\"]"
+  scope: ["*.js"]
+  severity: blocking
+  message: "'show-restart-message' signal removed from global.display in GNOME 50 (X11 support dropped)"
+  category: version-compat
+  fix: "Remove the signal connection; restart is no longer available in GNOME 50 (Wayland only)"
+  min-version: 50
+
+- id: R-VER50-04
+  pattern: "connect\\s*\\(\\s*['\"]restart['\"]"
+  scope: ["*.js"]
+  severity: blocking
+  message: "'restart' signal removed from global.display in GNOME 50 (X11 support dropped)"
+  category: version-compat
+  fix: "Remove the signal connection; restart is no longer available in GNOME 50 (Wayland only)"
+  min-version: 50

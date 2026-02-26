@@ -18,6 +18,7 @@ Checks:
   - R-LIFE-12: Stored timeout/idle ID without Source.remove() in disable()
   - R-LIFE-13: Selective disable() detection (conditional return skips cleanup)
   - R-LIFE-14: unlock-dialog comment requirement
+  - R-LIFE-15: Soup.Session without abort() in disable/destroy
   - R-SEC-16: Clipboard + keybinding cross-reference
   - R-FILE-07: Missing export default class
 
@@ -655,6 +656,33 @@ def check_pkexec_user_writable(ext_dir):
                     return
 
 
+def check_soup_session_abort(ext_dir):
+    """R-LIFE-15: Soup.Session should be aborted in disable()/destroy()."""
+    js_files = find_js_files(ext_dir, exclude_prefs=True)
+    if not js_files:
+        return
+
+    has_session = False
+    has_abort = False
+
+    for filepath in js_files:
+        content = strip_comments(read_file(filepath))
+        if (re.search(r'new\s+Soup\.Session', content) or
+                re.search(r'Soup\.Session\.new', content)):
+            has_session = True
+        if re.search(r'\.abort\s*\(', content):
+            has_abort = True
+
+    if has_session and not has_abort:
+        result("WARN", "lifecycle/soup-session-abort",
+               "Soup.Session created but no .abort() found — "
+               "pending requests will continue after disable()")
+    elif has_session and has_abort:
+        result("PASS", "lifecycle/soup-session-abort",
+               "Soup.Session with .abort() cleanup detected")
+    # If no session, skip silently
+
+
 def main():
     if len(sys.argv) < 2:
         result("FAIL", "lifecycle/args", "No extension directory provided")
@@ -679,6 +707,7 @@ def main():
     check_unlock_dialog_comment(ext_dir)
     check_clipboard_keybinding(ext_dir)
     check_pkexec_user_writable(ext_dir)
+    check_soup_session_abort(ext_dir)
 
 
 if __name__ == '__main__':

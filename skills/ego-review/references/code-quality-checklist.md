@@ -151,6 +151,44 @@ shared by all extensions and the shell itself.
 zero journal output during normal operation. `console.debug` messages only
 appear when the user explicitly enables debug output.
 
+## Custom Logger Class
+
+> **Reviewer says:** "Please use the built-in `console` methods instead of a custom Logger class. GNOME Shell's console already integrates with the journal — a custom wrapper adds complexity without benefit."
+
+AI-generated code often includes a custom Logger abstraction. This is
+unnecessary in GJS — the built-in `console` methods (`console.debug`,
+`console.warn`, `console.error`) handle journal integration, and GNOME 47+
+provides `console.getLogger()` for structured logging.
+
+```javascript
+// WRONG: custom Logger class
+class Logger {
+    static log(msg) { console.log(`[MyExt] ${msg}`); }
+    static warn(msg) { console.warn(`[MyExt] ${msg}`); }
+    static error(msg) { console.error(`[MyExt] ${msg}`); }
+}
+
+// CORRECT: use built-in console directly
+console.debug('MyExt: initialized');
+console.error('MyExt: failed to load:', e.message);
+```
+
+**Automatically checked by ego-lint (R-QUAL-26).**
+
+## this.dir.get_path() Anti-Pattern
+
+> **Reviewer says:** "Use `this.path` instead of `this.dir.get_path()`. The Extension base class already provides `this.path` as a convenience property." — Nowa Shell review
+
+```javascript
+// WRONG: verbose path access
+const configPath = GLib.build_filenamev([this.dir.get_path(), 'config.json']);
+
+// CORRECT: use the provided convenience property
+const configPath = GLib.build_filenamev([this.path, 'config.json']);
+```
+
+**Automatically checked by ego-lint (R-QUAL-25).**
+
 ## Error Handling Patterns
 
 ### Async operations
@@ -244,9 +282,16 @@ class MyWidget extends St.BoxLayout {
 
 ### Destroy chaining
 
-Always chain the parent destroy method:
+Always chain the parent destroy method. However, an empty override that only
+calls `super.destroy()` is pure noise — GObject chains automatically:
 
 ```javascript
+// WRONG: empty destroy override (GObject chains automatically)
+destroy() {
+    super.destroy();
+}
+
+// CORRECT: override only when you have resources to clean up
 destroy() {
     // Clean up own resources first
     if (this._timeoutId) {
@@ -315,6 +360,27 @@ export default class MyPrefs extends ExtensionPreferences {
     }
 }
 ```
+
+### Prefs.js memory leaks
+
+GObject instances stored as `this._` properties in prefs classes prevent
+garbage collection after the preferences window closes. Use local variables
+or attach a `close-request` handler to clean up.
+
+```javascript
+// WRONG: settings stored on class instance, never released
+fillPreferencesWindow(window) {
+    this._settings = this.getSettings();
+}
+
+// CORRECT: local variable, GC'd with window
+fillPreferencesWindow(window) {
+    const settings = this.getSettings();
+    // ... use settings locally
+}
+```
+
+**Automatically checked by ego-lint (R-PREFS-05).**
 
 ### Prefs.js resource path difference
 

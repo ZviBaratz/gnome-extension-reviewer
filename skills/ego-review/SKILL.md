@@ -159,15 +159,15 @@ Using [code-quality-checklist.md](references/code-quality-checklist.md):
 
 ### Phase 5a: AI Pattern Analysis
 
-Using [ai-slop-checklist.md](references/ai-slop-checklist.md) (21-item checklist):
+Using [ai-slop-checklist.md](references/ai-slop-checklist.md) (40-item checklist):
 
 1. For each checklist item, search the extension source for the described pattern
 2. Record whether it triggers, with file:line references
 3. Note whether the pattern is justified by context
 4. Apply the scoring model:
-   - 1-2 triggered: ADVISORY — note them, extension may still pass
-   - 3-5 triggered: BLOCKING — suggests insufficient code review
-   - 6+ triggered: BLOCKING — likely unreviewed AI output
+   - 1-3 triggered: ADVISORY — note them, extension may still pass
+   - 4-6 triggered: BLOCKING — suggests insufficient code review
+   - 7+ triggered: BLOCKING — likely unreviewed AI output
 5. Include count, category breakdown, and assessment in the report
 6. When score reaches BLOCKING, provide specific file:line citations for each triggered item so the developer has an actionable fix list
 
@@ -233,7 +233,7 @@ Items that are acceptable IF properly documented:
 
 ### Section 5: AI Pattern Analysis
 
-**Score**: N/27 triggered — [ADVISORY | BLOCKING]
+**Score**: N/40 triggered — [ADVISORY | BLOCKING]
 **Triggered items**: list with file:line
 **Assessment**: interpretation
 
