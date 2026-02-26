@@ -131,6 +131,7 @@ forbidden_patterns=(
     ".swo"
     "meson.build"
     "CHANGELOG.md"
+    "convenience.js"
 )
 
 forbidden_found=0

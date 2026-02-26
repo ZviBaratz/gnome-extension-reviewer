@@ -41,4 +41,6 @@ assert_output_not_contains "no soup-session-abort false positive" "\[WARN\].*lif
 assert_output_not_contains "no network-disclosure false positive" "\[WARN\].*quality/network-disclosure"
 assert_output_not_contains "no destroy-no-null false positive" "\[WARN\].*lifecycle/destroy-no-null"
 assert_output_not_contains "no shell-version-minor false positive" "\[FAIL\].*metadata/shell-version-minor"
+assert_output_not_contains "no gnome-trademark false positive" "\[FAIL\].*metadata/gnome-trademark"
+assert_output_not_contains "no schema gnome-trademark false positive" "\[FAIL\].*schema/gnome-trademark"
 echo ""

@@ -1,0 +1,7 @@
+{
+    "uuid": "prefs-gtk-legitimate@test",
+    "name": "GTK Widget Test",
+    "description": "Test fixture for R-PREFS-04 split",
+    "shell-version": ["45", "46"],
+    "url": "https://github.com/test/prefs-gtk-legitimate"
+}

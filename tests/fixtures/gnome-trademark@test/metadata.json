@@ -1,0 +1,7 @@
+{
+    "uuid": "gnome-trademark@test",
+    "name": "My Gnome Tool",
+    "description": "Test fixture for GNOME trademark detection",
+    "shell-version": ["45", "46"],
+    "url": "https://github.com/test/gnome-trademark"
+}

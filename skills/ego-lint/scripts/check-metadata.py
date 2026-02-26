@@ -240,6 +240,9 @@ def main():
             except ValueError:
                 pass
 
+    # --- GNOME trademark ---
+    check_gnome_trademark(meta)
+
     # --- Additional validations ---
     check_donations(meta)
     check_session_modes_values(meta)
@@ -250,6 +253,33 @@ def main():
     check_shell_version_dev_limit(meta)
     check_esm_version_floor(meta, ext_dir)
     check_session_modes_consistency(meta, ext_dir)
+
+
+def check_gnome_trademark(meta):
+    """FAIL if UUID, name, or settings-schema contains 'gnome' (trademark violation)."""
+    violations = []
+    uuid = meta.get("uuid", "")
+    # Skip the @gnome.org check (already handled by uuid-no-gnome-org)
+    # Check if 'gnome' appears elsewhere in the UUID
+    uuid_without_domain = uuid.split("@")[0] if "@" in uuid else uuid
+    if re.search(r"gnome", uuid_without_domain, re.IGNORECASE):
+        violations.append(f"UUID '{uuid}'")
+    name = meta.get("name", "")
+    if re.search(r"gnome", name, re.IGNORECASE):
+        violations.append(f"name '{name}'")
+    schema = meta.get("settings-schema", "")
+    # The standard prefix org.gnome.shell.extensions.* is the expected schema path
+    if schema and re.search(r"gnome", schema, re.IGNORECASE):
+        # Only flag if 'gnome' appears outside the standard prefix
+        without_prefix = re.sub(r"^org\.gnome\.shell\.extensions\.", "", schema)
+        if re.search(r"gnome", without_prefix, re.IGNORECASE):
+            violations.append(f"settings-schema '{schema}'")
+    if violations:
+        result("FAIL", "metadata/gnome-trademark",
+               f"GNOME trademark must not appear in {', '.join(violations)}")
+    else:
+        result("PASS", "metadata/gnome-trademark",
+               "No GNOME trademark violations in metadata")
 
 
 CURRENT_STABLE = 48
