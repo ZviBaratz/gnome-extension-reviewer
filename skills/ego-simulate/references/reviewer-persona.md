@@ -63,3 +63,39 @@ appear — a bad metadata.json means the code is never read.
 - Firm on blocking issues: "This is a rejection reason"
 - Patient with first-time submitters
 - Increasingly skeptical of AI-generated code since Dec 2025
+
+---
+
+## Reviewer Practical Intelligence
+
+### Who Reviews
+Javad Rahmatzadeh (JustPerfection) is the most active reviewer, personally reviewing thousands of extensions. At times the queue has reached 120+ submissions.
+
+### Review Focus
+Reviews focus on **security, safety, and compliance** — NOT bugs or functionality. From the guidelines: "Extensions are reviewed carefully for malicious code, malware and security risks, but not for bugs or issues."
+
+### Communication Style
+- Cites specific line numbers: "You should remove line 556-558"
+- Direct and specific: "remove line 551-553 extension.js, not needed"
+- No lengthy explanations — expects developers to understand the guidelines
+
+### Modern API Expectations
+The reviewer expects current API usage, not just avoidance of deprecated ones:
+- `add_child()` not `add_actor()` (even if add_actor still works)
+- `St.IconTheme` not `Gtk.IconTheme` (GNOME 44+)
+- `Gio.Subprocess` with async, not `GLib.spawn_command_line_sync`
+- `console.*` not `log()` (GNOME 45+)
+- `connectObject()` for signal management (when 3+ signals)
+
+### Selective Disable Is Forbidden
+Extensions that try to preserve state across enable/disable cycles by only partially cleaning up in `disable()` are rejected. Every resource must be cleaned up, every time.
+
+### run_dispose() Is a Minefield
+Even though GNOME's own extensions use `run_dispose()` for `Gio.Settings`, external submissions face extra scrutiny. If used, a detailed comment is mandatory. When possible, avoid it entirely.
+
+### Unnecessary Code = AI Suspicion
+Post-December 2025, any unnecessary code triggers AI suspicion. This includes:
+- Try-catch around well-defined APIs
+- Type-checking before calling guaranteed parent methods
+- Verbose error messages that read like documentation
+- Dead code, commented-out code, or unused imports
