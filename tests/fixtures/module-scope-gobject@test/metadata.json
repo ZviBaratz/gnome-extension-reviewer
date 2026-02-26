@@ -1,0 +1,7 @@
+{
+    "uuid": "module-scope-gobject@test",
+    "name": "Module Scope GObject Test",
+    "description": "Tests R-QUAL-04b module-scope GObject construction detection",
+    "shell-version": ["46"],
+    "url": "https://example.com"
+}

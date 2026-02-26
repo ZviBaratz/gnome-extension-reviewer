@@ -47,4 +47,8 @@ assert_output_not_contains "no dbus-export-leak false positive" "\[FAIL\].*lifec
 assert_output_not_contains "no timeout-reassignment false positive" "\[WARN\].*lifecycle/timeout-reassignment"
 assert_output_not_contains "no subprocess-no-cancel false positive" "\[WARN\].*lifecycle/subprocess-no-cancel"
 assert_output_not_contains "no resource-path-case false positive" "\[FAIL\].*imports/resource-path-case"
+assert_output_not_contains "no R-QUAL-27 false positive" "\[WARN\].*R-QUAL-27"
+assert_output_not_contains "no R-I18N-02 false positive" "\[WARN\].*R-I18N-02"
+assert_output_not_contains "no R-QUAL-04b false positive" "\[FAIL\].*R-QUAL-04b"
+assert_output_not_contains "no R-VER50-05 false positive" "\[WARN\].*R-VER50-05"
 echo ""

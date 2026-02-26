@@ -1,0 +1,7 @@
+{
+    "uuid": "version-string-compare@test",
+    "name": "Version String Compare Test",
+    "description": "Tests R-QUAL-27 version string comparison detection",
+    "shell-version": ["46"],
+    "url": "https://example.com"
+}

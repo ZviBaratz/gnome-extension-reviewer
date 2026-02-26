@@ -1,0 +1,7 @@
+{
+    "uuid": "gettext-concat@test",
+    "name": "Gettext Concat Test",
+    "description": "Tests R-I18N-02 gettext concatenation detection",
+    "shell-version": ["46"],
+    "url": "https://example.com"
+}

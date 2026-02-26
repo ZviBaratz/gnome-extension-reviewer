@@ -773,6 +773,14 @@
   category: i18n
   fix: "Use _('Found %d items').format(count) instead of _(`Found ${count} items`)"
 
+- id: R-I18N-02
+  pattern: "_\\([^)]*['\"]\\s*\\+"
+  scope: ["*.js"]
+  severity: advisory
+  message: "String concatenation inside gettext _() breaks xgettext extraction"
+  category: i18n
+  fix: "Use _('Hello %s').format(name) instead of _('Hello ' + name)"
+
 # --- Security (continued) ---
 
 - id: R-SEC-17
@@ -904,6 +912,34 @@
   category: quality
   fix: "Remove custom Logger; use console.debug() for messages, console.error() for errors"
 
+# --- Quality: string-based version comparison ---
+
+- id: R-QUAL-27
+  pattern: "Config\\.PACKAGE_VERSION\\s*(===|!==|>=|<=|>|<)"
+  scope: ["*.js"]
+  severity: advisory
+  message: "String comparison on PACKAGE_VERSION is unreliable — use parseInt() for numeric comparison"
+  category: quality
+  fix: "Use parseInt(Config.PACKAGE_VERSION) >= 45 instead of Config.PACKAGE_VERSION >= '45'"
+
+- id: R-QUAL-27b
+  pattern: "Config\\.PACKAGE_VERSION\\.startsWith\\s*\\("
+  scope: ["*.js"]
+  severity: advisory
+  message: "String comparison on PACKAGE_VERSION is unreliable — use parseInt() for numeric comparison"
+  category: quality
+  fix: "Use parseInt(Config.PACKAGE_VERSION) >= 45 instead of Config.PACKAGE_VERSION.startsWith('45')"
+
+# --- Quality: module-scope GObject construction ---
+
+- id: R-QUAL-04b
+  pattern: "^(let|var)\\s+\\w+\\s*=\\s*new\\s+(St|Gio|GLib|Clutter|Meta|Shell|GObject)\\."
+  scope: ["*.js"]
+  severity: blocking
+  message: "Module-scope GObject construction persists across enable/disable cycles — move into enable()"
+  category: quality
+  fix: "Move the GObject construction into enable() and store as an instance property"
+
 # --- GNOME 50 removed APIs ---
 # GNOME 50 removed X11 support and associated APIs.
 # See https://gjs.guide/extensions/upgrading/gnome-shell-50.html
@@ -942,4 +978,15 @@
   message: "'restart' signal removed from global.display in GNOME 50 (X11 support dropped)"
   category: version-compat
   fix: "Remove the signal connection; restart is no longer available in GNOME 50 (Wayland only)"
+  min-version: 50
+
+# --- GNOME 50 one-shot timeout lifecycle trap ---
+
+- id: R-VER50-05
+  pattern: "timeout_add_once|idle_add_once|timeout_add_seconds_once"
+  scope: ["*.js"]
+  severity: advisory
+  message: "One-shot timeouts cannot be cancelled with Source.remove() — use a _destroyed guard in the callback"
+  category: version-compat
+  fix: "Check if (this._destroyed) return; at the start of the callback"
   min-version: 50

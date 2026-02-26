@@ -1,0 +1,7 @@
+{
+    "uuid": "gnome50-oneshot@test",
+    "name": "GNOME 50 One-Shot Test",
+    "description": "Tests R-VER50-05 one-shot timeout lifecycle trap detection",
+    "shell-version": ["50"],
+    "url": "https://example.com"
+}
