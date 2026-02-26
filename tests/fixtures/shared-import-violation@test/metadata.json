@@ -1,0 +1,7 @@
+{
+  "uuid": "shared-import-violation@test",
+  "name": "Shared Import Violation Test",
+  "description": "Test fixture for shared module import segregation",
+  "shell-version": ["45"],
+  "url": "https://example.com"
+}
