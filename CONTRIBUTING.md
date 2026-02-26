@@ -1,5 +1,17 @@
 # Contributing
 
+Thank you for your interest in improving GNOME extension review tooling.
+
+## How Rules Are Sourced
+
+Rules come from three sources:
+
+1. **Official guidelines** — [gjs.guide](https://gjs.guide) review guidelines and GNOME Shell documentation
+2. **Real reviewer behavior** — Analysis of actual EGO reviews on extensions.gnome.org (documented in [docs/research/](docs/research/))
+3. **Observed patterns** — Common mistakes found in approved and rejected extensions
+
+When proposing a new rule, cite the source (guideline section, review URL, or observed pattern) in the rule's rationale. Rules grounded in real rejection data are prioritized.
+
 ## Contributing a Rule
 
 There are three ways to contribute a new rule, depending on complexity:
@@ -131,6 +143,23 @@ bash tests/run-tests.sh
 ```
 
 All assertions must pass before submitting a pull request.
+
+## Reporting False Positives
+
+If ego-lint flags something incorrectly:
+
+1. Open an issue with the rule ID (e.g., `R-SLOP-08`), the flagged code, and why it's a false positive
+2. If possible, include the extension UUID or a minimal reproduction
+3. We validate all reports against our regression baseline (a real 11-module extension with known-good findings)
+
+False positives in blocking rules (FAIL) are treated as high priority. False positives in advisory rules (WARN) are tracked and addressed in batches.
+
+## Rule Lifecycle
+
+- New rules start as **advisory** (WARN) unless they correspond to a documented MUST requirement in the official guidelines
+- Rules are upgraded to **blocking** (FAIL) after validation against real extensions confirms no false positives
+- Rules are **deprecated** (not removed) when the GNOME versions they apply to are no longer supported
+- Version-gated rules use `min-version`/`max-version` fields in `rules/patterns.yaml` — they only fire when the extension's declared `shell-version` falls within range
 
 ## Skill Content Changes
 
