@@ -524,7 +524,8 @@ def check_gettext_pattern(ext_dir, js_files):
         locs = ', '.join(locations[:5])
         result("WARN", "quality/gettext-pattern",
                f"Uses Gettext.dgettext() directly ({locs}) — "
-               f"prefer this.gettext() from Extension/ExtensionPreferences base class")
+               f"hardcoded gettext domain creates maintenance burden if domain changes; "
+               f"use this.gettext() from the Extension base class")
     else:
         result("PASS", "quality/gettext-pattern",
                "Gettext usage follows recommended pattern")

@@ -629,3 +629,49 @@ let msg = _('Found %d items').format(count);
 > **AI slop blog post (December 2025):** Reviewer Javad Rahmatzadeh cited `typeof super.destroy === 'function'` as a dead giveaway of AI-generated code. The correct pattern is simply `super.destroy()`.
 
 **Key lesson:** Reviewers cite specific line numbers in rejection feedback. "Remove line 556-558" is a typical review comment style.
+
+---
+
+## Code Quality Advisory Items
+
+These are best-practice recommendations that reviewers may note but are not automatic rejection reasons. Apply judgment based on context.
+
+### CQ-NEW-1: Prefer connectObject() over manual connect/disconnect
+
+For GNOME 42+, prefer `connectObject()`/`disconnectObject()` over manually tracking signal IDs. This eliminates an entire class of signal-leak bugs. **Automatically checked by ego-lint (lifecycle/connectObject-migration).**
+
+### CQ-NEW-2: Use settings.bind() for simple GSettings bindings
+
+When a GSettings key maps directly to a widget property, use `settings.bind()` instead of manual `connect('changed::key')` + initial read. Reduces boilerplate and ensures the binding is always in sync.
+
+### CQ-NEW-3: Use optional chaining in disable()
+
+Prefer `this._widget?.destroy()` over `if (this._widget) { this._widget.destroy(); }`. Optional chaining is idiomatic JS and reduces verbosity in cleanup code. **Automatically checked by ego-lint (quality/redundant-cleanup).**
+
+### CQ-NEW-4: Keep extension.js thin
+
+`extension.js` should primarily contain the `enable()`/`disable()` lifecycle and delegate complex logic to helper modules. Large monolithic extension.js files are harder to review and maintain.
+
+### CQ-NEW-5: Organize imports consistently
+
+Follow the GJS convention: (1) GI imports (`gi://`), (2) GNOME Shell resource imports (`resource:///`), (3) Extension imports (`./`). Separate groups with blank lines.
+
+### CQ-NEW-6: Error boundaries around async operations
+
+Every `async` function should have a try/catch at the top level. Unhandled rejections in GJS crash the GNOME Shell process.
+
+### CQ-NEW-7: Use numeric version comparison
+
+Compare `Config.PACKAGE_VERSION` numerically (`parseInt(Config.PACKAGE_VERSION) >= 45`), not as strings. String comparison breaks for multi-digit versions. **Automatically checked by ego-lint (R-QUAL-27).**
+
+### CQ-NEW-8: Single getSettings() instance
+
+Call `this.getSettings()` once in `enable()` and pass the settings object to sub-components via dependency injection. Multiple `getSettings()` calls create redundant GSettings instances. **Automatically checked by ego-lint (quality/repeated-settings).**
+
+### CQ-NEW-9: Descriptive class names
+
+Use descriptive class names that reflect the extension's purpose (`class BatteryIndicator extends SystemIndicator`), not generic names (`class MyExtension extends Extension`). The class name appears in error messages and logs.
+
+### CQ-NEW-10: Avoid unnecessary exports
+
+Only `export` symbols that are actually imported elsewhere. Unnecessary `export` on internal helper functions adds noise and suggests the code was auto-generated without considering module boundaries.

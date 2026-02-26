@@ -1,0 +1,10 @@
+{
+  "uuid": "donations-overflow@test",
+  "name": "Donations Overflow Test",
+  "description": "Test fixture for donations array length limit",
+  "shell-version": ["45"],
+  "url": "https://example.com",
+  "donations": {
+    "custom": ["https://a.com", "https://b.com", "https://c.com", "https://d.com"]
+  }
+}
