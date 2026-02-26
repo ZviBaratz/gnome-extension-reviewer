@@ -952,6 +952,66 @@ def check_excessive_null_checks(ext_dir, js_files):
            f"Null/undefined check density acceptable ({total_checks} in {total_lines} lines)")
 
 
+def check_obfuscated_names(ext_dir, js_files):
+    """Detect obfuscator-style variable names (single-char + digit patterns)."""
+    obfuscated_names = set()
+    # _0x1a2b style hex vars are strong obfuscator signals
+    hex_var_re = re.compile(r'\b_0x[0-9a-f]{2,}\b')
+    # Short letter+digit combos in variable declarations (not unicode escapes)
+    decl_re = re.compile(r'(?:const|let|var|function)\s+([a-z]\d+)\b')
+    total_usages = 0
+
+    for filepath in js_files:
+        with open(filepath, encoding='utf-8', errors='replace') as f:
+            for line in f:
+                stripped = line.lstrip()
+                if stripped.startswith('//') or stripped.startswith('*'):
+                    continue
+                for m in hex_var_re.finditer(stripped):
+                    obfuscated_names.add(m.group(0))
+                    total_usages += 1
+                for m in decl_re.finditer(stripped):
+                    obfuscated_names.add(m.group(1))
+                    total_usages += 1
+
+    if len(obfuscated_names) >= 15 or total_usages >= 50:
+        result("FAIL", "quality/obfuscated-names",
+               f"Detected {len(obfuscated_names)} obfuscator-style variable names "
+               f"({total_usages} usages) — code appears minified or obfuscated")
+    else:
+        result("PASS", "quality/obfuscated-names",
+               f"No significant obfuscation detected ({len(obfuscated_names)} suspect names)")
+
+
+def check_mixed_indentation(ext_dir, js_files):
+    """Detect files with mixed tab and space indentation."""
+    mixed_files = []
+
+    for filepath in js_files:
+        tab_lines = 0
+        space_lines = 0
+        with open(filepath, encoding='utf-8', errors='replace') as f:
+            for line in f:
+                if line.startswith('\t') and not line.startswith('\t//'):
+                    tab_lines += 1
+                elif line.startswith('    '):
+                    space_lines += 1
+
+        total = tab_lines + space_lines
+        if total > 10 and tab_lines > 0 and space_lines > 0:
+            minority = min(tab_lines, space_lines)
+            if minority / total > 0.10:
+                rel = os.path.relpath(filepath, ext_dir)
+                mixed_files.append(f"{rel}(tabs:{tab_lines},spaces:{space_lines})")
+
+    if mixed_files:
+        result("WARN", "quality/mixed-indentation",
+               f"Mixed tab/space indentation in {len(mixed_files)} file(s): "
+               f"{', '.join(mixed_files[:3])}")
+    else:
+        result("PASS", "quality/mixed-indentation", "Consistent indentation style")
+
+
 def main():
     if len(sys.argv) < 2:
         result("FAIL", "quality/args", "No extension directory provided")
@@ -988,6 +1048,8 @@ def main():
     check_network_disclosure(ext_dir, js_files)
     check_excessive_null_checks(ext_dir, js_files)
     check_repeated_settings(ext_dir, js_files)
+    check_obfuscated_names(ext_dir, js_files)
+    check_mixed_indentation(ext_dir, js_files)
     check_code_provenance(ext_dir, js_files)
 
 

@@ -1,0 +1,7 @@
+{
+    "uuid": "obfuscated-code@test",
+    "name": "Obfuscated Code Test",
+    "description": "Tests obfuscator-style variable name detection",
+    "shell-version": ["48"],
+    "url": "https://example.com"
+}

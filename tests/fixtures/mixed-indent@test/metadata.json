@@ -1,0 +1,7 @@
+{
+    "uuid": "mixed-indent@test",
+    "name": "Mixed Indentation Test",
+    "description": "Tests mixed tab/space indentation detection",
+    "shell-version": ["48"],
+    "url": "https://example.com"
+}
