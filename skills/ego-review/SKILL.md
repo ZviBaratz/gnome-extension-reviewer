@@ -159,7 +159,7 @@ Using [code-quality-checklist.md](references/code-quality-checklist.md):
 
 ### Phase 5a: AI Pattern Analysis
 
-Using [ai-slop-checklist.md](references/ai-slop-checklist.md) (40-item checklist):
+Using [ai-slop-checklist.md](references/ai-slop-checklist.md) (43-item checklist):
 
 1. For each checklist item, search the extension source for the described pattern
 2. Record whether it triggers, with file:line references
@@ -233,7 +233,7 @@ Items that are acceptable IF properly documented:
 
 ### Section 5: AI Pattern Analysis
 
-**Score**: N/40 triggered — [ADVISORY | BLOCKING]
+**Score**: N/43 triggered — [ADVISORY | BLOCKING]
 **Triggered items**: list with file:line
 **Assessment**: interpretation
 
