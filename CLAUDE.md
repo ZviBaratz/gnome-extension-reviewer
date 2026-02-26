@@ -33,16 +33,16 @@ bash skills/ego-lint/scripts/ego-lint.sh tests/fixtures/<fixture-name>
 
 `ego-lint.sh` is the main orchestrator. It uses a three-tier rule system (pattern → structural → semantic) and delegates to sub-scripts via `run_subscript`:
 
-- `rules/patterns.yaml` — Tier 1 pattern rules (77 regex-based, declarative rules)
+- `rules/patterns.yaml` — Tier 1 pattern rules (84 regex-based, declarative rules)
 - `apply-patterns.py` — Tier 1 pattern engine (inline YAML parser, no PyYAML dependency)
-- `check-quality.py` — Tier 2 heuristic AI slop detection (try-catch density, impossible states, pendulum patterns, empty catches, _destroyed density, mock detection, constructor resources)
+- `check-quality.py` — Tier 2 heuristic AI slop detection (try-catch density, impossible states, pendulum patterns, empty catches, _destroyed density, mock detection, constructor resources, run_dispose comment, clipboard disclosure)
 - `check-metadata.py` — JSON validity, required fields, UUID format/match, shell-version, session-modes, settings-schema, version-name, donations
-- `check-init.py` — Init-time Shell modification and GObject constructor detection (all GI namespaces)
-- `check-lifecycle.py` — enable/disable symmetry, signal cleanup, timeout removal verification, InjectionManager, lock screen signals
+- `check-init.py` — Init-time Shell modification, GObject constructor detection (all GI namespaces), Gio._promisify placement
+- `check-lifecycle.py` — enable/disable symmetry, signal cleanup, timeout removal verification, InjectionManager, lock screen signals, selective disable detection, unlock-dialog comment, clipboard+keybinding cross-ref, prototype override detection
 - `check-prefs.py` — Preferences file validation (ExtensionPreferences base class, GTK4/Adwaita patterns)
 - `check-gobject.py` — GObject.registerClass patterns and GTypeName validation
 - `check-async.py` — Async/await safety (_destroyed guards, cancellable usage)
-- `check-css.py` — Stylesheet validation
+- `check-css.py` — Stylesheet validation, shell class override detection
 - `check-resources.py` — Cross-file resource orphan detection (reads resource graph)
 - `build-resource-graph.py` — Cross-file resource graph builder (signals, timeouts, widgets, D-Bus, file monitors, GSettings)
 - `check-imports.sh` — Import segregation (no GTK in extension.js, no Shell libs in prefs.js)
@@ -57,9 +57,9 @@ Additional tooling:
 
 ### Three-tier rule system
 
-- **Tier 1 (patterns.yaml)**: 77 regex rules in YAML, processed by `apply-patterns.py`. Covers web APIs, deprecated APIs, security, logging, import segregation, AI slop signals, subprocess safety, GNOME 48 migration. Add new rules by editing `rules/patterns.yaml`. Supports version-gating via `min-version`/`max-version` fields.
+- **Tier 1 (patterns.yaml)**: 84 regex rules in YAML, processed by `apply-patterns.py`. Covers web APIs, deprecated APIs, security, logging, import segregation, AI slop signals, subprocess safety, i18n, GNOME 48/49 migration. Add new rules by editing `rules/patterns.yaml`. Supports version-gating via `min-version`/`max-version` fields.
 - **Tier 2 (scripts)**: 13 structural heuristic check scripts in Python/bash. `check-quality.py` (AI slop heuristics), `check-init.py` (init-time safety), `check-lifecycle.py` (enable/disable symmetry + timeout verification), `check-resources.py` + `build-resource-graph.py` (cross-file resource tracking), plus metadata, prefs, GObject, async, CSS, imports, schema, and package checks. `ego-lint.sh` also has an inline minified JS check.
-- **Tier 3 (checklists)**: 6 semantic review checklists in `skills/ego-review/references/`: lifecycle, security, code-quality, ai-slop (33-item scoring model), licensing, accessibility (7 items). Applied by Claude during `ego-review` phases.
+- **Tier 3 (checklists)**: 6 semantic review checklists in `skills/ego-review/references/`: lifecycle, security, code-quality, ai-slop (35-item scoring model), licensing, accessibility (7 items). Applied by Claude during `ego-review` phases.
 
 ### ego-review internals
 
