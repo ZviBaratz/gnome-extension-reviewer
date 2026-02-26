@@ -118,7 +118,7 @@ run_lint "deprecated-imports"
 assert_exit_code "exits with 1 (has failures)" 1
 assert_output_contains "fails on ExtensionUtils" "\[FAIL\].*R-DEPR-05"
 assert_output_contains "fails on Tweener" "\[FAIL\].*R-DEPR-06"
-assert_output_contains "warns on legacy imports.*" "\[WARN\].*R-DEPR-04"
+assert_output_contains "fails on legacy imports" "\[FAIL\].*R-DEPR-04"
 echo ""
 
 # --- non-standard-metadata ---
@@ -157,7 +157,7 @@ assert_exit_code "exits with 1 (has failures)" 1
 assert_output_contains "fails on eval()" "\[FAIL\].*R-SEC-01"
 assert_output_contains "fails on new Function()" "\[FAIL\].*R-SEC-02"
 assert_output_contains "warns on http://" "\[WARN\].*R-SEC-03"
-assert_output_contains "warns on shell -c" "\[WARN\].*R-SEC-05"
+assert_output_contains "fails on shell -c" "\[FAIL\].*R-SEC-05"
 echo ""
 
 # --- logging-patterns ---
@@ -487,8 +487,8 @@ echo ""
 # --- non-gjs-scripts ---
 echo "=== non-gjs-scripts ==="
 run_lint "non-gjs-scripts@test"
-assert_exit_code "exits with 0 (warnings only)" 0
-assert_output_contains "warns on non-GJS scripts" "\[WARN\].*non-gjs-scripts"
+assert_exit_code "exits with 1 (has failures)" 1
+assert_output_contains "fails on non-GJS scripts (no pkexec)" "\[FAIL\].*non-gjs-scripts"
 echo ""
 
 # --- compiled-schemas-dir ---
@@ -531,7 +531,7 @@ echo ""
 # --- shell-concat ---
 echo "=== shell-concat ==="
 run_lint "shell-concat@test"
-assert_output_contains "Should detect subprocess string concatenation" "\[WARN\].*R-SEC-13"
+assert_output_contains "Should detect subprocess string concatenation" "\[FAIL\].*R-SEC-13"
 echo ""
 
 # --- sync-subprocess ---
@@ -587,6 +587,16 @@ fi
 # Phase 4: Strengthening assertions (WS2)
 if [[ -f "$ASSERTIONS_DIR/phase4-strengthening.sh" ]]; then
     source "$ASSERTIONS_DIR/phase4-strengthening.sh"
+fi
+
+# Phase 5: Version-gated rule assertions
+if [[ -f "$ASSERTIONS_DIR/phase5-version-rules.sh" ]]; then
+    source "$ASSERTIONS_DIR/phase5-version-rules.sh"
+fi
+
+# Phase 6: AI slop hardening assertions
+if [[ -f "$ASSERTIONS_DIR/phase6-ai-slop-hardening.sh" ]]; then
+    source "$ASSERTIONS_DIR/phase6-ai-slop-hardening.sh"
 fi
 
 # Hara-hachi-bu regression (conditional)

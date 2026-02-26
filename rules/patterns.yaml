@@ -203,7 +203,7 @@
 - id: R-SEC-05
   pattern: "Subprocess.*'/bin/sh'.*'-c'"
   scope: ["*.js"]
-  severity: advisory
+  severity: blocking
   message: "Subprocess with /bin/sh -c risks command injection; use explicit argv array"
   category: security
   fix: "Pass command and arguments as separate argv array elements instead of a shell string."
@@ -249,10 +249,11 @@
 - id: R-DEPR-04
   pattern: "\\bimports\\.(ui|gi|misc)\\."
   scope: ["*.js"]
-  severity: advisory
+  severity: blocking
   message: "Legacy imports.* syntax; use ESM imports for GNOME 45+"
   category: deprecated
   fix: "Replace 'const X = imports.ui.main' with 'import * as Main from \"resource:///org/gnome/shell/ui/main.js\"'."
+  min-version: 45
 
 - id: R-DEPR-08
   pattern: "\\bspawn_command_line_sync\\b"
@@ -646,7 +647,7 @@
 - id: R-SEC-13
   pattern: "Subprocess[^;]*['\"]\\s*\\+|\\+\\s*['\"][^;]*Subprocess"
   scope: ["*.js"]
-  severity: advisory
+  severity: blocking
   message: "Subprocess with string concatenation risks command injection; use explicit argv array"
   category: security
   fix: "Pass command and arguments as separate argv array elements instead of concatenating strings"
@@ -784,3 +785,66 @@
   category: version-compat
   fix: "Use new Clutter.SwipeGesture() instead"
   min-version: 49
+
+# --- GNOME 48 CSS class rename ---
+
+- id: R-VER48-07
+  pattern: "quick-menu-toggle"
+  scope: ["*.css"]
+  severity: blocking
+  message: "CSS class .quick-menu-toggle renamed to .quick-toggle-has-menu in GNOME 48"
+  category: version-compat
+  fix: "Replace .quick-menu-toggle with .quick-toggle-has-menu"
+  min-version: 48
+
+# --- GNOME 49 maximize() signature change ---
+
+- id: R-VER49-08
+  pattern: "\\bmaximize\\s*\\(\\s*(Meta\\.)?MaximizeFlags"
+  scope: ["*.js"]
+  severity: blocking
+  message: "maximize() lost MaximizeFlags parameter in GNOME 49; use set_maximize_flags() first"
+  category: version-compat
+  fix: "Call window.set_maximize_flags(flags) then window.maximize()"
+  min-version: 49
+
+# --- GNOME 49 AppMenuButton removal ---
+
+- id: R-VER49-09
+  pattern: "\\bAppMenuButton\\b"
+  scope: ["*.js"]
+  severity: blocking
+  message: "AppMenuButton removed from panel.js in GNOME 49"
+  category: version-compat
+  fix: "AppMenuButton was removed without replacement in GNOME 49"
+  min-version: 49
+
+# --- GSettings bind flags confusion ---
+
+- id: R-QUAL-23
+  pattern: "\\.bind\\s*\\([^)]*GObject\\.BindingFlags"
+  scope: ["*.js"]
+  severity: advisory
+  message: "GSettings.bind() takes Gio.SettingsBindFlags, not GObject.BindingFlags"
+  category: quality
+  fix: "Use Gio.SettingsBindFlags.DEFAULT (or .GET, .SET, .INVERT_BOOLEAN) instead of GObject.BindingFlags"
+
+# --- AI slop: defensive spread copies ---
+
+- id: R-SLOP-27
+  pattern: "\\{\\s*\\.\\.\\.this\\._\\w+\\s*\\}"
+  scope: ["*.js"]
+  severity: advisory
+  message: "Unnecessary object spread copy — GNOME extensions should pass references"
+  category: ai-slop
+  fix: "Pass the object reference directly instead of creating a shallow copy"
+
+# --- AI slop: instanceof Error checks ---
+
+- id: R-SLOP-28
+  pattern: "instanceof\\s+(Error|TypeError|RangeError|SyntaxError|ReferenceError)"
+  scope: ["*.js"]
+  severity: advisory
+  message: "instanceof Error check is unusual in GNOME extensions"
+  category: ai-slop
+  fix: "In GJS, catch blocks already have typed errors; instanceof checks are rarely needed"

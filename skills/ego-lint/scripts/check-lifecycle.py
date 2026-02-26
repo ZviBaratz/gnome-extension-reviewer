@@ -610,12 +610,49 @@ def check_timeout_removal_in_disable(ext_dir):
 
     if missing:
         for var_name in sorted(missing):
-            result("WARN", "lifecycle/timeout-not-removed",
+            result("FAIL", "lifecycle/timeout-not-removed",
                    f"this.{var_name} stores timeout/idle source but no "
                    f"GLib.Source.remove() call found in disable()")
     else:
         result("PASS", "lifecycle/timeout-not-removed",
                "All stored timeout/idle IDs have Source.remove() in disable()")
+
+
+def check_pkexec_user_writable(ext_dir):
+    """R-SEC-18: pkexec target must not be user-writable."""
+    js_files = find_js_files(ext_dir)
+    if not js_files:
+        return
+
+    user_writable_prefixes = ['/home/', '/tmp/', './', '../']
+
+    for filepath in js_files:
+        content = strip_comments(read_file(filepath))
+        rel = os.path.relpath(filepath, ext_dir)
+
+        # Match pkexec in argv arrays: ['pkexec', '/path/to/script']
+        for m in re.finditer(
+            r"""pkexec['"]\s*,\s*['"]([^'"]+)['"]""", content
+        ):
+            target = m.group(1)
+            for prefix in user_writable_prefixes:
+                if target.startswith(prefix):
+                    result("FAIL", "lifecycle/pkexec-user-writable",
+                           f"{rel}: pkexec target '{target}' is user-writable — "
+                           f"attacker can replace it with arbitrary code")
+                    return
+
+        # Match pkexec in command strings: 'pkexec /path/to/script'
+        for m in re.finditer(
+            r"""['"]pkexec\s+([^'"]+)['"]""", content
+        ):
+            target = m.group(1).split()[0]
+            for prefix in user_writable_prefixes:
+                if target.startswith(prefix):
+                    result("FAIL", "lifecycle/pkexec-user-writable",
+                           f"{rel}: pkexec target '{target}' is user-writable — "
+                           f"attacker can replace it with arbitrary code")
+                    return
 
 
 def main():
@@ -641,6 +678,7 @@ def main():
     check_selective_disable(ext_dir)
     check_unlock_dialog_comment(ext_dir)
     check_clipboard_keybinding(ext_dir)
+    check_pkexec_user_writable(ext_dir)
 
 
 if __name__ == '__main__':

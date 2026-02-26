@@ -1,0 +1,7 @@
+{
+    "uuid": "non-executable-script@test",
+    "name": "Non-Executable Script Test",
+    "description": "Tests script permission detection",
+    "shell-version": ["48"],
+    "url": "https://github.com/test/non-executable-script"
+}

@@ -1,0 +1,7 @@
+{
+    "uuid": "slop-spread-copy@test",
+    "name": "Slop Spread Copy Test",
+    "description": "Tests defensive spread copy detection",
+    "shell-version": ["48"],
+    "url": "https://github.com/test/slop-spread-copy"
+}

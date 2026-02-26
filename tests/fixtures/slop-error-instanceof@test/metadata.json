@@ -1,0 +1,7 @@
+{
+    "uuid": "slop-error-instanceof@test",
+    "name": "Slop Error Instanceof Test",
+    "description": "Tests instanceof Error detection",
+    "shell-version": ["48"],
+    "url": "https://github.com/test/slop-error-instanceof"
+}

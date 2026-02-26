@@ -1,0 +1,7 @@
+{
+    "uuid": "gnome48-css-compat@test",
+    "name": "GNOME 48 CSS Compat Test",
+    "description": "Tests GNOME 48 CSS class rename detection",
+    "shell-version": ["48"],
+    "url": "https://github.com/test/gnome48-css-compat"
+}

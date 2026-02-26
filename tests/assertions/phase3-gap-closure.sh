@@ -44,5 +44,6 @@ echo ""
 # --- prefs-no-method ---
 echo "=== prefs-no-method ==="
 run_lint "prefs-no-method@test"
-assert_output_contains "warns on missing prefs method" "\[WARN\].*prefs/missing-prefs-method"
+assert_exit_code "exits with 1 (has failures)" 1
+assert_output_contains "fails on missing prefs method" "\[FAIL\].*prefs/missing-prefs-method"
 echo ""

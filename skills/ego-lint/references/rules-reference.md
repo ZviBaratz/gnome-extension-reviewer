@@ -2071,3 +2071,83 @@ Rules for APIs removed or changed in specific GNOME Shell versions. These rules 
 - **Rationale**: Monkey-patching prototypes without restoration causes the patch to persist across enable/disable cycles. This affects all instances of the patched class, not just the extension's own objects.
 - **Fix**: Use `InjectionManager` (preferred), or save the original method in `enable()` and restore it in `disable()`. See the [GNOME Shell InjectionManager documentation](https://gjs.guide/extensions/).
 - **Tested by**: `tests/fixtures/manual-prototype-override@test/`
+
+---
+
+## GNOME 48/49 Version-Gated Rules (New)
+
+### R-VER48-07: QuickMenuToggle CSS class rename
+- **Severity**: blocking
+- **Checked by**: apply-patterns.py (min-version: 48)
+- **Rule**: The CSS class `.quick-menu-toggle` was renamed to `.quick-toggle-has-menu` in GNOME 48.
+- **Rationale**: Extensions targeting GNOME 48+ that use the old class name will have broken styling.
+- **Fix**: Replace `.quick-menu-toggle` with `.quick-toggle-has-menu` in stylesheet.css.
+- **Tested by**: `tests/fixtures/gnome48-css-compat@test/`
+
+### R-VER49-08: Meta.Window.maximize() signature change
+- **Severity**: blocking
+- **Checked by**: apply-patterns.py (min-version: 49)
+- **Rule**: `maximize()` lost the `MaximizeFlags` parameter in GNOME 49.
+- **Rationale**: Passing `MaximizeFlags` to `maximize()` will throw in GNOME 49.
+- **Fix**: Call `window.set_maximize_flags(flags)` first, then `window.maximize()`.
+- **Tested by**: `tests/fixtures/gnome49-maximize@test/`
+
+### R-VER49-09: AppMenuButton removal
+- **Severity**: blocking
+- **Checked by**: apply-patterns.py (min-version: 49)
+- **Rule**: `AppMenuButton` was removed from `panel.js` in GNOME 49.
+- **Rationale**: The app menu was removed from the GNOME Shell panel.
+- **Fix**: Remove references to `AppMenuButton`.
+- **Tested by**: `tests/fixtures/gnome49-appmenu@test/`
+
+---
+
+## Security (New)
+
+### R-SEC-18: pkexec target must not be user-writable
+- **Severity**: blocking
+- **Checked by**: check-lifecycle.py
+- **Rule**: The target script/binary passed to `pkexec` must not be in a user-writable location (`/home/`, `/tmp/`, `./`, `../`).
+- **Rationale**: A user-writable pkexec target allows privilege escalation — an attacker can replace the script with arbitrary code that runs as root.
+- **Fix**: Place the helper script in `/usr/local/bin/` or `/usr/lib/` and reference it by absolute path.
+- **Tested by**: `tests/fixtures/pkexec-user-writable@test/`
+
+---
+
+## Quality (New)
+
+### R-QUAL-23: GSettings bind flags confusion
+- **Severity**: advisory
+- **Checked by**: apply-patterns.py
+- **Rule**: `GSettings.bind()` takes `Gio.SettingsBindFlags`, not `GObject.BindingFlags`.
+- **Rationale**: Using the wrong flags enum causes silent binding failures.
+- **Fix**: Use `Gio.SettingsBindFlags.DEFAULT` instead of `GObject.BindingFlags`.
+- **Tested by**: `tests/fixtures/gsettings-bind-flags@test/`
+
+### R-QUAL-24: Excessive null/undefined checks
+- **Severity**: advisory
+- **Checked by**: check-quality.py
+- **Rule**: Excessive null/undefined checks (15+ with ratio > 2%) suggest AI-generated code.
+- **Rationale**: Modern JavaScript and GJS support optional chaining (`?.`) and nullish coalescing (`??`) which are more idiomatic.
+- **Fix**: Replace verbose null guards with `?.` and `??` operators.
+- **Tested by**: `tests/fixtures/excessive-null-checks@test/`
+
+---
+
+## AI Slop (New)
+
+### R-SLOP-27: Defensive spread copies
+- **Severity**: advisory
+- **Checked by**: apply-patterns.py
+- **Rule**: `{ ...this._something }` creates unnecessary shallow copies.
+- **Rationale**: GNOME extensions should pass object references directly. Defensive copying is an enterprise JavaScript pattern not used in GJS.
+- **Fix**: Pass the object reference directly instead of spreading.
+- **Tested by**: `tests/fixtures/slop-spread-copy@test/`
+
+### R-SLOP-28: instanceof Error checks
+- **Severity**: advisory
+- **Checked by**: apply-patterns.py
+- **Rule**: `instanceof Error/TypeError/RangeError/...` checks are unusual in GNOME extensions.
+- **Rationale**: In GJS catch blocks, errors are already typed. `instanceof` checks add no value and signal AI-generated over-defensive code.
+- **Fix**: Remove the `instanceof` check and handle the error directly.
+- **Tested by**: `tests/fixtures/slop-error-instanceof@test/`

@@ -1,0 +1,7 @@
+{
+    "uuid": "gnome49-appmenu@test",
+    "name": "GNOME 49 AppMenu Test",
+    "description": "Tests AppMenuButton removal detection",
+    "shell-version": ["49"],
+    "url": "https://github.com/test/gnome49-appmenu"
+}

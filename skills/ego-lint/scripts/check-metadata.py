@@ -253,7 +253,17 @@ def check_url_field(meta):
         result("FAIL", "metadata/missing-url",
                "metadata.json has no url field — required for EGO submission")
     else:
+        url = meta["url"]
         result("PASS", "metadata/missing-url", "url field is present")
+        # Check if URL looks like a repository URL
+        repo_patterns = [
+            "github.com", "gitlab.", "codeberg.org", "sr.ht",
+            "bitbucket.org", "pagure.io", "salsa.debian.org",
+        ]
+        if isinstance(url, str) and not any(p in url for p in repo_patterns):
+            result("WARN", "metadata/url-format",
+                   f"url '{url}' does not appear to be a repository URL — "
+                   f"EGO expects a link to the source code repository")
 
 
 def check_shell_version_dev_limit(meta):

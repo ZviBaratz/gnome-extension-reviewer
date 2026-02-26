@@ -81,7 +81,7 @@
 
 | Guideline Requirement | Severity | Currently Covered? | By Which Rule/Check? | Gap Notes |
 |---|---|---|---|---|
-| Extensions MUST NOT be submitted if primarily AI-generated | **MUST** | Partial | R-SLOP-01 through R-SLOP-17, R-QUAL-01 through R-QUAL-11, ai-slop-checklist.md | Multiple heuristic signals (try-catch density, hallucinated APIs, typeof super, comment density, impossible state, pendulum pattern). Tier 3 checklist has 18 detailed items. Inherently hard to fully automate. |
+| Extensions MUST NOT be submitted if primarily AI-generated | **MUST** | Partial | R-SLOP-01 through R-SLOP-28, R-QUAL-01 through R-QUAL-24, ai-slop-checklist.md (40 items) | Multiple heuristic signals (try-catch density, hallucinated APIs, typeof super, comment density, impossible state, pendulum pattern, null check density, spread copies, instanceof Error). Tier 3 checklist has 40 detailed items. Inherently hard to fully automate. |
 | Developers MUST be able to justify and explain submitted code | **MUST** | Tier 3 Only | ai-slop-checklist.md | Semantic requirement; only addressable during human/AI code review. |
 
 ## Section 9: Metadata Requirements
@@ -136,8 +136,8 @@
 | Guideline Requirement | Severity | Currently Covered? | By Which Rule/Check? | Gap Notes |
 |---|---|---|---|---|
 | Privileged subprocess MUST use `pkexec` (not sudo directly) | **MUST** | Partial | R-SEC-04 (pattern: `pkexec`/`sudo`) | Flags both pkexec and sudo. Does not distinguish between them to enforce pkexec-only. |
-| Privileged subprocess MUST NOT be user-writable executable or script | **MUST** | Uncovered | -- | No check for script permissions or paths. Requires filesystem analysis of referenced scripts. |
-| Scripts MUST be written in GJS unless absolutely necessary | **MUST** | Partial | ego-lint.sh `non-gjs-scripts` | Issues WARN for .py/.sh/.rb/.pl files. Guidelines say MUST. |
+| Privileged subprocess MUST NOT be user-writable executable or script | **MUST** | Covered | R-SEC-18 (check-lifecycle.py `pkexec-user-writable`) | Checks pkexec target paths for user-writable locations (/home/, /tmp/, ./, ../). |
+| Scripts MUST be written in GJS unless absolutely necessary | **MUST** | Covered | ego-lint.sh `non-gjs-scripts` | FAIL for non-GJS scripts without pkexec justification; WARN with pkexec (privileged helper exception). |
 | MUST NOT include binary executables or libraries | **MUST** | Covered | R-FILE-04, ego-lint.sh `no-binary-files` | |
 | Scripts MUST be distributed under OSI-approved license | **MUST** | Tier 3 Only | licensing-checklist.md | Requires manual license review of included scripts. |
 | MUST NOT use synchronous subprocess calls in Shell process | **MUST** | Covered | R-SEC-14 (pattern: sync subprocess), R-DEPR-08 (upgraded to blocking) | Detects `spawn_sync`, `GLib.spawn_command_line_sync`, and other synchronous subprocess patterns. Upgraded to FAIL severity as sync calls block the compositor. |
@@ -147,7 +147,7 @@
 | Guideline Requirement | Severity | Currently Covered? | By Which Rule/Check? | Gap Notes |
 |---|---|---|---|---|
 | Using `unlock-dialog` MUST be necessary for correct operation | **MUST** | Tier 3 Only | lifecycle-checklist.md | Requires semantic understanding of why lock screen access is needed. |
-| All keyboard event signals MUST be disconnected in lock screen mode | **MUST** | Uncovered | -- | No check for keyboard signals (`key-press-event`, `key-release-event`, `captured-event`) remaining connected during `unlock-dialog`. |
+| All keyboard event signals MUST be disconnected in lock screen mode | **MUST** | Covered | R-LIFE-11 (check-lifecycle.py `lockscreen-signals`) | Detects keyboard signals (key-press-event, key-release-event, captured-event) without session mode guards when unlock-dialog is declared. |
 | `disable()` function MUST include comment explaining why `unlock-dialog` is used | **MUST** | Covered | R-LIFE-14 (check-lifecycle.py) | Warns when unlock-dialog declared but disable() has no explanatory comment. |
 | Extensions MUST NOT disable selectively | **MUST** | Covered | R-LIFE-13 (check-lifecycle.py) | Detects `if (...) return;` in disable() that skips cleanup. |
 | `session-modes` field MUST be dropped if only using `user` | **MUST** | Partial | R-META-09 (check-metadata.py) | Issues WARN, not FAIL. Should be FAIL per guidelines. |
@@ -181,7 +181,7 @@
 | Guideline Requirement | Severity | Currently Covered? | By Which Rule/Check? | Gap Notes |
 |---|---|---|---|---|
 | MUST extend `ExtensionPreferences` class | **MUST** | Partial | R-PREFS-02 (check-prefs.py `default-export`) | Checks for `export default class` but does NOT verify it extends `ExtensionPreferences`. |
-| MUST implement `fillPreferencesWindow()` or `getPreferencesWidget()` | **MUST** | Partial | R-PREFS-01 (check-prefs.py) | Detects dual-prefs pattern conflict. Does not FAIL if neither method is present. |
+| MUST implement `fillPreferencesWindow()` or `getPreferencesWidget()` | **MUST** | Covered | R-PREFS-01 (check-prefs.py) | FAIL if neither method is present. Detects dual-prefs pattern conflict. |
 | MUST use GTK4 and Adwaita (not GTK3) | **MUST** | Uncovered | -- | No check for GTK3-specific imports or patterns in prefs.js (e.g., `Gtk.init(null)`, `Gtk.Box.pack_start`, GTK3-only widget names). |
 | MUST NOT import Shell, Clutter, Meta, St in prefs | **MUST** | Covered | R-IMPORT-04 through R-IMPORT-07, check-imports.sh | |
 

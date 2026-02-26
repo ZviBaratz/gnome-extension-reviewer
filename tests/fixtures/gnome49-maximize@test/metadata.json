@@ -1,0 +1,7 @@
+{
+    "uuid": "gnome49-maximize@test",
+    "name": "GNOME 49 Maximize Test",
+    "description": "Tests maximize() signature change detection",
+    "shell-version": ["49"],
+    "url": "https://github.com/test/gnome49-maximize"
+}

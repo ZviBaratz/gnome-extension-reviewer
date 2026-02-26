@@ -856,6 +856,7 @@ export default class MyExtension extends Extension {
 | `InputSourceManager._switchInputSource` signature changed | Added `event` parameter |
 | WindowManager methods gained `event` parameter | Update method signatures |
 | New `ExtensionBase.getLogger()` method | Use for structured logging |
+| CSS class `.quick-menu-toggle` renamed | Use `.quick-toggle-has-menu` |
 
 #### `getLogger()` (GNOME 48+)
 
@@ -872,14 +873,51 @@ export default class MyExtension extends Extension {
 
 The logger supports `message()`, `warning()`, and `critical()` methods. Extensions targeting GNOME 48+ SHOULD prefer `getLogger()` over raw `console.*` calls for better log hygiene.
 
-### GNOME 49 (Upcoming)
+#### QuickMenuToggle CSS Rename (GNOME 48+)
+
+The CSS class `.quick-menu-toggle` was renamed to `.quick-toggle-has-menu` in GNOME 48. Extensions that style QuickSettings toggles with menus must update their stylesheets:
+
+```css
+/* GNOME 47 and earlier */
+.quick-menu-toggle { ... }
+
+/* GNOME 48+ */
+.quick-toggle-has-menu { ... }
+```
+
+This is a **blocking** change — the old class no longer matches any element, so styles silently stop working. Automated check: R-VER48-07.
+
+### GNOME 49
 
 | Change | Migration |
 |---|---|
 | `Meta.Rectangle` fully removed (alias dropped) | Use `Mtk.Rectangle` |
 | `Clutter.ClickAction`/`Clutter.TapAction` changes | Check current API |
-| `Window.get_maximized` changes | Check current API |
+| `Window.maximize()` signature changed | Use `set_maximize_flags()` then `maximize()` |
 | `CursorTracker.set_pointer_visible` changes | Check current API |
+| `AppMenuButton` removed from panel.js | No replacement — was unused since GNOME 43 |
+| Gesture API migration | Check updated `Clutter.GestureAction` subclasses |
+
+#### `maximize()` Signature Change (GNOME 49+)
+
+In GNOME 49, `Meta.Window.maximize()` lost the `MaximizeFlags` parameter. Code that passes `Meta.MaximizeFlags.BOTH` (or similar) to `maximize()` will throw a type error.
+
+```javascript
+// GNOME 48 and earlier
+window.maximize(Meta.MaximizeFlags.BOTH);
+
+// GNOME 49+
+window.set_maximize_flags(Meta.MaximizeFlags.BOTH);
+window.maximize();
+```
+
+Automated check: R-VER49-08.
+
+#### AppMenuButton Removal (GNOME 49+)
+
+`AppMenuButton` has been fully removed from `panel.js` in GNOME 49. It was deprecated since GNOME 43 and was a no-op, but extensions that reference it (e.g., `Main.panel.statusArea.AppMenuButton`) will throw. There is no direct replacement — the app menu functionality was moved to the window header bar.
+
+Automated check: R-VER49-09.
 
 ---
 

@@ -39,5 +39,5 @@ echo ""
 # --- timeout-no-remove ---
 echo "=== timeout-no-remove ==="
 run_lint "timeout-no-remove@test"
-assert_output_contains "detects missing Source.remove" "\[WARN\].*lifecycle/timeout-not-removed"
+assert_output_contains "detects missing Source.remove" "\[FAIL\].*lifecycle/timeout-not-removed"
 echo ""

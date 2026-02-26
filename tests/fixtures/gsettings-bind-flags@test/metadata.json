@@ -1,0 +1,7 @@
+{
+    "uuid": "gsettings-bind-flags@test",
+    "name": "GSettings Bind Flags Test",
+    "description": "Tests GSettings bind flags confusion detection",
+    "shell-version": ["48"],
+    "url": "https://github.com/test/gsettings-bind-flags"
+}

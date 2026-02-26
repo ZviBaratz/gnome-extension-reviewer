@@ -1,0 +1,7 @@
+{
+    "uuid": "pkexec-user-writable@test",
+    "name": "Pkexec User-Writable Test",
+    "description": "Tests pkexec target path validation",
+    "shell-version": ["48"],
+    "url": "https://github.com/test/pkexec-user-writable"
+}

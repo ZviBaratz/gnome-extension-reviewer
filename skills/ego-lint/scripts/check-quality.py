@@ -729,6 +729,41 @@ def check_error_message_verbosity(ext_dir, js_files):
            "Error message verbosity acceptable")
 
 
+def check_excessive_null_checks(ext_dir, js_files):
+    """R-QUAL-24: Flag excessive null/undefined checks instead of optional chaining."""
+    total_checks = 0
+    total_lines = 0
+
+    null_patterns = [
+        r'===?\s*null\b',
+        r'!==?\s*null\b',
+        r'===?\s*undefined\b',
+        r"typeof\s+\w+\s*!==?\s*['\"]undefined['\"]",
+    ]
+
+    for filepath in js_files:
+        with open(filepath, encoding='utf-8', errors='replace') as f:
+            lines = f.readlines()
+        total_lines += sum(1 for l in lines if l.strip())
+        for line in lines:
+            stripped = line.lstrip()
+            if stripped.startswith('//') or stripped.startswith('*'):
+                continue
+            for pat in null_patterns:
+                total_checks += len(re.findall(pat, line))
+
+    if total_lines > 0 and total_checks >= 15:
+        ratio = total_checks / total_lines
+        if ratio > 0.02:
+            result("WARN", "quality/excessive-null-checks",
+                   f"{total_checks} null/undefined checks across {total_lines} lines "
+                   f"(ratio: {ratio:.3f}) — prefer optional chaining (?.) or nullish coalescing (??)")
+            return
+
+    result("PASS", "quality/excessive-null-checks",
+           f"Null/undefined check density acceptable ({total_checks} in {total_lines} lines)")
+
+
 def main():
     if len(sys.argv) < 2:
         result("FAIL", "quality/args", "No extension directory provided")
@@ -762,6 +797,7 @@ def main():
     check_error_message_verbosity(ext_dir, js_files)
     check_run_dispose_comment(ext_dir, js_files)
     check_clipboard_disclosure(ext_dir, js_files)
+    check_excessive_null_checks(ext_dir, js_files)
 
 
 if __name__ == '__main__':

@@ -1,0 +1,7 @@
+{
+    "uuid": "excessive-null-checks@test",
+    "name": "Excessive Null Checks Test",
+    "description": "Tests excessive null/undefined check detection",
+    "shell-version": ["48"],
+    "url": "https://github.com/test/excessive-null-checks"
+}

@@ -1,0 +1,7 @@
+{
+    "uuid": "bad-url@test",
+    "name": "Bad URL Test",
+    "description": "Tests URL format validation",
+    "shell-version": ["48"],
+    "url": "http://not-a-repo.example.com"
+}

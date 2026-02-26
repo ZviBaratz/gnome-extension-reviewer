@@ -673,6 +673,102 @@ const REFRESH_INTERVAL = 30;
 const MAX_RETRIES = 3;
 ```
 
+### 36. Excessive null/undefined checks instead of optional chaining
+
+Using `=== null`, `!== null`, `=== undefined`, `typeof x !== 'undefined'`
+extensively instead of optional chaining (`?.`) or nullish coalescing (`??`).
+
+- **Red flag:** 15+ null/undefined checks with a ratio > 2% of code lines,
+  especially when checking class properties that are always initialized
+- **Acceptable:** Null checks at system boundaries (D-Bus results, settings
+  values, GLib function returns)
+
+```javascript
+// RED FLAG: verbose null guards
+if (this._settings !== null && this._settings !== undefined) {
+    if (typeof this._settings.get_int !== 'undefined') {
+        value = this._settings.get_int('key');
+    }
+}
+
+// ACCEPTABLE: optional chaining
+value = this._settings?.get_int('key') ?? defaultValue;
+```
+
+### 37. Unnecessary defensive copies (spread operator on class properties)
+
+Using `{ ...this._config }` to create shallow copies of internal objects
+when the extension should just pass references.
+
+- **Red flag:** `{ ...this._something }` patterns, especially for objects
+  that are never mutated externally
+- **Acceptable:** Spread when sending data to external APIs or when the
+  caller modifies the object
+
+```javascript
+// RED FLAG: unnecessary copy
+_getConfig() {
+    return { ...this._config };
+}
+
+// ACCEPTABLE: direct reference
+_getConfig() {
+    return this._config;
+}
+```
+
+### 38. Over-specified parameter names (20+ character camelCase descriptive)
+
+Using extremely long parameter names like `extensionPreferencesWindowInstance`
+or `currentlyActiveDisplayMonitorIndex`.
+
+- **Red flag:** Multiple parameters with 20+ character names that read like
+  documentation rather than code
+- **Acceptable:** Standard GNOME naming: `display`, `monitor`, `settings`,
+  `proxy`, `window`
+
+### 39. Gratuitous enum-like const objects for 2-3 values
+
+Creating `const States = Object.freeze({ IDLE: 0, RUNNING: 1, DONE: 2 })`
+for simple state tracking that could use boolean flags.
+
+- **Red flag:** Enum objects with 2-3 members, especially with
+  `Object.freeze()`. GNOME extensions use simple boolean flags or string
+  constants.
+- **Acceptable:** Actual enums from GLib/GObject (e.g., `Gio.SettingsBindFlags`)
+
+```javascript
+// RED FLAG: enum for 2 states
+const State = Object.freeze({ ENABLED: 'enabled', DISABLED: 'disabled' });
+
+// ACCEPTABLE: simple boolean
+this._enabled = true;
+```
+
+### 40. Unnecessary Promise wrappers around already-async operations
+
+Wrapping operations that already return Promises or are synchronous in
+`new Promise()`.
+
+- **Red flag:** `new Promise((resolve, reject) => { resolve(syncValue); })`
+  or wrapping `Gio._promisify`'d methods in additional Promise layers
+- **Acceptable:** `new Promise()` for callback-based APIs that don't have
+  promisified versions
+
+```javascript
+// RED FLAG: unnecessary wrapper
+async _getValue() {
+    return new Promise((resolve) => {
+        resolve(this._settings.get_int('key'));
+    });
+}
+
+// ACCEPTABLE: direct return
+_getValue() {
+    return this._settings.get_int('key');
+}
+```
+
 ---
 
 ## Real-World AI Detection Intelligence
@@ -691,7 +787,7 @@ The reviewer reported spending "more than 6 hours a day reviewing over 15,000 li
 
 ## Scoring Model
 
-Count the number of triggered items out of the 35 above.
+Count the number of triggered items out of the 40 above.
 
 ```
 1-3 triggered:  ADVISORY  -- note them, extension may still pass

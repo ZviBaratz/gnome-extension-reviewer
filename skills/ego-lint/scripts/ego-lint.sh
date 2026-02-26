@@ -303,9 +303,41 @@ done < <(find "$EXT_DIR" -type f \( -name '*.py' -o -name '*.sh' -o -name '*.rb'
 
 if [[ -n "$non_gjs_scripts" ]]; then
     hit_count=$(echo -n "$non_gjs_scripts" | grep -c '.' || true)
-    print_result "WARN" "non-gjs-scripts" "Found $hit_count non-GJS script(s) — scripts MUST be written in GJS unless absolutely necessary"
+    # Upgrade to FAIL if no pkexec justification exists (pkexec helpers are the main exception)
+    has_pkexec=false
+    while IFS= read -r -d '' f; do
+        if grep -q 'pkexec' "$f" 2>/dev/null; then
+            has_pkexec=true
+            break
+        fi
+    done < <(find "$EXT_DIR" -name '*.js' -not -path '*/node_modules/*' -not -path '*/.git/*' -print0 2>/dev/null)
+    if [[ "$has_pkexec" == true ]]; then
+        print_result "WARN" "non-gjs-scripts" "Found $hit_count non-GJS script(s) — scripts MUST be written in GJS unless absolutely necessary (pkexec helper detected)"
+    else
+        print_result "FAIL" "non-gjs-scripts" "Found $hit_count non-GJS script(s) — scripts MUST be written in GJS; no pkexec/privileged helper justification found"
+    fi
 else
     print_result "PASS" "non-gjs-scripts" "No non-GJS scripts found"
+fi
+
+# ---------------------------------------------------------------------------
+# Helper script permission check
+# ---------------------------------------------------------------------------
+
+non_exec_scripts=""
+while IFS= read -r -d '' f; do
+    if [[ ! -x "$f" ]]; then
+        rel_path="${f#"$EXT_DIR/"}"
+        non_exec_scripts+="  $rel_path"$'\n'
+    fi
+done < <(find "$EXT_DIR" -type f -name '*.sh' \
+    -not -path '*/node_modules/*' -not -path '*/.git/*' -print0 2>/dev/null)
+
+if [[ -n "$non_exec_scripts" ]]; then
+    hit_count=$(echo -n "$non_exec_scripts" | grep -c '.' || true)
+    print_result "WARN" "script-permissions" "Found $hit_count shell script(s) without execute permission — packaging tools may strip permissions"
+else
+    print_result "PASS" "script-permissions" "All shell scripts have execute permission (or no shell scripts found)"
 fi
 
 # ---------------------------------------------------------------------------
