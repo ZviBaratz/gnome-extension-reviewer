@@ -1,0 +1,7 @@
+{
+    "uuid": "clipboard-keybinding@test",
+    "name": "Clipboard Keybinding Test",
+    "description": "Tests clipboard plus keybinding cross-reference detection",
+    "shell-version": ["47", "48"],
+    "url": "https://github.com/test/clipboard-keybinding"
+}

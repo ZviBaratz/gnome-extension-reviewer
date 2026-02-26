@@ -99,3 +99,66 @@ Post-December 2025, any unnecessary code triggers AI suspicion. This includes:
 - Type-checking before calling guaranteed parent methods
 - Verbose error messages that read like documentation
 - Dead code, commented-out code, or unused imports
+
+---
+
+## Post-2025 AI Detection Escalation
+
+Since Javad Rahmatzadeh's December 2025 blog post, AI-generated code detection
+has become a primary focus of the review process:
+
+- **Time investment:** Reviewers now spend 6+ hours/day reviewing code, with a
+  significant portion dedicated to identifying AI-generated submissions
+- **15,000+ lines/day:** The reviewer reported personally reviewing this volume
+  of extension code daily
+- **Zero tolerance for unreviewed AI output:** Extensions that appear to be
+  primarily AI-generated without developer understanding are rejected outright
+- **Signal clustering:** A single AI signal (e.g., one JSDoc annotation) is
+  noted but not blocking. 3+ signals in the same extension trigger deeper
+  scrutiny. 6+ signals are grounds for rejection.
+
+### Key detection heuristics (post-2025)
+
+1. Try-catch around `super.destroy()` — the #1 tell
+2. `typeof super.method === 'function'` — canonical example from the blog
+3. Template literal error messages with `${this.constructor.name}`
+4. Comments that read like LLM prompts ("Important: Make sure to...")
+5. Hallucinated APIs that don't exist in the declared GNOME version
+6. `Object.freeze()` on config objects — enterprise JS, not GNOME
+7. Unnecessary `async/await` wrapping synchronous GSettings operations
+
+## Queue Pressure
+
+The EGO review queue operates under constant pressure:
+
+- **~120+ submissions pending** at any given time
+- **Single primary reviewer** (Javad Rahmatzadeh) handles the majority
+- **First-come, first-served** ordering with some priority for updates to
+  existing extensions
+- **Average review time:** 2-4 weeks for new submissions; faster for updates
+  to known-good extensions
+
+### Implications for simulation
+
+When simulating reviews, account for the reviewer's time constraints:
+- Issues that waste reviewer time (unnecessary code, verbose messages, AI slop)
+  create a negative first impression
+- Clean, minimal extensions get reviewed faster because they take less time
+- Extensions that fail on metadata are rejected within seconds — the code is
+  never read
+
+## What Gets Fast-Tracked
+
+Extensions that match these patterns move through the queue faster:
+
+1. **Small, focused extensions** (<500 lines of JS) — quick to review, easy to verify
+2. **Updates to previously-approved extensions** — the reviewer already knows the
+   codebase and just diffs the changes
+3. **Clean metadata** — no unnecessary fields, correct UUID format, valid
+   shell-version
+4. **connectObject throughout** — signals the developer knows modern GNOME
+   patterns
+5. **No AI signals** — zero triggered items from the AI slop checklist
+6. **SPDX license headers** — attention to detail that builds trust
+7. **Existing url field** — points to a real repo with commit history (proves
+   human authorship)

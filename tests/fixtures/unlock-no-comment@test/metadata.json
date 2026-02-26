@@ -1,0 +1,8 @@
+{
+    "uuid": "unlock-no-comment@test",
+    "name": "Unlock No Comment Test",
+    "description": "Tests unlock-dialog without explanatory comment",
+    "shell-version": ["47", "48"],
+    "session-modes": ["user", "unlock-dialog"],
+    "url": "https://github.com/test/unlock-no-comment"
+}

@@ -175,6 +175,58 @@ def check_init_modifications(ext_dir):
                "No init-time Shell modifications detected")
 
 
+def check_promisify_placement(ext_dir):
+    """R-INIT-02: Detect Gio._promisify() inside enable() body."""
+    js_files = find_js_files(ext_dir)
+    if not js_files:
+        result("PASS", "init/promisify-in-enable",
+               "No Gio._promisify() placement issues")
+        return
+
+    violations = []
+
+    for filepath in js_files:
+        rel = os.path.relpath(filepath, ext_dir)
+        with open(filepath, encoding='utf-8', errors='replace') as f:
+            raw_content = f.read()
+
+        cleaned = strip_comments(raw_content)
+        lines = cleaned.splitlines()
+
+        in_enable = False
+        enable_depth = 0
+
+        for lineno, line in enumerate(lines, 1):
+            # Detect enable() method start
+            if not in_enable and re.search(r'\benable\s*\(', line):
+                in_enable = True
+                enable_depth = 0
+                # Count braces on the enable line itself
+                enable_depth += line.count('{') - line.count('}')
+                if enable_depth <= 0 and '{' in line:
+                    # Single-line enable body
+                    if 'Gio._promisify' in line:
+                        violations.append(f"{rel}:{lineno}")
+                    in_enable = False
+                continue
+
+            if in_enable:
+                enable_depth += line.count('{') - line.count('}')
+                if 'Gio._promisify' in line:
+                    violations.append(f"{rel}:{lineno}")
+                if enable_depth <= 0:
+                    in_enable = False
+
+    if violations:
+        for loc in violations:
+            result("WARN", "init/promisify-in-enable",
+                   f"{loc}: Gio._promisify() inside enable() "
+                   f"— should be at module scope")
+    else:
+        result("PASS", "init/promisify-in-enable",
+               "No Gio._promisify() placement issues")
+
+
 def main():
     if len(sys.argv) < 2:
         result("FAIL", "init/args", "No extension directory provided")
@@ -182,6 +234,7 @@ def main():
 
     ext_dir = os.path.realpath(sys.argv[1])
     check_init_modifications(ext_dir)
+    check_promisify_placement(ext_dir)
 
 
 if __name__ == '__main__':

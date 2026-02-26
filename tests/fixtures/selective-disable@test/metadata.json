@@ -1,0 +1,7 @@
+{
+    "uuid": "selective-disable@test",
+    "name": "Selective Disable Test",
+    "description": "Tests selective disable detection",
+    "shell-version": ["47", "48"],
+    "url": "https://github.com/test/selective-disable"
+}

@@ -55,6 +55,9 @@ def main():
         result("PASS", "prefs/prefs-method", "prefs.js uses fillPreferencesWindow()")
     elif has_widget:
         result("PASS", "prefs/prefs-method", "prefs.js uses getPreferencesWidget()")
+    else:
+        result("WARN", "prefs/missing-prefs-method",
+               "prefs.js does not define fillPreferencesWindow() or getPreferencesWidget()")
 
     # Default export check
     if not re.search(r'\bexport\s+default\s+class\b', content):

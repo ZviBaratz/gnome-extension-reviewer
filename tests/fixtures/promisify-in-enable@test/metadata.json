@@ -1,0 +1,7 @@
+{
+    "uuid": "promisify-in-enable@test",
+    "name": "Promisify Placement Test",
+    "description": "Tests Gio._promisify inside enable detection",
+    "shell-version": ["47", "48"],
+    "url": "https://github.com/test/promisify-in-enable"
+}

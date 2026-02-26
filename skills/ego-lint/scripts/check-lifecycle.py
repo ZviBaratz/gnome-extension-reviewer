@@ -13,9 +13,12 @@ Checks:
   - R-LIFE-07: DBus proxy creation without disconnect
   - R-LIFE-08: File monitor without cancel
   - R-LIFE-09: Keybinding add without remove
-  - R-LIFE-10: InjectionManager without clear()
+  - R-LIFE-10: InjectionManager without clear() + prototype override detection
   - R-LIFE-11: Lock screen signal safety
   - R-LIFE-12: Stored timeout/idle ID without Source.remove() in disable()
+  - R-LIFE-13: Selective disable() detection (conditional return skips cleanup)
+  - R-LIFE-14: unlock-dialog comment requirement
+  - R-SEC-16: Clipboard + keybinding cross-reference
   - R-FILE-07: Missing export default class
 
 Output: PIPE-delimited lines: STATUS|check-name|detail
@@ -323,7 +326,8 @@ def check_file_monitor_lifecycle(ext_dir):
 
 
 def check_injection_manager(ext_dir):
-    """R-LIFE-10: InjectionManager must be cleared in disable()."""
+    """R-LIFE-10: InjectionManager must be cleared in disable().
+    Also detects direct prototype overrides (WS1-D enhancement)."""
     js_files = find_js_files(ext_dir, exclude_prefs=True)
     if not js_files:
         return
@@ -345,6 +349,171 @@ def check_injection_manager(ext_dir):
     elif has_injection and has_clear:
         result("PASS", "lifecycle/injection-cleanup",
                "InjectionManager with .clear() cleanup detected")
+
+    # WS1-D: Detect direct prototype overrides
+    prototype_overrides = []
+    for filepath in js_files:
+        content = strip_comments(read_file(filepath))
+        rel = os.path.relpath(filepath, ext_dir)
+        # SomeClass.prototype.methodName = ...
+        for m in re.finditer(r'(\w+\.prototype\.\w+)\s*=', content):
+            prototype_overrides.append((rel, m.group(1)))
+        # Object.assign(SomeClass.prototype, ...)
+        for m in re.finditer(r'Object\.assign\s*\(\s*(\w+\.prototype)', content):
+            prototype_overrides.append((rel, f"Object.assign({m.group(1)}, ...)"))
+
+    if prototype_overrides:
+        # Check if disable() restores prototypes
+        ext_js = os.path.join(ext_dir, 'extension.js')
+        disable_restores = False
+        if os.path.isfile(ext_js):
+            ext_content = strip_comments(read_file(ext_js))
+            disable_match = re.search(r'\bdisable\s*\(\s*\)\s*\{', ext_content)
+            if disable_match:
+                start = disable_match.end()
+                depth = 1
+                pos = start
+                while pos < len(ext_content) and depth > 0:
+                    if ext_content[pos] == '{':
+                        depth += 1
+                    elif ext_content[pos] == '}':
+                        depth -= 1
+                    pos += 1
+                disable_body = ext_content[start:pos]
+                # Check for prototype restoration in disable
+                if re.search(r'\w+\.prototype\.\w+\s*=', disable_body):
+                    disable_restores = True
+
+        if not disable_restores:
+            for rel, override in prototype_overrides:
+                result("WARN", "lifecycle/prototype-override",
+                       f"{rel}: {override} — direct prototype modification "
+                       f"should be restored in disable()")
+
+
+def check_selective_disable(ext_dir):
+    """R-LIFE-13: Detect conditional returns in disable() that skip cleanup."""
+    ext_js = os.path.join(ext_dir, 'extension.js')
+    if not os.path.isfile(ext_js):
+        return
+
+    content = strip_comments(read_file(ext_js))
+
+    # Extract disable() body using brace depth
+    disable_match = re.search(r'\bdisable\s*\(\s*\)\s*\{', content)
+    if not disable_match:
+        return
+
+    start = disable_match.end()
+    depth = 1
+    pos = start
+    while pos < len(content) and depth > 0:
+        if content[pos] == '{':
+            depth += 1
+        elif content[pos] == '}':
+            depth -= 1
+        pos += 1
+    disable_body = content[start:pos]
+
+    # Look for early returns that skip cleanup: `if (...) return;`
+    # But exclude legitimate null guards like `if (this._x) { this._x.destroy(); }`
+    # and `if (!this._x) return;` (null guard for a single resource)
+    early_return_patterns = re.finditer(
+        r'if\s*\(([^)]+)\)\s*return\s*;', disable_body
+    )
+
+    for m in early_return_patterns:
+        condition = m.group(1).strip()
+
+        # Exclude null guards: `if (!this._x)` — these protect a single destroy
+        if re.match(r'^!\s*this\._\w+$', condition):
+            continue
+
+        # Flag session mode / enabled state checks that skip all cleanup
+        result("FAIL", "lifecycle/selective-disable",
+               f"disable() has conditional return: 'if ({condition}) return;' — "
+               f"disable() must always clean up all resources regardless of state")
+        return  # Report once
+
+    result("PASS", "lifecycle/selective-disable",
+           "disable() does not conditionally skip cleanup")
+
+
+def check_unlock_dialog_comment(ext_dir):
+    """R-LIFE-14: unlock-dialog session mode should have explanatory comment in disable()."""
+    metadata_path = os.path.join(ext_dir, 'metadata.json')
+    if not os.path.isfile(metadata_path):
+        return
+
+    try:
+        with open(metadata_path, encoding='utf-8') as f:
+            metadata = json.load(f)
+    except (json.JSONDecodeError, OSError):
+        return
+
+    session_modes = metadata.get('session-modes', [])
+    if 'unlock-dialog' not in session_modes:
+        return  # Not relevant
+
+    ext_js = os.path.join(ext_dir, 'extension.js')
+    if not os.path.isfile(ext_js):
+        return
+
+    # Read raw content (not stripped) to preserve comments
+    raw_content = read_file(ext_js)
+
+    # Extract disable() body from raw content
+    disable_match = re.search(r'\bdisable\s*\(\s*\)\s*\{', raw_content)
+    if not disable_match:
+        return
+
+    start = disable_match.end()
+    depth = 1
+    pos = start
+    while pos < len(raw_content) and depth > 0:
+        if raw_content[pos] == '{':
+            depth += 1
+        elif raw_content[pos] == '}':
+            depth -= 1
+        pos += 1
+    disable_body = raw_content[start:pos]
+
+    # Look for comments mentioning unlock/lock/session/mode
+    comment_keywords = re.search(
+        r'//.*\b(unlock|lock|session|mode)\b', disable_body, re.IGNORECASE
+    )
+
+    if not comment_keywords:
+        result("WARN", "lifecycle/unlock-dialog-comment",
+               "extension declares 'unlock-dialog' session mode but disable() has no "
+               "comment explaining lock screen behavior — add a comment documenting "
+               "which resources need special handling on the lock screen")
+    else:
+        result("PASS", "lifecycle/unlock-dialog-comment",
+               "disable() has comment documenting lock screen behavior")
+
+
+def check_clipboard_keybinding(ext_dir):
+    """R-SEC-16: Clipboard access combined with keybinding registration is suspicious."""
+    js_files = find_js_files(ext_dir, exclude_prefs=True)
+    if not js_files:
+        return
+
+    for filepath in js_files:
+        content = strip_comments(read_file(filepath))
+        rel = os.path.relpath(filepath, ext_dir)
+
+        has_clipboard = bool(re.search(r'St\.Clipboard', content))
+        has_keybinding = bool(re.search(r'addKeybinding', content))
+
+        if has_clipboard and has_keybinding:
+            result("WARN", "lifecycle/clipboard-keybinding",
+                   f"{rel}: St.Clipboard and addKeybinding() in same file — "
+                   f"review whether keybinding-triggered clipboard access is intended "
+                   f"and not a keylogger pattern")
+            return  # Report once
+
+    # No co-occurrence found, skip silently
 
 
 def check_lockscreen_signals(ext_dir):
@@ -469,6 +638,9 @@ def main():
     check_file_monitor_lifecycle(ext_dir)
     check_injection_manager(ext_dir)
     check_lockscreen_signals(ext_dir)
+    check_selective_disable(ext_dir)
+    check_unlock_dialog_comment(ext_dir)
+    check_clipboard_keybinding(ext_dir)
 
 
 if __name__ == '__main__':

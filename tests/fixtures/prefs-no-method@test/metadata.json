@@ -1,0 +1,7 @@
+{
+    "uuid": "prefs-no-method@test",
+    "name": "Prefs No Method Test",
+    "description": "Tests missing prefs method detection",
+    "shell-version": ["47", "48"],
+    "url": "https://github.com/test/prefs-no-method"
+}

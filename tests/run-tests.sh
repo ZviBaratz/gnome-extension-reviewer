@@ -458,8 +458,9 @@ echo ""
 # --- session-modes-inconsistent ---
 echo "=== session-modes-inconsistent ==="
 run_lint "session-modes-inconsistent@test"
-assert_exit_code "exits with 0 (warnings only)" 0
+assert_exit_code "exits with 1 (has failures)" 1
 assert_output_contains "warns on session-modes inconsistency" "\[WARN\].*metadata/session-modes-consistency"
+assert_output_contains "fails on selective disable" "\[FAIL\].*lifecycle/selective-disable"
 echo ""
 
 # --- gettext-direct ---
@@ -576,6 +577,21 @@ fi
 # Cross-file resource tracking assertions
 if [[ -f "$ASSERTIONS_DIR/cross-file-resources.sh" ]]; then
     source "$ASSERTIONS_DIR/cross-file-resources.sh"
+fi
+
+# Phase 3: Gap closure assertions (WS1)
+if [[ -f "$ASSERTIONS_DIR/phase3-gap-closure.sh" ]]; then
+    source "$ASSERTIONS_DIR/phase3-gap-closure.sh"
+fi
+
+# Phase 4: Strengthening assertions (WS2)
+if [[ -f "$ASSERTIONS_DIR/phase4-strengthening.sh" ]]; then
+    source "$ASSERTIONS_DIR/phase4-strengthening.sh"
+fi
+
+# Hara-hachi-bu regression (conditional)
+if [[ -f "$ASSERTIONS_DIR/hara-hachi-bu-regression.sh" ]]; then
+    source "$ASSERTIONS_DIR/hara-hachi-bu-regression.sh"
 fi
 
 # --- Summary ---

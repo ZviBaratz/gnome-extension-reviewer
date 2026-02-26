@@ -1911,3 +1911,163 @@ Rules for APIs removed or changed in specific GNOME Shell versions. These rules 
 - **Checked by**: check-resources.py → build-resource-graph.py
 - **Rule**: Module has a `destroy()` method but its parent/owner never calls it.
 - **Fix**: Call `this._ref.destroy()` in the parent's `disable()` or `destroy()` method.
+
+---
+
+## Lifecycle (R-LIFE) — continued
+
+### R-LIFE-13: No selective disable
+- **Severity**: blocking
+- **Checked by**: check-lifecycle.py
+- **Rule**: `disable()` must not conditionally skip cleanup via early returns like `if (condition) return;`.
+- **Rationale**: Extensions MUST NOT disable selectively. All resources must be cleaned up every time disable() is called, regardless of session mode, enabled state, or other conditions. Selective disable causes leaked resources on enable/disable cycles.
+- **Fix**: Remove conditional returns from `disable()`. If different code paths create different resources, use null guards (`this._x?.destroy()`) instead of skipping cleanup entirely.
+- **Tested by**: `tests/fixtures/selective-disable@test/`, `tests/fixtures/conditional-null-guard@test/` (negative)
+
+### R-LIFE-14: unlock-dialog comment in disable()
+- **Severity**: advisory
+- **Checked by**: check-lifecycle.py
+- **Rule**: If `metadata.json` declares `session-modes` including `unlock-dialog`, `disable()` should contain a comment explaining lock screen behavior.
+- **Rationale**: EGO reviewers require documentation of why lock screen support is needed and how the extension handles mode transitions. A comment helps the reviewer understand the design intent.
+- **Fix**: Add a `//` comment in `disable()` explaining which resources need special handling during lock screen transitions, e.g., `// Disconnect keyboard signals during unlock-dialog to prevent input leakage`.
+- **Tested by**: `tests/fixtures/unlock-no-comment@test/`, `tests/fixtures/unlock-with-comment@test/` (negative)
+
+---
+
+## Security (R-SEC) — continued
+
+### R-SEC-16: Clipboard + keybinding cross-reference
+- **Severity**: advisory
+- **Checked by**: check-lifecycle.py
+- **Rule**: If both `St.Clipboard` and `addKeybinding()` appear in the same file, reviewers will scrutinize for keylogger patterns.
+- **Rationale**: Extensions MUST NOT ship default keyboard shortcuts for clipboard interaction. A keybinding that triggers clipboard access could be used to intercept user input.
+- **Fix**: Ensure clipboard access is user-initiated (button click, menu action), not triggered by a global keybinding. If a keybinding is genuinely needed, document the use case.
+- **Tested by**: `tests/fixtures/clipboard-keybinding@test/`
+
+### R-SEC-17: No hardcoded /tmp paths
+- **Severity**: advisory
+- **Checked by**: apply-patterns.py
+- **Rule**: `Gio.File.new_for_path('/tmp...')` should use `GLib.get_tmp_dir()` or XDG cache directories instead.
+- **Rationale**: Hardcoded `/tmp` paths are a security risk (symlink attacks, world-readable data). Using `GLib.get_tmp_dir()` or `GLib.get_user_cache_dir()` follows XDG conventions and is safer.
+- **Fix**: Replace `Gio.File.new_for_path('/tmp/...')` with `Gio.File.new_for_path(GLib.get_tmp_dir() + '/...')` or `GLib.get_user_cache_dir()`.
+
+---
+
+## Init-Time Safety (R-INIT) — continued
+
+### R-INIT-02: Gio._promisify() placement
+- **Severity**: advisory
+- **Checked by**: check-init.py
+- **Rule**: `Gio._promisify()` should be called at module scope, not inside `enable()`.
+- **Rationale**: `Gio._promisify()` is idempotent but cannot be undone — it permanently modifies the prototype of the target class. Placing it in `enable()` is misleading (suggests it's enable-scoped) and wastes cycles on repeated enable/disable. Module scope is the correct location.
+- **Fix**: Move `Gio._promisify(...)` calls to the top of the file, after imports and before the class definition.
+- **Tested by**: `tests/fixtures/promisify-in-enable@test/`
+
+---
+
+## Quality (R-QUAL) — continued
+
+### R-QUAL-21: run_dispose() without comment
+- **Severity**: advisory
+- **Checked by**: check-quality.py
+- **Rule**: Every `run_dispose()` call should have an adjacent comment explaining why it is necessary.
+- **Rationale**: `run_dispose()` is a low-level GObject method that most extensions should not need. EGO reviewers require justification when it is used, because misuse can cause double-free bugs or premature signal disconnection.
+- **Fix**: Add a `//` comment on the preceding line or inline explaining why `run_dispose()` is needed, e.g., `// Force immediate GSettings signal disconnection`.
+- **Tested by**: `tests/fixtures/run-dispose-no-comment@test/`
+
+### R-QUAL-22: Clipboard disclosure in metadata
+- **Severity**: advisory
+- **Checked by**: check-quality.py
+- **Rule**: If the extension uses `St.Clipboard`, the `description` field in `metadata.json` should mention clipboard access.
+- **Rationale**: EGO requires clipboard access to be disclosed in the extension description. Undisclosed clipboard usage will be flagged during review and may delay approval.
+- **Fix**: Add a note to the `description` field in `metadata.json`, e.g., "This extension reads from the system clipboard."
+
+---
+
+## CSS (R-CSS)
+
+### css/shell-class-override: Shell theme class override
+- **Severity**: advisory
+- **Checked by**: check-css.py
+- **Rule**: Top-level CSS selectors should not directly override known GNOME Shell theme classes (`.panel-button`, `.popup-menu`, etc.) without scoping.
+- **Rationale**: Overriding Shell theme classes affects ALL instances of that class, not just the extension's widgets. This can break other extensions and the Shell UI itself. Using a scoped selector (`.my-extension .panel-button`) limits the override to the extension's own widgets.
+- **Fix**: Wrap the overriding rule in a scoped parent selector, e.g., `.my-extension .panel-button { ... }`.
+- **Tested by**: `tests/fixtures/shell-class-override@test/`
+
+---
+
+## Preferences (R-PREFS) — continued
+
+### prefs/missing-prefs-method: Missing prefs method
+- **Severity**: advisory
+- **Checked by**: check-prefs.py
+- **Rule**: If `prefs.js` exists, it must define either `fillPreferencesWindow()` or `getPreferencesWidget()`.
+- **Rationale**: Without one of these methods, the preferences window will be empty. GNOME Shell calls one of these methods to populate the preferences UI.
+- **Fix**: Implement `fillPreferencesWindow(window)` (preferred for GNOME 45+) or `getPreferencesWidget()` in your `ExtensionPreferences` subclass.
+- **Tested by**: `tests/fixtures/prefs-no-method@test/`
+
+---
+
+## AI Slop (R-SLOP) — continued
+
+### R-SLOP-24: new Gio.Settings() instead of this.getSettings()
+- **Severity**: advisory
+- **Checked by**: apply-patterns.py
+- **Rule**: `new Gio.Settings()` should not be used in GNOME 45+ extensions.
+- **Rationale**: The `Extension` base class provides `this.getSettings()` which uses the correct schema path automatically. Manually constructing `Gio.Settings` requires specifying the schema ID and may use the wrong compiled schema path.
+- **Fix**: Use `this.getSettings()` in the Extension subclass, or pass a schema ID: `this.getSettings('org.gnome.shell.extensions.my-ext')`.
+
+### R-SLOP-25: Main.extensionManager.enable/disable
+- **Severity**: advisory
+- **Checked by**: apply-patterns.py
+- **Rule**: `Main.extensionManager.enable()` and `.disable()` are hallucinated APIs.
+- **Rationale**: Extensions cannot programmatically enable or disable themselves or other extensions. The extension lifecycle is managed by GNOME Shell and the user.
+- **Fix**: Remove the call. If the extension needs to react to state changes, use `Main.extensionManager.connect('extension-state-changed', ...)`.
+
+### R-SLOP-26: Shell.ActionMode.ALL
+- **Severity**: advisory
+- **Checked by**: apply-patterns.py
+- **Rule**: `Shell.ActionMode.ALL` does not exist in the GNOME Shell API.
+- **Rationale**: AI models generate this non-existent constant. The actual values are `Shell.ActionMode.NORMAL`, `Shell.ActionMode.OVERVIEW`, `Shell.ActionMode.LOCK_SCREEN`, etc. You can combine modes with bitwise OR.
+- **Fix**: Use `Shell.ActionMode.NORMAL` for most keybindings, or combine modes: `Shell.ActionMode.NORMAL | Shell.ActionMode.OVERVIEW`.
+
+---
+
+## Internationalization (R-I18N)
+
+### R-I18N-01: Template literal inside gettext
+- **Severity**: advisory
+- **Checked by**: apply-patterns.py
+- **Rule**: `_(\`...\${var}...\`)` — template literals inside `_()` break xgettext extraction.
+- **Rationale**: The `xgettext` tool that extracts translatable strings cannot parse JavaScript template literals. Strings wrapped in `_(\`...\`)` will not appear in the `.pot` file and will never be translated.
+- **Fix**: Use `_('Found %d items').format(count)` instead of `_(\`Found \${count} items\`)`.
+
+---
+
+## Version Compatibility (R-VER49) — continued
+
+### R-VER49-06: Clutter.DragAction removed in GNOME 49
+- **Severity**: blocking
+- **Checked by**: apply-patterns.py (min-version: 49)
+- **Rule**: `Clutter.DragAction` has been removed in GNOME 49.
+- **Rationale**: GNOME 49 replaced action-based input handling with gesture-based APIs. `DragAction` no longer exists.
+- **Fix**: Use `new Clutter.DragGesture()` instead.
+
+### R-VER49-07: Clutter.SwipeAction removed in GNOME 49
+- **Severity**: blocking
+- **Checked by**: apply-patterns.py (min-version: 49)
+- **Rule**: `Clutter.SwipeAction` has been removed in GNOME 49.
+- **Rationale**: Same as R-VER49-06 — the action-to-gesture migration in GNOME 49.
+- **Fix**: Use `new Clutter.SwipeGesture()` instead.
+
+---
+
+## Prototype Override Detection
+
+### lifecycle/prototype-override
+- **Severity**: advisory
+- **Checked by**: check-lifecycle.py (enhanced R-LIFE-10)
+- **Rule**: Direct prototype modifications (`SomeClass.prototype.method = ...` or `Object.assign(SomeClass.prototype, ...)`) must be restored in `disable()`.
+- **Rationale**: Monkey-patching prototypes without restoration causes the patch to persist across enable/disable cycles. This affects all instances of the patched class, not just the extension's own objects.
+- **Fix**: Use `InjectionManager` (preferred), or save the original method in `enable()` and restore it in `disable()`. See the [GNOME Shell InjectionManager documentation](https://gjs.guide/extensions/).
+- **Tested by**: `tests/fixtures/manual-prototype-override@test/`

@@ -718,3 +718,69 @@
   message: "GLib.spawn_command_line_async provides no error handling; prefer Gio.Subprocess"
   category: security
   fix: "Use 'new Gio.Subprocess({argv: [...]})' for proper lifecycle control and error handling."
+
+# --- Hallucinated APIs (continued) ---
+
+- id: R-SLOP-24
+  pattern: "\\bnew\\s+Gio\\.Settings\\s*\\("
+  scope: ["*.js"]
+  severity: advisory
+  message: "new Gio.Settings() is incorrect in GNOME 45+; use this.getSettings() from Extension base class"
+  category: ai-slop
+  fix: "Use this.getSettings() in Extension subclass or this.getSettings() in ExtensionPreferences"
+
+- id: R-SLOP-25
+  pattern: "\\bMain\\.extensionManager\\.(enable|disable)\\s*\\("
+  scope: ["*.js"]
+  severity: advisory
+  message: "Main.extensionManager.enable()/disable() is a hallucinated API — extensions cannot enable/disable themselves"
+  category: ai-slop
+  fix: "Remove the call. Extension lifecycle is managed by GNOME Shell, not by the extension itself."
+
+- id: R-SLOP-26
+  pattern: "\\bShell\\.ActionMode\\.ALL\\b"
+  scope: ["*.js"]
+  severity: advisory
+  message: "Shell.ActionMode.ALL does not exist; use Shell.ActionMode.NORMAL or combine specific modes"
+  category: ai-slop
+  fix: "Use Shell.ActionMode.NORMAL for most keybindings, or Shell.ActionMode.OVERVIEW | Shell.ActionMode.NORMAL for multi-mode"
+
+# --- Translation (advisory) ---
+
+- id: R-I18N-01
+  pattern: "_\\(\\`[^`]*\\$\\{"
+  scope: ["*.js"]
+  severity: advisory
+  message: "Template literal inside gettext _() breaks xgettext string extraction"
+  category: i18n
+  fix: "Use _('Found %d items').format(count) instead of _(`Found ${count} items`)"
+
+# --- Security (continued) ---
+
+- id: R-SEC-17
+  pattern: "Gio\\.File\\.new_for_path\\s*\\(\\s*['\"]\/tmp"
+  scope: ["*.js"]
+  severity: advisory
+  message: "Writing to /tmp is insecure; use GLib.get_tmp_dir() or XDG dirs (GLib.get_user_cache_dir())"
+  category: security
+  fix: "Use GLib.get_tmp_dir() for temporary files or GLib.get_user_cache_dir() for persistent cache"
+
+# --- GNOME 49 removed APIs (continued) ---
+
+- id: R-VER49-06
+  pattern: "\\bClutter\\.DragAction\\b"
+  scope: ["*.js"]
+  severity: blocking
+  message: "Clutter.DragAction removed in GNOME 49; use Clutter.DragGesture"
+  category: version-compat
+  fix: "Use new Clutter.DragGesture() instead"
+  min-version: 49
+
+- id: R-VER49-07
+  pattern: "\\bClutter\\.SwipeAction\\b"
+  scope: ["*.js"]
+  severity: blocking
+  message: "Clutter.SwipeAction removed in GNOME 49; use Clutter.SwipeGesture"
+  category: version-compat
+  fix: "Use new Clutter.SwipeGesture() instead"
+  min-version: 49

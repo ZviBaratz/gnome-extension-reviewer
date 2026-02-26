@@ -1,0 +1,7 @@
+{
+    "uuid": "run-dispose-no-comment@test",
+    "name": "Run Dispose No Comment Test",
+    "description": "Tests run_dispose without comment detection",
+    "shell-version": ["47", "48"],
+    "url": "https://github.com/test/run-dispose-no-comment"
+}

@@ -1,0 +1,7 @@
+{
+    "uuid": "manual-prototype-override@test",
+    "name": "Prototype Override Test",
+    "description": "Tests prototype override detection",
+    "shell-version": ["47", "48"],
+    "url": "https://github.com/test/manual-prototype-override"
+}

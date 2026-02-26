@@ -1,0 +1,7 @@
+{
+    "uuid": "conditional-null-guard@test",
+    "name": "Conditional Null Guard Test",
+    "description": "Tests that null guards do not trigger selective disable",
+    "shell-version": ["47", "48"],
+    "url": "https://github.com/test/conditional-null-guard"
+}

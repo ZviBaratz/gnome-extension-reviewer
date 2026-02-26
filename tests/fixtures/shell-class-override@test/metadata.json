@@ -1,0 +1,7 @@
+{
+    "uuid": "shell-class-override@test",
+    "name": "Shell Class Override Test",
+    "description": "Tests CSS shell class override detection",
+    "shell-version": ["47", "48"],
+    "url": "https://github.com/test/shell-class-override"
+}

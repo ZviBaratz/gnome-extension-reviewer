@@ -127,7 +127,7 @@
 |---|---|---|---|---|
 | Clipboard access MUST be declared in description | **MUST** | Partial | R-SEC-07 (pattern: `St.Clipboard`) | Detects clipboard usage and advises disclosure. Does NOT verify that the metadata description actually contains disclosure text. |
 | MUST NOT share clipboard data with third parties without explicit user interaction | **MUST** | Tier 3 Only | security-checklist.md | Requires semantic review of clipboard + network code flow. |
-| MUST NOT ship with default keyboard shortcuts for clipboard interaction | **MUST** | Uncovered | -- | No check for keybindings that trigger clipboard operations. |
+| MUST NOT ship with default keyboard shortcuts for clipboard interaction | **MUST** | Covered | R-SEC-16 (check-lifecycle.py `clipboard-keybinding`) | Cross-references St.Clipboard and addKeybinding in same file. |
 | MUST NOT use telemetry tools to track users | **MUST** | Covered | R-SEC-08 (pattern: analytics/telemetry/trackEvent/etc.) | Pattern-based detection of common telemetry identifiers. |
 | MUST NOT share user data online | **MUST** | Tier 3 Only | security-checklist.md | Requires semantic analysis of network requests and data payloads. |
 
@@ -148,8 +148,8 @@
 |---|---|---|---|---|
 | Using `unlock-dialog` MUST be necessary for correct operation | **MUST** | Tier 3 Only | lifecycle-checklist.md | Requires semantic understanding of why lock screen access is needed. |
 | All keyboard event signals MUST be disconnected in lock screen mode | **MUST** | Uncovered | -- | No check for keyboard signals (`key-press-event`, `key-release-event`, `captured-event`) remaining connected during `unlock-dialog`. |
-| `disable()` function MUST include comment explaining why `unlock-dialog` is used | **MUST** | Uncovered | -- | No check for explanatory comment when `unlock-dialog` is declared. |
-| Extensions MUST NOT disable selectively | **MUST** | Uncovered | -- | No check for conditional `disable()` behavior (e.g., early returns based on session mode). |
+| `disable()` function MUST include comment explaining why `unlock-dialog` is used | **MUST** | Covered | R-LIFE-14 (check-lifecycle.py) | Warns when unlock-dialog declared but disable() has no explanatory comment. |
+| Extensions MUST NOT disable selectively | **MUST** | Covered | R-LIFE-13 (check-lifecycle.py) | Detects `if (...) return;` in disable() that skips cleanup. |
 | `session-modes` field MUST be dropped if only using `user` | **MUST** | Partial | R-META-09 (check-metadata.py) | Issues WARN, not FAIL. Should be FAIL per guidelines. |
 
 ## Section 15: Licensing and Attribution
@@ -196,7 +196,7 @@
 
 | Guideline Requirement | Severity | Currently Covered? | By Which Rule/Check? | Gap Notes |
 |---|---|---|---|---|
-| All monkey patches MUST be restored in `disable()` | **MUST** | Uncovered | -- | No check for `InjectionManager.clear()` in disable(), or manual prototype restoration. Lifecycle checks only cover signals/timeouts/keybindings. |
+| All monkey patches MUST be restored in `disable()` | **MUST** | Covered | Enhanced R-LIFE-10 (check-lifecycle.py) | Detects InjectionManager without `.clear()` in disable(), and direct prototype.method = assignments without restoration. |
 
 ## Section 26: Network Access and Data Sharing
 
@@ -214,12 +214,12 @@ These MUST requirements have **no automated check** (not even a partial heuristi
 
 | # | Requirement | Section | Impact | Recommendation |
 |---|---|---|---|---|
-| 1 | MUST NOT ship with default keyboard shortcuts for clipboard interaction | S12 | Medium | Add cross-reference check: keybinding + St.Clipboard in same extension |
+| ~~1~~ | ~~MUST NOT ship with default keyboard shortcuts for clipboard interaction~~ | ~~S12~~ | ~~Medium~~ | **Covered** — R-SEC-16 in check-lifecycle.py |
 | 2 | Privileged subprocess MUST NOT be user-writable | S13 | High | Hard to check statically; add as Tier 3 checklist item if not present |
 | 3 | Keyboard event signals MUST be disconnected in lock screen mode | S14 | High | Add check: if `unlock-dialog` in session-modes, verify `key-press-event`/`key-release-event` disconnection patterns |
-| 4 | `disable()` MUST include comment explaining `unlock-dialog` usage | S14 | Medium | Add check: if `unlock-dialog` declared, scan disable() for comment |
-| 5 | Extensions MUST NOT disable selectively | S14 | Medium | Add check for early returns/conditionals in disable() |
-| 6 | All monkey patches MUST be restored in `disable()` | S24 | High | Add check: if `InjectionManager` or prototype overrides detected, verify `.clear()` or restoration in disable() |
+| ~~4~~ | ~~`disable()` MUST include comment explaining `unlock-dialog` usage~~ | ~~S14~~ | ~~Medium~~ | **Covered** — R-LIFE-14 in check-lifecycle.py |
+| ~~5~~ | ~~Extensions MUST NOT disable selectively~~ | ~~S14~~ | ~~Medium~~ | **Covered** — R-LIFE-13 in check-lifecycle.py |
+| ~~6~~ | ~~All monkey patches MUST be restored in `disable()`~~ | ~~S24~~ | ~~High~~ | **Covered** — Enhanced R-LIFE-10 in check-lifecycle.py |
 | 7 | Fundamentally broken / no-purpose extensions | S17 | Low | Not feasible for static analysis; inherently a runtime/semantic check |
 
 ## Summary: Severity Mismatches (WARN should be FAIL)
@@ -244,11 +244,11 @@ These requirements have checks that catch some but not all violations:
 | Timeout source removal in disable (R-LIFE-02) | Only checks if return value is stored, not if `Source.remove` is called | Add disable() body scan for matching `Source.remove` calls | **Fixed** (R-LIFE-12) |
 | AI-generated code detection (R-SLOP-*) | Pattern-based; misses novel AI patterns | Inherent limitation; Tier 3 checklist compensates | Open (inherent) |
 | Code obfuscation (R-FILE-06) | Only catches minification (long lines); not variable mangling or encoding | Add checks for high entropy variable names or base64-encoded strings | Open |
-| run_dispose comment requirement | Detects usage but not comment | Add lookahead for comment on preceding/same line | Open |
-| Clipboard disclosure verification (R-SEC-07) | Detects clipboard usage; does not verify description text | Cross-reference with metadata.json description content | Open |
+| run_dispose comment requirement | Detects usage but not comment | Add lookahead for comment on preceding/same line | **Done** (R-QUAL-21) |
+| Clipboard disclosure verification (R-SEC-07) | Detects clipboard usage; does not verify description text | Cross-reference with metadata.json description content | **Done** (R-QUAL-22) |
 | License file validation (R-FILE-03) | Checks existence only; not content | Parse LICENSE file for GPL-compatible license identifiers (SPDX) | **Fixed** (GPL-compatibility scanning) |
 | Prefs extends ExtensionPreferences (R-PREFS-02) | Checks `export default class` but not the extends clause | Regex for `export default class \w+ extends ExtensionPreferences` | **Fixed** (R-PREFS-02 strengthened) |
-| Prefs method requirement | Detects dual-pattern conflict; does not fail when neither method present | Add FAIL if prefs.js has no `fillPreferencesWindow` and no `getPreferencesWidget` | Open |
+| Prefs method requirement | Detects dual-pattern conflict; does not fail when neither method present | Add FAIL if prefs.js has no `fillPreferencesWindow` and no `getPreferencesWidget` | **Done** (prefs/missing-prefs-method) |
 
 ---
 
@@ -284,6 +284,24 @@ The following areas are now covered through Tier 3 review checklists:
 | Notification/dialog lifecycle | MessageTray.Source destroy signal, dialog lifecycle states, stale reference detection | lifecycle-checklist.md |
 | Search provider contract | id/appInfo/canLaunchSearch contract, register/unregister in enable/disable, createIcon scaling | lifecycle-checklist.md |
 | Translation best practices | gettext domain setup, ngettext for plurals, no string concatenation for translated strings | code-quality-checklist.md |
+
+## New Coverage Added (2026-02-26) — Quality Optimization
+
+| Area | New Rules/Checks | Where |
+|---|---|---|
+| Selective disable (R-LIFE-13) | Detects `if (...) return;` in disable() that skips cleanup | check-lifecycle.py |
+| unlock-dialog comment (R-LIFE-14) | Warns when unlock-dialog declared but disable() has no explanatory comment | check-lifecycle.py |
+| Clipboard + keybinding (R-SEC-16) | Cross-references St.Clipboard and addKeybinding in same file | check-lifecycle.py |
+| Prototype override (enhanced R-LIFE-10) | Detects direct prototype.method = assignments without restoration | check-lifecycle.py |
+| Prefs method existence | Warns when prefs.js has neither fillPreferencesWindow nor getPreferencesWidget | check-prefs.py |
+| run_dispose comment (R-QUAL-21) | Warns when run_dispose() lacks explanatory comment | check-quality.py |
+| Clipboard disclosure (R-QUAL-22) | Cross-references St.Clipboard with metadata description | check-quality.py |
+| CSS shell class override | Warns when stylesheet overrides known Shell theme classes at top level | check-css.py |
+| Gio._promisify placement (R-INIT-02) | Warns when Gio._promisify() is inside enable() instead of module scope | check-init.py |
+| Hallucinated APIs (R-SLOP-24/25/26) | new Gio.Settings(), Main.extensionManager.enable/disable, Shell.ActionMode.ALL | patterns.yaml |
+| Translation anti-pattern (R-I18N-01) | Template literal inside gettext _() breaks xgettext | patterns.yaml |
+| /tmp path security (R-SEC-17) | Hardcoded /tmp paths instead of XDG dirs | patterns.yaml |
+| GNOME 49 compat (R-VER49-06/07) | Clutter.DragAction, Clutter.SwipeAction removed | patterns.yaml |
 
 ---
 

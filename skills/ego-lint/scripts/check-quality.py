@@ -627,6 +627,78 @@ def check_comment_prompt_density(ext_dir, js_files):
            "No excessive instructional comment patterns")
 
 
+def check_run_dispose_comment(ext_dir, js_files):
+    """R-QUAL-21: Flag run_dispose() calls without an explanatory comment."""
+    found_without_comment = []
+
+    for filepath in js_files:
+        rel = os.path.relpath(filepath, ext_dir)
+        with open(filepath, encoding='utf-8', errors='replace') as f:
+            lines = f.readlines()
+
+        for i, line in enumerate(lines):
+            if '.run_dispose()' not in line:
+                continue
+            # Check if the current line has an inline comment
+            if '//' in line:
+                continue
+            # Check if the preceding line has a comment
+            if i > 0 and lines[i - 1].lstrip().startswith('//'):
+                continue
+            found_without_comment.append(f"{rel}:{i + 1}")
+
+    if found_without_comment:
+        for loc in found_without_comment:
+            result("WARN", "quality/run-dispose-no-comment",
+                   f"{loc}: run_dispose() without explanatory comment "
+                   f"— reviewers require justification")
+    else:
+        result("PASS", "quality/run-dispose-no-comment",
+               "All run_dispose() calls have comments or none found")
+
+
+def check_clipboard_disclosure(ext_dir, js_files):
+    """R-QUAL-22: Flag clipboard usage not mentioned in metadata description."""
+    uses_clipboard = False
+
+    for filepath in js_files:
+        with open(filepath, encoding='utf-8', errors='replace') as f:
+            for line in f:
+                if 'St.Clipboard' in line:
+                    uses_clipboard = True
+                    break
+        if uses_clipboard:
+            break
+
+    if not uses_clipboard:
+        result("PASS", "quality/clipboard-disclosure",
+               "No St.Clipboard usage detected")
+        return
+
+    meta_path = os.path.join(ext_dir, 'metadata.json')
+    if not os.path.isfile(meta_path):
+        result("WARN", "quality/clipboard-disclosure",
+               "St.Clipboard used but metadata.json not found")
+        return
+
+    try:
+        with open(meta_path) as f:
+            meta = json.load(f)
+    except (json.JSONDecodeError, OSError):
+        result("WARN", "quality/clipboard-disclosure",
+               "St.Clipboard used but metadata.json could not be read")
+        return
+
+    description = meta.get('description', '')
+    if 'clipboard' in description.lower():
+        result("PASS", "quality/clipboard-disclosure",
+               "St.Clipboard usage disclosed in metadata description")
+    else:
+        result("WARN", "quality/clipboard-disclosure",
+               "St.Clipboard used but metadata description does not "
+               "mention clipboard access")
+
+
 def check_error_message_verbosity(ext_dir, js_files):
     """R-QUAL-20: Flag overly verbose error message strings."""
     lengths = []
@@ -688,6 +760,8 @@ def main():
     check_redundant_cleanup(ext_dir, js_files)
     check_comment_prompt_density(ext_dir, js_files)
     check_error_message_verbosity(ext_dir, js_files)
+    check_run_dispose_comment(ext_dir, js_files)
+    check_clipboard_disclosure(ext_dir, js_files)
 
 
 if __name__ == '__main__':

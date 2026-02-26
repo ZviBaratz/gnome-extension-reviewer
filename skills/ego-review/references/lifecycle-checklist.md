@@ -674,6 +674,65 @@ disable() {
 
 ---
 
+## Selective Disable Detection
+
+Extensions MUST NOT disable selectively. The `disable()` method must always
+perform complete cleanup regardless of the current session mode, enabled state,
+or any other condition.
+
+**Automatically checked by ego-lint (R-LIFE-13).**
+
+### Rejected pattern: conditional return in disable()
+
+```javascript
+// REJECTED: skips cleanup based on session mode
+disable() {
+    if (Main.sessionMode.currentMode === 'unlock-dialog')
+        return;  // R-LIFE-13 flags this
+    this._indicator.destroy();
+    this._indicator = null;
+}
+```
+
+### Approved pattern: unconditional cleanup
+
+```javascript
+// APPROVED: always cleans up
+disable() {
+    this._indicator?.destroy();
+    this._indicator = null;
+}
+```
+
+**Exception:** Null guards like `if (!this._x) return;` are NOT flagged — they
+protect against double-destroy on rapid enable/disable cycles.
+
+## Prototype Override Restoration
+
+Direct prototype modifications (`SomeClass.prototype.method = ...`) must be
+restored in `disable()`. The preferred approach is to use `InjectionManager`:
+
+```javascript
+import {InjectionManager} from 'resource:///org/gnome/shell/extensions/extension.js';
+
+enable() {
+    this._injectionManager = new InjectionManager();
+    this._injectionManager.overrideMethod(
+        PopupMenu.PopupMenuItem.prototype, 'activate',
+        original => function() { /* custom behavior */ }
+    );
+}
+
+disable() {
+    this._injectionManager.clear();
+    this._injectionManager = null;
+}
+```
+
+**Automatically checked by ego-lint (enhanced R-LIFE-10).**
+
+---
+
 ## Real Rejection Examples
 
 > **"Search Light" (May 2024):** "improper resource cleanup in disable, logging methods, and creating object instances in global scope." — Rejected for three simultaneous lifecycle violations.

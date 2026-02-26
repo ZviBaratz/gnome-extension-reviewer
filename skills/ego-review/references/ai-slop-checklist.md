@@ -627,6 +627,52 @@ const box = new St.BoxLayout({vertical: true});
 box.add_child(this._label);
 ```
 
+### 34. Unnecessary async/await wrapping
+
+Wrapping synchronous operations in async/await for no reason.
+
+- **Red flag:** `async enable() { await this._settings.set_int('key', value); }` —
+  GSettings operations are synchronous; `await` does nothing useful
+- **Acceptable:** `async` on methods that genuinely use `await` on I/O, D-Bus calls,
+  or subprocess communication
+
+```javascript
+// RED FLAG: sync operation wrapped in async
+async _updateSetting(key, value) {
+    await this._settings.set_int(key, value);
+    await this._settings.set_boolean('modified', true);
+}
+
+// ACCEPTABLE: genuine async operation
+async _loadData() {
+    const [ok, contents] = await this._file.load_contents_async(null);
+    this._data = JSON.parse(new TextDecoder().decode(contents));
+}
+```
+
+### 35. Object.freeze() on configuration objects
+
+Using `Object.freeze()` on configuration or constants objects — an enterprise
+JavaScript pattern not used in GNOME extensions.
+
+- **Red flag:** `const CONFIG = Object.freeze({ ... })` at module scope or in
+  constructors. GNOME extensions use `const` for immutability; `Object.freeze()`
+  adds runtime overhead for no benefit
+- **Acceptable:** `const` declarations for configuration values
+
+```javascript
+// RED FLAG: enterprise pattern
+const CONFIG = Object.freeze({
+    REFRESH_INTERVAL: 30,
+    MAX_RETRIES: 3,
+    TIMEOUT_MS: 5000,
+});
+
+// ACCEPTABLE: simple constants
+const REFRESH_INTERVAL = 30;
+const MAX_RETRIES = 3;
+```
+
 ---
 
 ## Real-World AI Detection Intelligence
@@ -645,7 +691,7 @@ The reviewer reported spending "more than 6 hours a day reviewing over 15,000 li
 
 ## Scoring Model
 
-Count the number of triggered items out of the 33 above.
+Count the number of triggered items out of the 35 above.
 
 ```
 1-3 triggered:  ADVISORY  -- note them, extension may still pass
