@@ -215,12 +215,13 @@ echo ""
 # --- hallucinated-apis ---
 echo "=== hallucinated-apis ==="
 run_lint "hallucinated-apis@test"
-assert_exit_code "exits with 0 (advisories only)" 0
+assert_exit_code "exits with 1 (has failures from R-SLOP-30)" 1
 assert_output_contains "warns on Meta.Screen" "\[WARN\].*R-SLOP-08"
 assert_output_contains "warns on St setter" "\[WARN\].*R-SLOP-09"
 assert_output_contains "warns on Clutter.Actor.show_all" "\[WARN\].*R-SLOP-10"
 assert_output_contains "warns on GLib.source_remove" "\[WARN\].*R-SLOP-11"
 assert_output_contains "warns on typeof super.destroy" "\[WARN\].*R-SLOP-17"
+assert_output_contains "fails on typeof super.method" "\[FAIL\].*R-SLOP-30"
 assert_output_contains "warns on this instanceof" "\[WARN\].*R-SLOP-13"
 echo ""
 
@@ -242,8 +243,9 @@ echo ""
 # --- quality-signals ---
 echo "=== quality-signals ==="
 run_lint "quality-signals@test"
-assert_exit_code "exits with 0 (advisories only)" 0
+assert_exit_code "exits with 1 (has failures from R-SLOP-30)" 1
 assert_output_contains "warns on typeof super.destroy" "\[WARN\].*R-SLOP-17"
+assert_output_contains "fails on typeof super.method" "\[FAIL\].*R-SLOP-30"
 assert_output_contains "warns on this instanceof" "\[WARN\].*R-SLOP-13"
 echo ""
 
@@ -602,6 +604,11 @@ fi
 # Phase 7: Review quality optimization assertions
 if [[ -f "$ASSERTIONS_DIR/phase7-optimization.sh" ]]; then
     source "$ASSERTIONS_DIR/phase7-optimization.sh"
+fi
+
+# Phase 8: Reviewer-grade understanding assertions
+if [[ -f "$ASSERTIONS_DIR/phase8-reviewer-grade.sh" ]]; then
+    source "$ASSERTIONS_DIR/phase8-reviewer-grade.sh"
 fi
 
 # Hara-hachi-bu regression (conditional)

@@ -16,7 +16,7 @@ exit_code=0
 output="$(bash "$LINT" "$HHB_DIR" 2>&1)" || exit_code=$?
 
 # Known legitimate findings that MUST remain
-assert_output_contains "known: R-SEC-04 (pkexec)" "\[FAIL\].*R-SEC-04"
+assert_output_contains "known: R-SEC-20 (pkexec advisory)" "\[WARN\].*R-SEC-20"
 assert_output_contains "known: R-PREFS-04 (GTK widgets)" "\[WARN\].*R-PREFS-04"
 assert_output_contains "known: R-SEC-07 (clipboard)" "\[WARN\].*R-SEC-07"
 
@@ -39,4 +39,6 @@ assert_output_not_contains "no R-QUAL-26 false positive" "\[WARN\].*R-QUAL-26"
 assert_output_not_contains "no prefs-memory-leak false positive" "\[WARN\].*prefs/memory-leak"
 assert_output_not_contains "no soup-session-abort false positive" "\[WARN\].*lifecycle/soup-session-abort"
 assert_output_not_contains "no network-disclosure false positive" "\[WARN\].*quality/network-disclosure"
+assert_output_not_contains "no destroy-no-null false positive" "\[WARN\].*lifecycle/destroy-no-null"
+assert_output_not_contains "no shell-version-minor false positive" "\[FAIL\].*metadata/shell-version-minor"
 echo ""

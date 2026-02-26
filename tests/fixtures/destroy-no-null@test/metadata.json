@@ -1,0 +1,1 @@
+{"uuid": "destroy-no-null@test", "name": "Destroy No Null Test", "description": "Tests destroy without null assignment detection", "shell-version": ["48"], "url": "https://github.com/test/destroy-no-null"}

@@ -95,6 +95,13 @@ def check_shell_version_entries(meta):
                    f"Invalid shell-version entry: {entry!r}; "
                    "expected format like '45' or '3.38'")
             return
+        # GNOME 40+ must use major-only versions (e.g. '45', not '45.1')
+        m = re.fullmatch(r"(\d+)\.(\d+)", entry)
+        if m and int(m.group(1)) >= 40:
+            result("FAIL", "metadata/shell-version-minor",
+                   f"shell-version '{entry}' uses minor version — "
+                   f"GNOME 40+ requires major-only (e.g. '{m.group(1)}')")
+            return
     result("PASS", "metadata/shell-version-entries",
            "All shell-version entries are valid")
 

@@ -1,0 +1,1 @@
+{"uuid": "shell-version-minor@test", "name": "Shell Version Minor Test", "description": "Tests that GNOME 40+ minor versions are rejected", "shell-version": ["45.1", "46"], "url": "https://github.com/test/shell-version-minor"}

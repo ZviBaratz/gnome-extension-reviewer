@@ -121,6 +121,16 @@ forbidden_patterns=(
     ".babelrc"
     # Source maps
     ".map"
+    # Development artifacts
+    "env.d.ts"
+    "jsconfig.json"
+    ".old"
+    ".bak"
+    ".orig"
+    ".swp"
+    ".swo"
+    "meson.build"
+    "CHANGELOG.md"
 )
 
 forbidden_found=0

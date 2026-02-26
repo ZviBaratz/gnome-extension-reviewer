@@ -185,12 +185,20 @@
   fix: "Change http:// to https://."
 
 - id: R-SEC-04
-  pattern: "\\bpkexec\\b|\\bsudo\\b"
+  pattern: "\\bsudo\\b"
   scope: ["*.js", "*.sh"]
   severity: blocking
-  message: "pkexec/sudo requires explicit EGO reviewer justification; prefer udev rules for hardware access"
+  message: "sudo is prohibited in GNOME extensions; use pkexec with a polkit policy for privileged operations"
   category: security
-  fix: "Use a udev rule to grant write access to sysfs files, or a systemd service with capabilities."
+  fix: "Replace sudo with pkexec and provide a polkit action file, or use a udev rule for hardware access."
+
+- id: R-SEC-20
+  pattern: "\\bpkexec\\b"
+  scope: ["*.js", "*.sh"]
+  severity: advisory
+  message: "pkexec usage will receive extra reviewer scrutiny; ensure a valid polkit policy is included"
+  category: security
+  fix: "Verify the polkit .policy file is present and the action ID matches. Consider udev rules for hardware access."
 
 - id: R-SEC-05
   pattern: "Subprocess.*'/bin/sh'.*'-c'"
@@ -850,6 +858,14 @@
   message: "Empty destroy() that only calls super.destroy() — remove the override"
   category: ai-slop
   fix: "Remove the destroy() override; GObject chains to super automatically"
+
+- id: R-SLOP-30
+  pattern: "typeof super\\.\\w+\\s*===\\s*['\"]function['\"]"
+  scope: ["*.js"]
+  severity: blocking
+  message: "typeof super.method check is unnecessary — GObject parent methods always exist (AI-generated pattern)"
+  category: ai-slop
+  fix: "Remove the typeof check and call super.method() directly."
 
 # --- Quality: dir.get_path() anti-pattern ---
 

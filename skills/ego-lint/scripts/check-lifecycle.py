@@ -656,6 +656,46 @@ def check_pkexec_user_writable(ext_dir):
                     return
 
 
+def check_destroy_then_null(ext_dir):
+    """GAP-004: destroy() calls should be followed by null assignment."""
+    js_files = find_js_files(ext_dir, exclude_prefs=True)
+    if not js_files:
+        return
+
+    violations = []
+    for filepath in js_files:
+        rel = os.path.relpath(filepath, ext_dir)
+        lines = read_file(filepath).splitlines()
+
+        for i, line in enumerate(lines):
+            stripped = line.strip()
+            if stripped.startswith('//') or stripped.startswith('*'):
+                continue
+            # Match this._xxx.destroy() or this._xxx?.destroy()
+            m = re.search(r'(this\._\w+)\??\.\bdestroy\s*\(', stripped)
+            if not m:
+                continue
+            prop = m.group(1)  # e.g. this._widget
+            # Look ahead 5 lines for null assignment
+            lookahead = '\n'.join(lines[i:i + 6])
+            null_pattern = re.escape(prop) + r'\s*=\s*null\b'
+            if not re.search(null_pattern, lookahead):
+                violations.append(f"{rel}:{i + 1}")
+                if len(violations) >= 5:
+                    break
+        if len(violations) >= 5:
+            break
+
+    if violations:
+        for loc in violations:
+            result("WARN", "lifecycle/destroy-no-null",
+                   f"{loc}: .destroy() without null assignment — "
+                   f"set reference to null after destroy to prevent stale access")
+    else:
+        result("PASS", "lifecycle/destroy-no-null",
+               "All destroy() calls followed by null assignment")
+
+
 def check_soup_session_abort(ext_dir):
     """R-LIFE-15: Soup.Session should be aborted in disable()/destroy()."""
     js_files = find_js_files(ext_dir, exclude_prefs=True)
@@ -708,6 +748,7 @@ def main():
     check_clipboard_keybinding(ext_dir)
     check_pkexec_user_writable(ext_dir)
     check_soup_session_abort(ext_dir)
+    check_destroy_then_null(ext_dir)
 
 
 if __name__ == '__main__':
