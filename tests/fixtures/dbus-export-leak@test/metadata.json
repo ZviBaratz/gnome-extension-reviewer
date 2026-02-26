@@ -1,0 +1,7 @@
+{
+    "uuid": "dbus-export-leak@test",
+    "name": "DBus Export Leak Test",
+    "description": "Tests DBus export without unexport detection",
+    "shell-version": ["46"],
+    "url": "https://example.com"
+}

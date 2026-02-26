@@ -1,0 +1,7 @@
+{
+    "uuid": "legacy-imports-pre45@test",
+    "name": "Legacy Imports Pre-45 Test",
+    "description": "Tests legacy imports on pre-GNOME 45 target get advisory not blocking",
+    "shell-version": ["44"],
+    "url": "https://example.com"
+}

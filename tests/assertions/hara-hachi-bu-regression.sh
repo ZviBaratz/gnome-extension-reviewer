@@ -43,4 +43,8 @@ assert_output_not_contains "no destroy-no-null false positive" "\[WARN\].*lifecy
 assert_output_not_contains "no shell-version-minor false positive" "\[FAIL\].*metadata/shell-version-minor"
 assert_output_not_contains "no gnome-trademark false positive" "\[FAIL\].*metadata/gnome-trademark"
 assert_output_not_contains "no schema gnome-trademark false positive" "\[FAIL\].*schema/gnome-trademark"
+assert_output_not_contains "no dbus-export-leak false positive" "\[FAIL\].*lifecycle/dbus-export-leak"
+assert_output_not_contains "no timeout-reassignment false positive" "\[WARN\].*lifecycle/timeout-reassignment"
+assert_output_not_contains "no subprocess-no-cancel false positive" "\[WARN\].*lifecycle/subprocess-no-cancel"
+assert_output_not_contains "no resource-path-case false positive" "\[FAIL\].*imports/resource-path-case"
 echo ""

@@ -1,0 +1,7 @@
+{
+    "uuid": "timeout-reassign@test",
+    "name": "Timeout Reassign Test",
+    "description": "Tests timeout reassignment without removal detection",
+    "shell-version": ["46"],
+    "url": "https://example.com"
+}

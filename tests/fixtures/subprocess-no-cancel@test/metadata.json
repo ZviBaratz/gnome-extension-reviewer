@@ -1,0 +1,7 @@
+{
+    "uuid": "subprocess-no-cancel@test",
+    "name": "Subprocess No Cancel Test",
+    "description": "Tests subprocess without cancellation detection",
+    "shell-version": ["46"],
+    "url": "https://example.com"
+}

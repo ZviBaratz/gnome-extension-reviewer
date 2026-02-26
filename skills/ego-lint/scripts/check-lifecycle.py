@@ -19,6 +19,9 @@ Checks:
   - R-LIFE-13: Selective disable() detection (conditional return skips cleanup)
   - R-LIFE-14: unlock-dialog comment requirement
   - R-LIFE-15: Soup.Session without abort() in disable/destroy
+  - R-LIFE-16: DBus export without unexport in disable/destroy
+  - R-LIFE-17: Timeout ID reassignment without prior Source.remove()
+  - R-LIFE-18: Subprocess without cancellation in disable/destroy
   - R-SEC-16: Clipboard + keybinding cross-reference
   - R-FILE-07: Missing export default class
 
@@ -696,6 +699,128 @@ def check_destroy_then_null(ext_dir):
                "All destroy() calls followed by null assignment")
 
 
+def check_dbus_export_lifecycle(ext_dir):
+    """GAP-003: DBus exported interfaces must be unexported in disable()/destroy()."""
+    js_files = find_js_files(ext_dir, exclude_prefs=True)
+    if not js_files:
+        return
+
+    export_patterns = [
+        (r'\.export\s*\(', '.unexport('),
+        (r'\.export_action_group\s*\(', 'unexport_action_group('),
+        (r'\.export_menu_model\s*\(', 'unexport_menu_model('),
+    ]
+
+    exports_found = []
+    all_content = ''
+
+    for filepath in js_files:
+        content = strip_comments(read_file(filepath))
+        all_content += content
+        rel = os.path.relpath(filepath, ext_dir)
+        for export_pat, _ in export_patterns:
+            # Skip ESM 'export' keyword — only match method calls on objects
+            for m in re.finditer(export_pat, content):
+                # Check that it's a method call (preceded by identifier or closing paren/bracket)
+                start = m.start()
+                if start > 0 and content[start - 1] not in (' ', '\t', '\n', ';', '{'):
+                    exports_found.append((rel, export_pat))
+                    break
+
+    if not exports_found:
+        return  # No DBus exports found
+
+    # Check for matching unexports anywhere in extension code
+    has_unexport = False
+    for _, unexport_method in export_patterns:
+        if unexport_method.replace('(', '\\s*\\(').replace('.', '\\.') and \
+                re.search(re.escape(unexport_method).replace(r'\(', r'\s*\('), all_content):
+            has_unexport = True
+            break
+
+    if not has_unexport:
+        for rel, _ in exports_found:
+            result("FAIL", "lifecycle/dbus-export-leak",
+                   f"{rel}: DBus interface exported but no .unexport() found — "
+                   f"exported interfaces must be unexported in disable()")
+            return  # Report once
+    else:
+        result("PASS", "lifecycle/dbus-export-leak",
+               "DBus export/unexport lifecycle OK")
+
+
+def check_timeout_reassignment(ext_dir):
+    """GAP-010: Timeout ID reassignment without prior Source.remove() leaks GLib sources."""
+    js_files = find_js_files(ext_dir, exclude_prefs=True)
+    if not js_files:
+        return
+
+    violations = []
+    for filepath in js_files:
+        rel = os.path.relpath(filepath, ext_dir)
+        content = strip_comments(read_file(filepath))
+        lines = content.splitlines()
+
+        for i, line in enumerate(lines):
+            # Match: this._xxx = GLib.timeout_add( or this._xxx = GLib.idle_add(
+            m = re.search(r'(this\._\w+)\s*=\s*.*?(timeout_add|idle_add)\s*\(', line)
+            if not m:
+                continue
+            prop = m.group(1)
+            # Check if this property is assigned timeout/idle elsewhere too (reassignment pattern)
+            assign_count = len(re.findall(
+                re.escape(prop) + r'\s*=\s*.*?(timeout_add|idle_add)\s*\(',
+                content
+            ))
+            if assign_count < 2:
+                continue  # Single assignment, not a reassignment pattern
+            # Look back 5 lines for Source.remove(this._xxx)
+            lookback = '\n'.join(lines[max(0, i - 5):i])
+            remove_pat = r'(Source\.remove|source_remove)\s*\(\s*' + re.escape(prop)
+            if not re.search(remove_pat, lookback):
+                violations.append(f"{rel}:{i + 1}")
+                break  # One per file
+
+    if violations:
+        for loc in violations:
+            result("WARN", "lifecycle/timeout-reassignment",
+                   f"{loc}: timeout/idle ID reassigned without prior "
+                   f"GLib.Source.remove() — may leak GLib sources")
+    else:
+        result("PASS", "lifecycle/timeout-reassignment",
+               "No timeout ID reassignment without removal detected")
+
+
+def check_subprocess_cancellation(ext_dir):
+    """GAP-012: Gio.Subprocess should have cancellation in disable()/destroy()."""
+    js_files = find_js_files(ext_dir, exclude_prefs=True)
+    if not js_files:
+        return
+
+    has_subprocess = False
+    has_cancel = False
+
+    for filepath in js_files:
+        content = strip_comments(read_file(filepath))
+        if (re.search(r'new\s+Gio\.Subprocess', content) or
+                re.search(r'Gio\.Subprocess\.new', content) or
+                re.search(r'Gio\.SubprocessLauncher', content)):
+            has_subprocess = True
+        if (re.search(r'\.force_exit\s*\(', content) or
+                re.search(r'\.send_signal\s*\(', content) or
+                re.search(r'cancellable.*\.cancel\s*\(', content, re.IGNORECASE)):
+            has_cancel = True
+
+    if has_subprocess and not has_cancel:
+        result("WARN", "lifecycle/subprocess-no-cancel",
+               "Gio.Subprocess created but no .force_exit(), .send_signal(), or "
+               "cancellable.cancel() found — subprocess may outlive disable()")
+    elif has_subprocess and has_cancel:
+        result("PASS", "lifecycle/subprocess-no-cancel",
+               "Subprocess with cancellation pattern detected")
+    # If no subprocess, skip silently
+
+
 def check_soup_session_abort(ext_dir):
     """R-LIFE-15: Soup.Session should be aborted in disable()/destroy()."""
     js_files = find_js_files(ext_dir, exclude_prefs=True)
@@ -747,6 +872,9 @@ def main():
     check_unlock_dialog_comment(ext_dir)
     check_clipboard_keybinding(ext_dir)
     check_pkexec_user_writable(ext_dir)
+    check_dbus_export_lifecycle(ext_dir)
+    check_timeout_reassignment(ext_dir)
+    check_subprocess_cancellation(ext_dir)
     check_soup_session_abort(ext_dir)
     check_destroy_then_null(ext_dir)
 

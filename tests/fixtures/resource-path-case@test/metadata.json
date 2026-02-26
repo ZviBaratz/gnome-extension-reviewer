@@ -1,0 +1,7 @@
+{
+    "uuid": "resource-path-case@test",
+    "name": "Resource Path Case Test",
+    "description": "Tests resource path case mismatch detection",
+    "shell-version": ["46"],
+    "url": "https://example.com"
+}

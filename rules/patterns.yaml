@@ -255,6 +255,15 @@
   fix: "Replace 'const X = imports.ui.main' with 'import * as Main from \"resource:///org/gnome/shell/ui/main.js\"'."
   min-version: 45
 
+- id: R-DEPR-04-legacy
+  pattern: "\\bimports\\.(ui|gi|misc)\\."
+  scope: ["*.js"]
+  severity: advisory
+  message: "Legacy imports.* syntax — will be required to migrate for GNOME 45+"
+  category: deprecated
+  fix: "For GNOME 45+ readiness, replace 'const X = imports.ui.main' with 'import * as Main from \"resource:///org/gnome/shell/ui/main.js\"'."
+  max-version: 44
+
 - id: R-DEPR-08
   pattern: "\\bspawn_command_line_sync\\b"
   scope: ["*.js"]

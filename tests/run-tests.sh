@@ -616,6 +616,11 @@ if [[ -f "$ASSERTIONS_DIR/phase9-batch3.sh" ]]; then
     source "$ASSERTIONS_DIR/phase9-batch3.sh"
 fi
 
+# Phase 10: Batch 4 assertions
+if [[ -f "$ASSERTIONS_DIR/phase10-batch4.sh" ]]; then
+    source "$ASSERTIONS_DIR/phase10-batch4.sh"
+fi
+
 # Hara-hachi-bu regression (conditional)
 if [[ -f "$ASSERTIONS_DIR/hara-hachi-bu-regression.sh" ]]; then
     source "$ASSERTIONS_DIR/hara-hachi-bu-regression.sh"
