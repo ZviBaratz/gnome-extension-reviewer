@@ -83,8 +83,16 @@ def check_version_name(meta):
     result("PASS", "metadata/version-name-format", f"version-name '{vn}' is valid")
 
 
+VALID_GNOME_VERSIONS = {
+    # Legacy versions (with minor)
+    "3.28", "3.30", "3.32", "3.34", "3.36", "3.38",
+    # Modern versions (major-only)
+    "40", "41", "42", "43", "44", "45", "46", "47", "48", "49", "50",
+}
+
+
 def check_shell_version_entries(meta):
-    """Validate each shell-version entry format."""
+    """Validate each shell-version entry format and known GNOME versions."""
     sv = meta.get("shell-version")
     if not isinstance(sv, list):
         return
@@ -102,6 +110,17 @@ def check_shell_version_entries(meta):
                    f"shell-version '{entry}' uses minor version — "
                    f"GNOME 40+ requires major-only (e.g. '{m.group(1)}')")
             return
+        # Validate against known GNOME versions
+        if entry not in VALID_GNOME_VERSIONS:
+            # Allow one development release (checked separately)
+            try:
+                major = int(entry.split(".")[0])
+                if major <= CURRENT_STABLE:
+                    result("WARN", "metadata/shell-version-unknown",
+                           f"shell-version '{entry}' is not a known GNOME release")
+                    return
+            except ValueError:
+                pass
     result("PASS", "metadata/shell-version-entries",
            "All shell-version entries are valid")
 
@@ -171,10 +190,10 @@ def main():
         if isinstance(sv, list):
             result("PASS", "metadata/shell-version-array", "shell-version is an array")
 
-            if "48" in sv:
-                result("PASS", "metadata/shell-version-current", "shell-version includes current GNOME 48")
+            if "49" in sv:
+                result("PASS", "metadata/shell-version-current", "shell-version includes current GNOME 49")
             else:
-                result("WARN", "metadata/shell-version-current", "shell-version does not include GNOME 48")
+                result("WARN", "metadata/shell-version-current", "shell-version does not include GNOME 49")
         else:
             result("FAIL", "metadata/shell-version-array", f"shell-version must be an array, got {type(sv).__name__}")
 
@@ -282,7 +301,7 @@ def check_gnome_trademark(meta):
                "No GNOME trademark violations in metadata")
 
 
-CURRENT_STABLE = 48
+CURRENT_STABLE = 49
 
 
 def check_url_field(meta):

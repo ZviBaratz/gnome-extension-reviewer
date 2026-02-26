@@ -1,0 +1,7 @@
+{
+    "uuid": "gi-version-import@test",
+    "name": "GI Version Import Test",
+    "description": "Tests unnecessary version specifier in gi imports",
+    "shell-version": ["48"],
+    "url": "https://example.com"
+}

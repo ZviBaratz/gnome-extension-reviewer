@@ -2,6 +2,6 @@
     "uuid": "multi-dev-version@test",
     "name": "Multi Dev Version Test",
     "description": "Tests that shell-version cannot have more than one development release",
-    "shell-version": ["48", "49", "50"],
+    "shell-version": ["49", "50", "51"],
     "url": "https://github.com/test/multi-dev-version"
 }

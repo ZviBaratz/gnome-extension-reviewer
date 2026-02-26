@@ -631,6 +631,10 @@ if [[ -f "$ASSERTIONS_DIR/ai-defense-provenance.sh" ]]; then
     source "$ASSERTIONS_DIR/ai-defense-provenance.sh"
 fi
 
+if [[ -f "$ASSERTIONS_DIR/severity-corrections.sh" ]]; then
+    source "$ASSERTIONS_DIR/severity-corrections.sh"
+fi
+
 # Hara-hachi-bu regression (conditional)
 if [[ -f "$ASSERTIONS_DIR/hara-hachi-bu-regression.sh" ]]; then
     source "$ASSERTIONS_DIR/hara-hachi-bu-regression.sh"

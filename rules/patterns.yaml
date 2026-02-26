@@ -999,3 +999,47 @@
   category: version-compat
   fix: "Check if (this._destroyed) return; at the start of the callback"
   min-version: 50
+
+# --- Subprocess security (blocking) ---
+
+- id: R-SEC-21
+  pattern: "(Subprocess|spawn|spawn_async|spawn_command_line).*['\"]curl['\"]|['\"]curl\\s"
+  scope: ["*.js"]
+  severity: blocking
+  message: "Spawning curl is forbidden — use Soup.Session for HTTP requests"
+  category: security
+  fix: "Replace subprocess curl call with Soup.Session and Soup.Message"
+
+- id: R-SEC-22
+  pattern: "(Subprocess|spawn|spawn_async|spawn_command_line).*['\"]gsettings['\"]|['\"]gsettings\\s|['\"]dconf['\"]|['\"]dconf\\s"
+  scope: ["*.js"]
+  severity: blocking
+  message: "Spawning gsettings/dconf CLI is forbidden — use Gio.Settings API directly"
+  category: security
+  fix: "Use this.getSettings() or new Gio.Settings() to access GSettings programmatically"
+
+# --- Quality patterns (advisory/blocking) ---
+
+- id: R-QUAL-30
+  pattern: "\\blookupByURL\\s*\\("
+  scope: ["*.js"]
+  severity: advisory
+  message: "lookupByURL() is discouraged — use this.getSettings() and this.path from the entry point class"
+  category: code-quality
+  fix: "Access settings and path via the Extension/ExtensionPreferences base class instead"
+
+- id: R-QUAL-31
+  pattern: "_onDestroy\\s*\\("
+  scope: ["*.js"]
+  severity: advisory
+  message: "_onDestroy() should be renamed to destroy() with super.destroy() at the end"
+  category: code-quality
+  fix: "Rename to destroy() { /* cleanup */; super.destroy(); }"
+
+- id: R-QUAL-32
+  pattern: "gi://(GLib|Gio|GObject|St|Clutter|Meta|Shell|Pango|Graphene|Mtk)\\?version="
+  scope: ["*.js"]
+  severity: advisory
+  message: "Unnecessary ?version= in gi:// import — this library does not require a version specifier"
+  category: code-quality
+  fix: "Remove ?version= from the import; only Soup, Gtk, Gdk, and Adw require version specifiers"

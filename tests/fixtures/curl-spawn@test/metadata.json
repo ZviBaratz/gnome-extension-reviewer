@@ -1,0 +1,7 @@
+{
+    "uuid": "curl-spawn@test",
+    "name": "Curl Spawn Test",
+    "description": "Tests curl/gsettings subprocess detection",
+    "shell-version": ["48"],
+    "url": "https://example.com"
+}

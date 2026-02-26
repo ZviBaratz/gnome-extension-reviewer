@@ -1,0 +1,7 @@
+{
+    "uuid": "version-unknown@test",
+    "name": "Unknown Version Test",
+    "description": "Tests unknown shell-version detection",
+    "shell-version": ["37"],
+    "url": "https://example.com"
+}
