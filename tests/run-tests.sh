@@ -533,6 +533,13 @@ run_lint "shell-concat@test"
 assert_output_contains "Should detect subprocess string concatenation" "\[WARN\].*R-SEC-13"
 echo ""
 
+# --- sync-subprocess ---
+echo "=== sync-subprocess ==="
+run_lint "sync-subprocess@test"
+assert_exit_code "exits with 1 (has failures)" 1
+assert_output_contains "detects GLib.spawn_sync" "\[FAIL\].*R-SEC-14"
+echo ""
+
 # --- async-no-cancel ---
 echo "=== async-no-cancel ==="
 run_lint "async-no-cancel@test"

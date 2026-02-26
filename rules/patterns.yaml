@@ -257,7 +257,7 @@
 - id: R-DEPR-08
   pattern: "\\bspawn_command_line_sync\\b"
   scope: ["*.js"]
-  severity: advisory
+  severity: blocking
   message: "GLib.spawn_command_line_sync is deprecated; use Gio.Subprocess"
   category: deprecated
   fix: "Use new Gio.Subprocess({argv: [...], flags: ...}) instead."
@@ -700,3 +700,21 @@
   message: "Dead code after throw — unreachable return"
   category: ai-slop
   fix: "Remove the unreachable return statement"
+
+# --- Subprocess safety ---
+
+- id: R-SEC-14
+  pattern: "\\bspawn_sync\\b"
+  scope: ["*.js"]
+  severity: blocking
+  message: "GLib.spawn_sync blocks the main loop; use Gio.Subprocess with async"
+  category: security
+  fix: "Use 'new Gio.Subprocess({argv: [...]})' with communicate_utf8_async() or Gio._promisify."
+
+- id: R-SEC-15
+  pattern: "\\bspawn_command_line_async\\b"
+  scope: ["*.js"]
+  severity: advisory
+  message: "GLib.spawn_command_line_async provides no error handling; prefer Gio.Subprocess"
+  category: security
+  fix: "Use 'new Gio.Subprocess({argv: [...]})' for proper lifecycle control and error handling."
