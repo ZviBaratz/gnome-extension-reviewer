@@ -1,5 +1,6 @@
 __pycache__/
 node_modules/
+.worktrees/
 *.zip
 !tests/fixtures/**/*.zip
 .claude/
