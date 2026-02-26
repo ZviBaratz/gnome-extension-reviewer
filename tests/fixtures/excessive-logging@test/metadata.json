@@ -1,0 +1,7 @@
+{
+    "uuid": "excessive-logging@test",
+    "name": "Excessive Logging Test",
+    "description": "Tests excessive console.debug detection",
+    "shell-version": ["48"],
+    "url": "https://example.com"
+}

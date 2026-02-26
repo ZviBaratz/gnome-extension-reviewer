@@ -1012,6 +1012,33 @@ def check_mixed_indentation(ext_dir, js_files):
         result("PASS", "quality/mixed-indentation", "Consistent indentation style")
 
 
+def check_excessive_logging(ext_dir, js_files):
+    """Advisory: flag excessive console.debug/log without settings guard."""
+    debug_count = 0
+    has_settings_guard = False
+    debug_re = re.compile(r'\bconsole\.(debug|log)\s*\(')
+    guard_re = re.compile(r'(\bsettings\b|_debug\b|\bDEBUG\b|\bverbose\b|\blogLevel\b)')
+
+    for filepath in js_files:
+        with open(filepath, encoding='utf-8', errors='replace') as f:
+            for line in f:
+                stripped = line.lstrip()
+                if stripped.startswith('//') or stripped.startswith('*'):
+                    continue
+                if debug_re.search(stripped):
+                    debug_count += 1
+                if guard_re.search(stripped):
+                    has_settings_guard = True
+
+    if debug_count > 15 and not has_settings_guard:
+        result("WARN", "quality/excessive-logging",
+               f"{debug_count} console.debug/log calls without a settings guard — "
+               "consider making debug output configurable")
+    else:
+        result("PASS", "quality/excessive-logging",
+               f"Logging volume acceptable ({debug_count} debug/log calls)")
+
+
 def main():
     if len(sys.argv) < 2:
         result("FAIL", "quality/args", "No extension directory provided")
@@ -1050,6 +1077,7 @@ def main():
     check_repeated_settings(ext_dir, js_files)
     check_obfuscated_names(ext_dir, js_files)
     check_mixed_indentation(ext_dir, js_files)
+    check_excessive_logging(ext_dir, js_files)
     check_code_provenance(ext_dir, js_files)
 
 

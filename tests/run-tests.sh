@@ -647,6 +647,10 @@ if [[ -f "$ASSERTIONS_DIR/widget-lifecycle.sh" ]]; then
     source "$ASSERTIONS_DIR/widget-lifecycle.sh"
 fi
 
+if [[ -f "$ASSERTIONS_DIR/quick-wins.sh" ]]; then
+    source "$ASSERTIONS_DIR/quick-wins.sh"
+fi
+
 # Hara-hachi-bu regression (conditional)
 if [[ -f "$ASSERTIONS_DIR/hara-hachi-bu-regression.sh" ]]; then
     source "$ASSERTIONS_DIR/hara-hachi-bu-regression.sh"

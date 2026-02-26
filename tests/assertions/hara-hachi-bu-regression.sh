@@ -66,4 +66,6 @@ assert_output_not_contains "no obfuscated-names false positive" "\[FAIL\].*quali
 assert_output_not_contains "no mixed-indentation false positive" "\[WARN\].*quality/mixed-indentation"
 assert_output_not_contains "no widget-destroy false positive" "\[WARN\].*lifecycle/widget-destroy"
 assert_output_not_contains "no settings-cleanup false positive" "\[WARN\].*lifecycle/settings-cleanup"
+assert_output_not_contains "no gettext-domain-mismatch false positive" "\[WARN\].*gettext-domain-mismatch"
+assert_output_not_contains "no excessive-logging false positive" "\[WARN\].*quality/excessive-logging"
 echo ""

@@ -1,0 +1,8 @@
+{
+    "uuid": "gettext-mismatch@test",
+    "name": "Gettext Mismatch Test",
+    "description": "Tests gettext-domain consistency check",
+    "shell-version": ["48"],
+    "gettext-domain": "my-extension",
+    "url": "https://example.com"
+}

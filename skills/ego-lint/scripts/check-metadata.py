@@ -272,6 +272,7 @@ def main():
     check_shell_version_dev_limit(meta)
     check_esm_version_floor(meta, ext_dir)
     check_session_modes_consistency(meta, ext_dir)
+    check_gettext_domain_consistency(meta, ext_dir)
 
 
 def check_gnome_trademark(meta):
@@ -405,6 +406,37 @@ def check_esm_version_floor(meta, ext_dir):
             result("FAIL", "metadata/shell-version-esm-floor",
                    f"shell-version includes pre-ESM version(s) ({', '.join(pre_esm)}) "
                    "but extension uses ESM imports (GNOME 45+ only)")
+
+def check_gettext_domain_consistency(meta, ext_dir):
+    """WARN if gettext-domain in metadata doesn't match dgettext() calls in JS."""
+    domain = meta.get("gettext-domain")
+    if not domain:
+        return
+
+    skip_dirs = {'node_modules', '.git', '__pycache__'}
+    mismatches = []
+
+    for root, dirs, files in os.walk(ext_dir):
+        dirs[:] = [d for d in dirs if d not in skip_dirs]
+        for fn in files:
+            if not fn.endswith('.js'):
+                continue
+            fp = os.path.join(root, fn)
+            with open(fp, encoding='utf-8', errors='replace') as f:
+                for i, line in enumerate(f, 1):
+                    m = re.search(r"dgettext\s*\(\s*['\"]([^'\"]+)['\"]", line)
+                    if m and m.group(1) != domain:
+                        rel = os.path.relpath(fp, ext_dir)
+                        mismatches.append(
+                            f"{rel}:{i} uses '{m.group(1)}' instead of '{domain}'")
+
+    if mismatches:
+        result("WARN", "metadata/gettext-domain-mismatch",
+               f"gettext-domain mismatch: {'; '.join(mismatches[:3])}")
+    else:
+        result("PASS", "metadata/gettext-domain-consistency",
+               f"gettext-domain '{domain}' consistent with JS usage")
+
 
 if __name__ == "__main__":
     main()
