@@ -514,3 +514,40 @@ When reviewing prefs.js:
 - Check for proper Adwaita widget usage: `Adw.PreferencesPage`, `Adw.PreferencesGroup`, `Adw.ActionRow`, `Adw.SwitchRow`
 - Verify no GTK3 patterns: `Gtk.Box`, `Gtk.Grid` when Adwaita equivalents exist
 - Check resource path: prefs.js uses `resource:///org/gnome/Shell/Extensions/js/` (capital S)
+
+---
+
+## Search Provider Contract
+
+If an extension implements a search provider:
+
+| Requirement | Implementation |
+|---|---|
+| `get id()` | Must return the extension's UUID |
+| `get appInfo()` | Must return `null` for extensions |
+| `canLaunchSearch` | Must return `false` |
+| Registration | `Main.overview.searchController.addProvider(this)` in `enable()` |
+| Unregistration | `Main.overview.searchController.removeProvider(this)` in `disable()` |
+| `createIcon` callback | Must account for display scaling (`scaleFactor`) |
+
+---
+
+## Translation Best Practices
+
+| Requirement | Severity |
+|---|---|
+| Use `String.prototype.format()` for `%s`/`%d` in translatable strings, NOT template literals | **SHOULD** |
+| Set `gettext-domain` in `metadata.json` | **SHOULD** |
+| Do NOT call `initTranslations()` manually (automatic in GNOME 45+) | **SHOULD** |
+
+**Wrong:**
+```javascript
+// Template literals break xgettext extraction
+let msg = _(`Found ${count} items`);
+```
+
+**Correct:**
+```javascript
+// format() works with xgettext
+let msg = _('Found %d items').format(count);
+```

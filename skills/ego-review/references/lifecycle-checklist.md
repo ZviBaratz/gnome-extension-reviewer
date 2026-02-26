@@ -624,3 +624,50 @@ For operations that may outlive the enable/disable cycle:
 - Use `Gio.Cancellable` for cancellable async operations
 - Cancel the cancellable in `disable()`: `this._cancellable.cancel()`
 - Alternatively, use the `_destroyed` flag pattern after each `await`
+
+---
+
+## Notification and Dialog Lifecycle
+
+### MessageTray.Source
+
+If an extension creates a `MessageTray.Source` for notifications:
+
+| Pattern | Requirement |
+|---|---|
+| Creating the source | Connect to `destroy` signal for safe reuse |
+| Reusing after destruction | Re-add to `Main.messageTray` after the source is destroyed |
+| In disable() | Destroy the source if it exists |
+
+```javascript
+// Correct pattern
+enable() {
+    this._source = new MessageTray.Source({title: 'My Extension'});
+    this._source.connect('destroy', () => { this._source = null; });
+    Main.messageTray.add(this._source);
+}
+
+disable() {
+    this._source?.destroy();
+    this._source = null;
+}
+```
+
+### Modal Dialogs
+
+If an extension creates modal dialogs:
+
+- Dialogs have lifecycle states: `OPENED`, `CLOSED`, `OPENING`, `CLOSING`, `FADED_OUT`
+- Do not operate on dialogs in incompatible states
+- When `destroyOnClose: false`, the extension is responsible for manual destruction in disable()
+
+```javascript
+// If dialog may outlive enable/disable
+disable() {
+    if (this._dialog) {
+        this._dialog.close(global.get_current_time());
+        this._dialog.destroy();
+        this._dialog = null;
+    }
+}
+```
