@@ -1279,6 +1279,51 @@ export default class MyExtension extends Extension {
 - **Rationale**: Keybindings that are not removed in `disable()` persist after the extension is disabled. They continue to intercept key events, potentially conflicting with other extensions or GNOME Shell itself. This is a common cause of EGO rejection.
 - **Fix**: Call `Main.wm.removeKeybinding('keybinding-name')` in `disable()` for each keybinding added in `enable()`.
 
+### R-LIFE-12: Stored timeout without Source.remove() in disable()
+- **Severity**: advisory
+- **Checked by**: check-lifecycle.py
+- **Rule**: If a timeout/idle source ID is stored (e.g., `this._timeoutId = GLib.timeout_add(...)`), `GLib.Source.remove()` must be called with that ID in disable()
+- **Rationale**: Lingering timers execute callbacks on destroyed objects, causing crashes. Search Light was rejected for this (May 2024).
+- **Fix**: Add `GLib.Source.remove(this._timeoutId)` to disable() before nulling
+
+---
+
+## Init-Time Safety (R-INIT)
+
+Rules for code that runs at module load or constructor time, before `enable()` is called.
+
+### R-INIT-01: Shell/GObject modification at init time (expanded)
+
+- **Severity**: blocking
+- **Checked by**: check-init.py
+- **Rule**: Must not create GObjects from any GI namespace (St, Clutter, Gio, GLib, GObject, Meta, Shell, Pango, Soup, Cogl, Atk, GdkPixbuf) at module scope or in constructor()
+- **Rationale**: GObjects created before enable() cannot be properly cleaned up; #1 rejection cause
+- **Fix**: Move all GObject creation to enable()
+
+#### Example
+
+**Before** (violation):
+```javascript
+export default class MyExtension extends Extension {
+    constructor(metadata) {
+        super(metadata);
+        this._file = new Gio.File.new_for_path('/tmp');
+    }
+}
+```
+
+**After** (idiomatic):
+```javascript
+export default class MyExtension extends Extension {
+    enable() {
+        this._file = Gio.File.new_for_path('/tmp');
+    }
+    disable() {
+        this._file = null;
+    }
+}
+```
+
 ---
 
 ## Files — Extended (R-FILE, continued)
@@ -1430,6 +1475,20 @@ destroy() {
 - **Rule**: Extension code and scripts must not run system package managers (`apt`, `apt-get`, `dnf`, `yum`, `pacman`, `zypper`).
 - **Rationale**: Same as R-SEC-10. Automatic system package installation requires root access and is a severe security risk. EGO reviewers will reject any extension that attempts to install system packages.
 - **Fix**: Remove automatic package installation commands. Document any required system packages in the extension description so users can install them manually.
+
+### R-SEC-14: GLib.spawn_sync
+- **Severity**: blocking
+- **Checked by**: patterns.yaml
+- **Rule**: Must not use GLib.spawn_sync — blocks the main loop
+- **Rationale**: Wechsel was rejected for sync subprocess calls (April 2024)
+- **Fix**: Use `new Gio.Subprocess({argv: [...]})` with `communicate_utf8_async()` or `Gio._promisify`
+
+### R-SEC-15: GLib.spawn_command_line_async
+- **Severity**: advisory
+- **Checked by**: patterns.yaml
+- **Rule**: Prefer Gio.Subprocess over GLib.spawn_command_line_async
+- **Rationale**: spawn_command_line_async provides no error handling or lifecycle control
+- **Fix**: Use `new Gio.Subprocess({argv: [...]})` for proper error handling
 
 ---
 
