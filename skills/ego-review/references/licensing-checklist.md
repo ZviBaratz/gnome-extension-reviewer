@@ -36,3 +36,13 @@ EGO requires all extensions to comply with licensing and legal requirements.
 > **Official guideline:** "If your extension contains code from another extension, you must include attribution to the original author [...] not doing so is a license violation and your extension will be rejected."
 
 > **Fork naming:** Forks must have unique names distinct from the original extension. Submitting a fork under the original name triggers immediate rejection.
+
+### L6: Fork Attribution in Metadata Description
+
+Forked extensions must mention the original extension in the `metadata.json`
+`description` field, not just in code comments or a LICENSE file. Reviewers check
+that users can see the fork relationship before installation.
+
+- Check: If the extension appears to be a fork (similar name, copied code structure),
+  verify `metadata.json` `description` references the original
+- Attribution in code comments alone is insufficient — it must be user-visible

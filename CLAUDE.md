@@ -59,7 +59,7 @@ Additional tooling:
 
 - **Tier 1 (patterns.yaml)**: 97 regex rules in YAML, processed by `apply-patterns.py`. Covers web APIs, deprecated APIs, security, logging, import segregation, AI slop signals, subprocess safety, i18n, GSettings bind flags, GNOME 44-50 migration. Add new rules by editing `rules/patterns.yaml`. Supports version-gating via `min-version`/`max-version` fields.
 - **Tier 2 (scripts)**: 13 structural heuristic check scripts in Python/bash. `check-quality.py` (AI slop heuristics), `check-init.py` (init-time safety), `check-lifecycle.py` (enable/disable symmetry + timeout verification), `check-resources.py` + `build-resource-graph.py` (cross-file resource tracking), plus metadata, prefs, GObject, async, CSS, imports, schema, and package checks. `ego-lint.sh` also has an inline minified JS check.
-- **Tier 3 (checklists)**: 6 semantic review checklists in `skills/ego-review/references/`: lifecycle, security, code-quality, ai-slop (43-item scoring model), licensing, accessibility (7 items). Applied by Claude during `ego-review` phases.
+- **Tier 3 (checklists)**: 6 semantic review checklists in `skills/ego-review/references/`: lifecycle, security, code-quality, ai-slop (46-item scoring model), licensing, accessibility (7 items). Applied by Claude during `ego-review` phases.
 
 ### ego-review internals
 

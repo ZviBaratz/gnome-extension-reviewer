@@ -837,6 +837,67 @@ export function createWidget() { ... }
 export { helper, utils };
 ```
 
+### 44. typeof super.method guard
+
+Checking if a parent method exists before calling it. In GJS/GObject, parent
+class methods are guaranteed to exist.
+
+- **Red flag:** `if (typeof super.destroy === 'function') super.destroy()` or
+  `if (typeof super.enable !== 'undefined') super.enable()`
+- **Acceptable:** Calling `super.destroy()`, `super.enable()` directly
+- **Note:** This is the canonical AI slop example cited in JustPerfection's
+  AI policy blog post. Automatically detected by ego-lint (R-SLOP-30).
+
+```javascript
+// RED FLAG: unnecessary type guard
+destroy() {
+    if (typeof super.destroy === 'function')
+        super.destroy();
+}
+
+// ACCEPTABLE: direct call
+destroy() {
+    super.destroy();
+}
+```
+
+### 45. Unused/dead code functions
+
+Methods that are defined but never called anywhere in the extension.
+
+- **Red flag:** `toString()`, `toJSON()`, `clone()`, `reset()`, or custom
+  methods with no callers — suggests the AI generated a "complete" class
+  template without pruning unused methods
+- **Acceptable:** GObject virtual methods (`vfunc_*`) and lifecycle methods
+  (`enable`, `disable`, `destroy`) that are called by the framework
+
+### 46. Boilerplate configuration objects with only default values
+
+Configuration constants that define defaults matching the built-in behavior,
+adding no value.
+
+- **Red flag:** `const CONFIG = { timeout: 0, retries: 1, debug: false }` where
+  the extension never reads or overrides these values, or where the defaults
+  match GLib/GObject behavior exactly
+- **Acceptable:** Configuration objects that are actually read and used to
+  customize behavior, or that document non-obvious defaults
+
+```javascript
+// RED FLAG: config object with defaults never used
+const DEFAULT_CONFIG = {
+    refreshInterval: 30,
+    maxRetries: 3,
+    enableDebug: false,
+    logLevel: 'error',
+};
+
+// ACCEPTABLE: config used in settings binding
+const SCHEMA_DEFAULTS = {
+    'refresh-interval': 30,
+    'max-retries': 3,
+};
+```
+
 ---
 
 ## Real-World AI Detection Intelligence
@@ -855,7 +916,7 @@ The reviewer reported spending "more than 6 hours a day reviewing over 15,000 li
 
 ## Scoring Model
 
-Count the number of triggered items out of the 43 above.
+Count the number of triggered items out of the 46 above.
 
 ```
 1-3 triggered:  ADVISORY  -- note them, extension may still pass

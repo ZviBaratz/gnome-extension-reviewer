@@ -297,3 +297,35 @@ submission notes:
 > **`run_dispose()` controversy:** The official `gnome-shell-extensions` repository uses `run_dispose()` for `Gio.Settings`, but external extensions have been rejected for the same pattern. If you use it, include a detailed comment explaining why.
 
 **Key lesson:** Reviewers expect `Gio.Subprocess` with async patterns. Sync subprocess calls are treated as blocking violations, not just style issues.
+
+---
+
+## Additional Security Requirements
+
+### Honest User-Agent Strings
+
+Extensions making HTTP requests should use a User-Agent string that honestly
+identifies the extension, not impersonate browsers or other software. Generic or
+spoofed User-Agent strings are a red flag for reviewers.
+
+```javascript
+// WRONG: impersonating a browser
+session.user_agent = 'Mozilla/5.0 (X11; Linux x86_64)...';
+
+// CORRECT: identifying the extension
+session.user_agent = 'my-extension@author/1.0';
+```
+
+### External Tool Dependency Documentation
+
+Extensions that spawn external commands (`Gio.Subprocess` with system tools like
+`powerprofilesctl`, `brightnessctl`, etc.) must document the dependency in
+`metadata.json` description or EGO submission notes. Users need to know what to
+install for the extension to function.
+
+### Clipboard-Network Cross-Reference
+
+Clipboard data "MUST NOT be shared with third parties." If an extension accesses
+both `St.Clipboard` and makes network requests (`Soup.Session`, `Gio.SocketClient`),
+manually verify the data flow to confirm clipboard contents are never transmitted.
+This combination warrants extra security scrutiny.

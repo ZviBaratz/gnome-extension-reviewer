@@ -802,3 +802,84 @@ disable() {
 > **"Open Bar" (February 2024):** Rejected for lifecycle violations including orphaned signal handlers and missing timeout cleanup in disable().
 
 **Key lesson:** Lifecycle violations are the #1 rejection cause. Reviewers check every `enable()` resource has a matching `disable()` cleanup.
+
+---
+
+## Additional Lifecycle Requirements
+
+### DBus Exported Interfaces
+
+Extensions that export DBus interfaces (`Gio.DBusExportedObject.wrapJSObject` +
+`.export()`, `connection.export_action_group()`, or `connection.export_menu_model()`)
+must call the corresponding `.unexport()` / `unexport_action_group()` /
+`unexport_menu_model()` in `disable()`. Exported interfaces that outlive `disable()`
+remain on the bus and leak resources.
+
+**Automatically checked by ego-lint (R-LIFE-16).**
+
+### Timeout Removal Before Reassignment
+
+When a timeout/idle ID is reassigned to a new timeout, the previous source must be
+removed first via `GLib.Source.remove()`. Debounce patterns that directly overwrite
+`this._timeoutId = GLib.timeout_add(...)` without first removing the old source
+leak GLib sources.
+
+```javascript
+// WRONG: leaks the previous timeout
+_onSettingsChanged() {
+    this._debounceId = GLib.timeout_add(GLib.PRIORITY_DEFAULT, 300, () => {
+        this._applySettings();
+        return GLib.SOURCE_REMOVE;
+    });
+}
+
+// CORRECT: remove before reassign
+_onSettingsChanged() {
+    if (this._debounceId)
+        GLib.Source.remove(this._debounceId);
+    this._debounceId = GLib.timeout_add(GLib.PRIORITY_DEFAULT, 300, () => {
+        this._applySettings();
+        return GLib.SOURCE_REMOVE;
+    });
+}
+```
+
+**Automatically checked by ego-lint (R-LIFE-17).**
+
+### Subprocess Cancellation in disable()
+
+Extensions that spawn subprocesses (`Gio.Subprocess`) must cancel or kill them in
+`disable()` to prevent orphaned processes. Use `.force_exit()`, `.send_signal()`,
+or a `Gio.Cancellable` that is cancelled in `disable()`.
+
+> **Reviewer says:** "Don't forget to cancel the subprocess on destroy or disable."
+
+**Automatically checked by ego-lint (R-LIFE-18).**
+
+### Main.notify() Notification Sources
+
+`Main.notify()` creates notification sources that should be tracked. If the extension
+may create notifications during its lifetime, consider storing the source and destroying
+it in `disable()` to prevent stale notifications.
+
+### Signal Disconnection on Destroyed Objects
+
+Signals on extension-owned objects that are `.destroy()`ed in `disable()` do not
+strictly need explicit disconnection — destruction auto-disconnects. However, explicit
+disconnection before destruction is preferred for reviewer clarity and avoids
+accidental callbacks during teardown.
+
+### GNOME 50 One-Shot Timeouts
+
+`GLib.timeout_add_once()`, `GLib.idle_add_once()`, and
+`GLib.timeout_add_seconds_once()` (new in GNOME 50) do **not** return a source ID,
+meaning they cannot be cancelled with `GLib.Source.remove()`. Extensions using these
+must use a `_destroyed` guard in the callback as the only way to prevent
+use-after-disable:
+
+```javascript
+GLib.timeout_add_once(GLib.PRIORITY_DEFAULT, 500, () => {
+    if (this._destroyed) return;  // Only protection available
+    this._applyUpdate();
+});
+```
