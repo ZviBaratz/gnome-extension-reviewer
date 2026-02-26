@@ -819,6 +819,104 @@ def check_repeated_settings(ext_dir, js_files):
                f"Settings instances OK ({total} across extension files)")
 
 
+def check_code_provenance(ext_dir, js_files):
+    """R-QUAL-29: Count positive indicators of hand-written code (AI defense context).
+
+    Counts indicators that suggest authentic developer authorship:
+      - Domain-specific vocabulary (hardware, DBus service names, app-specific terms)
+      - Non-trivial algorithms (bitwise ops, math beyond simple arithmetic)
+      - Debugging/workaround comments referencing bugs or version quirks
+      - Consistent naming style (all camelCase or all snake_case, not mixed)
+
+    Output is informational — provides context for AI slop scoring.
+    """
+    domain_vocab = 0
+    nontrivial_algo = 0
+    debug_comments = 0
+    total_non_blank = 0
+    naming_styles = {'camel': 0, 'snake': 0}
+
+    # Domain vocabulary patterns (suggest real-world knowledge)
+    domain_re = re.compile(
+        r'\b(dbus|polkit|upower|networkmanager|bluez|logind|systemd|'
+        r'pipewire|pulseaudio|wayland|x11|xdg|freedesktop|'
+        r'brightness|backlight|cpu|gpu|battery|thermal|'
+        r'inhibit|suspend|hibernate|idle|screensaver)\b', re.IGNORECASE
+    )
+
+    # Non-trivial algorithm patterns
+    algo_re = re.compile(
+        r'(<<|>>|>>>|&\s*0x|\|\s*0x'
+        r'|Math\.(floor|ceil|round|pow|sqrt|log|min|max)\b'
+        r'|for\s*\(\s*let\s+\w+\s*=\s*\w+[^;]*;\s*\w+[^;]*;\s*\w+)'
+    )
+
+    # Debugging/workaround comments (suggest iteration, not one-shot generation)
+    debug_comment_re = re.compile(
+        r'//\s*(workaround|hack|fixme|bug\s*#?\d+|regression|quirk|compat|'
+        r'upstream|backport|see\s+https?://|gnome\.org|gitlab)',
+        re.IGNORECASE
+    )
+
+    for filepath in js_files:
+        with open(filepath, encoding='utf-8', errors='replace') as f:
+            lines = f.readlines()
+
+        for line in lines:
+            stripped = line.strip()
+            if not stripped:
+                continue
+            total_non_blank += 1
+
+            domain_vocab += len(domain_re.findall(stripped))
+
+            if algo_re.search(stripped):
+                nontrivial_algo += 1
+
+            if debug_comment_re.search(stripped):
+                debug_comments += 1
+
+            # Naming style consistency (private methods)
+            for m in re.finditer(r'this\.(_[a-z][a-zA-Z0-9]+)', stripped):
+                name = m.group(1)
+                if '_' in name[1:]:
+                    naming_styles['snake'] += 1
+                else:
+                    naming_styles['camel'] += 1
+
+    signals = []
+    if domain_vocab >= 5:
+        signals.append(f"domain-vocabulary({domain_vocab})")
+    if nontrivial_algo >= 3:
+        signals.append(f"nontrivial-algorithms({nontrivial_algo})")
+    if debug_comments >= 2:
+        signals.append(f"debug-comments({debug_comments})")
+
+    total_names = naming_styles['camel'] + naming_styles['snake']
+    if total_names >= 10:
+        dominant = max(naming_styles.values())
+        if dominant / total_names > 0.9:
+            signals.append("consistent-naming-style")
+
+    score = len(signals)
+    file_count = len(js_files)
+
+    detail_parts = [f"provenance-score={score}"]
+    if signals:
+        detail_parts.append(f"signals=[{', '.join(signals)}]")
+    detail_parts.append(f"files={file_count}")
+
+    if score >= 3:
+        result("PASS", "quality/code-provenance",
+               f"Strong hand-written indicators: {'; '.join(detail_parts)}")
+    elif score >= 1:
+        result("PASS", "quality/code-provenance",
+               f"Some hand-written indicators: {'; '.join(detail_parts)}")
+    else:
+        result("PASS", "quality/code-provenance",
+               f"No strong provenance indicators: {'; '.join(detail_parts)}")
+
+
 def check_excessive_null_checks(ext_dir, js_files):
     """R-QUAL-24: Flag excessive null/undefined checks instead of optional chaining."""
     total_checks = 0
@@ -890,6 +988,7 @@ def main():
     check_network_disclosure(ext_dir, js_files)
     check_excessive_null_checks(ext_dir, js_files)
     check_repeated_settings(ext_dir, js_files)
+    check_code_provenance(ext_dir, js_files)
 
 
 if __name__ == '__main__':

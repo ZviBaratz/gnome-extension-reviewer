@@ -163,13 +163,33 @@ Using [ai-slop-checklist.md](references/ai-slop-checklist.md) (46-item checklist
 
 1. For each checklist item, search the extension source for the described pattern
 2. Record whether it triggers, with file:line references
-3. Note whether the pattern is justified by context
-4. Apply the scoring model:
-   - 1-3 triggered: ADVISORY — note them, extension may still pass
-   - 4-6 triggered: BLOCKING — suggests insufficient code review
-   - 7+ triggered: BLOCKING — likely unreviewed AI output
-5. Include count, category breakdown, and assessment in the report
-6. When score reaches BLOCKING, provide specific file:line citations for each triggered item so the developer has an actionable fix list
+3. Note whether the pattern is justified by context (check "NOT a signal" exceptions)
+4. Count JS files to determine threshold tier:
+   - **<10 files**: standard thresholds (4-6 BLOCKING)
+   - **10+ files**: size-adjusted thresholds (5-8 BLOCKING)
+5. Check ego-lint's `quality/code-provenance` score — if provenance-score >= 3,
+   apply +2 credit to BLOCKING threshold
+6. Include count, category breakdown, threshold used, and assessment in the report
+7. When score reaches BLOCKING, provide specific file:line citations for each
+   triggered item so the developer has an actionable fix list
+
+#### AI Defense Report (for extensions with triggered AI patterns)
+
+For each triggered AI pattern, include a **Defense** column in the analysis:
+
+| # | Pattern | Triggered? | File:Line | Defense |
+|---|---------|-----------|-----------|---------|
+| 1 | Excessive try-catch | Yes | ext.js:45 | All try-catch wraps D-Bus calls (justified) |
+| 8 | TypeScript JSDoc | Yes | lib/api.js:12 | Only on 2 exported functions (below threshold) |
+
+**Defense indicators to check for each triggered item:**
+- Is the pattern contextually justified? (try-catch around D-Bus, JSDoc on shared API)
+- Does the code show domain knowledge that contradicts AI generation?
+- Is there a consistent personal style across the file?
+- Does the provenance score suggest genuine authorship?
+
+If **more triggered items have valid defenses than not**, downgrade the verdict
+by one tier (BLOCKING → ADVISORY, ADVISORY → note only).
 
 ## Output Format
 

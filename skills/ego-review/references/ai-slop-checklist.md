@@ -221,6 +221,8 @@ codebase.
 - **Red flag:** Systematic JSDoc on every method, especially with complex types
   like `@param {Map<string, GObject.Object>}` or `@returns {Promise<boolean>}`
 - **Acceptable:** Occasional simple comments, GObject property documentation
+- **NOT a signal:** JSDoc on 1-3 public API methods (e.g., a library module
+  consumed by other files). Only flag when >50% of methods have full JSDoc.
 
 ```javascript
 // RED FLAG: systematic TypeScript-style JSDoc
@@ -244,6 +246,9 @@ method context baked in.
 
 - **Red flag:** `console.error(\`Failed to initialize ${this.constructor.name}: ${error.message}\`)`
 - **Acceptable:** `console.error(error)` or `logError(error, 'ExtensionName')`
+- **NOT a signal:** Error messages that include the extension name as a fixed
+  prefix (e.g., `console.error('HaraHachiBu:', e.message)`) — this is standard
+  GNOME convention for identifying which extension logged the error
 
 ```javascript
 // RED FLAG: enterprise-style error messages
@@ -268,6 +273,10 @@ Enterprise-style null checks and type guards that are unnecessary in GJS.
   `instanceof` checks, `Object.freeze()` on configuration objects
 - **Acceptable:** Checks at trust boundaries (preferences UI input, D-Bus
   signals from external services)
+- **NOT a signal:** Null checks in `disable()` are correct practice
+  (`if (this._widget) this._widget.destroy()` guards against rapid
+  enable/disable cycles). Only flag null checks on values that were
+  unconditionally assigned within the same scope.
 
 ```javascript
 // RED FLAG: unnecessary type guards
@@ -918,11 +927,30 @@ The reviewer reported spending "more than 6 hours a day reviewing over 15,000 li
 
 Count the number of triggered items out of the 46 above.
 
+### Standard thresholds (extensions with <10 JS files)
+
 ```
 1-3 triggered:  ADVISORY  -- note them, extension may still pass
 4-6 triggered:  BLOCKING  -- suggests insufficient code review
 7+  triggered:  BLOCKING  -- likely unreviewed AI output
 ```
+
+### Size-adjusted thresholds (extensions with 10+ JS files)
+
+Large extensions naturally trigger more items due to volume. Raise thresholds:
+
+```
+1-4 triggered:  ADVISORY  -- note them, extension may still pass
+5-8 triggered:  BLOCKING  -- suggests insufficient code review
+9+  triggered:  BLOCKING  -- likely unreviewed AI output
+```
+
+### Provenance adjustment
+
+If ego-lint reports `quality/code-provenance` with `provenance-score >= 3`
+(strong hand-written indicators), apply a **+2 credit** to the BLOCKING
+threshold. For example, a large extension with strong provenance needs 7+
+triggers (not 5) to reach BLOCKING.
 
 **Independently blocking items:** Regardless of total count, any hallucinated
 API (items 11, 17) or impossible state check (item 5) is independently blocking
@@ -931,14 +959,14 @@ instance.
 
 ## Verdict Guide
 
-- **ADVISORY (1-2 triggered):** Mention the patterns found and suggest fixes,
-  but do not block the extension. These patterns occasionally appear in
-  hand-written code.
-- **BLOCKING (3-5 triggered):** Request fixes for the specific patterns. The
+- **ADVISORY (below BLOCKING threshold):** Mention the patterns found and
+  suggest fixes, but do not block the extension. These patterns occasionally
+  appear in hand-written code.
+- **BLOCKING (at threshold):** Request fixes for the specific patterns. The
   developer should demonstrate they understand the code by explaining their
   design choices or refactoring the flagged patterns.
-- **BLOCKING (6+ triggered):** Request a thorough rewrite. The code likely does
-  not reflect the developer's understanding of the GNOME Shell extension
-  lifecycle and APIs. Point the developer to the
+- **BLOCKING (well above threshold):** Request a thorough rewrite. The code
+  likely does not reflect the developer's understanding of the GNOME Shell
+  extension lifecycle and APIs. Point the developer to the
   [GNOME Shell extension documentation](https://gjs.guide/extensions/) and
   suggest they build familiarity before resubmitting.

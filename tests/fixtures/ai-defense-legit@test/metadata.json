@@ -1,0 +1,7 @@
+{
+    "uuid": "ai-defense-legit@test",
+    "name": "Brightness Controller",
+    "description": "Controls screen brightness via DBus and UPower",
+    "shell-version": ["48"],
+    "url": "https://github.com/example/brightness-ctrl"
+}
