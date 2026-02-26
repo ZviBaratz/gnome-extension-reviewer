@@ -21,8 +21,8 @@
 | MUST NOT create objects during initialization (constructor/import time) | **MUST** | Partial | R-QUAL-08 (check-quality.py `constructor-resources`) | Only checks constructor bodies for known bad patterns (getSettings, connect, timeout_add, DBusProxy). Does NOT detect GObject creation (e.g., `new St.Widget()`, `new Gio.Settings()`) in constructors. Does not check module-level code (import-time side effects). |
 | MUST NOT connect signals during initialization | **MUST** | Partial | R-QUAL-08 (check-quality.py `constructor-resources`) | Checks for `.connect()` in constructors, but skips widget subclass constructors (by design). Does not check module-level signal connections. |
 | MUST NOT add main loop sources during initialization | **MUST** | Partial | R-QUAL-08 (check-quality.py `constructor-resources`) | Checks for `timeout_add` in constructors. Does not check module-level `timeout_add`/`idle_add`. |
-| MUST NOT modify GNOME Shell during initialization | **MUST** | Uncovered | -- | No check for Shell modifications (e.g., `Main.panel.addToStatusArea()`) in constructors or at module scope. |
-| All GObject classes disallowed during init | **MUST** | Partial | R-QUAL-08 (partial) | Only catches `getSettings()` and `DBusProxy`. Misses `new St.Widget()`, `new Gio.File()`, `new GLib.Variant()`, etc. in constructors. |
+| MUST NOT modify GNOME Shell during initialization | **MUST** | Covered | R-INIT-01 (check-init.py) | Detects Shell global access (`Main.panel`, `Main.overview`, etc.) at module scope and in constructors. |
+| All GObject classes disallowed during init | **MUST** | Covered | R-INIT-01 (check-init.py), R-QUAL-08 (check-quality.py) | check-init.py detects GObject constructors (`new St.`, `new Gio.`, `new GLib.`, `new Clutter.`) at module scope and in constructors via expanded regex. |
 
 ## Section 2: Object and Resource Cleanup
 
@@ -43,7 +43,7 @@
 
 | Guideline Requirement | Severity | Currently Covered? | By Which Rule/Check? | Gap Notes |
 |---|---|---|---|---|
-| All main loop sources MUST be removed in `disable()` | **MUST** | Partial | R-LIFE-02 (check-lifecycle.py `untracked-timeout`) | Checks if `timeout_add`/`idle_add` return values are assigned. Does NOT verify `GLib.Source.remove()` is called in `disable()` for stored IDs. |
+| All main loop sources MUST be removed in `disable()` | **MUST** | Covered | R-LIFE-02 (check-lifecycle.py `untracked-timeout`), R-LIFE-12 (check-lifecycle.py `source-remove-verify`) | Checks if return values are assigned AND verifies `GLib.Source.remove()` is called in `disable()` for stored IDs. |
 | Sources MUST be removed even if callback returns `GLib.SOURCE_REMOVE` | **MUST** | Tier 3 Only | lifecycle-checklist.md | Checklist mentions this. No automated verification. |
 
 ## Section 5: Library and Import Restrictions
@@ -140,6 +140,7 @@
 | Scripts MUST be written in GJS unless absolutely necessary | **MUST** | Partial | ego-lint.sh `non-gjs-scripts` | Issues WARN for .py/.sh/.rb/.pl files. Guidelines say MUST. |
 | MUST NOT include binary executables or libraries | **MUST** | Covered | R-FILE-04, ego-lint.sh `no-binary-files` | |
 | Scripts MUST be distributed under OSI-approved license | **MUST** | Tier 3 Only | licensing-checklist.md | Requires manual license review of included scripts. |
+| MUST NOT use synchronous subprocess calls in Shell process | **MUST** | Covered | R-SEC-14 (pattern: sync subprocess), R-DEPR-08 (upgraded to blocking) | Detects `spawn_sync`, `GLib.spawn_command_line_sync`, and other synchronous subprocess patterns. Upgraded to FAIL severity as sync calls block the compositor. |
 
 ## Section 14: Session Modes
 
@@ -213,62 +214,109 @@ These MUST requirements have **no automated check** (not even a partial heuristi
 
 | # | Requirement | Section | Impact | Recommendation |
 |---|---|---|---|---|
-| 1 | MUST NOT modify GNOME Shell during initialization | S1 | High | Add pattern check for `Main.panel`, `Main.overview`, etc. in constructors/module scope |
-| 2 | MUST NOT ship with default keyboard shortcuts for clipboard interaction | S12 | Medium | Add cross-reference check: keybinding + St.Clipboard in same extension |
-| 3 | Privileged subprocess MUST NOT be user-writable | S13 | High | Hard to check statically; add as Tier 3 checklist item if not present |
-| 4 | Keyboard event signals MUST be disconnected in lock screen mode | S14 | High | Add check: if `unlock-dialog` in session-modes, verify `key-press-event`/`key-release-event` disconnection patterns |
-| 5 | `disable()` MUST include comment explaining `unlock-dialog` usage | S14 | Medium | Add check: if `unlock-dialog` declared, scan disable() for comment |
-| 6 | Extensions MUST NOT disable selectively | S14 | Medium | Add check for early returns/conditionals in disable() |
-| 7 | All monkey patches MUST be restored in `disable()` | S24 | High | Add check: if `InjectionManager` or prototype overrides detected, verify `.clear()` or restoration in disable() |
-| 8 | Fundamentally broken / no-purpose extensions | S17 | Low | Not feasible for static analysis; inherently a runtime/semantic check |
-| 9 | MUST use GTK4/Adwaita (not GTK3) in prefs.js | S21 | Medium | Add pattern check for GTK3-specific APIs in prefs.js |
+| 1 | MUST NOT ship with default keyboard shortcuts for clipboard interaction | S12 | Medium | Add cross-reference check: keybinding + St.Clipboard in same extension |
+| 2 | Privileged subprocess MUST NOT be user-writable | S13 | High | Hard to check statically; add as Tier 3 checklist item if not present |
+| 3 | Keyboard event signals MUST be disconnected in lock screen mode | S14 | High | Add check: if `unlock-dialog` in session-modes, verify `key-press-event`/`key-release-event` disconnection patterns |
+| 4 | `disable()` MUST include comment explaining `unlock-dialog` usage | S14 | Medium | Add check: if `unlock-dialog` declared, scan disable() for comment |
+| 5 | Extensions MUST NOT disable selectively | S14 | Medium | Add check for early returns/conditionals in disable() |
+| 6 | All monkey patches MUST be restored in `disable()` | S24 | High | Add check: if `InjectionManager` or prototype overrides detected, verify `.clear()` or restoration in disable() |
+| 7 | Fundamentally broken / no-purpose extensions | S17 | Low | Not feasible for static analysis; inherently a runtime/semantic check |
 
 ## Summary: Severity Mismatches (WARN should be FAIL)
 
 These requirements are correctly detected but the severity level is too low:
 
-| Requirement | Current Severity | Correct Severity | Rule |
-|---|---|---|---|
-| `session-modes: ["user"]` is redundant | WARN | FAIL (hard reject) | R-META-09 |
-| Future shell-version entries | WARN | FAIL (hard reject) | R-META-17 |
-| Missing `url` field in metadata | WARN | FAIL (for EGO) | R-META-22 |
-| Schema filename convention mismatch | WARN | FAIL | R-SCHEMA-05 (check-schema.sh) |
+| Requirement | Current Severity | Correct Severity | Rule | Status |
+|---|---|---|---|---|
+| `session-modes: ["user"]` is redundant | ~~WARN~~ FAIL | FAIL (hard reject) | R-META-09 | **Fixed** |
+| Future shell-version entries | ~~WARN~~ FAIL | FAIL (hard reject) | R-META-17 | **Fixed** |
+| Missing `url` field in metadata | ~~WARN~~ FAIL | FAIL (for EGO) | R-META-22 | **Fixed** |
+| Schema filename convention mismatch | ~~WARN~~ FAIL | FAIL | R-SCHEMA-05 (check-schema.sh) | **Fixed** |
 
 ## Summary: Covered but Weak (Partial) Checks
 
 These requirements have checks that catch some but not all violations:
 
-| Requirement | Weakness | Improvement |
-|---|---|---|
-| No resource creation in constructors (R-QUAL-08) | Only checks 5 specific patterns; misses arbitrary GObject creation | Expand pattern list: `new St.`, `new Gio.`, `new GLib.`, `new Clutter.` |
-| Signal disconnect balance (R-LIFE-01) | Heuristic tolerance of +2 allows small leaks | Consider tighter threshold or per-signal tracking |
-| Timeout source removal in disable (R-LIFE-02) | Only checks if return value is stored, not if `Source.remove` is called | Add disable() body scan for matching `Source.remove` calls |
-| AI-generated code detection (R-SLOP-*) | Pattern-based; misses novel AI patterns | Inherent limitation; Tier 3 checklist compensates |
-| Code obfuscation (R-FILE-06) | Only catches minification (long lines); not variable mangling or encoding | Add checks for high entropy variable names or base64-encoded strings |
-| run_dispose comment requirement | Detects usage but not comment | Add lookahead for comment on preceding/same line |
-| Clipboard disclosure verification (R-SEC-07) | Detects clipboard usage; does not verify description text | Cross-reference with metadata.json description content |
-| License file validation (R-FILE-03) | Checks existence only; not content | Parse LICENSE file for GPL-compatible license identifiers (SPDX) |
-| Prefs extends ExtensionPreferences (R-PREFS-02) | Checks `export default class` but not the extends clause | Regex for `export default class \w+ extends ExtensionPreferences` |
-| Prefs method requirement | Detects dual-pattern conflict; does not fail when neither method present | Add FAIL if prefs.js has no `fillPreferencesWindow` and no `getPreferencesWidget` |
+| Requirement | Weakness | Improvement | Status |
+|---|---|---|---|
+| No resource creation in constructors (R-QUAL-08) | Only checks 5 specific patterns; misses arbitrary GObject creation | Expand pattern list: `new St.`, `new Gio.`, `new GLib.`, `new Clutter.` | **Fixed** (check-init.py expanded regex) |
+| Signal disconnect balance (R-LIFE-01) | Heuristic tolerance of +2 allows small leaks | Consider tighter threshold or per-signal tracking | Open |
+| Timeout source removal in disable (R-LIFE-02) | Only checks if return value is stored, not if `Source.remove` is called | Add disable() body scan for matching `Source.remove` calls | **Fixed** (R-LIFE-12) |
+| AI-generated code detection (R-SLOP-*) | Pattern-based; misses novel AI patterns | Inherent limitation; Tier 3 checklist compensates | Open (inherent) |
+| Code obfuscation (R-FILE-06) | Only catches minification (long lines); not variable mangling or encoding | Add checks for high entropy variable names or base64-encoded strings | Open |
+| run_dispose comment requirement | Detects usage but not comment | Add lookahead for comment on preceding/same line | Open |
+| Clipboard disclosure verification (R-SEC-07) | Detects clipboard usage; does not verify description text | Cross-reference with metadata.json description content | Open |
+| License file validation (R-FILE-03) | Checks existence only; not content | Parse LICENSE file for GPL-compatible license identifiers (SPDX) | **Fixed** (GPL-compatibility scanning) |
+| Prefs extends ExtensionPreferences (R-PREFS-02) | Checks `export default class` but not the extends clause | Regex for `export default class \w+ extends ExtensionPreferences` | **Fixed** (R-PREFS-02 strengthened) |
+| Prefs method requirement | Detects dual-pattern conflict; does not fail when neither method present | Add FAIL if prefs.js has no `fillPreferencesWindow` and no `getPreferencesWidget` | Open |
 
 ---
 
 ## Priority Recommendations
 
-### P0: Fix severity mismatches (quick wins, no new code needed)
-1. `R-META-09` (`session-modes: ["user"]`): Change WARN to FAIL
-2. `R-META-17` (future shell-version): Change WARN to FAIL
-3. `R-META-22` (missing url): Change WARN to FAIL (or at least document that EGO requires it)
+### P0: Fix severity mismatches (quick wins, no new code needed) -- DONE
+1. ~~`R-META-09` (`session-modes: ["user"]`): Change WARN to FAIL~~ **Done**
+2. ~~`R-META-17` (future shell-version): Change WARN to FAIL~~ **Done**
+3. ~~`R-META-22` (missing url): Change WARN to FAIL~~ **Done**
 
-### P1: Add high-impact missing checks
-4. **InjectionManager cleanup check** -- if `InjectionManager` or `overrideMethod` found, verify `.clear()` in disable()
-5. **Constructor GObject creation** -- expand R-QUAL-08 patterns to include `new St.`, `new Gio.`, `new Clutter.`, `new GLib.`
-6. **GTK3 in prefs.js** -- add patterns for GTK3-specific APIs (`Gtk.Box.pack_start`, `Gtk.init(null)`, etc.)
+### P1: Add high-impact missing checks -- Partially done
+4. **InjectionManager cleanup check** -- if `InjectionManager` or `overrideMethod` found, verify `.clear()` in disable() -- **Done** (R-LIFE-10)
+5. ~~**Constructor GObject creation** -- expand R-QUAL-08 patterns to include `new St.`, `new Gio.`, `new Clutter.`, `new GLib.`~~ **Done** (check-init.py)
+6. ~~**GTK3 in prefs.js** -- add patterns for GTK3-specific APIs~~ **Done** (R-PREFS-04)
 7. **Keyboard signals in unlock-dialog** -- if `unlock-dialog` declared, check for key event signal cleanup
 
-### P2: Strengthen existing partial checks
-8. **Timeout removal verification** -- verify `GLib.Source.remove()` in disable() body for stored timeout IDs
-9. **License content parsing** -- basic SPDX identifier detection in LICENSE/COPYING files
-10. **Prefs ExtensionPreferences extends check** -- verify extends clause, not just default export
+### P2: Strengthen existing partial checks -- Partially done
+8. ~~**Timeout removal verification** -- verify `GLib.Source.remove()` in disable() body for stored timeout IDs~~ **Done** (R-LIFE-12)
+9. ~~**License content parsing** -- basic SPDX identifier detection in LICENSE/COPYING files~~ **Done** (GPL-compatibility scanning)
+10. ~~**Prefs ExtensionPreferences extends check** -- verify extends clause, not just default export~~ **Done** (R-PREFS-02 strengthened)
 11. **Clipboard disclosure cross-reference** -- check metadata description for clipboard disclosure when St.Clipboard detected
 12. **run_dispose comment check** -- verify adjacent comment when run_dispose detected
+
+---
+
+## New Coverage Added (2026-02-26)
+
+The following areas are now covered through Tier 3 review checklists:
+
+| Area | Coverage | Where |
+|---|---|---|
+| Accessibility | 7 checklist items (A1-A7): accessible-role, label-actor, Atk.StateType sync, keyboard navigation, focus order, color independence, focus chain | code-quality-checklist.md |
+| Notification/dialog lifecycle | MessageTray.Source destroy signal, dialog lifecycle states, stale reference detection | lifecycle-checklist.md |
+| Search provider contract | id/appInfo/canLaunchSearch contract, register/unregister in enable/disable, createIcon scaling | lifecycle-checklist.md |
+| Translation best practices | gettext domain setup, ngettext for plurals, no string concatenation for translated strings | code-quality-checklist.md |
+
+---
+
+## Rejection Case Studies
+
+Real-world EGO rejections that informed the plugin's detection rules:
+
+### Search Light (May 2024) -- Lifecycle Violations
+
+**Rejection reason:** Signals connected in `enable()` were not fully disconnected in `disable()`. Search provider was registered but not unregistered, leading to crashes when the extension was disabled mid-search.
+
+**Relevant rules:** R-LIFE-01 (signal-balance), lifecycle-checklist.md (search provider cleanup)
+
+### Blur my Shell (March 2024) -- Init-Time Violations
+
+**Rejection reason:** GObject creation (`new Gio.Settings()`) detected in the extension constructor rather than in `enable()`. Module-level code was creating Shell modifications at import time.
+
+**Relevant rules:** R-INIT-01 (check-init.py), R-QUAL-08 (constructor-resources)
+
+### Wechsel (April 2024) -- Sync Subprocess, Unnecessary Metadata
+
+**Rejection reason:** Used `GLib.spawn_command_line_sync()` to invoke external commands, blocking the compositor. Also included unnecessary metadata fields that were not part of the specification.
+
+**Relevant rules:** R-SEC-14 (sync subprocess pattern), R-DEPR-08 (blocking subprocess upgraded to FAIL), check-metadata.py (unknown field detection)
+
+### Power Tracker (September 2024) -- Missing URL
+
+**Rejection reason:** Missing `url` field in metadata.json. EGO requires this field for all submissions to provide users with a link to the extension's source code or homepage.
+
+**Relevant rules:** R-META-22 (missing url, now FAIL)
+
+### Open Bar (February 2024) -- Orphaned Signals, Missing Timeout Cleanup
+
+**Rejection reason:** Multiple signal connections in helper modules were never disconnected because the cleanup code only covered the main extension file. Timeouts created in a utility module were not tracked or removed in `disable()`.
+
+**Relevant rules:** R-LIFE-01 (signal-balance), R-LIFE-02 (untracked-timeout), R-LIFE-12 (source-remove-verify), check-resources.py (cross-file orphan detection)

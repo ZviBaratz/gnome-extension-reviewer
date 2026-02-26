@@ -36,7 +36,10 @@
 26. [Network Access and Data Sharing](#26-network-access-and-data-sharing)
 27. [Development Tools and Linting](#27-development-tools-and-linting)
 28. [Common Rejection Reasons Summary](#28-common-rejection-reasons-summary)
-29. [Sources](#29-sources)
+29. [Notification and Dialog Lifecycle](#29-notification-and-dialog-lifecycle)
+30. [Search Provider Contract](#30-search-provider-contract)
+31. [Accessibility Requirements](#31-accessibility-requirements)
+32. [Sources](#32-sources)
 
 ---
 
@@ -305,6 +308,10 @@ GLib.timeout_add(GLib.PRIORITY_DEFAULT, 1000, callback);
 - Use `console.debug()` for development (remove before submission)
 - Never log in tight loops or frequent callbacks
 - Never log sensitive data
+
+### Accessibility
+
+Accessibility is **a hard requirement** for GNOME Shell extensions. Custom widgets MUST provide appropriate accessible roles, labels, and keyboard navigation. Extensions that introduce visual UI elements without accessibility support may be rejected. See [Section 31: Accessibility Requirements](#31-accessibility-requirements) for full details.
 
 ---
 
@@ -721,6 +728,10 @@ _('You have %d notifications').format(count) // interpolation
 | Preferences run in separate process from Shell | Informational | preferences |
 | SHOULD follow GNOME Human Interface Guidelines | SHOULD | preferences |
 
+### Async Preferences (GNOME 47+)
+
+Starting with GNOME 47, `fillPreferencesWindow()` and `getPreferencesWidget()` are `await`-ed by the extension system. This means these methods can be declared `async` and use `await` internally (e.g., for loading resources or fetching settings asynchronously). Extensions targeting GNOME 47+ can take advantage of this to perform async initialization in their preferences window setup without blocking the UI.
+
 ### Correct Pattern
 
 ```javascript
@@ -845,6 +856,21 @@ export default class MyExtension extends Extension {
 | `InputSourceManager._switchInputSource` signature changed | Added `event` parameter |
 | WindowManager methods gained `event` parameter | Update method signatures |
 | New `ExtensionBase.getLogger()` method | Use for structured logging |
+
+#### `getLogger()` (GNOME 48+)
+
+GNOME 48 introduces `ExtensionBase.getLogger()`, which returns a structured logger scoped to the extension. This replaces ad-hoc `console.log()` calls with a logger that automatically prefixes messages with the extension name. Usage:
+
+```javascript
+export default class MyExtension extends Extension {
+    enable() {
+        this._logger = this.getLogger();
+        this._logger.message('Extension enabled');  // prefixed with extension name
+    }
+}
+```
+
+The logger supports `message()`, `warning()`, and `critical()` methods. Extensions targeting GNOME 48+ SHOULD prefer `getLogger()` over raw `console.*` calls for better log hygiene.
 
 ### GNOME 49 (Upcoming)
 
@@ -1049,7 +1075,155 @@ Ordered roughly by frequency (based on reviewer discussions and guidelines):
 
 ---
 
-## 29. Sources
+## 29. Notification and Dialog Lifecycle
+
+### MessageTray.Source Patterns
+
+Extensions that create notifications MUST manage `MessageTray.Source` lifecycle correctly. Each notification source MUST connect to its own `destroy` signal for safe cleanup and potential reuse.
+
+| Requirement | Severity | Category |
+|---|---|---|
+| Notification sources MUST be destroyed in `disable()` | **MUST** | lifecycle |
+| MUST connect to `destroy` signal on Source for safe reuse | **MUST** | lifecycle |
+| MUST NOT hold stale references to destroyed sources | **MUST** | lifecycle |
+
+**Correct pattern:**
+```javascript
+enable() {
+    this._source = new MessageTray.Source({
+        title: this.metadata.name,
+        iconName: 'dialog-information-symbolic',
+    });
+    this._source.connect('destroy', () => {
+        this._source = null;
+    });
+    Main.messageTray.add(this._source);
+}
+
+disable() {
+    this._source?.destroy();
+    this._source = null;
+}
+```
+
+### Dialog Lifecycle States
+
+Modal dialogs in GNOME Shell transition through defined lifecycle states. Extensions that create dialogs MUST respect these states to avoid crashes or UI freezes.
+
+| State | Constant | Meaning |
+|---|---|---|
+| `OPENED` | `ModalDialog.State.OPENED` | Dialog is fully visible and interactive |
+| `CLOSED` | `ModalDialog.State.CLOSED` | Dialog is fully closed and destroyed |
+| `OPENING` | `ModalDialog.State.OPENING` | Transition animation in progress (opening) |
+| `CLOSING` | `ModalDialog.State.CLOSING` | Transition animation in progress (closing) |
+| `FADED_OUT` | `ModalDialog.State.FADED_OUT` | Dialog has faded out but is not yet destroyed |
+
+Extensions MUST NOT interact with dialogs in transitional states (`OPENING`, `CLOSING`). Attempting to close or destroy a dialog during `OPENING` or operate on a dialog in `FADED_OUT` state leads to undefined behavior.
+
+---
+
+## 30. Search Provider Contract
+
+Extensions that implement search providers MUST follow the `SearchProvider` interface contract. Search providers are registered with the Shell's search system and have strict lifecycle requirements.
+
+### Required Interface
+
+| Method/Property | Contract |
+|---|---|
+| `get id()` | MUST return the extension UUID |
+| `get appInfo()` | MUST return `null` (extension search providers are not apps) |
+| `canLaunchSearch` | MUST return `false` unless the extension provides a dedicated search UI |
+| `getInitialResultSet(terms, cancellable)` | Return initial results for search terms |
+| `getSubsearchResultSet(previousResults, terms, cancellable)` | Refine previous results |
+| `getResultMetas(ids, cancellable)` | Return metadata for result IDs |
+| `activateResult(id, terms)` | Handle result activation |
+| `createIcon(size)` | Create icon at given size; MUST account for display scaling factor |
+
+### Lifecycle
+
+| Requirement | Severity | Category |
+|---|---|---|
+| MUST register provider in `enable()` | **MUST** | lifecycle |
+| MUST unregister provider in `disable()` | **MUST** | lifecycle |
+| MUST NOT hold references to Shell objects after `disable()` | **MUST** | lifecycle |
+
+**Correct pattern:**
+```javascript
+enable() {
+    this._provider = new MySearchProvider(this);
+    Main.overview.searchController.addProvider(this._provider);
+}
+
+disable() {
+    Main.overview.searchController.removeProvider(this._provider);
+    this._provider = null;
+}
+```
+
+### Icon Scaling
+
+`createIcon(size)` receives the logical icon size. The implementation MUST account for the display scaling factor when creating icons from custom sources (e.g., cairo surfaces, pixel buffers). Standard `Gio.Icon` implementations handle scaling automatically.
+
+---
+
+## 31. Accessibility Requirements
+
+Accessibility is a hard requirement for GNOME Shell extensions. Extensions that introduce custom UI elements MUST provide proper accessibility support.
+
+### Requirements
+
+| Requirement | Severity | Category |
+|---|---|---|
+| Custom widgets MUST set `accessible-role` | **MUST** | accessibility |
+| Interactive elements MUST have `accessible-name` or `label-actor` | **MUST** | accessibility |
+| Dynamic state changes MUST be reflected in `Atk.StateType` | **MUST** | accessibility |
+| All interactive UI MUST be keyboard-navigable | **MUST** | accessibility |
+| Focus order MUST be logical and predictable | **MUST** | accessibility |
+| MUST NOT rely solely on color to convey information | **MUST** | accessibility |
+| Custom containers MUST implement proper focus chain | **MUST** | accessibility |
+
+### accessible-role
+
+Every custom widget that is not a standard GTK/St widget MUST declare its role using the `accessible-role` property from `Atk.Role`:
+
+```javascript
+const myButton = new St.Button({
+    style_class: 'my-custom-button',
+    accessible_role: Atk.Role.PUSH_BUTTON,
+    accessible_name: _('Toggle feature'),
+});
+```
+
+### label-actor Relationships
+
+When a label visually describes another widget, the relationship MUST be declared so screen readers can associate them:
+
+```javascript
+const label = new St.Label({text: _('Volume')});
+const slider = new Slider.Slider(0.5);
+slider.accessible_name = label.text;
+```
+
+### Atk.StateType Synchronization
+
+If a custom widget has dynamic state (e.g., toggled, expanded, selected), the accessible state MUST be synchronized:
+
+```javascript
+this._button.connect('clicked', () => {
+    this._active = !this._active;
+    this._button.add_accessible_state(
+        this._active ? Atk.StateType.CHECKED : Atk.StateType.ENABLED
+    );
+});
+```
+
+### Keyboard Navigation
+
+All interactive elements MUST be reachable via Tab/Shift+Tab and activatable via Enter/Space. Custom containers that manage their own children MUST implement `vfunc_navigate_focus()` or use `St.Widget`'s built-in focus management with `can_focus: true`.
+
+---
+
+## 32. Sources
 
 ### Primary Official Sources
 
