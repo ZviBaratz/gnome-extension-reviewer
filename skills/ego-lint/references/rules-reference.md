@@ -1422,6 +1422,41 @@ destroy() {
 - **Rationale**: `GLib.file_get_contents()` does not exist in GJS. LLMs hallucinate this from the C API (`g_file_get_contents`), but GJS does not expose it. The correct approach is to use `Gio.File` methods.
 - **Fix**: Use `const file = Gio.File.new_for_path(path); const [ok, contents] = file.load_contents(null);` then `new TextDecoder().decode(contents)` to get a string.
 
+### R-SLOP-17: typeof super.method === 'function' guard
+- **Severity**: advisory
+- **Checked by**: patterns.yaml
+- **Rule**: `typeof super.method === 'function'` is unnecessary on GObject classes where methods always exist.
+- **Rationale**: AI-generated code defensively checks if superclass methods exist. In GObject hierarchies, inherited methods are always present.
+- **Fix**: Remove the typeof check and call `super.method()` directly.
+
+### R-SLOP-18: LLM prompt-style comments
+- **Severity**: advisory
+- **Checked by**: patterns.yaml
+- **Rule**: Comments starting with "Important:", "Note:", "Remember:" followed by imperative instructions ("Make sure", "Ensure", "Always") look like LLM prompt artifacts.
+- **Rationale**: EGO reviewers flag these as evidence of unreviewed AI output. Human developers write comments explaining "why", not "what to do".
+- **Fix**: Remove or rewrite to explain the rationale rather than giving instructions.
+
+### R-SLOP-19: Verbose template error messages
+- **Severity**: advisory
+- **Checked by**: patterns.yaml
+- **Rule**: Error messages like `` console.error(`Failed to ${action}...`) `` are verbose LLM-style patterns.
+- **Rationale**: GNOME extension error messages should be terse and actionable. Template-literal error strings that read like documentation are a strong AI signal.
+- **Fix**: Simplify to: `console.error('ExtName: init failed', e)`.
+
+### R-SLOP-22: Catch-log-rethrow anti-pattern
+- **Severity**: advisory
+- **Checked by**: patterns.yaml
+- **Rule**: Catching an error just to log it then rethrow adds no value.
+- **Rationale**: If the error will propagate anyway, the catch block is unnecessary. This is a common AI-generated "completeness" pattern.
+- **Fix**: Remove the try-catch or handle the error meaningfully.
+
+### R-SLOP-23: Dead code after throw
+- **Severity**: advisory
+- **Checked by**: patterns.yaml
+- **Rule**: Return statements after `throw` are unreachable dead code.
+- **Rationale**: AI generators sometimes add a defensive `return` after `throw` for "safety". The code is unreachable and reveals non-understanding of control flow.
+- **Fix**: Remove the unreachable return statement.
+
 ---
 
 ## Security — Extended (R-SEC, continued)
@@ -1475,6 +1510,13 @@ destroy() {
 - **Rule**: Extension code and scripts must not run system package managers (`apt`, `apt-get`, `dnf`, `yum`, `pacman`, `zypper`).
 - **Rationale**: Same as R-SEC-10. Automatic system package installation requires root access and is a severe security risk. EGO reviewers will reject any extension that attempts to install system packages.
 - **Fix**: Remove automatic package installation commands. Document any required system packages in the extension description so users can install them manually.
+
+### R-SEC-13: String concatenation in subprocess args
+- **Severity**: blocking
+- **Checked by**: patterns.yaml
+- **Rule**: Subprocess commands must not use string concatenation to build arguments.
+- **Rationale**: String concatenation in subprocess arguments risks command injection. Same class of vulnerability as R-SEC-05 (`/bin/sh -c`).
+- **Fix**: Pass command and arguments as separate argv array elements instead of concatenating strings.
 
 ### R-SEC-14: GLib.spawn_sync
 - **Severity**: blocking
@@ -1648,6 +1690,13 @@ Rules for `prefs.js` validation and EGO compliance.
 - **Rationale**: The preferences window runs in a separate GTK process that does not have access to GNOME Shell's UI modules. Importing Shell UI modules (e.g., `Main`, `PanelMenu`, `PopupMenu`) in `prefs.js` will cause an import error when the user opens preferences.
 - **Fix**: Use only GTK/Adw/Gio/GLib imports in `prefs.js`. Shell UI modules are only available in `extension.js` and its runtime imports.
 
+### R-PREFS-04: Raw GTK widgets in prefs instead of Adwaita
+- **Severity**: advisory
+- **Checked by**: patterns.yaml
+- **Rule**: `prefs.js` should use Adwaita (Adw) widgets rather than raw GTK widgets for GNOME 45+.
+- **Rationale**: The GNOME HIG prefers Adwaita widgets (PreferencesPage, PreferencesGroup, ActionRow, SwitchRow, ComboRow) which provide consistent styling and behavior. Raw GTK widgets (Box, Label, Switch, Grid, etc.) work but look inconsistent with other GNOME preferences dialogs.
+- **Fix**: Use `Adw.PreferencesPage`, `Adw.PreferencesGroup`, `Adw.ActionRow`, `Adw.SwitchRow`, `Adw.ComboRow` instead of raw GTK widget constructors.
+
 ---
 
 ## Version Compatibility (R-VER)
@@ -1730,6 +1779,20 @@ Rules for APIs removed or changed in specific GNOME Shell versions. These rules 
 - **Rationale**: Will be removed around GNOME 50. Use the orientation property instead.
 - **Fix**: Use `{orientation: Clutter.Orientation.VERTICAL}` instead of `{vertical: true}`.
 
+### R-VER48-05: Shell.SnippetHook removed
+- **Severity**: blocking
+- **Checked by**: apply-patterns.py (min-version: 48)
+- **Rule**: `Shell.SnippetHook` was removed in GNOME 48.
+- **Rationale**: The snippet hook API was moved or removed without a direct Shell-level replacement.
+- **Fix**: Check current Cogl/Clutter API for shader snippet hooks.
+
+### R-VER48-06: get_key_focus() behavior change on Wayland
+- **Severity**: advisory
+- **Checked by**: apply-patterns.py (min-version: 48)
+- **Rule**: `Clutter.Stage.get_key_focus()` returns `null` on Wayland in GNOME 48 when no actor has focus (previously returned the stage itself).
+- **Rationale**: Extensions that check `get_key_focus() === stage` will break. Track focus via signals instead.
+- **Fix**: Use `'key-focus-in'` signal on the stage to track focus changes, or handle `null` return value.
+
 ### GNOME 44 (R-VER44)
 
 ### R-VER44-01: Meta.later_add() removed
@@ -1752,6 +1815,13 @@ Rules for APIs removed or changed in specific GNOME Shell versions. These rules 
 - **Rule**: `Shell.BlurEffect.sigma` was replaced by `.radius` in GNOME 46.
 - **Rationale**: The blur API was unified. The conversion formula is `radius = sigma * 2.0`.
 - **Fix**: Use `.radius` instead of `.sigma`.
+
+### R-VER46-07: Clutter.Container removed
+- **Severity**: blocking
+- **Checked by**: apply-patterns.py (min-version: 46)
+- **Rule**: `Clutter.Container` interface was removed in GNOME 46.
+- **Rationale**: The Container interface was merged into `Clutter.Actor`. All child management methods are now directly on Actor.
+- **Fix**: Use `Clutter.Actor` methods (`add_child`, `remove_child`) directly instead of the Container interface.
 
 ### GNOME 49 (R-VER49)
 

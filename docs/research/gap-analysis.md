@@ -215,8 +215,8 @@ These MUST requirements have **no automated check** (not even a partial heuristi
 | # | Requirement | Section | Impact | Recommendation |
 |---|---|---|---|---|
 | ~~1~~ | ~~MUST NOT ship with default keyboard shortcuts for clipboard interaction~~ | ~~S12~~ | ~~Medium~~ | **Covered** — R-SEC-16 in check-lifecycle.py |
-| 2 | Privileged subprocess MUST NOT be user-writable | S13 | High | Hard to check statically; add as Tier 3 checklist item if not present |
-| 3 | Keyboard event signals MUST be disconnected in lock screen mode | S14 | High | Add check: if `unlock-dialog` in session-modes, verify `key-press-event`/`key-release-event` disconnection patterns |
+| ~~2~~ | ~~Privileged subprocess MUST NOT be user-writable~~ | ~~S13~~ | ~~High~~ | **Covered** — R-SEC-18 in check-lifecycle.py (`pkexec-user-writable`) |
+| ~~3~~ | ~~Keyboard event signals MUST be disconnected in lock screen mode~~ | ~~S14~~ | ~~High~~ | **Covered** — R-LIFE-11 in check-lifecycle.py (`lockscreen-signals`) |
 | ~~4~~ | ~~`disable()` MUST include comment explaining `unlock-dialog` usage~~ | ~~S14~~ | ~~Medium~~ | **Covered** — R-LIFE-14 in check-lifecycle.py |
 | ~~5~~ | ~~Extensions MUST NOT disable selectively~~ | ~~S14~~ | ~~Medium~~ | **Covered** — R-LIFE-13 in check-lifecycle.py |
 | ~~6~~ | ~~All monkey patches MUST be restored in `disable()`~~ | ~~S24~~ | ~~High~~ | **Covered** — Enhanced R-LIFE-10 in check-lifecycle.py |
@@ -259,18 +259,18 @@ These requirements have checks that catch some but not all violations:
 2. ~~`R-META-17` (future shell-version): Change WARN to FAIL~~ **Done**
 3. ~~`R-META-22` (missing url): Change WARN to FAIL~~ **Done**
 
-### P1: Add high-impact missing checks -- Partially done
+### P1: Add high-impact missing checks -- DONE
 4. **InjectionManager cleanup check** -- if `InjectionManager` or `overrideMethod` found, verify `.clear()` in disable() -- **Done** (R-LIFE-10)
 5. ~~**Constructor GObject creation** -- expand R-QUAL-08 patterns to include `new St.`, `new Gio.`, `new Clutter.`, `new GLib.`~~ **Done** (check-init.py)
 6. ~~**GTK3 in prefs.js** -- add patterns for GTK3-specific APIs~~ **Done** (R-PREFS-04)
-7. **Keyboard signals in unlock-dialog** -- if `unlock-dialog` declared, check for key event signal cleanup
+7. ~~**Keyboard signals in unlock-dialog** -- if `unlock-dialog` declared, check for key event signal cleanup~~ **Done** (R-LIFE-11)
 
-### P2: Strengthen existing partial checks -- Partially done
+### P2: Strengthen existing partial checks -- DONE
 8. ~~**Timeout removal verification** -- verify `GLib.Source.remove()` in disable() body for stored timeout IDs~~ **Done** (R-LIFE-12)
 9. ~~**License content parsing** -- basic SPDX identifier detection in LICENSE/COPYING files~~ **Done** (GPL-compatibility scanning)
 10. ~~**Prefs ExtensionPreferences extends check** -- verify extends clause, not just default export~~ **Done** (R-PREFS-02 strengthened)
-11. **Clipboard disclosure cross-reference** -- check metadata description for clipboard disclosure when St.Clipboard detected
-12. **run_dispose comment check** -- verify adjacent comment when run_dispose detected
+11. ~~**Clipboard disclosure cross-reference** -- check metadata description for clipboard disclosure when St.Clipboard detected~~ **Done** (R-QUAL-22)
+12. ~~**run_dispose comment check** -- verify adjacent comment when run_dispose detected~~ **Done** (R-QUAL-21)
 
 ---
 
