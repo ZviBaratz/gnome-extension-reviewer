@@ -127,6 +127,14 @@ Using [security-checklist.md](references/security-checklist.md):
 - When a reviewer sees network access, they check if it's disclosed in the description
 - When a reviewer sees clipboard access, they check if the user initiated it
 
+### Phase 4b: Accessibility (if extension adds UI)
+
+Apply [accessibility-checklist.md](references/accessibility-checklist.md):
+
+1. Identify all custom UI elements added by the extension
+2. Check A1-A7 for each element
+3. Note: standard St.Button, PopupMenu, QuickToggle have built-in accessibility — only flag custom widgets
+
 ### Phase 5: Code Quality
 
 Using [code-quality-checklist.md](references/code-quality-checklist.md):
