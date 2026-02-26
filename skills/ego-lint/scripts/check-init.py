@@ -62,10 +62,11 @@ SHELL_GLOBALS = re.compile(
     r'extensionManager|notify)\b'
 )
 
-# GObject constructors that allocate resources
+# GObject constructors that allocate resources — any GI namespace is forbidden at init
 GOBJECT_CONSTRUCTORS = re.compile(
-    r'\bnew\s+(St\.\w+|Clutter\.\w+|Gio\.Settings|Gio\.DBusProxy|'
-    r'GObject\.\w+|Meta\.\w+|Shell\.\w+)\b'
+    r'\bnew\s+(St\.\w+|Clutter\.\w+|Gio\.\w+|GLib\.\w+|'
+    r'GObject\.\w+|Meta\.\w+|Shell\.\w+|Pango\.\w+|'
+    r'Soup\.\w+|Cogl\.\w+|Atk\.\w+|GdkPixbuf\.\w+)\b'
 )
 
 
