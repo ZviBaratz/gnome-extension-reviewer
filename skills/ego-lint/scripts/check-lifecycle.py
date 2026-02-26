@@ -873,6 +873,101 @@ def check_soup_session_abort(ext_dir):
     # If no session, skip silently
 
 
+def check_widget_lifecycle(ext_dir):
+    """Detect widgets created in enable() but not destroyed in disable()."""
+    ext_file = os.path.join(ext_dir, 'extension.js')
+    if not os.path.isfile(ext_file):
+        return
+
+    content = read_file(ext_file)
+    clean = strip_comments(content)
+    lines = clean.splitlines()
+
+    # Find widgets assigned to this._xxx in enable()
+    widget_re = re.compile(
+        r'this\.(_\w+)\s*=\s*new\s+'
+        r'(St\.\w+|PanelMenu\.\w+|PopupMenu\.\w+|Clutter\.\w+)')
+    destroy_re_template = r'this\.{name}\.(destroy|remove_child|remove_all_children)\s*\('
+    null_re_template = r'this\.{name}\s*=\s*null'
+
+    in_enable = False
+    in_disable = False
+    brace_depth = 0
+    created_widgets = {}  # name -> line number
+
+    for i, line in enumerate(lines):
+        stripped = line.strip()
+        if re.search(r'\benable\s*\(', stripped):
+            in_enable = True
+            brace_depth = 0
+        if re.search(r'\bdisable\s*\(', stripped):
+            in_disable = True
+            brace_depth = 0
+
+        if in_enable:
+            brace_depth += stripped.count('{') - stripped.count('}')
+            m = widget_re.search(stripped)
+            if m:
+                created_widgets[m.group(1)] = i + 1
+            if brace_depth <= 0 and '{' in stripped:
+                in_enable = False
+
+        if in_disable:
+            brace_depth += stripped.count('{') - stripped.count('}')
+            if brace_depth <= 0 and '{' in stripped:
+                in_disable = False
+
+    if not created_widgets:
+        result("PASS", "lifecycle/widget-destroy", "No widgets tracked in enable()")
+        return
+
+    # Check if each widget is destroyed or nulled in disable()
+    leaked = []
+    for name, lineno in created_widgets.items():
+        destroy_pat = destroy_re_template.format(name=re.escape(name))
+        null_pat = null_re_template.format(name=re.escape(name))
+        if not re.search(destroy_pat, clean) and not re.search(null_pat, clean):
+            leaked.append(f"{name}(L{lineno})")
+
+    if leaked:
+        result("WARN", "lifecycle/widget-destroy",
+               f"Widget(s) created in enable() but not destroyed/nulled in disable(): "
+               f"{', '.join(leaked[:5])}")
+    else:
+        result("PASS", "lifecycle/widget-destroy",
+               f"All {len(created_widgets)} widget(s) properly cleaned up")
+
+
+def check_settings_cleanup(ext_dir):
+    """Detect getSettings() without cleanup in disable()."""
+    ext_file = os.path.join(ext_dir, 'extension.js')
+    if not os.path.isfile(ext_file):
+        return
+
+    content = read_file(ext_file)
+    clean = strip_comments(content)
+
+    # Check for this._settings = this.getSettings() or similar
+    settings_assign = re.findall(
+        r'this\.(_\w+)\s*=\s*(?:this\.getSettings|new\s+Gio\.Settings)\s*\(', clean)
+    if not settings_assign:
+        result("PASS", "lifecycle/settings-cleanup", "No settings objects tracked")
+        return
+
+    leaked = []
+    for name in settings_assign:
+        null_pat = rf'this\.{re.escape(name)}\s*=\s*null'
+        if not re.search(null_pat, clean):
+            leaked.append(name)
+
+    if leaked:
+        result("WARN", "lifecycle/settings-cleanup",
+               f"Settings object(s) not nulled in disable(): {', '.join(leaked)}")
+    else:
+        result("PASS", "lifecycle/settings-cleanup",
+               f"All settings objects properly cleaned up")
+
+
 def main():
     if len(sys.argv) < 2:
         result("FAIL", "lifecycle/args", "No extension directory provided")
@@ -903,6 +998,8 @@ def main():
     check_clipboard_network(ext_dir)
     check_soup_session_abort(ext_dir)
     check_destroy_then_null(ext_dir)
+    check_widget_lifecycle(ext_dir)
+    check_settings_cleanup(ext_dir)
 
 
 if __name__ == '__main__':

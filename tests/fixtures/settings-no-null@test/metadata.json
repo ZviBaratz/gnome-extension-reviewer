@@ -1,0 +1,7 @@
+{
+    "uuid": "settings-no-null@test",
+    "name": "Settings No Null Test",
+    "description": "Tests GSettings not nulled in disable()",
+    "shell-version": ["48"],
+    "url": "https://example.com"
+}

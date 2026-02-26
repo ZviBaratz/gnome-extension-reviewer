@@ -1,0 +1,7 @@
+{
+    "uuid": "widget-no-destroy@test",
+    "name": "Widget No Destroy Test",
+    "description": "Tests widget created in enable() without destroy in disable()",
+    "shell-version": ["48"],
+    "url": "https://example.com"
+}
