@@ -93,24 +93,41 @@ def extract_constructor_lines(content_lines):
     """Extract lines inside constructor() method bodies.
 
     Returns a list of (original_lineno, line_text) tuples.
+    Skips constructors inside GObject.registerClass() class bodies, since those
+    only run when explicitly instantiated (not at module init time).
     """
     constructor_lines = []
     in_constructor = False
     ctor_depth = 0
-    ctor_start_depth = 0
+    in_register_class = False
+    depth = 0
 
     for lineno, line in enumerate(content_lines, 1):
-        # Detect constructor method start
+        # Enter registerClass scope
+        if not in_register_class and re.search(
+                r'GObject\.registerClass\s*\(', line):
+            in_register_class = True
+
+        # Track brace depth
+        depth += line.count('{') - line.count('}')
+        if depth < 0:
+            depth = 0
+
+        # Exit registerClass scope when all braces close
+        if in_register_class and ')' in line and depth == 0:
+            in_register_class = False
+            continue
+
+        # Detect constructor start (skip inside registerClass bodies)
         if not in_constructor and re.search(r'\bconstructor\s*\(', line):
+            if in_register_class:
+                continue
             in_constructor = True
-            # Count braces on the constructor line itself to set initial depth
-            ctor_start_depth = 0
             open_braces = line.count('{')
             close_braces = line.count('}')
             if open_braces > 0:
                 ctor_depth = open_braces - close_braces
                 if ctor_depth <= 0:
-                    # Single-line constructor
                     constructor_lines.append((lineno, line))
                     in_constructor = False
                 else:

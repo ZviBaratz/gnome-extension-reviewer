@@ -198,6 +198,7 @@ def main():
         "settings-schema", "gettext-domain", "url",
         "session-modes", "donations", "original-author",
         "version",  # deprecated but recognized — flagged separately below
+        "version-name",  # optional display version per gjs.guide
     }
     non_standard = [k for k in meta if k not in STANDARD_FIELDS]
     if non_standard:

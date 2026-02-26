@@ -21,6 +21,8 @@ assert_output_contains "known: R-PREFS-04 (GTK widgets)" "\[WARN\].*R-PREFS-04"
 assert_output_contains "known: R-SEC-07 (clipboard)" "\[WARN\].*R-SEC-07"
 
 # New checks MUST NOT produce false positives
+assert_output_not_contains "no init-safety false positive on registerClass" "\[FAIL\].*init/shell-modification"
+assert_output_not_contains "no R-SLOP-04 false positive on version-name" "\[WARN\].*R-SLOP-04"
 assert_output_not_contains "no selective-disable false positive" "\[FAIL\].*lifecycle/selective-disable"
 assert_output_not_contains "no clipboard-keybinding false positive" "\[WARN\].*lifecycle/clipboard-keybinding"
 assert_output_not_contains "no prototype-override false positive" "\[WARN\].*lifecycle/prototype-override"

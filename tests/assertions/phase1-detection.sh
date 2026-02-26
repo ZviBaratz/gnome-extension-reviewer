@@ -30,6 +30,14 @@ assert_exit_code "exits with 1 (has failures)" 1
 assert_output_contains "detects Gio.File in constructor" "\[FAIL\].*init/shell-modification"
 echo ""
 
+# --- gobject-class-init ---
+echo "=== gobject-class-init ==="
+run_lint "gobject-class-init@test"
+assert_exit_code "exits with 1 (has failures)" 1
+assert_output_contains "still flags module-scope Shell modification" "\[FAIL\].*init/shell-modification"
+assert_output_not_contains "does not flag registerClass constructor" "\[FAIL\].*init/shell-modification.*:1[1-5]:"
+echo ""
+
 # --- gtk3-prefs ---
 echo "=== gtk3-prefs ==="
 run_lint "gtk3-prefs@test"

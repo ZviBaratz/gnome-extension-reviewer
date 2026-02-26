@@ -1,0 +1,1 @@
+{"uuid": "gobject-class-init@test", "name": "GObject Class Init Test", "description": "Tests that GObject.registerClass constructors are not flagged as init-time violations", "shell-version": ["48"], "url": "https://github.com/test/gobject-class-init"}

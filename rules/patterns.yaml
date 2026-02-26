@@ -141,14 +141,6 @@
   category: ai-slop
   fix: "Remove the version field from metadata.json; EGO manages versions automatically."
 
-- id: R-SLOP-04
-  pattern: "\"version-name\""
-  scope: ["metadata.json"]
-  severity: advisory
-  message: "version-name is a non-standard metadata field"
-  category: ai-slop
-  fix: "Remove the version-name field; it is not a standard EGO metadata field."
-
 - id: R-SLOP-05
   pattern: "\"homepage\""
   scope: ["metadata.json"]
