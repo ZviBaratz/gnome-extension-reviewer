@@ -565,80 +565,66 @@ assert_output_contains "detects unscoped CSS classes" "css/unscoped-class"
 assert_output_contains "detects !important usage" "css/important"
 echo ""
 
-# Phase 1: Detection completeness assertions
+# Extended assertion files (sourced by category)
 ASSERTIONS_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/assertions"
-if [[ -f "$ASSERTIONS_DIR/phase1-detection.sh" ]]; then
-    source "$ASSERTIONS_DIR/phase1-detection.sh"
+if [[ -f "$ASSERTIONS_DIR/init-lifecycle-prefs.sh" ]]; then
+    source "$ASSERTIONS_DIR/init-lifecycle-prefs.sh"
 fi
 
-# Phase 2: AI slop assertions
-if [[ -f "$ASSERTIONS_DIR/phase2-ai-slop.sh" ]]; then
-    source "$ASSERTIONS_DIR/phase2-ai-slop.sh"
+if [[ -f "$ASSERTIONS_DIR/ai-slop-heuristics.sh" ]]; then
+    source "$ASSERTIONS_DIR/ai-slop-heuristics.sh"
 fi
 
-# Cross-file resource tracking assertions
 if [[ -f "$ASSERTIONS_DIR/cross-file-resources.sh" ]]; then
     source "$ASSERTIONS_DIR/cross-file-resources.sh"
 fi
 
-# Phase 3: Gap closure assertions (WS1)
-if [[ -f "$ASSERTIONS_DIR/phase3-gap-closure.sh" ]]; then
-    source "$ASSERTIONS_DIR/phase3-gap-closure.sh"
+if [[ -f "$ASSERTIONS_DIR/lifecycle-advanced.sh" ]]; then
+    source "$ASSERTIONS_DIR/lifecycle-advanced.sh"
 fi
 
-# Phase 4: Strengthening assertions (WS2)
-if [[ -f "$ASSERTIONS_DIR/phase4-strengthening.sh" ]]; then
-    source "$ASSERTIONS_DIR/phase4-strengthening.sh"
+if [[ -f "$ASSERTIONS_DIR/quality-patterns.sh" ]]; then
+    source "$ASSERTIONS_DIR/quality-patterns.sh"
 fi
 
-# Phase 5: Version-gated rule assertions
-if [[ -f "$ASSERTIONS_DIR/phase5-version-rules.sh" ]]; then
-    source "$ASSERTIONS_DIR/phase5-version-rules.sh"
+if [[ -f "$ASSERTIONS_DIR/version-compat.sh" ]]; then
+    source "$ASSERTIONS_DIR/version-compat.sh"
 fi
 
-# Phase 6: AI slop hardening assertions
-if [[ -f "$ASSERTIONS_DIR/phase6-ai-slop-hardening.sh" ]]; then
-    source "$ASSERTIONS_DIR/phase6-ai-slop-hardening.sh"
+if [[ -f "$ASSERTIONS_DIR/slop-patterns-extended.sh" ]]; then
+    source "$ASSERTIONS_DIR/slop-patterns-extended.sh"
 fi
 
-# Phase 7: Review quality optimization assertions
-if [[ -f "$ASSERTIONS_DIR/phase7-optimization.sh" ]]; then
-    source "$ASSERTIONS_DIR/phase7-optimization.sh"
+if [[ -f "$ASSERTIONS_DIR/package-security.sh" ]]; then
+    source "$ASSERTIONS_DIR/package-security.sh"
 fi
 
-# Phase 8: Reviewer-grade understanding assertions
-if [[ -f "$ASSERTIONS_DIR/phase8-reviewer-grade.sh" ]]; then
-    source "$ASSERTIONS_DIR/phase8-reviewer-grade.sh"
+if [[ -f "$ASSERTIONS_DIR/metadata-init-fixes.sh" ]]; then
+    source "$ASSERTIONS_DIR/metadata-init-fixes.sh"
 fi
 
-# Phase 9: Batch 3 assertions
-if [[ -f "$ASSERTIONS_DIR/phase9-batch3.sh" ]]; then
-    source "$ASSERTIONS_DIR/phase9-batch3.sh"
+if [[ -f "$ASSERTIONS_DIR/trademark-imports.sh" ]]; then
+    source "$ASSERTIONS_DIR/trademark-imports.sh"
 fi
 
-# Phase 10: Batch 4 assertions
-if [[ -f "$ASSERTIONS_DIR/phase10-batch4.sh" ]]; then
-    source "$ASSERTIONS_DIR/phase10-batch4.sh"
+if [[ -f "$ASSERTIONS_DIR/lifecycle-dbus-subprocess.sh" ]]; then
+    source "$ASSERTIONS_DIR/lifecycle-dbus-subprocess.sh"
 fi
 
-# Phase 11: Batch 6 assertions
-if [[ -f "$ASSERTIONS_DIR/phase11-batch6.sh" ]]; then
-    source "$ASSERTIONS_DIR/phase11-batch6.sh"
+if [[ -f "$ASSERTIONS_DIR/i18n-quality-ver50.sh" ]]; then
+    source "$ASSERTIONS_DIR/i18n-quality-ver50.sh"
 fi
 
-# Phase 12: Batch 7 assertions
-if [[ -f "$ASSERTIONS_DIR/phase12-batch7.sh" ]]; then
-    source "$ASSERTIONS_DIR/phase12-batch7.sh"
+if [[ -f "$ASSERTIONS_DIR/settings-async-clipboard.sh" ]]; then
+    source "$ASSERTIONS_DIR/settings-async-clipboard.sh"
 fi
 
-# Phase 13: Batch 8 assertions
-if [[ -f "$ASSERTIONS_DIR/phase13-batch8.sh" ]]; then
-    source "$ASSERTIONS_DIR/phase13-batch8.sh"
+if [[ -f "$ASSERTIONS_DIR/import-segregation.sh" ]]; then
+    source "$ASSERTIONS_DIR/import-segregation.sh"
 fi
 
-# Phase 14: Batch 9 assertions
-if [[ -f "$ASSERTIONS_DIR/phase14-batch9.sh" ]]; then
-    source "$ASSERTIONS_DIR/phase14-batch9.sh"
+if [[ -f "$ASSERTIONS_DIR/donations-overflow.sh" ]]; then
+    source "$ASSERTIONS_DIR/donations-overflow.sh"
 fi
 
 # Hara-hachi-bu regression (conditional)
