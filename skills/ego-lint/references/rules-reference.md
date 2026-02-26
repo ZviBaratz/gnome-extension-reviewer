@@ -2385,3 +2385,118 @@ Rules for APIs removed or changed in specific GNOME Shell versions. These rules 
 - **Rule**: `vertical: true/false` in constructor configuration objects was removed in GNOME 48.
 - **Rationale**: GNOME 48 removed the `vertical` shorthand property from St.BoxLayout and other container constructors. Extensions targeting GNOME 48+ must use the `orientation` property with `Clutter.Orientation.VERTICAL` or `Clutter.Orientation.HORIZONTAL`.
 - **Fix**: Replace `{vertical: true}` with `{orientation: Clutter.Orientation.VERTICAL}`.
+
+---
+
+## Security (R-SEC) — continued
+
+### R-SEC-21: curl spawn forbidden
+- **Severity**: blocking
+- **Checked by**: apply-patterns.py
+- **Rule**: Spawning `curl` via subprocess is forbidden.
+- **Rationale**: Extensions must use Soup.Session for HTTP requests. Spawning curl circumvents the GNOME sandbox and makes network requests untraceable.
+- **Fix**: Replace subprocess curl call with `Soup.Session` and `Soup.Message`.
+
+### R-SEC-22: gsettings/dconf spawn forbidden
+- **Severity**: blocking
+- **Checked by**: apply-patterns.py
+- **Rule**: Spawning `gsettings` or `dconf` CLI tools is forbidden.
+- **Rationale**: Extensions must use `Gio.Settings` API directly. Spawning CLI tools for GSettings access is fragile and bypassable.
+- **Fix**: Use `this.getSettings()` or `new Gio.Settings()`.
+
+### R-SEC-23: Base64 encoding/decoding
+- **Severity**: advisory
+- **Checked by**: apply-patterns.py
+- **Rule**: Usage of `atob()` or `btoa()` may indicate obfuscated content.
+- **Rationale**: Base64 encoding in extensions is sometimes used to hide malicious payloads. Reviewers will inspect the encoded content.
+- **Fix**: If used legitimately (e.g., data URIs), add a comment explaining the purpose.
+
+---
+
+## Code Quality (R-QUAL) — continued
+
+### R-QUAL-30: lookupByURL() usage
+- **Severity**: advisory
+- **Checked by**: apply-patterns.py
+- **Rule**: `lookupByURL()` is discouraged.
+- **Rationale**: `lookupByURL()` is a fragile API that depends on internal URL format. Use `this.getSettings()` and `this.path` instead.
+- **Fix**: Replace with `this.getSettings()` and `this.path`.
+
+### R-QUAL-31: _onDestroy() naming
+- **Severity**: advisory
+- **Checked by**: apply-patterns.py
+- **Rule**: `_onDestroy()` should be renamed to `destroy()`.
+- **Rationale**: The GNOME convention is to override `destroy()` with `super.destroy()` at the end, not to use a private `_onDestroy()` callback.
+- **Fix**: Rename to `destroy() { /* cleanup */; super.destroy(); }`.
+
+### R-QUAL-32: Unnecessary gi:// version specifier
+- **Severity**: advisory
+- **Checked by**: apply-patterns.py
+- **Rule**: `?version=` in gi:// imports for libraries that don't need it.
+- **Rationale**: Only Soup, Gtk, Gdk, and Adw require version specifiers. Adding versions to GLib, Gio, St, etc. is unnecessary and can cause breakage.
+- **Fix**: Remove `?version=` from the import.
+
+---
+
+## Version Compatibility (R-VER49) — continued
+
+### R-VER49-10: DoNotDisturbSwitch removed
+- **Severity**: blocking
+- **Checked by**: apply-patterns.py (min-version: 49)
+- **Rule**: `DoNotDisturbSwitch` was removed in GNOME 49.
+- **Rationale**: GNOME 49 replaced `DoNotDisturbSwitch` with `DoNotDisturbToggle`.
+- **Fix**: Replace `DoNotDisturbSwitch` with `DoNotDisturbToggle`.
+
+### R-VER49-11: MaximizeFlags parameter removed
+- **Severity**: blocking
+- **Checked by**: apply-patterns.py (min-version: 49)
+- **Rule**: `MaximizeFlags` parameter was removed from `unmaximize()` in GNOME 49.
+- **Rationale**: The `unmaximize()` method no longer accepts a flags parameter.
+- **Fix**: Call `unmaximize()` without the `MaximizeFlags` parameter.
+
+---
+
+## Structural Checks — continued
+
+### quality/obfuscated-names: Obfuscator-style variable names
+- **Severity**: blocking
+- **Checked by**: check-quality.py
+- **Rule**: Detects `_0x`-prefixed hex variable names and high concentrations of obfuscator-style declarations.
+- **Rationale**: Obfuscated/minified code cannot be reviewed. EGO requires human-readable source code.
+- **Threshold**: 15+ unique suspect names or 50+ total usages.
+
+### quality/mixed-indentation: Mixed tab/space indentation
+- **Severity**: advisory
+- **Checked by**: check-quality.py
+- **Rule**: Flags files with both tab and space indentation (>10% minority style).
+- **Rationale**: Mixed indentation suggests copy-pasted code from different sources, which is a code quality concern.
+
+### quality/excessive-logging: Excessive debug logging
+- **Severity**: advisory
+- **Checked by**: check-quality.py
+- **Rule**: Warns when >15 `console.debug/log` calls exist without a settings guard.
+- **Rationale**: Excessive logging pollutes the system journal. Debug output should be configurable via a GSettings key.
+
+### lifecycle/widget-destroy: Widget lifecycle tracking
+- **Severity**: advisory
+- **Checked by**: check-lifecycle.py
+- **Rule**: Detects St/PanelMenu/PopupMenu/Clutter widgets created in `enable()` without `.destroy()` or null assignment in `disable()`.
+- **Rationale**: Widgets must be destroyed when the extension is disabled to prevent memory leaks and orphaned UI elements.
+
+### lifecycle/settings-cleanup: Settings object cleanup
+- **Severity**: advisory
+- **Checked by**: check-lifecycle.py
+- **Rule**: Detects `getSettings()`/`new Gio.Settings()` assignments not nulled in `disable()`.
+- **Rationale**: GSettings objects hold references that should be released when the extension is disabled.
+
+### metadata/gettext-domain-mismatch: Gettext domain consistency
+- **Severity**: advisory
+- **Checked by**: check-metadata.py
+- **Rule**: Warns when `dgettext()` domain in JS doesn't match `gettext-domain` in metadata.json.
+- **Rationale**: Domain mismatch causes translations to silently fail.
+
+### metadata/shell-version-unknown: Unknown GNOME version
+- **Severity**: advisory
+- **Checked by**: check-metadata.py
+- **Rule**: Warns when `shell-version` contains a version not in the known GNOME releases list.
+- **Rationale**: Typos or fictional versions in shell-version waste reviewer time and may cause confusion.
