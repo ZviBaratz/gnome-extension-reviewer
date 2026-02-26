@@ -551,3 +551,15 @@ let msg = _(`Found ${count} items`);
 // format() works with xgettext
 let msg = _('Found %d items').format(count);
 ```
+
+---
+
+## Real Rejection Examples
+
+> **"Power Tracker" (September 2024):** Rejected partly for "missing repository URLs." The `url` field in metadata.json is practically mandatory.
+
+> **"Wechsel" (April 2024):** Rejected for "unnecessary version specifications in metadata.json" and including `package.json` in the ZIP.
+
+> **AI slop blog post (December 2025):** Reviewer Javad Rahmatzadeh cited `typeof super.destroy === 'function'` as a dead giveaway of AI-generated code. The correct pattern is simply `super.destroy()`.
+
+**Key lesson:** Reviewers cite specific line numbers in rejection feedback. "Remove line 556-558" is a typical review comment style.

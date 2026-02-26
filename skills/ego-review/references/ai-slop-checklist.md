@@ -627,6 +627,22 @@ const box = new St.BoxLayout({vertical: true});
 box.add_child(this._label);
 ```
 
+---
+
+## Real-World AI Detection Intelligence
+
+**Reviewer perspective (Javad Rahmatzadeh, December 2025):**
+
+The reviewer reported spending "more than 6 hours a day reviewing over 15,000 lines of extension code" due to AI-generated submissions. The primary detection signals:
+
+1. **Try-catch around guaranteed APIs** — wrapping `super.destroy()` in try-catch is the single biggest tell
+2. **Inconsistent style** — mixing patterns suggests copy-paste from different AI generations
+3. **Imaginary APIs** — calling methods that don't exist in GNOME Shell (AI hallucinations)
+4. **Comments as prompts** — "// Create a button that does X" reads like an LLM instruction
+5. **Verbose error messages** — error strings that read like documentation, not debugging output
+
+> **Reviewer says:** "While it is not prohibited to use AI as a learning aid or a development tool (i.e. code completions), extension developers should be able to justify and explain the code they submit, within reason."
+
 ## Scoring Model
 
 Count the number of triggered items out of the 33 above.

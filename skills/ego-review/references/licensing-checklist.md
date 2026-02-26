@@ -28,3 +28,11 @@ EGO requires all extensions to comply with licensing and legal requirements.
 ### L5: Code of Conduct
 - All content must comply with the GNOME Code of Conduct
 - Check: Name, description, comments, UI text, icons, screenshots
+
+---
+
+## Real Rejection Examples
+
+> **Official guideline:** "If your extension contains code from another extension, you must include attribution to the original author [...] not doing so is a license violation and your extension will be rejected."
+
+> **Fork naming:** Forks must have unique names distinct from the original extension. Submitting a fork under the original name triggers immediate rejection.

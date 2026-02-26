@@ -273,3 +273,13 @@ submission notes:
 5. **Polkit policy scope**: [e.g., "Only allows org.freedesktop.policykit.exec
    for the specific helper path"]
 ````
+
+---
+
+## Real Rejection Examples
+
+> **"Wechsel" (April 2024):** Rejected partly for "not using async subprocess calls" — used `GLib.spawn_command_line_sync` instead of `Gio.Subprocess`.
+
+> **`run_dispose()` controversy:** The official `gnome-shell-extensions` repository uses `run_dispose()` for `Gio.Settings`, but external extensions have been rejected for the same pattern. If you use it, include a detailed comment explaining why.
+
+**Key lesson:** Reviewers expect `Gio.Subprocess` with async patterns. Sync subprocess calls are treated as blocking violations, not just style issues.

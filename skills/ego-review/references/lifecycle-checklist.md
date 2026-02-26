@@ -671,3 +671,15 @@ disable() {
     }
 }
 ```
+
+---
+
+## Real Rejection Examples
+
+> **"Search Light" (May 2024):** "improper resource cleanup in disable, logging methods, and creating object instances in global scope." — Rejected for three simultaneous lifecycle violations.
+
+> **"Blur my Shell" (March 2024):** "creating object instances in global scope." — Even well-known, popular extensions get rejected for init-time violations.
+
+> **"Open Bar" (February 2024):** Rejected for lifecycle violations including orphaned signal handlers and missing timeout cleanup in disable().
+
+**Key lesson:** Lifecycle violations are the #1 rejection cause. Reviewers check every `enable()` resource has a matching `disable()` cleanup.
