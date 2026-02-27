@@ -1,6 +1,7 @@
 # gnome-extension-reviewer
 
 EGO review compliance tools for GNOME Shell extensions — catch rejection reasons before submission.
+ego-lint is fully deterministic: bash + python + YAML rules. No AI, no network access, no dependencies beyond coreutils.
 
 ## Quick Start
 
@@ -13,6 +14,10 @@ cd gnome-extension-reviewer
 Exit code 0 = no blocking issues. Exit code 1 = blocking issues that will likely cause rejection.
 
 Run `./ego-lint --help` for the full check list and options.
+
+Try it on a bundled test fixture:
+
+    ./ego-lint tests/fixtures/lifecycle-imbalance@test --verbose
 
 ## What Gets Checked
 
@@ -78,7 +83,7 @@ Pattern rules are declared in [`rules/patterns.yaml`](rules/patterns.yaml) — a
 
 ## For Reviewers
 
-ego-lint automates the mechanical parts of EGO review that are tedious to do by hand:
+ego-lint automates the mechanical checks that cause the most common rejections. When developers run it before submitting, it catches issues that would otherwise waste review cycles:
 
 - **Transitive import analysis** — BFS from `prefs.js` through relative imports to catch indirect Shell runtime dependencies (`gi://St`, `gi://Clutter`, etc.)
 - **Cross-file resource tracking** — builds a resource graph (signals, timeouts, widgets, D-Bus, file monitors, GSettings) and detects orphans that aren't cleaned up
@@ -92,7 +97,7 @@ ego-lint does **not**:
 - Check logic correctness or functionality
 - Replace human review judgment
 
-**CI integration**: Pure bash + python, exits 0/1, no network access, no dependencies beyond coreutils. See [docs/ci-integration.md](docs/ci-integration.md) for GitHub Actions and GitLab CI examples.
+**CI integration**: Pure bash + python, exits 0/1, no network access, no dependencies beyond coreutils. Tested against 138 fixtures with 360 assertions. See [docs/ci-integration.md](docs/ci-integration.md) for GitHub Actions and GitLab CI examples.
 
 ## Research Background
 
@@ -141,12 +146,12 @@ This project is also a [Claude Code](https://docs.anthropic.com/en/docs/claude-c
 claude plugins add github:ZviBaratz/gnome-extension-reviewer
 ```
 
-ego-lint is **fully deterministic** — bash and python only, no AI calls. The four skills above use Claude to read and analyze extension source code via Anthropic's API.
+The four skills above use Claude to analyze extension source code via Anthropic's API. ego-lint itself makes no API calls — it's the same deterministic tool whether or not you use the plugin.
 
 ## How This Was Built
 
 1. **Rules grounded in real data.** Every rule traces back to real EGO reviews on extensions.gnome.org, [gjs.guide](https://gjs.guide) requirements, or GNOME Shell GitLab history. Regression-tested against a real 11-module extension as baseline.
-2. **Research and code produced with AI assistance.** The Discourse mining, guideline analysis, cross-source synthesis, and implementation were done using [Claude Code](https://docs.anthropic.com/en/docs/claude-code). The AI slop detection rules exist because the author understands how LLMs generate GNOME extension code — and where they get it wrong.
+2. **Research and code produced with AI assistance.** The Discourse mining, guideline analysis, cross-source synthesis, and implementation were done using [Claude Code](https://docs.anthropic.com/en/docs/claude-code). The AI slop detection rules are based on patterns observed in real EGO rejections of AI-generated submissions.
 3. **ego-lint itself is AI-free.** Bash + python + YAML. Deterministic. No API calls. No network access. Runs anywhere with `bash` and `python3`.
 
 ## Requirements
