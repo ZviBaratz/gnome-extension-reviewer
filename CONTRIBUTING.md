@@ -2,6 +2,97 @@
 
 Thank you for your interest in improving GNOME extension review tooling.
 
+## For Reviewers: Add a Check in 5 Minutes
+
+You just rejected an extension because it uses `navigator.clipboard` (a browser API that doesn't exist in GJS). Here's how to encode that rejection so ego-lint catches it automatically next time.
+
+### Step 1: Add the rule to `rules/patterns.yaml`
+
+Append 4 lines of YAML:
+
+```yaml
+- id: R-WEB-12
+  pattern: "\\bnavigator\\.clipboard\\b"
+  scope: ["*.js"]
+  severity: blocking
+  message: "navigator.clipboard is a browser API; use St.Clipboard instead"
+  category: web-apis
+  fix: "Import St from 'gi://St' and use St.Clipboard.get_default()"
+```
+
+### Step 2: Create a test fixture
+
+Every rule needs a minimal extension that triggers it. Create a directory in `tests/fixtures/`:
+
+```
+tests/fixtures/navigator-clipboard@test/
+  metadata.json
+  extension.js
+  LICENSE
+```
+
+**UUID conventions:**
+- The directory name **must contain `@`** -- use `<rule-name>@test`
+- The `uuid` in `metadata.json` **must match the directory name exactly**
+
+`metadata.json`:
+```json
+{
+    "uuid": "navigator-clipboard@test",
+    "name": "Navigator Clipboard Test",
+    "description": "Tests R-WEB-12",
+    "shell-version": ["48"],
+    "url": "https://example.com"
+}
+```
+
+`extension.js`:
+```js
+import {Extension} from 'resource:///org/gnome/shell/extensions/extension.js';
+export default class TestExtension extends Extension {
+    enable() { navigator.clipboard.writeText('test'); }
+    disable() {}
+}
+```
+
+`LICENSE`:
+```
+SPDX-License-Identifier: GPL-2.0-or-later
+```
+
+### Step 3: Add a test assertion
+
+Create a new file `tests/assertions/your-category.sh` (or add to an existing one):
+
+```bash
+# Navigator clipboard browser API detection
+echo "=== navigator-clipboard ==="
+run_lint "navigator-clipboard@test"
+assert_exit_code "exits with 1 (has failures)" 1
+assert_output_contains "fails on navigator.clipboard" "\[FAIL\].*R-WEB-12"
+echo ""
+```
+
+If you created a new assertion file, source it in `tests/run-tests.sh` by adding before the summary section:
+
+```bash
+if [[ -f "$ASSERTIONS_DIR/your-category.sh" ]]; then
+    source "$ASSERTIONS_DIR/your-category.sh"
+fi
+```
+
+### Step 4: Run tests
+
+```bash
+bash tests/run-tests.sh
+```
+
+All existing tests must still pass alongside your new assertion.
+
+**Shortcut:** Use `scripts/new-rule.sh` to scaffold all of the above interactively, or `scripts/validate-fixture.sh` to check that your fixtures meet the structural requirements.
+
+---
+
 ## How Rules Are Sourced
 
 Rules come from three sources:

@@ -216,7 +216,11 @@ def check_empty_catch(ext_dir, js_files):
     - Try body before catch contains cleanup calls (.disconnect, .cancel, .destroy,
       .close) or dynamic import() — empty catch is intentional
     """
-    cleanup_re = re.compile(r'\.(disconnect|cancel|destroy|close)\s*\(|import\s*\(')
+    cleanup_re = re.compile(
+        r'\.(disconnect|cancel|destroy|close)\s*\(|import\s*\('
+        r'|\.(get_value|set_value|get_string|set_string|get_int|set_int'
+        r'|get_boolean|set_boolean|get_double|set_double)\s*\('
+    )
     found = []
 
     for filepath in js_files:
@@ -462,18 +466,23 @@ def check_code_volume(ext_dir, js_files):
 
 
 def check_file_complexity(ext_dir, js_files):
-    """R-QUAL-12: Flag individual files with excessive non-blank lines."""
+    """R-QUAL-12: Flag individual files with excessive non-blank lines.
+
+    prefs.js gets a higher threshold (2000) because GTK4/Adw preferences files
+    are structurally larger — each page builds widget trees in code.
+    """
     for filepath in js_files:
         rel = os.path.relpath(filepath, ext_dir)
         with open(filepath, encoding='utf-8', errors='replace') as f:
             count = sum(1 for line in f if line.strip())
-        if count > 1500:
+        threshold = 2000 if os.path.basename(filepath) == 'prefs.js' else 1500
+        if count > threshold:
             result("WARN", "quality/file-complexity",
                    f"{rel}: {count} non-blank lines — consider splitting into modules")
             return
 
     result("PASS", "quality/file-complexity",
-           "No individual files exceed 1500 non-blank lines")
+           "No individual files exceed complexity thresholds")
 
 
 def check_debug_volume(ext_dir, js_files):
@@ -515,7 +524,7 @@ def check_logging_volume(ext_dir, js_files):
                 total += len(re.findall(
                     r'console\.(debug|warn|error|info)\(', line))
 
-    threshold = max(30, total_non_blank // 100)
+    threshold = max(30, total_non_blank // 70)
     if total > threshold:
         result("WARN", "quality/logging-volume",
                f"{total} total console.* calls (threshold: {threshold} for "

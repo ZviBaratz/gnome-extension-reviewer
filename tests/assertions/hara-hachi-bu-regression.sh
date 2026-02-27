@@ -67,4 +67,6 @@ assert_output_not_contains "no settings-cleanup false positive" "\[WARN\].*lifec
 assert_output_not_contains "no gettext-domain-mismatch false positive" "\[WARN\].*gettext-domain-mismatch"
 assert_output_not_contains "no excessive-logging false positive" "\[WARN\].*quality/excessive-logging"
 assert_output_not_contains "no compiled-schemas-dir false positive" "\[WARN\].*compiled-schemas-dir"
+assert_output_not_contains "no logging-volume false positive" "\[WARN\].*quality/logging-volume"
+assert_output_not_contains "no file-complexity false positive" "\[WARN\].*quality/file-complexity"
 echo ""
