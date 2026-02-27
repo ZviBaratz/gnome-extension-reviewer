@@ -141,6 +141,34 @@ def _version_gate_applies(rule, shell_versions):
 
 
 
+def _is_suppressed(line, prev_line, rule_id):
+    """Check if a line is suppressed via ego-lint-ignore comment.
+
+    Supports:
+      // ego-lint-ignore: R-XXX-NN  (same line or previous line, specific rule)
+      // ego-lint-ignore             (same line or previous line, blanket)
+      // ego-lint-ignore-next-line: R-XXX-NN  (previous line only)
+      // ego-lint-ignore-next-line             (previous line, blanket)
+    """
+    # Check current line for inline suppression
+    if 'ego-lint-ignore' in line:
+        m = re.search(r'ego-lint-ignore(?:-next-line)?(?::\s*(\S+))?', line)
+        if m:
+            specified = m.group(1)
+            if not specified or specified == rule_id:
+                return True
+
+    # Check previous line for next-line suppression
+    if prev_line and 'ego-lint-ignore' in prev_line:
+        m = re.search(r'ego-lint-ignore(?:-next-line)?(?::\s*(\S+))?', prev_line)
+        if m:
+            specified = m.group(1)
+            if not specified or specified == rule_id:
+                return True
+
+    return False
+
+
 def main():
     if len(sys.argv) < 3:
         print("Usage: apply-patterns.py RULES_YAML EXTENSION_DIR", file=sys.stderr)
@@ -161,18 +189,19 @@ def main():
         scopes = rule.get('scope', ['*.js'])
         severity = rule.get('severity', 'advisory')
         message = rule.get('message', rid)
+        deduplicate = rule.get('deduplicate', '') == 'true'
 
         # Version gating: skip rules that don't apply to declared shell versions
         if not _version_gate_applies(rule, shell_versions):
             print(f"SKIP|{rid}|Not applicable for declared shell-version(s)")
             continue
 
-
         if isinstance(scopes, str):
             scopes = [scopes]
 
         status = 'FAIL' if severity == 'blocking' else 'WARN'
         found = False
+        dedup_files = set()  # For deduplicate mode
 
         try:
             compiled = re.compile(pattern)
@@ -198,19 +227,37 @@ def main():
                 seen.add(filepath)
                 try:
                     with open(filepath, encoding='utf-8', errors='replace') as f:
+                        prev_line = ''
                         for lineno, line in enumerate(f, 1):
                             if compiled.search(line):
+                                # Check for inline suppression
+                                if _is_suppressed(line, prev_line, rid):
+                                    prev_line = line
+                                    continue
                                 rel = os.path.relpath(filepath, ext_dir)
-                                fix = rule.get('fix', '')
-                                if fix:
-                                    print(f"{status}|{rid}|{rel}:{lineno}: {message}|fix: {fix}")
+                                if deduplicate:
+                                    dedup_files.add(rel)
+                                    found = True
                                 else:
-                                    print(f"{status}|{rid}|{rel}:{lineno}: {message}")
-                                found = True
+                                    fix = rule.get('fix', '')
+                                    if fix:
+                                        print(f"{status}|{rid}|{rel}:{lineno}: {message}|fix: {fix}")
+                                    else:
+                                        print(f"{status}|{rid}|{rel}:{lineno}: {message}")
+                                    found = True
+                            prev_line = line
                 except OSError:
                     continue
 
-        if not found:
+        if deduplicate and dedup_files:
+            files_list = ', '.join(sorted(dedup_files))
+            fix = rule.get('fix', '')
+            summary = f"{message} in {len(dedup_files)} file(s): {files_list}"
+            if fix:
+                print(f"{status}|{rid}|{summary}|fix: {fix}")
+            else:
+                print(f"{status}|{rid}|{summary}")
+        elif not found:
             print(f"PASS|{rid}|No matches")
 
 

@@ -23,6 +23,21 @@ def result(status, check, detail):
     print(f"{status}|{check}|{detail}")
 
 
+def is_suppressed(line, check_name, prev_line=''):
+    """Check if a line is suppressed via ego-lint-ignore comment.
+
+    Supports same-line and previous-line suppression for Tier 2 checks.
+    """
+    for check_line in (line, prev_line):
+        if check_line and 'ego-lint-ignore' in check_line:
+            m = re.search(r'ego-lint-ignore(?:-next-line)?(?::\s*(\S+))?', check_line)
+            if m:
+                specified = m.group(1)
+                if not specified or specified == check_name:
+                    return True
+    return False
+
+
 def find_js_files(ext_dir):
     """Find all JS files in extension directory, excluding node_modules."""
     skip_dirs = {'node_modules', '.git', '__pycache__'}
@@ -154,13 +169,18 @@ def check_pendulum_pattern(ext_dir, js_files):
 
 
 def check_module_state(ext_dir, js_files):
-    """R-QUAL-04: Flag module-level let/var declarations."""
+    """R-QUAL-04: Flag module-level let/var declarations.
+
+    Suppressed when the variable is reset to null elsewhere in the file
+    (developer manages cleanup).
+    """
     found = []
 
     for filepath in js_files:
         rel = os.path.relpath(filepath, ext_dir)
         with open(filepath, encoding='utf-8', errors='replace') as f:
-            lines = f.readlines()
+            content = f.read()
+        lines = content.splitlines()
 
         brace_depth = 0
         for i, line in enumerate(lines):
@@ -168,8 +188,15 @@ def check_module_state(ext_dir, js_files):
             brace_depth += line.count('{') - line.count('}')
 
             # Module scope: brace_depth <= 0 (outside any block)
-            if brace_depth <= 0 and re.match(r'\s*(let|var)\s+\w+', line):
-                found.append(f"{rel}:{i + 1}")
+            if brace_depth <= 0:
+                m = re.match(r'\s*(let|var)\s+(\w+)', line)
+                if m:
+                    var_name = m.group(2)
+                    # Check if var is reset to null elsewhere
+                    reset_re = re.compile(rf'\b{re.escape(var_name)}\s*=\s*null\b')
+                    if reset_re.search(content):
+                        continue  # Variable is cleaned up
+                    found.append(f"{rel}:{i + 1}")
 
     if found:
         locations = ', '.join(found[:5])
@@ -182,7 +209,14 @@ def check_module_state(ext_dir, js_files):
 
 
 def check_empty_catch(ext_dir, js_files):
-    """R-QUAL-05: Flag empty catch blocks."""
+    """R-QUAL-05: Flag empty catch blocks.
+
+    Suppressed when:
+    - Catch body contains only comments (developer acknowledged the empty catch)
+    - Try body before catch contains cleanup calls (.disconnect, .cancel, .destroy,
+      .close) or dynamic import() — empty catch is intentional
+    """
+    cleanup_re = re.compile(r'\.(disconnect|cancel|destroy|close)\s*\(|import\s*\(')
     found = []
 
     for filepath in js_files:
@@ -199,6 +233,13 @@ def check_empty_catch(ext_dir, js_files):
                 or not line.strip()
                 for line in body.split('\n')
             ):
+                # Check if try-body contains cleanup calls
+                # Look backwards from catch to find the try block
+                before_catch = content[:m.start()]
+                try_match = re.search(r'\btry\s*\{([\s\S]*)\}[\s\n]*$', before_catch)
+                if try_match and cleanup_re.search(try_match.group(1)):
+                    continue  # Intentional cleanup — suppress
+
                 # Calculate line number
                 line_num = content[:m.start()].count('\n') + 1
                 found.append(f"{rel}:{line_num}")
@@ -271,10 +312,23 @@ def check_mock_in_production(ext_dir, js_files):
 
         # Check for runtime mock triggers
         with open(filepath, encoding='utf-8', errors='replace') as f:
-            for lineno, line in enumerate(f, 1):
-                if re.search(r'use_mock|mock_trigger|MOCK_MODE|\.mock\b', line,
-                             re.IGNORECASE):
-                    mock_triggers.append(f"{rel}:{lineno}")
+            content = f.read()
+
+        # Detect try/catch guarded mock triggers (graceful degradation)
+        has_try_import_guard = bool(re.search(
+            r'try\s*\{[^}]*import\s*\([^}]*\}\s*catch', content, re.DOTALL))
+
+        lines = content.splitlines()
+        for lineno, line in enumerate(lines, 1):
+            if re.search(r'use_mock|mock_trigger|MOCK_MODE|\.mock\b', line,
+                         re.IGNORECASE):
+                # Skip if file uses try/catch import guard pattern
+                if has_try_import_guard:
+                    continue
+                prev = lines[lineno - 2] if lineno >= 2 else ''
+                if is_suppressed(line, 'quality/mock-in-production', prev):
+                    continue
+                mock_triggers.append(f"{rel}:{lineno}")
 
     found = False
     for mf in mock_files:
@@ -317,6 +371,8 @@ def check_constructor_resources(ext_dir, js_files):
         'PopupMenu.PopupBaseMenuItem', 'PopupMenu.PopupMenuItem',
         'PopupMenu.PopupSwitchMenuItem', 'PopupMenu.PopupSubMenuMenuItem',
         'Adw.PreferencesPage', 'Adw.PreferencesGroup',
+        'Adw.ActionRow', 'Adw.ExpanderRow', 'Adw.ComboRow',
+        'Adw.SwitchRow', 'Adw.SpinRow', 'Adw.EntryRow',
         'Gtk.Widget', 'Gtk.Box', 'Gtk.Button',
     }
     # Also match just the short names (e.g., "BoxLayout" from "St.BoxLayout")
@@ -347,6 +403,19 @@ def check_constructor_resources(ext_dir, js_files):
 
             if is_widget:
                 continue  # Skip widget constructors
+
+            # Skip if the class has a destroy() method (lifecycle-aware)
+            # Look for destroy() between this class and the next class (or EOF)
+            class_start = None
+            for cm in re.finditer(r'class\s+\w+', content):
+                if cm.start() < m.start():
+                    class_start = cm.start()
+            if class_start is not None:
+                next_class = re.search(r'\nclass\s+\w+', content[m.start():])
+                class_end = m.start() + next_class.start() if next_class else len(content)
+                class_body = content[class_start:class_end]
+                if re.search(r'\bdestroy\s*\(\s*\)\s*\{', class_body):
+                    continue  # Class manages its own lifecycle
 
             # Extract the constructor body (find matching brace)
             start = m.end()
@@ -398,13 +467,13 @@ def check_file_complexity(ext_dir, js_files):
         rel = os.path.relpath(filepath, ext_dir)
         with open(filepath, encoding='utf-8', errors='replace') as f:
             count = sum(1 for line in f if line.strip())
-        if count > 1000:
+        if count > 1500:
             result("WARN", "quality/file-complexity",
                    f"{rel}: {count} non-blank lines — consider splitting into modules")
             return
 
     result("PASS", "quality/file-complexity",
-           "No individual files exceed 1000 non-blank lines")
+           "No individual files exceed 1500 non-blank lines")
 
 
 def check_debug_volume(ext_dir, js_files):
@@ -428,25 +497,33 @@ def check_debug_volume(ext_dir, js_files):
 
 
 def check_logging_volume(ext_dir, js_files):
-    """R-QUAL-17: Flag excessive total console.* calls."""
+    """R-QUAL-17: Flag excessive total console.* calls.
+
+    Threshold scales with codebase size: max(30, total_non_blank_lines // 100).
+    """
     total = 0
+    total_non_blank = 0
     for filepath in js_files:
         with open(filepath, encoding='utf-8', errors='replace') as f:
             for line in f:
                 stripped = line.lstrip()
                 if stripped.startswith('//') or stripped.startswith('*'):
                     continue
+                if stripped:
+                    total_non_blank += 1
                 # console.log excluded — already a hard FAIL in ego-lint.sh
                 total += len(re.findall(
                     r'console\.(debug|warn|error|info)\(', line))
 
-    if total > 30:
+    threshold = max(30, total_non_blank // 100)
+    if total > threshold:
         result("WARN", "quality/logging-volume",
-               f"{total} total console.* calls — excessive logging may cause "
+               f"{total} total console.* calls (threshold: {threshold} for "
+               f"{total_non_blank} lines) — excessive logging may cause "
                f"rejection; keep only essential error/warning messages")
     else:
         result("PASS", "quality/logging-volume",
-               f"Total logging volume OK ({total} calls)")
+               f"Total logging volume OK ({total} calls, threshold: {threshold})")
 
 
 def check_notification_volume(ext_dir, js_files):
@@ -460,7 +537,7 @@ def check_notification_volume(ext_dir, js_files):
                     continue
                 total += len(re.findall(r'Main\.notify\s*\(', line))
 
-    if total > 3:
+    if total > 5:
         result("WARN", "quality/notification-volume",
                f"{total} Main.notify() call sites — reviewers consider excessive "
                f"notifications a rejection risk; keep 2-3 essential (errors, one-time setup)")
@@ -484,13 +561,19 @@ def check_private_api(ext_dir, js_files):
     for filepath in js_files:
         rel = os.path.relpath(filepath, ext_dir)
         with open(filepath, encoding='utf-8', errors='replace') as f:
+            prev_line = ''
             for lineno, line in enumerate(f, 1):
                 stripped = line.lstrip()
                 if stripped.startswith('//') or stripped.startswith('*'):
+                    prev_line = line
+                    continue
+                if is_suppressed(line, 'quality/private-api', prev_line):
+                    prev_line = line
                     continue
                 for pat, desc in patterns:
                     if re.search(pat, line):
                         matches.append((rel, lineno, desc))
+                prev_line = line
 
     if matches:
         for rel, lineno, desc in matches[:5]:
@@ -507,10 +590,18 @@ def check_private_api(ext_dir, js_files):
 
 
 def check_gettext_pattern(ext_dir, js_files):
-    """R-QUAL-16: Flag direct Gettext.dgettext() usage."""
+    """R-QUAL-16: Flag direct Gettext.dgettext() usage in entry points.
+
+    Only checks extension.js and prefs.js where this.gettext() is available.
+    Library modules correctly use GLib.dgettext() — no alternative exists there.
+    """
+    # Only check entry-point files where this.gettext() is available
+    entry_points = {'extension.js', 'prefs.js'}
     locations = []
 
     for filepath in js_files:
+        if os.path.basename(filepath) not in entry_points:
+            continue
         rel = os.path.relpath(filepath, ext_dir)
         with open(filepath, encoding='utf-8', errors='replace') as f:
             for lineno, line in enumerate(f, 1):
@@ -698,36 +789,6 @@ def check_clipboard_disclosure(ext_dir, js_files):
         result("WARN", "quality/clipboard-disclosure",
                "St.Clipboard used but metadata description does not "
                "mention clipboard access")
-
-
-def check_error_message_verbosity(ext_dir, js_files):
-    """R-QUAL-20: Flag overly verbose error message strings."""
-    lengths = []
-
-    for filepath in js_files:
-        with open(filepath, encoding='utf-8', errors='replace') as f:
-            for line in f:
-                stripped = line.lstrip()
-                if stripped.startswith('//') or stripped.startswith('*'):
-                    continue
-                # Find console.error/warn string arguments
-                for m in re.finditer(
-                    r'console\.(error|warn)\s*\([\'"`]([^\'"`]*)[\'"`]', line
-                ):
-                    msg = m.group(2)
-                    if len(msg) > 10:  # skip trivially short messages
-                        lengths.append(len(msg))
-
-    if len(lengths) >= 3:
-        avg = sum(lengths) / len(lengths)
-        if avg > 50:
-            result("WARN", "quality/error-message-verbosity",
-                   f"{len(lengths)} error/warn messages with avg length {avg:.0f} chars — "
-                   f"prefer terse error strings")
-            return
-
-    result("PASS", "quality/error-message-verbosity",
-           "Error message verbosity acceptable")
 
 
 def check_network_disclosure(ext_dir, js_files):
@@ -1069,7 +1130,6 @@ def main():
     check_gettext_pattern(ext_dir, js_files)
     check_redundant_cleanup(ext_dir, js_files)
     check_comment_prompt_density(ext_dir, js_files)
-    check_error_message_verbosity(ext_dir, js_files)
     check_run_dispose_comment(ext_dir, js_files)
     check_clipboard_disclosure(ext_dir, js_files)
     check_network_disclosure(ext_dir, js_files)

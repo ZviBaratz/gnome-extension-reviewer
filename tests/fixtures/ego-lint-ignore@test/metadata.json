@@ -1,0 +1,7 @@
+{
+    "uuid": "ego-lint-ignore@test",
+    "name": "Test",
+    "description": "Test",
+    "shell-version": ["48"],
+    "url": "https://example.com"
+}

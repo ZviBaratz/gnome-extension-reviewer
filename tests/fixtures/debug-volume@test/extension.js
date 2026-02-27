@@ -28,6 +28,8 @@ export default class DebugVolumeTest extends Extension {
         Main.notify('Alert 2');
         Main.notify('Alert 3');
         Main.notify('Alert 4');
+        Main.notify('Alert 5');
+        Main.notify('Alert 6');
     }
 
     disable() {

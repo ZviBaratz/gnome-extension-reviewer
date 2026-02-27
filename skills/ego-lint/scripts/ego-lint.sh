@@ -201,16 +201,6 @@ else
 fi
 
 # ---------------------------------------------------------------------------
-# Compiled schemas in directory check
-# ---------------------------------------------------------------------------
-
-if [[ -f "$EXT_DIR/schemas/gschemas.compiled" ]]; then
-    print_result "WARN" "compiled-schemas-dir" "schemas/gschemas.compiled found — unnecessary for GNOME 44+ (auto-compiled by Shell); remove from distribution"
-else
-    print_result "PASS" "compiled-schemas-dir" "No unnecessary compiled schemas in directory"
-fi
-
-# ---------------------------------------------------------------------------
 # console.log check
 # ---------------------------------------------------------------------------
 
@@ -350,7 +340,7 @@ if [[ -n "$non_gjs_scripts" ]]; then
         fi
     done < <(find "$EXT_DIR" -name '*.js' -not -path '*/node_modules/*' -not -path '*/.git/*' -print0 2>/dev/null)
     if [[ "$has_pkexec" == true ]]; then
-        print_result "WARN" "non-gjs-scripts" "Found $hit_count non-GJS script(s) — scripts MUST be written in GJS unless absolutely necessary (pkexec helper detected)"
+        print_result "PASS" "non-gjs-scripts" "Found $hit_count non-GJS script(s) — pkexec helper detected, scripts support privileged operations"
     else
         print_result "FAIL" "non-gjs-scripts" "Found $hit_count non-GJS script(s) — scripts MUST be written in GJS; no pkexec/privileged helper justification found"
     fi

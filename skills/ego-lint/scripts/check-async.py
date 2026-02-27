@@ -83,22 +83,57 @@ def check_cancellable_usage(ext_dir, js_files):
 
 
 def check_async_inline_cancellable(ext_dir, js_files):
-    """GAP-020: Flag individual _async() calls without cancellable on the same line."""
+    """GAP-020: Flag individual _async() calls without cancellable on the same line.
+
+    Suppressed when the enclosing function has a cancellable-like parameter
+    (isCancelled, cancellable) — caller manages cancellation.
+    """
+    cancellable_param_re = re.compile(
+        r'(?:async\s+)?\w+\s*\(([^)]*)\)\s*\{')
+    cancellable_names = {'iscancelled', 'cancellable', 'cancel'}
     missing = []
 
     for filepath in js_files:
         rel = os.path.relpath(filepath, ext_dir)
         with open(filepath, encoding='utf-8', errors='replace') as f:
-            for lineno, line in enumerate(f, 1):
-                stripped = line.lstrip()
-                if stripped.startswith('//') or stripped.startswith('*'):
-                    continue
-                if '_async(' not in stripped:
-                    continue
-                # Skip lines that already have cancellable
-                if 'cancellable' in line.lower():
-                    continue
-                missing.append(f"{rel}:{lineno}")
+            lines = f.readlines()
+
+        # Track whether current scope has a cancellable parameter
+        has_cancellable_param = False
+        scope_depth = 0
+        scope_start_depth = -1
+
+        for lineno, line in enumerate(lines, 1):
+            stripped = line.lstrip()
+            if stripped.startswith('//') or stripped.startswith('*'):
+                continue
+
+            # Detect function/method definitions with parameters
+            func_match = cancellable_param_re.search(line)
+            if func_match:
+                params = func_match.group(1).lower()
+                param_names = {p.strip().split('=')[0].strip()
+                               for p in params.split(',')}
+                if param_names & cancellable_names:
+                    has_cancellable_param = True
+                    scope_start_depth = scope_depth
+
+            # Track brace depth
+            scope_depth += line.count('{') - line.count('}')
+
+            # Reset cancellable param flag when exiting the function scope
+            if has_cancellable_param and scope_depth <= scope_start_depth:
+                has_cancellable_param = False
+
+            if '_async(' not in stripped:
+                continue
+            # Skip lines that already have cancellable
+            if 'cancellable' in line.lower():
+                continue
+            # Skip if enclosing function has cancellable parameter
+            if has_cancellable_param:
+                continue
+            missing.append(f"{rel}:{lineno}")
 
     if missing:
         locs = ', '.join(missing[:3])

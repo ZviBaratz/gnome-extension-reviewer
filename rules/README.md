@@ -76,6 +76,29 @@ bash tests/run-tests.sh
 bash scripts/validate-rule.sh R-XXXX-NN tests/fixtures/<fixture-name>@test
 ```
 
+## Inline Suppression
+
+Add `ego-lint-ignore` comments to suppress specific findings on a per-line basis.
+This works for both Tier 1 (pattern rules) and Tier 2 (heuristic checks).
+
+```js
+// Suppress a specific rule on the next line
+// ego-lint-ignore-next-line: R-WEB-01
+setTimeout(() => {}, 1000);
+
+// Suppress a specific rule on the same line
+clearTimeout(this._id); // ego-lint-ignore: R-WEB-10
+
+// Blanket suppress (any rule) — use sparingly
+doSomething(); // ego-lint-ignore
+
+// Suppress a Tier 2 check
+Main.panel._delegate; // ego-lint-ignore: quality/private-api
+```
+
+Use suppression for intentional deviations that would otherwise be false positives.
+Always prefer fixing the issue over suppressing it.
+
 ## Category Prefixes
 
 | Prefix | Category | Severity |

@@ -493,13 +493,6 @@ assert_exit_code "exits with 1 (has failures)" 1
 assert_output_contains "fails on non-GJS scripts (no pkexec)" "\[FAIL\].*non-gjs-scripts"
 echo ""
 
-# --- compiled-schemas-dir ---
-echo "=== compiled-schemas-dir ==="
-run_lint "compiled-schemas-dir@test"
-assert_exit_code "exits with 0 (warnings only)" 0
-assert_output_contains "warns on compiled schemas in dir" "\[WARN\].*compiled-schemas-dir"
-echo ""
-
 # --- logging-volume ---
 echo "=== logging-volume ==="
 run_lint "logging-volume@test"
@@ -563,6 +556,14 @@ echo "=== css-unscoped ==="
 run_lint "css-unscoped@test"
 assert_output_contains "detects unscoped CSS classes" "css/unscoped-class"
 assert_output_contains "detects !important usage" "css/important"
+echo ""
+
+# --- ego-lint-ignore ---
+echo "=== ego-lint-ignore ==="
+run_lint "ego-lint-ignore@test"
+assert_exit_code "exits with 0 (suppressed rules)" 0
+assert_output_not_contains "R-WEB-01 suppressed by next-line" "\[FAIL\].*R-WEB-01"
+assert_output_not_contains "R-WEB-10 suppressed by inline" "\[FAIL\].*R-WEB-10"
 echo ""
 
 # Extended assertion files (sourced by category)

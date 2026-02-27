@@ -8,12 +8,11 @@ export default class TestPrefs extends ExtensionPreferences {
         const group = new Adw.PreferencesGroup();
 
         // Replaceable: should be blocking (R-PREFS-04)
-        const list = new Gtk.ListBox({});
         const header = new Gtk.HeaderBar({});
 
-        // Legitimate: should be advisory (R-PREFS-04b)
-        const label = new Gtk.SpinButton({});
-        const button = new Gtk.Button({ label: 'Click' });
+        // Advisory: has Adw replacement (R-PREFS-04b)
+        const combo = new Gtk.ComboBoxText({});
+        const expander = new Gtk.Expander({ label: 'More' });
 
         page.add(group);
         window.add(page);

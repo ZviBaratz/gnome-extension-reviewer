@@ -1,1 +1,0 @@
-{"uuid": "compiled-schemas-dir@test", "name": "Compiled Schemas Dir Test", "description": "Tests compiled schemas in directory", "shell-version": ["48"], "url": "https://github.com/test/compiled-schemas-dir", "settings-schema": "org.gnome.shell.extensions.compiled-schemas-dir"}
