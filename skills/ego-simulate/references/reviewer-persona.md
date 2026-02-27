@@ -1,5 +1,12 @@
 # EGO Reviewer Persona
 
+> *This persona is based on publicly available review feedback and blog posts
+> by Javad Rahmatzadeh (JustPerfection), whose thorough work reviewing
+> thousands of GNOME Shell extensions forms the backbone of EGO's quality
+> standards. This project aims to complement that work by automating the
+> mechanical checks, freeing reviewer time for the judgment calls that require
+> human expertise.*
+
 How EGO reviewers (particularly JustPerfection/Javad Rahmatzadeh) triage
 extension submissions. Adopt this persona when generating simulation reports.
 

@@ -2,31 +2,19 @@
 
 EGO review compliance tools for GNOME Shell extensions — catch rejection reasons before submission.
 
-## The Problem
-
-Extensions submitted to [extensions.gnome.org](https://extensions.gnome.org) (EGO) are manually reviewed, and many are rejected for avoidable reasons: missing lifecycle cleanup, import segregation violations, deprecated APIs, or incorrect metadata formats. Some rejection criteria are documented in official guidelines; others are unwritten rules consistently enforced by reviewers but not published anywhere. Meanwhile, AI-generated extensions are increasingly common and often fail review due to patterns that look correct but violate GNOME Shell conventions (unnecessary try-catch wrapping, TypeScript-style JSDoc, dead code after throw).
-
-This project provides automated checks to catch these issues before submission.
-
-## ego-lint: Standalone Compliance Checker
-
-ego-lint is a standalone bash/python tool with **zero AI dependency**. It runs locally, produces deterministic output, and checks your extension against 114 pattern rules and 13 structural analysis scripts.
-
-### Quick Start
+## Quick Start
 
 ```bash
-./lint.sh /path/to/your-extension@username
+git clone https://github.com/ZviBaratz/gnome-extension-reviewer.git
+cd gnome-extension-reviewer
+./ego-lint /path/to/your-extension@username
 ```
 
-Or directly:
+Exit code 0 = no blocking issues. Exit code 1 = blocking issues that will likely cause rejection.
 
-```bash
-bash skills/ego-lint/scripts/ego-lint.sh /path/to/your-extension@username
-```
+Run `./ego-lint --help` for the full check list and options.
 
-Exit code 0 = no blocking issues found. Exit code 1 = blocking issues that will likely cause rejection.
-
-### What Gets Checked
+## What Gets Checked
 
 | Category | Checks |
 |----------|--------|
@@ -88,6 +76,24 @@ Pattern rules are declared in [`rules/patterns.yaml`](rules/patterns.yaml) — a
   category: deprecated
 ```
 
+## For Reviewers
+
+ego-lint automates the mechanical parts of EGO review that are tedious to do by hand:
+
+- **Transitive import analysis** — BFS from `prefs.js` through relative imports to catch indirect Shell runtime dependencies (`gi://St`, `gi://Clutter`, etc.)
+- **Cross-file resource tracking** — builds a resource graph (signals, timeouts, widgets, D-Bus, file monitors, GSettings) and detects orphans that aren't cleaned up
+- **AI pattern detection** — code provenance scoring, try-catch density, impossible state guards, `typeof super.method` checks, and 40+ other heuristic signals
+- **Version-gated rules** — GNOME 44–50 migration rules that only fire when the extension's declared `shell-version` includes the relevant version
+
+ego-lint does **not**:
+
+- Make approval/rejection decisions
+- Use AI inference or network access
+- Check logic correctness or functionality
+- Replace human review judgment
+
+**CI integration**: Pure bash + python, exits 0/1, no network access, no dependencies beyond coreutils. See [docs/ci-integration.md](docs/ci-integration.md) for GitHub Actions and GitLab CI examples.
+
 ## Research Background
 
 The rules and checks in this project are grounded in analysis of real EGO review behavior — not just the official documentation.
@@ -111,7 +117,16 @@ Key unwritten rules discovered:
 
 Full research: [docs/RESEARCH-SUMMARY.md](docs/RESEARCH-SUMMARY.md) | Detailed findings: [docs/research/](docs/research/)
 
-## Optional: Claude Code Integration
+## Known Limitations
+
+- **Does not guarantee EGO approval** — use as guidance, not certification
+- Rules are based primarily on active EGO reviewer patterns; individual reviewers may have different preferences
+- Some checks are heuristic (AI slop detection, code quality scoring) and may produce false positives
+- Per-line `_async()` cancellable check is a heuristic — some `null` cancellable calls are valid
+- Three known gaps remain: polkit action ID validation, schema filename validation, module-scope mutable state detection
+- Full gap list: [docs/research/gap-analysis.md](docs/research/gap-analysis.md)
+
+## Optional: AI-Assisted Review
 
 This project is also a [Claude Code](https://docs.anthropic.com/en/docs/claude-code) plugin that provides AI-assisted review skills. These are **optional** — ego-lint works standalone without them.
 
@@ -122,28 +137,17 @@ This project is also a [Claude Code](https://docs.anthropic.com/en/docs/claude-c
 | `ego-scaffold` | Generates EGO-compliant extension boilerplate from templates |
 | `ego-submit` | Full pipeline: lint → review → package validation → readiness report |
 
-### Installation
-
 ```bash
 claude plugins add github:ZviBaratz/gnome-extension-reviewer
 ```
 
-### AI Transparency
-
-ego-lint is **fully deterministic** — bash and python only, no AI calls. The four skills above (`ego-review`, `ego-simulate`, `ego-scaffold`, `ego-submit`) use Claude to read and analyze extension source code via Anthropic's API.
-
-## Known Limitations
-
-- **Does not guarantee EGO approval** — use as guidance, not certification
-- Rules are based primarily on active EGO reviewer patterns; individual reviewers may have different preferences
-- Some checks are heuristic (AI slop detection, code quality scoring) and may produce false positives
-- Per-line `_async()` cancellable check is a heuristic — some `null` cancellable calls are valid
-- Three known gaps remain: polkit action ID validation, schema filename validation, module-scope mutable state detection
-- Full gap list: [docs/research/gap-analysis.md](docs/research/gap-analysis.md)
+ego-lint is **fully deterministic** — bash and python only, no AI calls. The four skills above use Claude to read and analyze extension source code via Anthropic's API.
 
 ## How This Was Built
 
-This tool was built using [Claude Code](https://docs.anthropic.com/en/docs/claude-code). The research — Discourse mining, guideline analysis, gold standard extension review — was AI-assisted. The rules and checklists were validated against real rejection data and regression-tested against a real extension. The AI slop detection rules exist precisely because the author understands how LLMs generate GNOME extension code — and where they get it wrong.
+1. **Rules grounded in real data.** Every rule traces back to real EGO reviews on extensions.gnome.org, [gjs.guide](https://gjs.guide) requirements, or GNOME Shell GitLab history. Regression-tested against a real 11-module extension as baseline.
+2. **Research and code produced with AI assistance.** The Discourse mining, guideline analysis, cross-source synthesis, and implementation were done using [Claude Code](https://docs.anthropic.com/en/docs/claude-code). The AI slop detection rules exist because the author understands how LLMs generate GNOME extension code — and where they get it wrong.
+3. **ego-lint itself is AI-free.** Bash + python + YAML. Deterministic. No API calls. No network access. Runs anywhere with `bash` and `python3`.
 
 ## Requirements
 

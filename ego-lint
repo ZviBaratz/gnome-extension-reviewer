@@ -1,3 +1,3 @@
 #!/usr/bin/env bash
-# lint.sh — convenience wrapper for ego-lint
+# ego-lint — convenience wrapper for ego-lint.sh
 exec "$(dirname "$0")/skills/ego-lint/scripts/ego-lint.sh" "$@"

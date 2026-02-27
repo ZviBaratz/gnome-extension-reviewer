@@ -14,10 +14,48 @@ set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
+show_help() {
+    cat <<'HELPEOF'
+Usage: ego-lint [OPTIONS] [EXTENSION_DIR]
+
+GNOME Shell extension compliance checker for EGO (extensions.gnome.org)
+submission. Runs deterministic checks — bash + python only, no AI, no
+network access.
+
+Options:
+  -h, --help       Show this help message and exit
+  -v, --verbose    Show verbose report with grouped results and verdict
+
+Checks (114 pattern rules + 13 structural scripts):
+  metadata         UUID, required fields, shell-version, session-modes, GNOME trademark
+  imports          GTK/Shell import segregation, transitive dependency analysis
+  schema           Schema ID, path format, glib-compile-schemas dry-run
+  lifecycle        enable/disable symmetry, signals, timeouts, D-Bus, widgets
+  async            _destroyed guards, cancellable usage
+  gobject          GObject.registerClass patterns, GTypeName validation
+  resources        Cross-file resource graph, orphan detection
+  security         Subprocess validation, pkexec, clipboard/network disclosure
+  deprecated       Mainloop, Lang, ByteArray, ExtensionUtils, legacy imports
+  version-compat   GNOME 44-50 migration rules (version-gated)
+  css              Unscoped classes, !important, Shell theme overrides
+  quality          AI slop detection, code provenance scoring, obfuscation
+  package          Forbidden/required files, compiled schemas
+  preferences      ExtensionPreferences base class, GTK4/Adwaita, memory leaks
+
+Exit codes:
+  0  No blocking issues found
+  1  Blocking issues found (likely rejection)
+HELPEOF
+    exit 0
+}
+
 VERBOSE=false
 EXT_DIR=""
 while [[ $# -gt 0 ]]; do
     case "$1" in
+        --help|-h)
+            show_help
+            ;;
         --verbose|-v)
             VERBOSE=true
             shift
