@@ -16,8 +16,6 @@ This skill guides a thorough manual code review that covers everything an
 extensions.gnome.org reviewer checks, plus common rejection patterns learned
 from real submissions.
 
-## Review Phases
-
 ## Reviewer Context
 
 Understanding the real EGO review process helps calibrate review severity:

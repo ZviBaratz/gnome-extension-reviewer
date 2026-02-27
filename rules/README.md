@@ -1,6 +1,11 @@
 # Pattern Rules
 
-This directory contains `patterns.yaml`, the Tier 1 rules for ego-lint.
+This directory lives at the project root (not under `skills/ego-lint/`) because
+pattern rules are shared across skills — `ego-lint` applies them, `ego-review`
+references them, and `ego-submit` orchestrates both. See [CONTRIBUTING.md](../CONTRIBUTING.md) for
+the full three-tier rule system.
+
+`patterns.yaml` contains the Tier 1 rules for ego-lint.
 Pattern rules are simple regex checks — the easiest way to add a new lint rule.
 
 ## Adding a Pattern Rule (5 minutes)

@@ -135,7 +135,7 @@ ego-lint is **fully deterministic** — bash and python only, no AI calls. The f
 ## Known Limitations
 
 - **Does not guarantee EGO approval** — use as guidance, not certification
-- Rules are based primarily on JustPerfection's review patterns; other reviewers may have different preferences
+- Rules are based primarily on active EGO reviewer patterns; individual reviewers may have different preferences
 - Some checks are heuristic (AI slop detection, code quality scoring) and may produce false positives
 - Per-line `_async()` cancellable check is a heuristic — some `null` cancellable calls are valid
 - Three known gaps remain: polkit action ID validation, schema filename validation, module-scope mutable state detection

@@ -18,7 +18,7 @@ Before scaffolding, gather from the user:
 1. **Extension name** — Human-readable name (e.g., "My Extension")
 2. **UUID** — Format: `name@username` (e.g., `my-extension@JohnDoe`)
 3. **Description** — What the extension does
-4. **Target GNOME versions** — Array like ["47", "48"] (must include 48)
+4. **Target GNOME versions** — Array like ["48", "49"] (must include current stable)
 5. **Author name** — For LICENSE copyright
 6. **Repository URL** — GitHub/GitLab URL
 7. **Needs preferences?** — Whether to generate prefs.js (default: yes)

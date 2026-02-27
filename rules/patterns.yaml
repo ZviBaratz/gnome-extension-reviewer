@@ -88,7 +88,49 @@
   category: web-apis
   fix: "Use ESM: import X from 'gi://X' or import {Y} from 'resource:///path/to/module.js'."
 
-# --- Deprecated APIs (blocking) ---
+- id: R-WEB-10
+  pattern: "\\bclearTimeout\\s*\\("
+  scope: ["*.js"]
+  severity: blocking
+  message: "clearTimeout is a browser API; use GLib.Source.remove(sourceId)"
+  category: web-apis
+  fix: "Store the return value of GLib.timeout_add() and pass it to GLib.Source.remove()."
+
+- id: R-WEB-11
+  pattern: "\\bclearInterval\\s*\\("
+  scope: ["*.js"]
+  severity: blocking
+  message: "clearInterval is a browser API; use GLib.Source.remove(sourceId)"
+  category: web-apis
+  fix: "Store the return value of GLib.timeout_add() and pass it to GLib.Source.remove()."
+
+- id: R-WEB-12
+  pattern: "\\bPromise\\.race\\s*\\("
+  scope: ["*.js"]
+  severity: advisory
+  message: "Promise.race() is risky without _destroyed guards; verify async safety"
+  category: web-apis
+  fix: "Ensure _destroyed is checked after the race resolves. Consider simpler alternatives."
+
+# --- Deprecated APIs (blocking/advisory) ---
+
+- id: R-DEPR-04
+  pattern: "\\bimports\\.(ui|gi|misc)\\."
+  scope: ["*.js"]
+  severity: blocking
+  message: "Legacy imports.* syntax; use ESM imports for GNOME 45+"
+  category: deprecated
+  fix: "Replace 'const X = imports.ui.main' with 'import * as Main from \"resource:///org/gnome/shell/ui/main.js\"'."
+  min-version: 45
+
+- id: R-DEPR-04-legacy
+  pattern: "\\bimports\\.(ui|gi|misc)\\."
+  scope: ["*.js"]
+  severity: advisory
+  message: "Legacy imports.* syntax — will be required to migrate for GNOME 45+"
+  category: deprecated
+  fix: "For GNOME 45+ readiness, replace 'const X = imports.ui.main' with 'import * as Main from \"resource:///org/gnome/shell/ui/main.js\"'."
+  max-version: 44
 
 - id: R-DEPR-05
   pattern: "\\bExtensionUtils\\b"
@@ -114,7 +156,272 @@
   category: deprecated
   fix: "Use this.getSettings() from the Extension base class."
 
-# --- AI slop signals (advisory) ---
+- id: R-DEPR-08
+  pattern: "\\bspawn_command_line_sync\\b"
+  scope: ["*.js"]
+  severity: blocking
+  message: "GLib.spawn_command_line_sync is deprecated; use Gio.Subprocess"
+  category: deprecated
+  fix: "Use new Gio.Subprocess({argv: [...], flags: ...}) instead."
+
+- id: R-DEPR-09
+  pattern: "^\\s*var\\s+\\w"
+  scope: ["*.js"]
+  severity: advisory
+  message: "Use const/let instead of var; var has function scope and causes bugs in closures"
+  category: deprecated
+  fix: "Replace var with const (preferred) or let (when reassignment needed)."
+
+- id: R-DEPR-10
+  pattern: "\\bimports\\.format\\b"
+  scope: ["*.js"]
+  severity: blocking
+  message: "imports.format is deprecated; use ES6 template literals"
+  category: deprecated
+  fix: "Replace format() calls with template literals: `my ${variable} string`."
+
+# --- Import segregation (blocking) ---
+
+- id: R-IMPORT-08
+  pattern: "resource:///org/gnome/shell/ui/"
+  scope: ["prefs.js"]
+  severity: blocking
+  message: "GNOME Shell UI modules are not available in the preferences process"
+  category: imports
+  fix: "Preferences must only use GTK/Adw/Gio/GLib. Shell UI modules run in a different process."
+
+# --- Security (blocking/advisory) ---
+
+- id: R-SEC-01
+  pattern: "\\beval\\s*\\("
+  scope: ["*.js"]
+  severity: blocking
+  message: "eval() is a security risk; never execute dynamic code"
+  category: security
+  fix: "Remove eval() entirely. If parsing JSON, use JSON.parse(). If computing values, use a lookup table."
+
+- id: R-SEC-02
+  pattern: "\\bnew\\s+Function\\s*\\("
+  scope: ["*.js"]
+  severity: blocking
+  message: "new Function() is equivalent to eval(); avoid dynamic code execution"
+  category: security
+  fix: "Replace with a direct function definition or a lookup table."
+
+- id: R-SEC-03
+  pattern: "http://(?!localhost|127\\.0\\.0\\.1|\\[::1\\])"
+  scope: ["*.js"]
+  severity: advisory
+  message: "Use HTTPS instead of HTTP for network requests"
+  category: security
+  fix: "Change http:// to https://."
+
+- id: R-SEC-04
+  pattern: "\\bsudo\\b"
+  scope: ["*.js", "*.sh"]
+  severity: blocking
+  message: "sudo is prohibited in GNOME extensions; use pkexec with a polkit policy for privileged operations"
+  category: security
+  fix: "Replace sudo with pkexec and provide a polkit action file, or use a udev rule for hardware access."
+
+- id: R-SEC-05
+  pattern: "Subprocess.*'/bin/sh'.*'-c'"
+  scope: ["*.js"]
+  severity: blocking
+  message: "Subprocess with /bin/sh -c risks command injection; use explicit argv array"
+  category: security
+  fix: "Pass command and arguments as separate argv array elements instead of a shell string."
+
+- id: R-SEC-06
+  pattern: "\\.run_dispose\\s*\\("
+  scope: ["*.js"]
+  severity: advisory
+  message: "GObject.run_dispose() should not be used unless absolutely necessary"
+  category: security
+  fix: "Remove run_dispose() call. If genuinely needed, add a comment explaining why."
+
+- id: R-SEC-07
+  pattern: "\\bSt\\.Clipboard\\b"
+  scope: ["*.js"]
+  severity: advisory
+  message: "Clipboard access must be disclosed in metadata.json description"
+  category: security
+  fix: "Add clipboard usage disclosure to your extension description on EGO."
+
+- id: R-SEC-08
+  pattern: "\\b(analytics|telemetry|trackEvent|trackPage|GA_TRACKING_ID|gtag)\\b"
+  scope: ["*.js"]
+  severity: blocking
+  message: "Telemetry/analytics is banned in GNOME extensions — this will be rejected"
+  category: security
+  fix: "Remove all telemetry/analytics code. EGO explicitly bans user tracking."
+
+- id: R-SEC-09
+  pattern: "\\b(Main\\.extensionManager|ExtensionManager|lookupByUUID)\\b"
+  scope: ["*.js"]
+  severity: advisory
+  message: "Extension system interference is discouraged; modifying other extensions requires justification"
+  category: security
+  fix: "Avoid interacting with other extensions unless absolutely necessary. Document the justification."
+
+- id: R-SEC-13
+  pattern: "Subprocess[^;]*['\"]\\s*\\+|\\+\\s*['\"][^;]*Subprocess"
+  scope: ["*.js"]
+  severity: blocking
+  message: "Subprocess with string concatenation risks command injection; use explicit argv array"
+  category: security
+  fix: "Pass command and arguments as separate argv array elements instead of concatenating strings"
+
+- id: R-SEC-17
+  pattern: "Gio\\.File\\.new_for_path\\s*\\(\\s*['\"]\/tmp"
+  scope: ["*.js"]
+  severity: advisory
+  message: "Writing to /tmp is insecure; use GLib.get_tmp_dir() or XDG dirs (GLib.get_user_cache_dir())"
+  category: security
+  fix: "Use GLib.get_tmp_dir() for temporary files or GLib.get_user_cache_dir() for persistent cache"
+
+- id: R-SEC-20
+  pattern: "\\bpkexec\\b"
+  scope: ["*.js", "*.sh"]
+  severity: advisory
+  message: "pkexec usage will receive extra reviewer scrutiny; ensure a valid polkit policy is included"
+  category: security
+  fix: "Verify the polkit .policy file is present and the action ID matches. Consider udev rules for hardware access."
+
+- id: R-SEC-23
+  pattern: "\\b(atob|btoa)\\s*\\("
+  scope: ["*.js"]
+  severity: advisory
+  message: "Base64 encoding/decoding may indicate obfuscated content — reviewer will inspect"
+  category: security
+  fix: "If used legitimately (e.g., data URIs), add a comment explaining the purpose"
+
+# --- Subprocess safety (blocking/advisory) ---
+
+- id: R-SEC-14
+  pattern: "\\bspawn_sync\\b"
+  scope: ["*.js"]
+  severity: blocking
+  message: "GLib.spawn_sync blocks the main loop; use Gio.Subprocess with async"
+  category: security
+  fix: "Use 'new Gio.Subprocess({argv: [...]})' with communicate_utf8_async() or Gio._promisify."
+
+- id: R-SEC-15
+  pattern: "\\bspawn_command_line_async\\b"
+  scope: ["*.js"]
+  severity: advisory
+  message: "GLib.spawn_command_line_async provides no error handling; prefer Gio.Subprocess"
+  category: security
+  fix: "Use 'new Gio.Subprocess({argv: [...]})' for proper lifecycle control and error handling."
+
+- id: R-SEC-21
+  pattern: "(Subprocess|spawn|spawn_async|spawn_command_line).*['\"]curl['\"]|['\"]curl\\s"
+  scope: ["*.js"]
+  severity: blocking
+  message: "Spawning curl is forbidden — use Soup.Session for HTTP requests"
+  category: security
+  fix: "Replace subprocess curl call with Soup.Session and Soup.Message"
+
+- id: R-SEC-22
+  pattern: "(Subprocess|spawn|spawn_async|spawn_command_line).*['\"]gsettings['\"]|['\"]gsettings\\s|['\"]dconf['\"]|['\"]dconf\\s"
+  scope: ["*.js"]
+  severity: blocking
+  message: "Spawning gsettings/dconf CLI is forbidden — use Gio.Settings API directly"
+  category: security
+  fix: "Use this.getSettings() or new Gio.Settings() to access GSettings programmatically"
+
+# --- Package installation bans (blocking) ---
+# Extensions MUST NOT automatically install packages.
+
+- id: R-SEC-10
+  pattern: "\\bpip\\s+install\\b"
+  scope: ["*.js", "*.sh"]
+  severity: blocking
+  message: "Automatic pip install is banned; extensions must not install packages without explicit user action"
+  category: security
+  fix: "Remove automatic pip install. If a Python dependency is needed, document manual installation steps."
+
+- id: R-SEC-11
+  pattern: "\\bnpm\\s+install\\b"
+  scope: ["*.js", "*.sh"]
+  severity: blocking
+  message: "Automatic npm install is banned; extensions must not install packages without explicit user action"
+  category: security
+  fix: "Remove automatic npm install. If a Node dependency is needed, document manual installation steps."
+
+- id: R-SEC-12
+  pattern: "\\b(apt|apt-get|dnf|yum|pacman|zypper)\\s+(install|-S)\\b"
+  scope: ["*.js", "*.sh"]
+  severity: blocking
+  message: "Automatic system package installation is banned; extensions must not install packages without explicit user action"
+  category: security
+  fix: "Remove automatic package installation. Document manual installation steps for required system packages."
+
+# --- Prefs.js GTK3 widget detection (blocking/advisory) ---
+
+- id: R-PREFS-04
+  pattern: "\\bnew\\s+Gtk\\.(ListBox|HeaderBar|StackSwitcher|Notebook|InfoBar)\\b"
+  scope: ["prefs.js"]
+  severity: blocking
+  message: "GTK widget with direct Adw replacement used in prefs.js — use the Adwaita equivalent"
+  category: prefs
+  fix: "Gtk.ListBox → Adw.PreferencesGroup, Gtk.HeaderBar → Adw.HeaderBar, Gtk.StackSwitcher → Adw.ViewSwitcher, Gtk.Notebook → Adw.ViewStack, Gtk.InfoBar → Adw.Banner"
+
+- id: R-PREFS-04b
+  pattern: "\\bnew\\s+Gtk\\.(Box|Label|Switch|Button|Entry|Grid|ScrolledWindow|Frame|Separator|SpinButton|ComboBoxText|CheckButton|RadioButton|ToggleButton|Stack|Revealer|Expander|FlowBox|Overlay|Paned|ActionBar|ProgressBar|Scale|LevelBar|SearchEntry|SearchBar|DropDown|Image|Adjustment)\\b"
+  scope: ["prefs.js"]
+  severity: advisory
+  message: "Raw GTK widget in prefs.js — consider Adwaita (Adw) widgets where possible for GNOME 45+"
+  category: prefs
+  fix: "Use Adw.PreferencesPage, Adw.PreferencesGroup, Adw.ActionRow, Adw.SwitchRow, Adw.ComboRow where suitable"
+
+# --- Translation (advisory) ---
+
+- id: R-I18N-01
+  pattern: "_\\(\\`[^`]*\\$\\{"
+  scope: ["*.js"]
+  severity: advisory
+  message: "Template literal inside gettext _() breaks xgettext string extraction"
+  category: i18n
+  fix: "Use _('Found %d items').format(count) instead of _(`Found ${count} items`)"
+
+- id: R-I18N-02
+  pattern: "_\\([^)]*['\"]\\s*\\+"
+  scope: ["*.js"]
+  severity: advisory
+  message: "String concatenation inside gettext _() breaks xgettext extraction"
+  category: i18n
+  fix: "Use _('Hello %s').format(name) instead of _('Hello ' + name)"
+
+# --- Logging (advisory) ---
+
+- id: R-LOG-02
+  pattern: "(?<![.\\w])log\\s*\\("
+  scope: ["*.js"]
+  severity: advisory
+  message: "Legacy log() function; use console.debug() instead"
+  category: logging
+  fix: "Replace log(...) with console.debug(...)."
+
+- id: R-LOG-03
+  pattern: "\\b(print|printerr)\\s*\\("
+  scope: ["*.js"]
+  severity: advisory
+  message: "print()/printerr() should not be used in production; use console.debug()"
+  category: logging
+  fix: "Replace print()/printerr() with console.debug() or console.error()."
+
+# --- GSettings (advisory) ---
+
+- id: R-QUAL-23
+  pattern: "\\.bind\\s*\\([^)]*GObject\\.BindingFlags"
+  scope: ["*.js"]
+  severity: advisory
+  message: "GSettings.bind() takes Gio.SettingsBindFlags, not GObject.BindingFlags"
+  category: quality
+  fix: "Use Gio.SettingsBindFlags.DEFAULT (or .GET, .SET, .INVERT_BOOLEAN) instead of GObject.BindingFlags"
+
+# --- AI slop signals (advisory/blocking) ---
 # These patterns are not wrong per se, but signal unreviewed AI-generated code.
 
 - id: R-SLOP-01
@@ -157,133 +464,6 @@
   category: ai-slop
   fix: "Remove bug-report-url; use the url field for your project URL."
 
-# --- Security (blocking) ---
-# These patterns indicate security risks that will cause EGO rejection.
-
-- id: R-SEC-01
-  pattern: "\\beval\\s*\\("
-  scope: ["*.js"]
-  severity: blocking
-  message: "eval() is a security risk; never execute dynamic code"
-  category: security
-  fix: "Remove eval() entirely. If parsing JSON, use JSON.parse(). If computing values, use a lookup table."
-
-- id: R-SEC-02
-  pattern: "\\bnew\\s+Function\\s*\\("
-  scope: ["*.js"]
-  severity: blocking
-  message: "new Function() is equivalent to eval(); avoid dynamic code execution"
-  category: security
-  fix: "Replace with a direct function definition or a lookup table."
-
-- id: R-SEC-03
-  pattern: "http://(?!localhost|127\\.0\\.0\\.1|\\[::1\\])"
-  scope: ["*.js"]
-  severity: advisory
-  message: "Use HTTPS instead of HTTP for network requests"
-  category: security
-  fix: "Change http:// to https://."
-
-- id: R-SEC-04
-  pattern: "\\bsudo\\b"
-  scope: ["*.js", "*.sh"]
-  severity: blocking
-  message: "sudo is prohibited in GNOME extensions; use pkexec with a polkit policy for privileged operations"
-  category: security
-  fix: "Replace sudo with pkexec and provide a polkit action file, or use a udev rule for hardware access."
-
-- id: R-SEC-20
-  pattern: "\\bpkexec\\b"
-  scope: ["*.js", "*.sh"]
-  severity: advisory
-  message: "pkexec usage will receive extra reviewer scrutiny; ensure a valid polkit policy is included"
-  category: security
-  fix: "Verify the polkit .policy file is present and the action ID matches. Consider udev rules for hardware access."
-
-- id: R-SEC-05
-  pattern: "Subprocess.*'/bin/sh'.*'-c'"
-  scope: ["*.js"]
-  severity: blocking
-  message: "Subprocess with /bin/sh -c risks command injection; use explicit argv array"
-  category: security
-  fix: "Pass command and arguments as separate argv array elements instead of a shell string."
-
-# --- Browser APIs (blocking, continued) ---
-
-- id: R-WEB-10
-  pattern: "\\bclearTimeout\\s*\\("
-  scope: ["*.js"]
-  severity: blocking
-  message: "clearTimeout is a browser API; use GLib.Source.remove(sourceId)"
-  category: web-apis
-  fix: "Store the return value of GLib.timeout_add() and pass it to GLib.Source.remove()."
-
-- id: R-WEB-11
-  pattern: "\\bclearInterval\\s*\\("
-  scope: ["*.js"]
-  severity: blocking
-  message: "clearInterval is a browser API; use GLib.Source.remove(sourceId)"
-  category: web-apis
-  fix: "Store the return value of GLib.timeout_add() and pass it to GLib.Source.remove()."
-
-# --- Logging (advisory) ---
-
-- id: R-LOG-02
-  pattern: "(?<![.\\w])log\\s*\\("
-  scope: ["*.js"]
-  severity: advisory
-  message: "Legacy log() function; use console.debug() instead"
-  category: logging
-  fix: "Replace log(...) with console.debug(...)."
-
-- id: R-LOG-03
-  pattern: "\\b(print|printerr)\\s*\\("
-  scope: ["*.js"]
-  severity: advisory
-  message: "print()/printerr() should not be used in production; use console.debug()"
-  category: logging
-  fix: "Replace print()/printerr() with console.debug() or console.error()."
-
-# --- Deprecated APIs (continued) ---
-
-- id: R-DEPR-04
-  pattern: "\\bimports\\.(ui|gi|misc)\\."
-  scope: ["*.js"]
-  severity: blocking
-  message: "Legacy imports.* syntax; use ESM imports for GNOME 45+"
-  category: deprecated
-  fix: "Replace 'const X = imports.ui.main' with 'import * as Main from \"resource:///org/gnome/shell/ui/main.js\"'."
-  min-version: 45
-
-- id: R-DEPR-04-legacy
-  pattern: "\\bimports\\.(ui|gi|misc)\\."
-  scope: ["*.js"]
-  severity: advisory
-  message: "Legacy imports.* syntax — will be required to migrate for GNOME 45+"
-  category: deprecated
-  fix: "For GNOME 45+ readiness, replace 'const X = imports.ui.main' with 'import * as Main from \"resource:///org/gnome/shell/ui/main.js\"'."
-  max-version: 44
-
-- id: R-DEPR-08
-  pattern: "\\bspawn_command_line_sync\\b"
-  scope: ["*.js"]
-  severity: blocking
-  message: "GLib.spawn_command_line_sync is deprecated; use Gio.Subprocess"
-  category: deprecated
-  fix: "Use new Gio.Subprocess({argv: [...], flags: ...}) instead."
-
-# --- Import segregation (blocking) ---
-
-- id: R-IMPORT-08
-  pattern: "resource:///org/gnome/shell/ui/"
-  scope: ["prefs.js"]
-  severity: blocking
-  message: "GNOME Shell UI modules are not available in the preferences process"
-  category: imports
-  fix: "Preferences must only use GTK/Adw/Gio/GLib. Shell UI modules run in a different process."
-
-# --- AI slop signals (advisory, continued) ---
-
 - id: R-SLOP-07
   pattern: "\\.get_button\\(\\)\\s*===?\\s*[123]"
   scope: ["*.js"]
@@ -292,7 +472,87 @@
   category: ai-slop
   fix: "Replace 1 with Clutter.BUTTON_PRIMARY, 2 with Clutter.BUTTON_MIDDLE, 3 with Clutter.BUTTON_SECONDARY."
 
-# --- Hallucinated APIs (advisory) ---
+- id: R-SLOP-13
+  pattern: "\\bthis\\s+instanceof\\s+\\w+"
+  scope: ["*.js"]
+  severity: advisory
+  message: "this instanceof check inside a class method is always true"
+  category: ai-slop
+  fix: "Remove the redundant instanceof check."
+
+- id: R-SLOP-17
+  pattern: "typeof\\s+super\\.\\w+\\s*===?\\s*['\"]function['\"]"
+  scope: ["*.js"]
+  severity: advisory
+  message: "typeof super.method === 'function' is unnecessary on GObject classes; methods always exist"
+  category: ai-slop
+  fix: "Remove the typeof check and call super.method() directly"
+
+- id: R-SLOP-18
+  pattern: "^\\s*//\\s*(Important|Note|Remember|TODO):\\s*(Make sure|Ensure|Always|Don't forget|Handle)"
+  scope: ["*.js"]
+  severity: advisory
+  message: "Comment reads like an LLM prompt — reviewers flag these as AI-generated"
+  category: ai-slop
+  fix: "Remove or rewrite to explain 'why', not 'what to do'"
+
+- id: R-SLOP-19
+  pattern: "console\\.(error|warn)\\(`Failed to \\$\\{"
+  scope: ["*.js"]
+  severity: advisory
+  message: "Verbose template error message — prefer terse error strings"
+  category: ai-slop
+  fix: "Simplify to: console.error('ExtName: init failed', e)"
+
+- id: R-SLOP-22
+  pattern: "catch\\s*\\(\\w+\\)\\s*\\{[^}]*console\\.(error|warn|log)\\([^)]*\\);?\\s*(throw|rethrow)\\s"
+  scope: ["*.js"]
+  severity: advisory
+  message: "Catch-log-rethrow adds no value — handle or let propagate"
+  category: ai-slop
+  fix: "Remove the try-catch or handle the error meaningfully"
+
+- id: R-SLOP-23
+  pattern: "throw\\s+[^;]+;\\s*\\n\\s*return\\s"
+  scope: ["*.js"]
+  severity: advisory
+  message: "Dead code after throw — unreachable return"
+  category: ai-slop
+  fix: "Remove the unreachable return statement"
+
+- id: R-SLOP-27
+  pattern: "\\{\\s*\\.\\.\\.this\\._\\w+\\s*\\}"
+  scope: ["*.js"]
+  severity: advisory
+  message: "Unnecessary object spread copy — GNOME extensions should pass references"
+  category: ai-slop
+  fix: "Pass the object reference directly instead of creating a shallow copy"
+
+- id: R-SLOP-28
+  pattern: "instanceof\\s+(Error|TypeError|RangeError|SyntaxError|ReferenceError)"
+  scope: ["*.js"]
+  severity: advisory
+  message: "instanceof Error check is unusual in GNOME extensions"
+  category: ai-slop
+  fix: "In GJS, catch blocks already have typed errors; instanceof checks are rarely needed"
+
+- id: R-SLOP-29
+  pattern: "destroy\\s*\\(\\)\\s*\\{\\s*super\\.destroy\\(\\)\\s*;?\\s*\\}"
+  scope: ["*.js"]
+  severity: advisory
+  message: "Empty destroy() that only calls super.destroy() — remove the override"
+  category: ai-slop
+  fix: "Remove the destroy() override; GObject chains to super automatically"
+
+- id: R-SLOP-30
+  pattern: "typeof super\\.\\w+\\s*===\\s*['\"]function['\"]"
+  scope: ["*.js"]
+  severity: blocking
+  message: "typeof super.method check is unnecessary — GObject parent methods always exist (AI-generated pattern)"
+  category: ai-slop
+  fix: "Remove the typeof check and call super.method() directly."
+
+# --- Hallucinated APIs (advisory/blocking) ---
 # LLMs frequently call methods that don't exist in GJS/GNOME Shell.
 
 - id: R-SLOP-08
@@ -327,72 +587,6 @@
   category: ai-slop
   fix: "GLib.timeout_add_seconds_full → GLib.timeout_add_seconds. GLib.source_remove → GLib.Source.remove."
 
-# --- Security (continued) ---
-
-- id: R-SEC-06
-  pattern: "\\.run_dispose\\s*\\("
-  scope: ["*.js"]
-  severity: advisory
-  message: "GObject.run_dispose() should not be used unless absolutely necessary"
-  category: security
-  fix: "Remove run_dispose() call. If genuinely needed, add a comment explaining why."
-
-# --- AI slop (continued) ---
-
-- id: R-SLOP-13
-  pattern: "\\bthis\\s+instanceof\\s+\\w+"
-  scope: ["*.js"]
-  severity: advisory
-  message: "this instanceof check inside a class method is always true"
-  category: ai-slop
-  fix: "Remove the redundant instanceof check."
-
-# --- Security (continued) ---
-
-- id: R-SEC-07
-  pattern: "\\bSt\\.Clipboard\\b"
-  scope: ["*.js"]
-  severity: advisory
-  message: "Clipboard access must be disclosed in metadata.json description"
-  category: security
-  fix: "Add clipboard usage disclosure to your extension description on EGO."
-
-- id: R-SEC-08
-  pattern: "\\b(analytics|telemetry|trackEvent|trackPage|GA_TRACKING_ID|gtag)\\b"
-  scope: ["*.js"]
-  severity: blocking
-  message: "Telemetry/analytics is banned in GNOME extensions — this will be rejected"
-  category: security
-  fix: "Remove all telemetry/analytics code. EGO explicitly bans user tracking."
-
-- id: R-SEC-09
-  pattern: "\\b(Main\\.extensionManager|ExtensionManager|lookupByUUID)\\b"
-  scope: ["*.js"]
-  severity: advisory
-  message: "Extension system interference is discouraged; modifying other extensions requires justification"
-  category: security
-  fix: "Avoid interacting with other extensions unless absolutely necessary. Document the justification."
-
-# --- Deprecated (continued) ---
-
-- id: R-DEPR-09
-  pattern: "^\\s*var\\s+\\w"
-  scope: ["*.js"]
-  severity: advisory
-  message: "Use const/let instead of var; var has function scope and causes bugs in closures"
-  category: deprecated
-  fix: "Replace var with const (preferred) or let (when reassignment needed)."
-
-- id: R-DEPR-10
-  pattern: "\\bimports\\.format\\b"
-  scope: ["*.js"]
-  severity: blocking
-  message: "imports.format is deprecated; use ES6 template literals"
-  category: deprecated
-  fix: "Replace format() calls with template literals: `my ${variable} string`."
-
-# --- Hallucinated APIs (continued) ---
-
 - id: R-SLOP-16
   pattern: "\\bGLib\\.file_get_contents\\b"
   scope: ["*.js"]
@@ -401,44 +595,115 @@
   category: ai-slop
   fix: "Use: const [ok, contents] = file.load_contents(null); then TextDecoder to decode."
 
-# --- Web APIs (continued) ---
-
-- id: R-WEB-12
-  pattern: "\\bPromise\\.race\\s*\\("
+- id: R-SLOP-24
+  pattern: "\\bnew\\s+Gio\\.Settings\\s*\\("
   scope: ["*.js"]
   severity: advisory
-  message: "Promise.race() is risky without _destroyed guards; verify async safety"
-  category: web-apis
-  fix: "Ensure _destroyed is checked after the race resolves. Consider simpler alternatives."
+  message: "new Gio.Settings() is incorrect in GNOME 45+; use this.getSettings() from Extension base class"
+  category: ai-slop
+  fix: "Use this.getSettings() in Extension subclass or this.getSettings() in ExtensionPreferences"
 
-# --- Package installation bans (blocking) ---
-# Extensions MUST NOT automatically install packages.
+- id: R-SLOP-25
+  pattern: "\\bMain\\.extensionManager\\.(enable|disable)\\s*\\("
+  scope: ["*.js"]
+  severity: advisory
+  message: "Main.extensionManager.enable()/disable() is a hallucinated API — extensions cannot enable/disable themselves"
+  category: ai-slop
+  fix: "Remove the call. Extension lifecycle is managed by GNOME Shell, not by the extension itself."
 
-- id: R-SEC-10
-  pattern: "\\bpip\\s+install\\b"
-  scope: ["*.js", "*.sh"]
+- id: R-SLOP-26
+  pattern: "\\bShell\\.ActionMode\\.ALL\\b"
+  scope: ["*.js"]
+  severity: advisory
+  message: "Shell.ActionMode.ALL does not exist; use Shell.ActionMode.NORMAL or combine specific modes"
+  category: ai-slop
+  fix: "Use Shell.ActionMode.NORMAL for most keybindings, or Shell.ActionMode.OVERVIEW | Shell.ActionMode.NORMAL for multi-mode"
+
+# --- Code quality (advisory/blocking) ---
+
+- id: R-QUAL-04b
+  pattern: "^(let|var)\\s+\\w+\\s*=\\s*new\\s+(St|Gio|GLib|Clutter|Meta|Shell|GObject)\\."
+  scope: ["*.js"]
   severity: blocking
-  message: "Automatic pip install is banned; extensions must not install packages without explicit user action"
-  category: security
-  fix: "Remove automatic pip install. If a Python dependency is needed, document manual installation steps."
+  message: "Module-scope GObject construction persists across enable/disable cycles — move into enable()"
+  category: quality
+  fix: "Move the GObject construction into enable() and store as an instance property"
 
-- id: R-SEC-11
-  pattern: "\\bnpm\\s+install\\b"
-  scope: ["*.js", "*.sh"]
+- id: R-QUAL-25
+  pattern: "this\\.dir\\.get_path\\(\\)"
+  scope: ["*.js"]
+  severity: advisory
+  message: "Use this.path instead of this.dir.get_path()"
+  category: quality
+  fix: "Replace this.dir.get_path() with this.path"
+
+- id: R-QUAL-26
+  pattern: "class\\s+Logger\\b"
+  scope: ["*.js"]
+  severity: advisory
+  message: "Custom Logger class is unnecessary — use console.debug/warn/error"
+  category: quality
+  fix: "Remove custom Logger; use console.debug() for messages, console.error() for errors"
+
+- id: R-QUAL-27
+  pattern: "Config\\.PACKAGE_VERSION\\s*(===|!==|>=|<=|>|<)"
+  scope: ["*.js"]
+  severity: advisory
+  message: "String comparison on PACKAGE_VERSION is unreliable — use parseInt() for numeric comparison"
+  category: quality
+  fix: "Use parseInt(Config.PACKAGE_VERSION) >= 45 instead of Config.PACKAGE_VERSION >= '45'"
+
+- id: R-QUAL-27b
+  pattern: "Config\\.PACKAGE_VERSION\\.startsWith\\s*\\("
+  scope: ["*.js"]
+  severity: advisory
+  message: "String comparison on PACKAGE_VERSION is unreliable — use parseInt() for numeric comparison"
+  category: quality
+  fix: "Use parseInt(Config.PACKAGE_VERSION) >= 45 instead of Config.PACKAGE_VERSION.startsWith('45')"
+
+- id: R-QUAL-30
+  pattern: "\\blookupByURL\\s*\\("
+  scope: ["*.js"]
+  severity: advisory
+  message: "lookupByURL() is discouraged — use this.getSettings() and this.path from the entry point class"
+  category: code-quality
+  fix: "Access settings and path via the Extension/ExtensionPreferences base class instead"
+
+- id: R-QUAL-31
+  pattern: "_onDestroy\\s*\\("
+  scope: ["*.js"]
+  severity: advisory
+  message: "_onDestroy() should be renamed to destroy() with super.destroy() at the end"
+  category: code-quality
+  fix: "Rename to destroy() { /* cleanup */; super.destroy(); }"
+
+- id: R-QUAL-32
+  pattern: "gi://(GLib|Gio|GObject|St|Clutter|Meta|Shell|Pango|Graphene|Mtk)\\?version="
+  scope: ["*.js"]
+  severity: advisory
+  message: "Unnecessary ?version= in gi:// import — this library does not require a version specifier"
+  category: code-quality
+  fix: "Remove ?version= from the import; only Soup, Gtk, Gdk, and Adw require version specifiers"
+
+# --- GNOME 44-46 migration (version-gated) ---
+
+- id: R-VER44-01
+  pattern: "\\bMeta\\.later_add\\b"
+  scope: ["*.js"]
   severity: blocking
-  message: "Automatic npm install is banned; extensions must not install packages without explicit user action"
-  category: security
-  fix: "Remove automatic npm install. If a Node dependency is needed, document manual installation steps."
+  message: "Meta.later_add() removed in GNOME 44; use global.compositor.get_laters().addLater()"
+  category: version-compat
+  fix: "Use global.compositor.get_laters().addLater(Meta.LaterType.BEFORE_REDRAW, callback)"
+  min-version: 44
 
-- id: R-SEC-12
-  pattern: "\\b(apt|apt-get|dnf|yum|pacman|zypper)\\s+(install|-S)\\b"
-  scope: ["*.js", "*.sh"]
+- id: R-VER44-02
+  pattern: "\\bMeta\\.later_remove\\b"
+  scope: ["*.js"]
   severity: blocking
-  message: "Automatic system package installation is banned; extensions must not install packages without explicit user action"
-  category: security
-  fix: "Remove automatic package installation. Document manual installation steps for required system packages."
-
-# --- GNOME 46 removed APIs (blocking, version-gated) ---
+  message: "Meta.later_remove() removed in GNOME 44; use global.compositor.get_laters().removeLater()"
+  category: version-compat
+  fix: "Use global.compositor.get_laters().removeLater(id)"
+  min-version: 44
 
 - id: R-VER46-01
   pattern: "\\.add_actor\\s*\\("
@@ -485,7 +750,25 @@
   fix: "Use ACTIVE, INACTIVE, ENABLING, DISABLING instead"
   min-version: 46
 
-# --- GNOME 47 removed APIs (blocking, version-gated) ---
+- id: R-VER46-06
+  pattern: "\\bBlurEffect[^;]*\\.sigma\\b|\\bBlurEffect\\s*\\(\\s*\\{[^}]*sigma"
+  scope: ["*.js"]
+  severity: blocking
+  message: "Shell.BlurEffect.sigma replaced by .radius in GNOME 46 (radius = sigma * 2.0)"
+  category: version-compat
+  fix: "Use .radius instead of .sigma (radius = sigma * 2.0)"
+  min-version: 46
+
+- id: R-VER46-07
+  pattern: "\\bClutter\\.Container\\b"
+  scope: ["*.js"]
+  severity: blocking
+  message: "Clutter.Container interface removed in GNOME 46; use Clutter.Actor methods directly"
+  category: version-compat
+  fix: "Use Clutter.Actor add_child/remove_child instead of Container interface methods"
+  min-version: 46
+
+# --- GNOME 47 migration (version-gated) ---
 
 - id: R-VER47-01
   pattern: "\\bClutter\\.Color\\b"
@@ -496,7 +779,7 @@
   fix: "Import Cogl from 'gi://Cogl' and use new Cogl.Color() instead"
   min-version: 47
 
-# --- GNOME 48 removed APIs (blocking, version-gated) ---
+# --- GNOME 48 migration (version-gated) ---
 
 - id: R-VER48-01
   pattern: "\\bClutter\\.Image\\b"
@@ -525,7 +808,52 @@
   fix: "Use global.backend.get_cursor_tracker() instead"
   min-version: 48
 
-# --- GNOME 49 removed APIs (blocking, version-gated) ---
+- id: R-VER48-04
+  pattern: "\\.vertical\\s*="
+  scope: ["*.js"]
+  severity: advisory
+  message: "St.Widget.vertical property deprecated in GNOME 48; use orientation: Clutter.Orientation.VERTICAL"
+  category: version-compat
+  fix: "Use {orientation: Clutter.Orientation.VERTICAL} instead of {vertical: true}"
+  min-version: 48
+
+- id: R-VER48-04b
+  pattern: "vertical:\\s*(true|false)"
+  scope: ["*.js"]
+  severity: advisory
+  message: "vertical property in constructor config removed in GNOME 48; use orientation: Clutter.Orientation.VERTICAL"
+  category: version-compat
+  fix: "Replace {vertical: true} with {orientation: Clutter.Orientation.VERTICAL}"
+  min-version: 48
+
+- id: R-VER48-05
+  pattern: "\\bShell\\.SnippetHook\\b"
+  scope: ["*.js"]
+  severity: blocking
+  message: "Shell.SnippetHook removed in GNOME 48"
+  category: version-compat
+  fix: "Shell.SnippetHook was removed without replacement in GNOME 48"
+  min-version: 48
+
+- id: R-VER48-06
+  pattern: "\\.get_key_focus\\s*\\("
+  scope: ["*.js"]
+  severity: advisory
+  message: "Clutter.Stage.get_key_focus() returns null on Wayland in GNOME 48; track focus via signals instead"
+  category: version-compat
+  fix: "get_key_focus() returns null on Wayland in GNOME 48; track focus via 'key-focus-in' signal"
+  min-version: 48
+
+- id: R-VER48-07
+  pattern: "quick-menu-toggle"
+  scope: ["*.css"]
+  severity: blocking
+  message: "CSS class .quick-menu-toggle renamed to .quick-toggle-has-menu in GNOME 48"
+  category: version-compat
+  fix: "Replace .quick-menu-toggle with .quick-toggle-has-menu"
+  min-version: 48
+
+# --- GNOME 49 migration (version-gated) ---
 
 - id: R-VER49-01
   pattern: "\\bMeta\\.Rectangle\\b"
@@ -572,236 +900,6 @@
   fix: "Use tracker.inhibit_cursor_visibility() / uninhibit_cursor_visibility()"
   min-version: 49
 
-# --- GNOME 44-48 gap rules ---
-
-- id: R-VER44-01
-  pattern: "\\bMeta\\.later_add\\b"
-  scope: ["*.js"]
-  severity: blocking
-  message: "Meta.later_add() removed in GNOME 44; use global.compositor.get_laters().addLater()"
-  category: version-compat
-  fix: "Use global.compositor.get_laters().addLater(Meta.LaterType.BEFORE_REDRAW, callback)"
-  min-version: 44
-
-- id: R-VER44-02
-  pattern: "\\bMeta\\.later_remove\\b"
-  scope: ["*.js"]
-  severity: blocking
-  message: "Meta.later_remove() removed in GNOME 44; use global.compositor.get_laters().removeLater()"
-  category: version-compat
-  fix: "Use global.compositor.get_laters().removeLater(id)"
-  min-version: 44
-
-- id: R-VER46-06
-  pattern: "\\bBlurEffect[^;]*\\.sigma\\b|\\bBlurEffect\\s*\\(\\s*\\{[^}]*sigma"
-  scope: ["*.js"]
-  severity: blocking
-  message: "Shell.BlurEffect.sigma replaced by .radius in GNOME 46 (radius = sigma * 2.0)"
-  category: version-compat
-  fix: "Use .radius instead of .sigma (radius = sigma * 2.0)"
-  min-version: 46
-
-- id: R-VER48-04
-  pattern: "\\.vertical\\s*="
-  scope: ["*.js"]
-  severity: advisory
-  message: "St.Widget.vertical property deprecated in GNOME 48; use orientation: Clutter.Orientation.VERTICAL"
-  category: version-compat
-  fix: "Use {orientation: Clutter.Orientation.VERTICAL} instead of {vertical: true}"
-  min-version: 48
-
-- id: R-VER48-04b
-  pattern: "vertical:\\s*(true|false)"
-  scope: ["*.js"]
-  severity: advisory
-  message: "vertical property in constructor config removed in GNOME 48; use orientation: Clutter.Orientation.VERTICAL"
-  category: version-compat
-  fix: "Replace {vertical: true} with {orientation: Clutter.Orientation.VERTICAL}"
-  min-version: 48
-
-# --- GNOME 48 extra removals ---
-
-- id: R-VER48-05
-  pattern: "\\bShell\\.SnippetHook\\b"
-  scope: ["*.js"]
-  severity: blocking
-  message: "Shell.SnippetHook removed in GNOME 48"
-  category: version-compat
-  fix: "Shell.SnippetHook was removed without replacement in GNOME 48"
-  min-version: 48
-
-- id: R-VER48-06
-  pattern: "\\.get_key_focus\\s*\\("
-  scope: ["*.js"]
-  severity: advisory
-  message: "Clutter.Stage.get_key_focus() returns null on Wayland in GNOME 48; track focus via signals instead"
-  category: version-compat
-  fix: "get_key_focus() returns null on Wayland in GNOME 48; track focus via 'key-focus-in' signal"
-  min-version: 48
-
-# --- GNOME 46 gap fill ---
-
-- id: R-VER46-07
-  pattern: "\\bClutter\\.Container\\b"
-  scope: ["*.js"]
-  severity: blocking
-  message: "Clutter.Container interface removed in GNOME 46; use Clutter.Actor methods directly"
-  category: version-compat
-  fix: "Use Clutter.Actor add_child/remove_child instead of Container interface methods"
-  min-version: 46
-
-# --- AI slop (generalized typeof super) ---
-
-- id: R-SLOP-17
-  pattern: "typeof\\s+super\\.\\w+\\s*===?\\s*['\"]function['\"]"
-  scope: ["*.js"]
-  severity: advisory
-  message: "typeof super.method === 'function' is unnecessary on GObject classes; methods always exist"
-  category: ai-slop
-  fix: "Remove the typeof check and call super.method() directly"
-
-# --- Security (subprocess shell concatenation) ---
-
-- id: R-SEC-13
-  pattern: "Subprocess[^;]*['\"]\\s*\\+|\\+\\s*['\"][^;]*Subprocess"
-  scope: ["*.js"]
-  severity: blocking
-  message: "Subprocess with string concatenation risks command injection; use explicit argv array"
-  category: security
-  fix: "Pass command and arguments as separate argv array elements instead of concatenating strings"
-
-# --- Prefs.js GTK3 widget detection ---
-
-- id: R-PREFS-04
-  pattern: "\\bnew\\s+Gtk\\.(ListBox|HeaderBar|StackSwitcher|Notebook|InfoBar)\\b"
-  scope: ["prefs.js"]
-  severity: blocking
-  message: "GTK widget with direct Adw replacement used in prefs.js — use the Adwaita equivalent"
-  category: prefs
-  fix: "Gtk.ListBox → Adw.PreferencesGroup, Gtk.HeaderBar → Adw.HeaderBar, Gtk.StackSwitcher → Adw.ViewSwitcher, Gtk.Notebook → Adw.ViewStack, Gtk.InfoBar → Adw.Banner"
-
-- id: R-PREFS-04b
-  pattern: "\\bnew\\s+Gtk\\.(Box|Label|Switch|Button|Entry|Grid|ScrolledWindow|Frame|Separator|SpinButton|ComboBoxText|CheckButton|RadioButton|ToggleButton|Stack|Revealer|Expander|FlowBox|Overlay|Paned|ActionBar|ProgressBar|Scale|LevelBar|SearchEntry|SearchBar|DropDown|Image|Adjustment)\\b"
-  scope: ["prefs.js"]
-  severity: advisory
-  message: "Raw GTK widget in prefs.js — consider Adwaita (Adw) widgets where possible for GNOME 45+"
-  category: prefs
-  fix: "Use Adw.PreferencesPage, Adw.PreferencesGroup, Adw.ActionRow, Adw.SwitchRow, Adw.ComboRow where suitable"
-
-# --- AI slop: LLM prompt comments ---
-
-- id: R-SLOP-18
-  pattern: "^\\s*//\\s*(Important|Note|Remember|TODO):\\s*(Make sure|Ensure|Always|Don't forget|Handle)"
-  scope: ["*.js"]
-  severity: advisory
-  message: "Comment reads like an LLM prompt — reviewers flag these as AI-generated"
-  category: ai-slop
-  fix: "Remove or rewrite to explain 'why', not 'what to do'"
-
-# --- AI slop: verbose template error messages ---
-
-- id: R-SLOP-19
-  pattern: "console\\.(error|warn)\\(`Failed to \\$\\{"
-  scope: ["*.js"]
-  severity: advisory
-  message: "Verbose template error message — prefer terse error strings"
-  category: ai-slop
-  fix: "Simplify to: console.error('ExtName: init failed', e)"
-
-# --- AI slop: catch-log-rethrow ---
-
-- id: R-SLOP-22
-  pattern: "catch\\s*\\(\\w+\\)\\s*\\{[^}]*console\\.(error|warn|log)\\([^)]*\\);?\\s*(throw|rethrow)\\s"
-  scope: ["*.js"]
-  severity: advisory
-  message: "Catch-log-rethrow adds no value — handle or let propagate"
-  category: ai-slop
-  fix: "Remove the try-catch or handle the error meaningfully"
-
-# --- AI slop: dead code after throw ---
-
-- id: R-SLOP-23
-  pattern: "throw\\s+[^;]+;\\s*\\n\\s*return\\s"
-  scope: ["*.js"]
-  severity: advisory
-  message: "Dead code after throw — unreachable return"
-  category: ai-slop
-  fix: "Remove the unreachable return statement"
-
-# --- Subprocess safety ---
-
-- id: R-SEC-14
-  pattern: "\\bspawn_sync\\b"
-  scope: ["*.js"]
-  severity: blocking
-  message: "GLib.spawn_sync blocks the main loop; use Gio.Subprocess with async"
-  category: security
-  fix: "Use 'new Gio.Subprocess({argv: [...]})' with communicate_utf8_async() or Gio._promisify."
-
-- id: R-SEC-15
-  pattern: "\\bspawn_command_line_async\\b"
-  scope: ["*.js"]
-  severity: advisory
-  message: "GLib.spawn_command_line_async provides no error handling; prefer Gio.Subprocess"
-  category: security
-  fix: "Use 'new Gio.Subprocess({argv: [...]})' for proper lifecycle control and error handling."
-
-# --- Hallucinated APIs (continued) ---
-
-- id: R-SLOP-24
-  pattern: "\\bnew\\s+Gio\\.Settings\\s*\\("
-  scope: ["*.js"]
-  severity: advisory
-  message: "new Gio.Settings() is incorrect in GNOME 45+; use this.getSettings() from Extension base class"
-  category: ai-slop
-  fix: "Use this.getSettings() in Extension subclass or this.getSettings() in ExtensionPreferences"
-
-- id: R-SLOP-25
-  pattern: "\\bMain\\.extensionManager\\.(enable|disable)\\s*\\("
-  scope: ["*.js"]
-  severity: advisory
-  message: "Main.extensionManager.enable()/disable() is a hallucinated API — extensions cannot enable/disable themselves"
-  category: ai-slop
-  fix: "Remove the call. Extension lifecycle is managed by GNOME Shell, not by the extension itself."
-
-- id: R-SLOP-26
-  pattern: "\\bShell\\.ActionMode\\.ALL\\b"
-  scope: ["*.js"]
-  severity: advisory
-  message: "Shell.ActionMode.ALL does not exist; use Shell.ActionMode.NORMAL or combine specific modes"
-  category: ai-slop
-  fix: "Use Shell.ActionMode.NORMAL for most keybindings, or Shell.ActionMode.OVERVIEW | Shell.ActionMode.NORMAL for multi-mode"
-
-# --- Translation (advisory) ---
-
-- id: R-I18N-01
-  pattern: "_\\(\\`[^`]*\\$\\{"
-  scope: ["*.js"]
-  severity: advisory
-  message: "Template literal inside gettext _() breaks xgettext string extraction"
-  category: i18n
-  fix: "Use _('Found %d items').format(count) instead of _(`Found ${count} items`)"
-
-- id: R-I18N-02
-  pattern: "_\\([^)]*['\"]\\s*\\+"
-  scope: ["*.js"]
-  severity: advisory
-  message: "String concatenation inside gettext _() breaks xgettext extraction"
-  category: i18n
-  fix: "Use _('Hello %s').format(name) instead of _('Hello ' + name)"
-
-# --- Security (continued) ---
-
-- id: R-SEC-17
-  pattern: "Gio\\.File\\.new_for_path\\s*\\(\\s*['\"]\/tmp"
-  scope: ["*.js"]
-  severity: advisory
-  message: "Writing to /tmp is insecure; use GLib.get_tmp_dir() or XDG dirs (GLib.get_user_cache_dir())"
-  category: security
-  fix: "Use GLib.get_tmp_dir() for temporary files or GLib.get_user_cache_dir() for persistent cache"
-
-# --- GNOME 49 removed APIs (continued) ---
-
 - id: R-VER49-06
   pattern: "\\bClutter\\.DragAction\\b"
   scope: ["*.js"]
@@ -820,19 +918,6 @@
   fix: "Use new Clutter.SwipeGesture() instead"
   min-version: 49
 
-# --- GNOME 48 CSS class rename ---
-
-- id: R-VER48-07
-  pattern: "quick-menu-toggle"
-  scope: ["*.css"]
-  severity: blocking
-  message: "CSS class .quick-menu-toggle renamed to .quick-toggle-has-menu in GNOME 48"
-  category: version-compat
-  fix: "Replace .quick-menu-toggle with .quick-toggle-has-menu"
-  min-version: 48
-
-# --- GNOME 49 maximize() signature change ---
-
 - id: R-VER49-08
   pattern: "\\bmaximize\\s*\\(\\s*(Meta\\.)?MaximizeFlags"
   scope: ["*.js"]
@@ -841,8 +926,6 @@
   category: version-compat
   fix: "Call window.set_maximize_flags(flags) then window.maximize()"
   min-version: 49
-
-# --- GNOME 49 AppMenuButton removal ---
 
 - id: R-VER49-09
   pattern: "\\bAppMenuButton\\b"
@@ -853,105 +936,26 @@
   fix: "AppMenuButton was removed without replacement in GNOME 49"
   min-version: 49
 
-# --- GSettings bind flags confusion ---
-
-- id: R-QUAL-23
-  pattern: "\\.bind\\s*\\([^)]*GObject\\.BindingFlags"
-  scope: ["*.js"]
-  severity: advisory
-  message: "GSettings.bind() takes Gio.SettingsBindFlags, not GObject.BindingFlags"
-  category: quality
-  fix: "Use Gio.SettingsBindFlags.DEFAULT (or .GET, .SET, .INVERT_BOOLEAN) instead of GObject.BindingFlags"
-
-# --- AI slop: defensive spread copies ---
-
-- id: R-SLOP-27
-  pattern: "\\{\\s*\\.\\.\\.this\\._\\w+\\s*\\}"
-  scope: ["*.js"]
-  severity: advisory
-  message: "Unnecessary object spread copy — GNOME extensions should pass references"
-  category: ai-slop
-  fix: "Pass the object reference directly instead of creating a shallow copy"
-
-# --- AI slop: instanceof Error checks ---
-
-- id: R-SLOP-28
-  pattern: "instanceof\\s+(Error|TypeError|RangeError|SyntaxError|ReferenceError)"
-  scope: ["*.js"]
-  severity: advisory
-  message: "instanceof Error check is unusual in GNOME extensions"
-  category: ai-slop
-  fix: "In GJS, catch blocks already have typed errors; instanceof checks are rarely needed"
-
-# --- AI slop: empty destroy override ---
-
-- id: R-SLOP-29
-  pattern: "destroy\\s*\\(\\)\\s*\\{\\s*super\\.destroy\\(\\)\\s*;?\\s*\\}"
-  scope: ["*.js"]
-  severity: advisory
-  message: "Empty destroy() that only calls super.destroy() — remove the override"
-  category: ai-slop
-  fix: "Remove the destroy() override; GObject chains to super automatically"
-
-- id: R-SLOP-30
-  pattern: "typeof super\\.\\w+\\s*===\\s*['\"]function['\"]"
+- id: R-VER49-10
+  pattern: "\\bDoNotDisturbSwitch\\b"
   scope: ["*.js"]
   severity: blocking
-  message: "typeof super.method check is unnecessary — GObject parent methods always exist (AI-generated pattern)"
-  category: ai-slop
-  fix: "Remove the typeof check and call super.method() directly."
+  message: "DoNotDisturbSwitch was removed in GNOME 49 — use DoNotDisturbToggle"
+  category: version-compat
+  min-version: 49
+  fix: "Replace DoNotDisturbSwitch with DoNotDisturbToggle"
 
-# --- Quality: dir.get_path() anti-pattern ---
-
-- id: R-QUAL-25
-  pattern: "this\\.dir\\.get_path\\(\\)"
-  scope: ["*.js"]
-  severity: advisory
-  message: "Use this.path instead of this.dir.get_path()"
-  category: quality
-  fix: "Replace this.dir.get_path() with this.path"
-
-# --- Quality: custom logger class ---
-
-- id: R-QUAL-26
-  pattern: "class\\s+Logger\\b"
-  scope: ["*.js"]
-  severity: advisory
-  message: "Custom Logger class is unnecessary — use console.debug/warn/error"
-  category: quality
-  fix: "Remove custom Logger; use console.debug() for messages, console.error() for errors"
-
-# --- Quality: string-based version comparison ---
-
-- id: R-QUAL-27
-  pattern: "Config\\.PACKAGE_VERSION\\s*(===|!==|>=|<=|>|<)"
-  scope: ["*.js"]
-  severity: advisory
-  message: "String comparison on PACKAGE_VERSION is unreliable — use parseInt() for numeric comparison"
-  category: quality
-  fix: "Use parseInt(Config.PACKAGE_VERSION) >= 45 instead of Config.PACKAGE_VERSION >= '45'"
-
-- id: R-QUAL-27b
-  pattern: "Config\\.PACKAGE_VERSION\\.startsWith\\s*\\("
-  scope: ["*.js"]
-  severity: advisory
-  message: "String comparison on PACKAGE_VERSION is unreliable — use parseInt() for numeric comparison"
-  category: quality
-  fix: "Use parseInt(Config.PACKAGE_VERSION) >= 45 instead of Config.PACKAGE_VERSION.startsWith('45')"
-
-# --- Quality: module-scope GObject construction ---
-
-- id: R-QUAL-04b
-  pattern: "^(let|var)\\s+\\w+\\s*=\\s*new\\s+(St|Gio|GLib|Clutter|Meta|Shell|GObject)\\."
+- id: R-VER49-11
+  pattern: "\\bunmaximize\\s*\\([^)]*MaximizeFlags"
   scope: ["*.js"]
   severity: blocking
-  message: "Module-scope GObject construction persists across enable/disable cycles — move into enable()"
-  category: quality
-  fix: "Move the GObject construction into enable() and store as an instance property"
+  message: "MaximizeFlags parameter was removed from unmaximize() in GNOME 49"
+  category: version-compat
+  min-version: 49
+  fix: "Call unmaximize() without the MaximizeFlags parameter"
 
-# --- GNOME 50 removed APIs ---
+# --- GNOME 50 migration (version-gated) ---
 # GNOME 50 removed X11 support and associated APIs.
-# See https://gjs.guide/extensions/upgrading/gnome-shell-50.html
 
 - id: R-VER50-01
   pattern: "\\breleaseKeyboard\\s*\\("
@@ -989,8 +993,6 @@
   fix: "Remove the signal connection; restart is no longer available in GNOME 50 (Wayland only)"
   min-version: 50
 
-# --- GNOME 50 one-shot timeout lifecycle trap ---
-
 - id: R-VER50-05
   pattern: "timeout_add_once|idle_add_once|timeout_add_seconds_once"
   scope: ["*.js"]
@@ -999,73 +1001,3 @@
   category: version-compat
   fix: "Check if (this._destroyed) return; at the start of the callback"
   min-version: 50
-
-# --- Subprocess security (blocking) ---
-
-- id: R-SEC-21
-  pattern: "(Subprocess|spawn|spawn_async|spawn_command_line).*['\"]curl['\"]|['\"]curl\\s"
-  scope: ["*.js"]
-  severity: blocking
-  message: "Spawning curl is forbidden — use Soup.Session for HTTP requests"
-  category: security
-  fix: "Replace subprocess curl call with Soup.Session and Soup.Message"
-
-- id: R-SEC-22
-  pattern: "(Subprocess|spawn|spawn_async|spawn_command_line).*['\"]gsettings['\"]|['\"]gsettings\\s|['\"]dconf['\"]|['\"]dconf\\s"
-  scope: ["*.js"]
-  severity: blocking
-  message: "Spawning gsettings/dconf CLI is forbidden — use Gio.Settings API directly"
-  category: security
-  fix: "Use this.getSettings() or new Gio.Settings() to access GSettings programmatically"
-
-# --- Quality patterns (advisory/blocking) ---
-
-- id: R-QUAL-30
-  pattern: "\\blookupByURL\\s*\\("
-  scope: ["*.js"]
-  severity: advisory
-  message: "lookupByURL() is discouraged — use this.getSettings() and this.path from the entry point class"
-  category: code-quality
-  fix: "Access settings and path via the Extension/ExtensionPreferences base class instead"
-
-- id: R-QUAL-31
-  pattern: "_onDestroy\\s*\\("
-  scope: ["*.js"]
-  severity: advisory
-  message: "_onDestroy() should be renamed to destroy() with super.destroy() at the end"
-  category: code-quality
-  fix: "Rename to destroy() { /* cleanup */; super.destroy(); }"
-
-- id: R-QUAL-32
-  pattern: "gi://(GLib|Gio|GObject|St|Clutter|Meta|Shell|Pango|Graphene|Mtk)\\?version="
-  scope: ["*.js"]
-  severity: advisory
-  message: "Unnecessary ?version= in gi:// import — this library does not require a version specifier"
-  category: code-quality
-  fix: "Remove ?version= from the import; only Soup, Gtk, Gdk, and Adw require version specifiers"
-
-- id: R-VER49-10
-  pattern: "\\bDoNotDisturbSwitch\\b"
-  scope: ["*.js"]
-  severity: blocking
-  message: "DoNotDisturbSwitch was removed in GNOME 49 — use DoNotDisturbToggle"
-  category: version-compat
-  min-version: 49
-  fix: "Replace DoNotDisturbSwitch with DoNotDisturbToggle"
-
-- id: R-VER49-11
-  pattern: "\\bunmaximize\\s*\\([^)]*MaximizeFlags"
-  scope: ["*.js"]
-  severity: blocking
-  message: "MaximizeFlags parameter was removed from unmaximize() in GNOME 49"
-  category: version-compat
-  min-version: 49
-  fix: "Call unmaximize() without the MaximizeFlags parameter"
-
-- id: R-SEC-23
-  pattern: "\\b(atob|btoa)\\s*\\("
-  scope: ["*.js"]
-  severity: advisory
-  message: "Base64 encoding/decoding may indicate obfuscated content — reviewer will inspect"
-  category: security
-  fix: "If used legitimately (e.g., data URIs), add a comment explaining the purpose"

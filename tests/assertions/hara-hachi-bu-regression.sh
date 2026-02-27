@@ -20,8 +20,6 @@ assert_output_contains "known: R-SEC-20 (pkexec advisory)" "\[WARN\].*R-SEC-20"
 assert_output_contains "known: R-PREFS-04 (GTK widgets)" "\[WARN\].*R-PREFS-04"
 assert_output_contains "known: R-SEC-07 (clipboard)" "\[WARN\].*R-SEC-07"
 assert_output_contains "known: async/missing-cancellable (null cancellables)" "\[WARN\].*async/missing-cancellable"
-assert_output_contains "known: R-VER48-04b (vertical constructor)" "\[WARN\].*R-VER48-04b"
-
 # New checks MUST NOT produce false positives
 assert_output_not_contains "no init-safety false positive on registerClass" "\[FAIL\].*init/shell-modification"
 assert_output_not_contains "no R-SLOP-04 false positive on version-name" "\[WARN\].*R-SLOP-04"
