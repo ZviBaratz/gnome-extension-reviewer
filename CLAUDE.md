@@ -6,6 +6,14 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 Claude Code plugin for GNOME Shell extension EGO (extensions.gnome.org) review compliance. It provides five skills (`ego-lint`, `ego-review`, `ego-scaffold`, `ego-simulate`, `ego-submit`). This is **not** a GNOME extension itself — it's a set of tools that validate GNOME extensions against EGO submission requirements. Load it with `claude --plugin-dir <path-to-this-repo>`.
 
+## Running ego-lint
+
+```bash
+./ego-lint /path/to/extension@username        # top-level wrapper
+./ego-lint --help                              # check categories, exit codes
+./ego-lint --verbose /path/to/extension        # grouped report + verdict
+```
+
 ## Testing
 
 ```bash
@@ -22,8 +30,10 @@ bash skills/ego-lint/scripts/ego-lint.sh tests/fixtures/<fixture-name>
 
 ### Plugin structure
 
+- `ego-lint` — Top-level CLI wrapper (runs `skills/ego-lint/scripts/ego-lint.sh`)
 - `.claude-plugin/plugin.json` — Plugin manifest (minimal: `name`, `description`, `version`)
 - `skills/` — Five skills, each with a `SKILL.md` (skill definition + instructions for Claude) and supporting files. Auto-discovered by Claude Code.
+- `docs/ci-integration.md` — GitHub Actions and GitLab CI examples
 
 ### Skill hierarchy
 
