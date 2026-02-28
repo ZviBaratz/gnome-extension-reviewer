@@ -37,7 +37,7 @@ bash skills/ego-lint/scripts/ego-lint.sh tests/fixtures/<fixture-name>
 
 ### Skill hierarchy
 
-`ego-submit` is the top-level orchestrator: it invokes `ego-lint` (automated checks) then `ego-review` (manual code review) then validates packaging. `ego-simulate` is an optional pre-flight that simulates the reviewer's triage process. `ego-scaffold` is independent (creates new extensions).
+`ego-submit` is the top-level orchestrator: it invokes `ego-lint` (automated checks) then `ego-review` (manual code review) then validates packaging. `ego-simulate` is an optional pre-flight that simulates the reviewer's triage process using a 23-reason rejection taxonomy with weight-based scoring; it integrates ego-lint FAIL results into its verdict. `ego-scaffold` is independent (creates new extensions).
 
 ### ego-lint internals
 
