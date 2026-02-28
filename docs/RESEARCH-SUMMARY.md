@@ -40,7 +40,7 @@ These rules are consistently enforced by reviewers but not documented in officia
 
 | Tier | Type | Count | Description |
 |------|------|-------|-------------|
-| 1 | Pattern rules (YAML) | 114 | Regex-based, declarative, version-gated |
+| 1 | Pattern rules (YAML) | 113 | Regex-based, declarative, version-gated |
 | 2 | Structural scripts | 13 | Python/bash heuristic analysis |
 | 3 | Semantic checklists | 6 | Applied by Claude during ego-review |
 

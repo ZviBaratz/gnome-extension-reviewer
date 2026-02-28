@@ -30,7 +30,7 @@ ego-lint automates the mechanical checks that cause the most common rejections. 
 
 - **Transitive import analysis** — BFS from `prefs.js` through relative imports to catch indirect Shell runtime dependencies (`gi://St`, `gi://Clutter`, etc.)
 - **Cross-file resource tracking** — builds a resource graph (signals, timeouts, widgets, D-Bus, file monitors, GSettings) and detects orphans that aren't cleaned up
-- **AI pattern detection** — code provenance scoring, try-catch density, impossible state guards, `typeof super.method` checks, and 40+ other heuristic signals for AI-generated code
+- **AI pattern detection** — code provenance scoring, try-catch density, impossible state guards, `typeof super.method` checks, and 40+ other heuristic signals for AI-generated code (patterns identified as common in AI-generated submissions per the [December 2025 GNOME blog post](https://blogs.gnome.org/shell-dev/2025/12/18/extensions-and-ai/))
 - **Version-gated rules** — GNOME 44–50 migration rules that only fire when the extension's declared `shell-version` includes the relevant version
 
 ego-lint does **not**:
@@ -67,6 +67,8 @@ ego-lint does **not**:
 | **Code Quality** | AI slop detection (try-catch density, impossible states, empty catches, obfuscation, code provenance scoring) |
 | **Package** | Forbidden files in zip, required files, compiled schemas for GNOME 45+ |
 | **Preferences** | ExtensionPreferences base class, GTK4/Adwaita patterns, memory leak detection |
+
+Of the 113 pattern rules, 64 are blocking (FAIL) and 49 are advisory (WARN). Structural checks add further findings. See [`rules/patterns.yaml`](rules/patterns.yaml) for the full list with rationale.
 
 ### Sample Output
 
@@ -147,14 +149,14 @@ Full research: [docs/RESEARCH-SUMMARY.md](docs/RESEARCH-SUMMARY.md) | Detailed f
 
 Found a false positive? Rule missing a common rejection reason? [Open an issue](https://github.com/ZviBaratz/gnome-extension-reviewer/issues) with the rule ID and a code sample. False positives in blocking rules are treated as high priority.
 
-## Optional: Claude Code Plugin
+## Advanced: Claude Code Plugin (Optional)
 
-This project is also a [Claude Code](https://docs.anthropic.com/en/docs/claude-code) plugin that provides AI-assisted review skills. These are **optional and separate from ego-lint** — ego-lint works standalone without them.
+ego-lint is the primary offering — it works standalone without Claude Code or any AI. The skills below are experimental extras for developers who use [Claude Code](https://docs.anthropic.com/en/docs/claude-code).
 
 | Skill | Description |
 |-------|-------------|
 | `ego-review` | Multi-phase code review applying 6 semantic checklists (lifecycle, security, code quality, AI slop, licensing, accessibility) |
-| `ego-simulate` | Predicts reviewer verdict using rejection taxonomy and reviewer persona model |
+| `ego-simulate` | Estimates review readiness using rejection taxonomy and published review criteria |
 | `ego-scaffold` | Generates EGO-compliant extension boilerplate from templates |
 | `ego-submit` | Full pipeline: lint → review → package validation → readiness report |
 
@@ -188,7 +190,7 @@ Full gap list: [docs/research/gap-analysis.md](docs/research/gap-analysis.md)
 
 ## Author
 
-Built by [Zvi Baratz](https://github.com/ZviBaratz), author of [hara-hachi-bu](https://github.com/ZviBaratz/hara-hachi-bu) (a GNOME Shell extension for power management, currently in EGO review). Motivated by review round-trip friction — the mechanical checks that delay approval shouldn't require human time on either side. Built entirely with [Claude Code](https://docs.anthropic.com/en/docs/claude-code).
+Built by [Zvi Baratz](https://github.com/ZviBaratz), author of [hara-hachi-bu](https://github.com/ZviBaratz/hara-hachi-bu) (a GNOME Shell extension for power management, submitted to EGO). Motivated by review round-trip friction — the mechanical checks that delay approval shouldn't require human time on either side. Built entirely with [Claude Code](https://docs.anthropic.com/en/docs/claude-code).
 
 ## Requirements
 
