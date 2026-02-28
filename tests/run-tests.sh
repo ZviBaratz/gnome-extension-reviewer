@@ -567,96 +567,12 @@ assert_output_not_contains "R-WEB-01 suppressed by next-line" "\[FAIL\].*R-WEB-0
 assert_output_not_contains "R-WEB-10 suppressed by inline" "\[FAIL\].*R-WEB-10"
 echo ""
 
-# Extended assertion files (sourced by category)
+# Extended assertion files (auto-sourced from assertions/ directory)
 ASSERTIONS_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/assertions"
-if [[ -f "$ASSERTIONS_DIR/init-lifecycle-prefs.sh" ]]; then
-    source "$ASSERTIONS_DIR/init-lifecycle-prefs.sh"
-fi
-
-if [[ -f "$ASSERTIONS_DIR/ai-slop-heuristics.sh" ]]; then
-    source "$ASSERTIONS_DIR/ai-slop-heuristics.sh"
-fi
-
-if [[ -f "$ASSERTIONS_DIR/cross-file-resources.sh" ]]; then
-    source "$ASSERTIONS_DIR/cross-file-resources.sh"
-fi
-
-if [[ -f "$ASSERTIONS_DIR/lifecycle-advanced.sh" ]]; then
-    source "$ASSERTIONS_DIR/lifecycle-advanced.sh"
-fi
-
-if [[ -f "$ASSERTIONS_DIR/quality-patterns.sh" ]]; then
-    source "$ASSERTIONS_DIR/quality-patterns.sh"
-fi
-
-if [[ -f "$ASSERTIONS_DIR/version-compat.sh" ]]; then
-    source "$ASSERTIONS_DIR/version-compat.sh"
-fi
-
-if [[ -f "$ASSERTIONS_DIR/slop-patterns-extended.sh" ]]; then
-    source "$ASSERTIONS_DIR/slop-patterns-extended.sh"
-fi
-
-if [[ -f "$ASSERTIONS_DIR/package-security.sh" ]]; then
-    source "$ASSERTIONS_DIR/package-security.sh"
-fi
-
-if [[ -f "$ASSERTIONS_DIR/metadata-init-fixes.sh" ]]; then
-    source "$ASSERTIONS_DIR/metadata-init-fixes.sh"
-fi
-
-if [[ -f "$ASSERTIONS_DIR/trademark-imports.sh" ]]; then
-    source "$ASSERTIONS_DIR/trademark-imports.sh"
-fi
-
-if [[ -f "$ASSERTIONS_DIR/lifecycle-dbus-subprocess.sh" ]]; then
-    source "$ASSERTIONS_DIR/lifecycle-dbus-subprocess.sh"
-fi
-
-if [[ -f "$ASSERTIONS_DIR/i18n-quality-ver50.sh" ]]; then
-    source "$ASSERTIONS_DIR/i18n-quality-ver50.sh"
-fi
-
-if [[ -f "$ASSERTIONS_DIR/settings-async-clipboard.sh" ]]; then
-    source "$ASSERTIONS_DIR/settings-async-clipboard.sh"
-fi
-
-if [[ -f "$ASSERTIONS_DIR/import-segregation.sh" ]]; then
-    source "$ASSERTIONS_DIR/import-segregation.sh"
-fi
-
-if [[ -f "$ASSERTIONS_DIR/donations-overflow.sh" ]]; then
-    source "$ASSERTIONS_DIR/donations-overflow.sh"
-fi
-
-if [[ -f "$ASSERTIONS_DIR/ai-defense-provenance.sh" ]]; then
-    source "$ASSERTIONS_DIR/ai-defense-provenance.sh"
-fi
-
-if [[ -f "$ASSERTIONS_DIR/severity-corrections.sh" ]]; then
-    source "$ASSERTIONS_DIR/severity-corrections.sh"
-fi
-
-if [[ -f "$ASSERTIONS_DIR/version-compat-batch3.sh" ]]; then
-    source "$ASSERTIONS_DIR/version-compat-batch3.sh"
-fi
-
-if [[ -f "$ASSERTIONS_DIR/obfuscation-formatting.sh" ]]; then
-    source "$ASSERTIONS_DIR/obfuscation-formatting.sh"
-fi
-
-if [[ -f "$ASSERTIONS_DIR/widget-lifecycle.sh" ]]; then
-    source "$ASSERTIONS_DIR/widget-lifecycle.sh"
-fi
-
-if [[ -f "$ASSERTIONS_DIR/quick-wins.sh" ]]; then
-    source "$ASSERTIONS_DIR/quick-wins.sh"
-fi
-
-# Local-only assertion files (not committed — for personal regression testing)
-if [[ -f "$ASSERTIONS_DIR/local-regression.sh" ]]; then
-    source "$ASSERTIONS_DIR/local-regression.sh"
-fi
+for assertion_file in "$ASSERTIONS_DIR"/*.sh; do
+    [[ -f "$assertion_file" ]] || continue
+    source "$assertion_file"
+done
 
 # --- Summary ---
 echo "============================================"

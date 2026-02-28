@@ -133,7 +133,7 @@ EOF
 
 echo "Created fixture at $fixture_dir/"
 
-# --- 3. Print assertion lines ---
+# --- 3. Append assertions to test file ---
 
 if [[ "$severity" == "blocking" ]]; then
     status_tag="FAIL"
@@ -145,14 +145,55 @@ else
     exit_val=0
 fi
 
+ASSERTIONS_DIR="$SCRIPT_DIR/tests/assertions"
+
+# Build assertion block
+assertion_block="# --- $fixture_name ---
+echo \"=== $fixture_name ===\"
+run_lint \"$fixture_name\"
+assert_exit_code \"$exit_label\" $exit_val
+assert_output_contains \"detects $rule_id\" \"\\[${status_tag}\\].*${rule_id}\"
+echo \"\""
+
 echo ""
-echo "--- Add the following to your assertion file (tests/assertions/*.sh) ---"
+echo "Assertion lines to append:"
 echo ""
-echo "# --- $fixture_name ---"
-echo "echo \"=== $fixture_name ===\""
-echo "run_lint \"$fixture_name\""
-echo "assert_exit_code \"$exit_label\" $exit_val"
-echo "assert_output_contains \"detects $rule_id\" \"\\[${status_tag}\\].*${rule_id}\""
-echo "echo \"\""
+echo "$assertion_block"
+echo ""
+
+# List existing assertion files
+mapfile -t files < <(ls "$ASSERTIONS_DIR"/*.sh 2>/dev/null | grep -v local-regression.sh | sort)
+if [[ ${#files[@]} -eq 0 ]]; then
+    echo "No existing assertion files found."
+else
+    echo "Existing assertion files:"
+    for i in "${!files[@]}"; do
+        printf "  %2d) %s\n" "$((i + 1))" "$(basename "${files[$i]}")"
+    done
+fi
+echo ""
+
+read -rp "Append to which file? (number, or 'new' to create one, or 'skip' to print only): " choice
+
+if [[ "$choice" == "skip" ]]; then
+    echo "Skipped — copy the assertion lines above into your test file manually."
+elif [[ "$choice" == "new" ]]; then
+    suggested_name="$(echo "$category" | tr '[:upper:]' '[:lower:]' | tr ' ' '-').sh"
+    read -rp "Filename [$suggested_name]: " new_name
+    new_name="${new_name:-$suggested_name}"
+    [[ "$new_name" == *.sh ]] || new_name="${new_name}.sh"
+    target="$ASSERTIONS_DIR/$new_name"
+    echo "" >> "$target"
+    echo "$assertion_block" >> "$target"
+    echo "Assertions appended to tests/assertions/$new_name"
+elif [[ "$choice" =~ ^[0-9]+$ ]] && (( choice >= 1 && choice <= ${#files[@]} )); then
+    target="${files[$((choice - 1))]}"
+    echo "" >> "$target"
+    echo "$assertion_block" >> "$target"
+    echo "Assertions appended to tests/assertions/$(basename "$target")"
+else
+    echo "Invalid choice — printing assertion lines for manual copy-paste."
+fi
+
 echo ""
 echo "--- Done! Run 'bash tests/run-tests.sh' to verify. ---"
