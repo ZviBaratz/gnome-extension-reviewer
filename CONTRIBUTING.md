@@ -1,5 +1,9 @@
 # Contributing
 
+> New here? Run `./ego-lint` on an extension from your review queue first.
+> If it catches something useful — or misses something obvious — that's the
+> best starting point for a contribution.
+
 Thank you for your interest in improving GNOME extension review tooling.
 
 ## For Reviewers: Add a Check in 5 Minutes

@@ -47,6 +47,8 @@ The project is actively looking for 2–3 EGO reviewers as co-maintainers to:
 2. **Discuss write access** — after contributions demonstrate familiarity with the rule system and testing conventions
 3. **Responsibilities**: rule PR review, severity validation against real extensions, false-positive triage
 
+Timeline: typically 2–4 weeks from first contribution to write access discussion.
+
 If you're an active EGO reviewer and interested, open an issue or reach out.
 
 ## Decision Process
