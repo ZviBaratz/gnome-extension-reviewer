@@ -19,6 +19,13 @@ run_lint "async-destroyed-guard@test"
 assert_output_not_contains "no missing-cancellable when _destroyed used" "\[WARN\].*async/missing-cancellable"
 echo ""
 
+# --- catch-on-sync ---
+echo "=== catch-on-sync ==="
+run_lint "catch-on-sync@test"
+assert_exit_code "exits with 0 (advisory only)" 0
+assert_output_contains "warns on .catch() on non-async method" "\[WARN\].*async/catch-on-sync"
+echo ""
+
 # --- clipboard-network ---
 echo "=== clipboard-network ==="
 run_lint "clipboard-network@test"

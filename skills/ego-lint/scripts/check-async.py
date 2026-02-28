@@ -198,6 +198,45 @@ def check_disable_cancellation(ext_dir, js_files):
                "disable() handles async cancellation")
 
 
+def check_catch_on_sync(ext_dir, js_files):
+    """WARN when .catch()/.then() is called on a non-async method defined in the same file."""
+    method_def_re = re.compile(
+        r'(?P<async>async\s+)?(?P<name>\w+)\s*\([^)]*\)\s*\{')
+    call_site_re = re.compile(
+        r'this\.(?P<name>_?\w+)\(\)\.(?:catch|then)\s*\(')
+
+    findings = []
+
+    for filepath in js_files:
+        rel = os.path.relpath(filepath, ext_dir)
+        with open(filepath, encoding='utf-8', errors='replace') as f:
+            content = f.read()
+
+        clean = strip_comments(content)
+        lines = clean.splitlines()
+
+        # Build method registry: name -> is_async
+        methods = {}
+        for m in method_def_re.finditer(clean):
+            methods[m.group('name')] = m.group('async') is not None
+
+        # Find .catch()/.then() call sites on this._method()
+        for lineno, line in enumerate(lines, 1):
+            for m in call_site_re.finditer(line):
+                called = m.group('name')
+                if called in methods and not methods[called]:
+                    findings.append(
+                        f"{rel}:{lineno}: .catch() on non-async {called}() "
+                        f"— verify method returns a Promise")
+
+    if findings:
+        for f in findings[:5]:
+            result("WARN", "async/catch-on-sync", f)
+    else:
+        result("PASS", "async/catch-on-sync",
+               "No .catch()/.then() calls on non-async methods")
+
+
 def main():
     if len(sys.argv) < 2:
         result("FAIL", "async/args", "No extension directory provided")
@@ -213,6 +252,7 @@ def main():
     check_cancellable_usage(ext_dir, js_files)
     check_async_inline_cancellable(ext_dir, js_files)
     check_disable_cancellation(ext_dir, js_files)
+    check_catch_on_sync(ext_dir, js_files)
 
 
 if __name__ == '__main__':

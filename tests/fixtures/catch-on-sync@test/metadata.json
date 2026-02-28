@@ -1,0 +1,7 @@
+{
+  "uuid": "catch-on-sync@test",
+  "name": "Catch On Sync Test",
+  "description": "Test fixture for .catch() on non-async method detection",
+  "shell-version": ["47"],
+  "url": "https://example.com"
+}
