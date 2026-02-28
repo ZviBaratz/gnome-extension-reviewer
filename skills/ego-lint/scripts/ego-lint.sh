@@ -392,6 +392,11 @@ else
     print_result "PASS" "polkit-files" "No polkit policy files found"
 fi
 
+# check-polkit.py (polkit action ID cross-reference)
+if [[ -f "$SCRIPT_DIR/check-polkit.py" ]]; then
+    run_subscript "$SCRIPT_DIR/check-polkit.py"
+fi
+
 # ---------------------------------------------------------------------------
 # Minified/bundled JavaScript check
 # ---------------------------------------------------------------------------
@@ -440,6 +445,11 @@ if [[ -f "$SCRIPT_DIR/check-css.py" ]]; then
     run_subscript "$SCRIPT_DIR/check-css.py"
 else
     print_result "SKIP" "css-scoping" "check-css.py not found"
+fi
+
+# check-accessibility.py (basic a11y checks)
+if [[ -f "$SCRIPT_DIR/check-accessibility.py" ]]; then
+    run_subscript "$SCRIPT_DIR/check-accessibility.py"
 fi
 
 # ---------------------------------------------------------------------------
@@ -493,6 +503,11 @@ fi
 # check-schema.sh
 run_subscript "$SCRIPT_DIR/check-schema.sh"
 
+# check-schema-usage.py (schema key cross-reference)
+if [[ -f "$SCRIPT_DIR/check-schema-usage.py" ]]; then
+    run_subscript "$SCRIPT_DIR/check-schema-usage.py"
+fi
+
 # check-imports.sh
 run_subscript "$SCRIPT_DIR/check-imports.sh"
 
@@ -531,8 +546,57 @@ if [[ -f "$SCRIPT_DIR/check-resources.py" ]]; then
     run_subscript "$SCRIPT_DIR/check-resources.py"
 fi
 
+# check-disclosures.py (capability disclosure matrix)
+if [[ -f "$SCRIPT_DIR/check-disclosures.py" ]]; then
+    run_subscript "$SCRIPT_DIR/check-disclosures.py"
+fi
+
 # check-package.sh
 run_subscript "$SCRIPT_DIR/check-package.sh"
+
+# ---------------------------------------------------------------------------
+# Code Metrics
+# ---------------------------------------------------------------------------
+
+compute_metrics() {
+    local js_count=0 total_lines=0 css_lines=0 schema_keys=0
+    local largest_file="" largest_lines=0
+
+    # Count JS files and lines
+    while IFS= read -r -d '' f; do
+        js_count=$((js_count + 1))
+        local lines
+        lines=$(wc -l < "$f" 2>/dev/null || echo 0)
+        total_lines=$((total_lines + lines))
+        if [[ $lines -gt $largest_lines ]]; then
+            largest_lines=$lines
+            largest_file="$(basename "$f")"
+        fi
+    done < <(find "$EXT_DIR" -name '*.js' -not -path '*/node_modules/*' -not -path '*/.git/*' -print0 2>/dev/null)
+
+    # Count CSS lines
+    if [[ -f "$EXT_DIR/stylesheet.css" ]]; then
+        css_lines=$(wc -l < "$EXT_DIR/stylesheet.css" 2>/dev/null || echo 0)
+    fi
+
+    # Count schema keys
+    local schema_file=""
+    schema_file=$(find "$EXT_DIR" -name '*.gschema.xml' -not -path '*/node_modules/*' -not -path '*/.git/*' 2>/dev/null | head -1)
+    if [[ -n "$schema_file" ]]; then
+        schema_keys=$(grep -c '<key ' "$schema_file" 2>/dev/null || echo 0)
+    fi
+
+    echo ""
+    echo "[METRIC] js-files: $js_count"
+    echo "[METRIC] total-lines: $total_lines"
+    if [[ -n "$largest_file" ]]; then
+        echo "[METRIC] largest-file: $largest_file ($largest_lines)"
+    fi
+    echo "[METRIC] css-lines: $css_lines"
+    echo "[METRIC] schema-keys: $schema_keys"
+}
+
+compute_metrics
 
 # ---------------------------------------------------------------------------
 # Summary

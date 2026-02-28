@@ -15,7 +15,7 @@ echo ""
 # --- network-undisclosed ---
 echo "=== network-undisclosed ==="
 run_lint "network-undisclosed@test"
-assert_output_contains "detects undisclosed network usage" "\[WARN\].*quality/network-disclosure"
+assert_output_contains "detects undisclosed network usage" "\[WARN\].*disclosure/network"
 echo ""
 
 # --- gnome50-compat ---

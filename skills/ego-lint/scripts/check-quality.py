@@ -775,105 +775,8 @@ def check_run_dispose_comment(ext_dir, js_files):
                "All run_dispose() calls have comments or none found")
 
 
-def check_clipboard_disclosure(ext_dir, js_files):
-    """R-QUAL-22: Flag clipboard usage not mentioned in metadata description."""
-    uses_clipboard = False
 
-    for filepath in js_files:
-        with open(filepath, encoding='utf-8', errors='replace') as f:
-            for line in f:
-                if 'St.Clipboard' in line:
-                    uses_clipboard = True
-                    break
-        if uses_clipboard:
-            break
-
-    if not uses_clipboard:
-        result("PASS", "quality/clipboard-disclosure",
-               "No St.Clipboard usage detected")
-        return
-
-    meta_path = os.path.join(ext_dir, 'metadata.json')
-    if not os.path.isfile(meta_path):
-        result("WARN", "quality/clipboard-disclosure",
-               "St.Clipboard used but metadata.json not found")
-        return
-
-    try:
-        with open(meta_path) as f:
-            meta = json.load(f)
-    except (json.JSONDecodeError, OSError):
-        result("WARN", "quality/clipboard-disclosure",
-               "St.Clipboard used but metadata.json could not be read")
-        return
-
-    description = meta.get('description', '')
-    if 'clipboard' in description.lower():
-        result("PASS", "quality/clipboard-disclosure",
-               "St.Clipboard usage disclosed in metadata description")
-    else:
-        result("WARN", "quality/clipboard-disclosure",
-               "St.Clipboard used but metadata description does not "
-               "mention clipboard access")
-
-
-def check_network_disclosure(ext_dir, js_files):
-    """R-SEC-19: Flag network code not mentioned in metadata description."""
-    network_patterns = [
-        r'Soup\.Session',
-        r'Soup\.Message',
-        r'Soup\.URI',
-        r'GLib\.Uri',
-    ]
-
-    has_network = False
-    for filepath in js_files:
-        # Exclude prefs.js — network in prefs is less concerning
-        if os.path.basename(filepath) == 'prefs.js':
-            continue
-        with open(filepath, encoding='utf-8', errors='replace') as f:
-            content = f.read()
-        for pat in network_patterns:
-            if re.search(pat, content):
-                has_network = True
-                break
-        if has_network:
-            break
-
-    if not has_network:
-        result("PASS", "quality/network-disclosure",
-               "No network API usage detected")
-        return
-
-    meta_path = os.path.join(ext_dir, 'metadata.json')
-    if not os.path.isfile(meta_path):
-        result("WARN", "quality/network-disclosure",
-               "Network APIs used but metadata.json not found")
-        return
-
-    try:
-        with open(meta_path) as f:
-            meta = json.load(f)
-    except (json.JSONDecodeError, OSError):
-        result("WARN", "quality/network-disclosure",
-               "Network APIs used but metadata.json could not be read")
-        return
-
-    description = meta.get('description', '').lower()
-    disclosure_keywords = [
-        'network', 'internet', 'http', 'api', 'server',
-        'online', 'fetch', 'request', 'web', 'service',
-    ]
-
-    for keyword in disclosure_keywords:
-        if keyword in description:
-            result("PASS", "quality/network-disclosure",
-                   f"Network API usage disclosed in metadata description (keyword: '{keyword}')")
-            return
-
-    result("WARN", "quality/network-disclosure",
-           "Network APIs used (Soup/GLib.Uri) but metadata description does not "
-           "mention network access — reviewers expect disclosure")
+# clipboard and network disclosure checks moved to check-disclosures.py
 
 
 def check_repeated_settings(ext_dir, js_files):
@@ -1157,8 +1060,7 @@ def main():
     check_redundant_cleanup(ext_dir, js_files)
     check_comment_prompt_density(ext_dir, js_files)
     check_run_dispose_comment(ext_dir, js_files)
-    check_clipboard_disclosure(ext_dir, js_files)
-    check_network_disclosure(ext_dir, js_files)
+    # clipboard and network disclosure checks moved to check-disclosures.py
     check_excessive_null_checks(ext_dir, js_files)
     check_repeated_settings(ext_dir, js_files)
     check_obfuscated_names(ext_dir, js_files)
