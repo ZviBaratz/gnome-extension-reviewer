@@ -486,7 +486,7 @@
   pattern: "^\\s*//\\s*(Important|Note|Remember|TODO):\\s*(Make sure|Ensure|Always|Don't forget|Handle)"
   scope: ["*.js"]
   severity: advisory
-  message: "Comment reads like an LLM prompt — reviewers flag these as AI-generated"
+  message: "Imperative comment pattern ('Important: Make sure...') draws reviewer scrutiny"
   category: ai-slop
   fix: "Remove or rewrite to explain 'why', not 'what to do'"
 
@@ -542,7 +542,7 @@
   pattern: "typeof super\\.\\w+\\s*===\\s*['\"]function['\"]"
   scope: ["*.js"]
   severity: blocking
-  message: "typeof super.method check is unnecessary — GObject parent methods always exist (AI-generated pattern)"
+  message: "typeof super.method check is unnecessary — GObject parent methods always exist; reviewers flag this pattern"
   category: ai-slop
   fix: "Remove the typeof check and call super.method() directly."
 
