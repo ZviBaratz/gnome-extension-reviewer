@@ -157,7 +157,7 @@ Key unwritten rules discovered:
 7. Subprocesses must have cancellation path in `disable()`
 8. No `convenience.js` patterns
 
-Full research: [docs/RESEARCH-SUMMARY.md](docs/RESEARCH-SUMMARY.md) | Detailed findings: [docs/research/](docs/research/)
+Full research: [docs/research/](docs/research/) | Coverage gaps: [docs/research/gap-analysis.md](docs/research/gap-analysis.md)
 
 ## Known Limitations
 

@@ -1,6 +1,16 @@
 # Research Summary
 
-This document summarizes the research behind gnome-extension-reviewer's rules and checks. For full details, see the individual research documents in [docs/research/](research/).
+This directory contains the research behind gnome-extension-reviewer's rules and checks.
+
+## Documents
+
+| Document | Description |
+|----------|-------------|
+| [`requirements-reference.md`](requirements-reference.md) | Comprehensive requirements reference — every MUST/SHOULD from gjs.guide (33 sections) |
+| [`real-review-findings.md`](real-review-findings.md) | 26 findings from 9 real EGO reviews, including 8 unwritten rules |
+| [`guideline-evolution.md`](guideline-evolution.md) | How guidelines changed across GNOME 44–50, EGO platform checks |
+| [`approved-extension-patterns.md`](approved-extension-patterns.md) | Architecture patterns from 5 popular approved extensions |
+| [`gap-analysis.md`](gap-analysis.md) | Coverage audit — maps guideline requirements against Tier 1/2/3 coverage |
 
 ## Methodology
 
@@ -68,12 +78,3 @@ Seven findings were independently confirmed across multiple research sources:
 | Compiled schemas prohibition (45+) | gjs.guide, Discourse reviews, GNOME Shell changelog |
 | AI slop try-catch wrapping | Discourse reviews, gold standard comparison, code quality research |
 | Convenience.js prohibition | Discourse reviews, gjs.guide migration guide, gold standards |
-
-## Research Documents
-
-- [`phase1-guidelines-deep-read.md`](research/phase1-guidelines-deep-read.md) — gjs.guide requirement extraction (109 requirements)
-- [`phase1-discourse-findings.md`](research/phase1-discourse-findings.md) — Real EGO review analysis (26 findings)
-- [`phase1-gitlab-guideline-evolution.md`](research/phase1-gitlab-guideline-evolution.md) — Guideline version tracking
-- [`phase1-gold-standards.md`](research/phase1-gold-standards.md) — Popular extension analysis
-- [`ego-review-guidelines-research.md`](research/ego-review-guidelines-research.md) — Initial guidelines research
-- [`gap-analysis.md`](research/gap-analysis.md) — Current coverage gaps

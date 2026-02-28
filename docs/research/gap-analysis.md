@@ -1,7 +1,7 @@
 # Gap Analysis: EGO Review Guidelines vs Plugin Coverage
 
 **Date:** 2026-02-25
-**Method:** Every MUST requirement from `ego-review-guidelines-research.md` was checked against the plugin's Tier 1 pattern rules (`rules/patterns.yaml`), Tier 2 scripts (`skills/ego-lint/scripts/`), and Tier 3 checklists (`skills/ego-review/references/`).
+**Method:** Every MUST requirement from `requirements-reference.md` was checked against the plugin's Tier 1 pattern rules (`rules/patterns.yaml`), Tier 2 scripts (`skills/ego-lint/scripts/`), and Tier 3 checklists (`skills/ego-review/references/`).
 
 ---
 

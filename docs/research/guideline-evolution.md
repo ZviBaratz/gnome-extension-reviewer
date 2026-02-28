@@ -1,4 +1,4 @@
-# Phase 1: GitLab Guideline Evolution Research
+# Guideline Evolution
 
 **Date:** 2026-02-26
 **Method:** Web research across gitlab.gnome.org (ewlsh/gjs-guide, Infrastructure/extensions-web), extensions.gnome.org review pages, GNOME blogs, Phoronix/XDA/ItsFoss news articles, GNOME Discourse, and gjs.guide porting guides. Focused on identifying when review guidelines changed, what motivated changes, and how the EGO platform itself performs automated validation.

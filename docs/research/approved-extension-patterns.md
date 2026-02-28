@@ -1,8 +1,8 @@
-# Phase 1: Gold-Standard Extension Patterns
+# Approved Extension Patterns
 
 **Date:** 2026-02-26
 **Method:** Web research across GitHub, GitLab, DeepWiki, gjs.guide, GNOME Discourse, extensions.gnome.org review pages, and developer blog posts. Analyzed architecture, lifecycle management, signal handling, settings patterns, preferences structure, error handling, import conventions, widget lifecycle, and metadata usage across 5 popular, reviewer-approved GNOME Shell extensions.
-**Complementary to:** `ego-review-guidelines-research.md` (formal requirements), `phase1-discourse-findings.md` (rejection patterns), `phase1-guidelines-deep-read.md` (MUST/SHOULD extraction)
+**Complementary to:** `requirements-reference.md` (formal requirements), `real-review-findings.md` (rejection patterns)
 
 ---
 
@@ -248,7 +248,7 @@ stylesheet.css
 
 - **Description:** After calling `.destroy()` on a widget or object, the reference is explicitly set to `null`. This is a universal pattern: `this._widget.destroy(); this._widget = null;` (or with optional chaining: `this._widget?.destroy(); this._widget = null;`).
 - **Used by:** All five extensions, consistently required by reviewers
-- **Why it works:** Prevents use-after-free errors where code attempts to access a destroyed GObject. Helps the garbage collector by breaking reference cycles. Reviewers explicitly flag missing null assignments (see phase1-discourse-findings.md, Finding #4 and #14).
+- **Why it works:** Prevents use-after-free errors where code attempts to access a destroyed GObject. Helps the garbage collector by breaking reference cycles. Reviewers explicitly flag missing null assignments (see real-review-findings.md, Finding #4 and #14).
 - **Current plugin coverage:** Partial. The lifecycle checklist mentions nulling references. No automated check verifies that `.destroy()` calls are followed by `= null`.
 - **Recommendation:** Add a Tier 2 check in check-lifecycle.py that warns when `.destroy()` is called on a member variable without a subsequent `= null` assignment. This is a high-signal, low-false-positive check.
 

@@ -1,4 +1,4 @@
-# Phase 1: Discourse & Community Findings
+# Real EGO Review Findings
 
 **Date:** 2026-02-26
 **Method:** Web search across GNOME Discourse, GNOME blogs, extensions.gnome.org review pages, gjs.guide, and developer community discussions. Focused on real reviewer comments, actual rejection reasons, and unwritten rules.
