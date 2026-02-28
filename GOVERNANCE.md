@@ -55,4 +55,4 @@ For rule changes:
 1. Proposer opens issue or PR with citation
 2. At least one co-maintainer (or the project lead) reviews
 3. New rules land as advisory; severity upgrades require test validation
-4. Changes that affect blocking rules require running the full test suite (364+ assertions) and regression baseline
+4. Changes that affect blocking rules require running the full test suite (373+ assertions) and regression baseline

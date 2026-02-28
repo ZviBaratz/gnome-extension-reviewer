@@ -12,7 +12,7 @@
          patterns.yaml      check-*.py/sh     ego-review refs/
               |                   |                |
        apply-patterns.py    13 sub-scripts    6 checklists
-       (114 rules, YAML)    (structural)      (semantic, AI)
+       (113 rules, YAML)    (structural)      (semantic, AI)
                  |                |                |
                  +--- PASS/FAIL/WARN/SKIP --------+
                       (pipe-delimited output)

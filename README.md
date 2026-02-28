@@ -40,7 +40,7 @@ ego-lint does **not**:
 - Check logic correctness or functionality
 - Replace human review judgment
 
-**CI integration**: Pure bash + python, exits 0/1, no network access, no dependencies beyond coreutils. Tested against 142 fixtures with 372 assertions. See [docs/ci-integration.md](docs/ci-integration.md) for GitHub Actions and GitLab CI examples.
+**CI integration**: Pure bash + python, exits 0/1, no network access, no dependencies beyond coreutils. Tested against 142 fixtures with 373 assertions. See [docs/ci-integration.md](docs/ci-integration.md) for GitHub Actions and GitLab CI examples.
 
 ## How This Was Built
 
@@ -182,7 +182,6 @@ Self-contained improvements where reviewer expertise would be especially valuabl
 - [ ] Polkit action ID validation (verify `.policy` file when `pkexec` is used)
 - [ ] Schema filename validation (ensure `.gschema.xml` filename matches schema ID)
 - [ ] Module-scope mutable state detection (`Map`/`Set` at module level)
-- [ ] False positive reduction (R-PREFS-04b GTK widget spam, R-SEC-20 deduplication)
 - [ ] Per-extension configuration (`.ego-lint.yml` for rule overrides)
 
 Full gap list: [docs/research/gap-analysis.md](docs/research/gap-analysis.md)
