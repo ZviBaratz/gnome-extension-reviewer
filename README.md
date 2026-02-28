@@ -24,6 +24,8 @@ Try it on a bundled test fixture:
 
     ./ego-lint tests/fixtures/lifecycle-imbalance@test --verbose
 
+> Runs in ~2 seconds on typical extensions, ~4 seconds on large ones (11 modules). No network access.
+
 ## How This Helps the Review Queue
 
 ego-lint automates the mechanical checks that cause the most common rejections. When developers run it before submitting, it catches issues that would otherwise require reviewer round-trips:
@@ -44,7 +46,7 @@ ego-lint does **not**:
 
 ## How This Was Built
 
-- **Claude Code wrote the code** — scripts, rules, tests, and docs were produced under human direction using [Claude Code](https://docs.anthropic.com/en/docs/claude-code) (Anthropic's AI coding tool). Every design decision was human-reviewed. The AI slop detection rules are based on patterns observed in real EGO rejections of AI-generated submissions.
+- **Claude Code wrote the code** — scripts, rules, tests, and docs were developed using [Claude Code](https://docs.anthropic.com/en/docs/claude-code) (Anthropic's AI coding tool). Every design decision was human-reviewed. The AI slop detection rules are based on patterns observed in real EGO rejections of AI-generated submissions.
 - **Research was AI-assisted** — Discourse mining, guideline extraction, cross-source synthesis, and gap analysis were performed with Claude Code and verified against real EGO reviews on extensions.gnome.org, [gjs.guide](https://gjs.guide) requirements, and GNOME Shell GitLab history. Regression-tested against a real 11-module extension as baseline.
 - **ego-lint itself is AI-free** — The output artifact is deterministic bash + python + YAML. No API calls. No network access. No model inference. AI was the development tool, not the runtime tool.
 
@@ -191,6 +193,15 @@ Full gap list: [docs/research/gap-analysis.md](docs/research/gap-analysis.md)
 ## Author
 
 Built by [Zvi Baratz](https://github.com/ZviBaratz), author of [hara-hachi-bu](https://github.com/ZviBaratz/hara-hachi-bu) (a GNOME Shell extension for power management, submitted to EGO). Motivated by review round-trip friction — the mechanical checks that delay approval shouldn't require human time on either side. Built entirely with [Claude Code](https://docs.anthropic.com/en/docs/claude-code).
+
+## Troubleshooting
+
+| Problem | Fix |
+|---------|-----|
+| `python3: command not found` | `sudo apt install python3` (Ubuntu/Debian) or `sudo dnf install python3` (Fedora) |
+| Schema check skipped | Install `glib-compile-schemas`: `sudo apt install libglib2.0-dev-bin` or `sudo dnf install glib2-devel` |
+| ESLint check skipped | Install Node.js: `sudo apt install nodejs npm` or `sudo dnf install nodejs npm` |
+| `zipinfo: not found` | `sudo apt install unzip` or `sudo dnf install unzip` |
 
 ## Requirements
 
