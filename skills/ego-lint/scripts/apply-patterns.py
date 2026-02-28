@@ -169,9 +169,65 @@ def _is_suppressed(line, prev_line, rule_id):
     return False
 
 
+def validate_rules(rules_file):
+    """Validate patterns.yaml for common errors. Returns exit code."""
+    if not os.path.isfile(rules_file):
+        print(f"ERROR: File not found: {rules_file}", file=sys.stderr)
+        return 1
+
+    rules = parse_rules(rules_file)
+    errors = 0
+    seen_ids = {}
+    required_fields = ('id', 'pattern', 'scope', 'severity', 'message')
+    valid_severities = ('blocking', 'advisory')
+
+    for i, rule in enumerate(rules):
+        rid = rule.get('id', f'(rule #{i+1})')
+
+        # Check required fields
+        for field in required_fields:
+            if field not in rule:
+                print(f"ERROR: {rid}: missing required field '{field}'")
+                errors += 1
+
+        # Check duplicate IDs
+        if 'id' in rule:
+            if rule['id'] in seen_ids:
+                print(f"ERROR: {rid}: duplicate ID (first seen at rule #{seen_ids[rule['id']]+1})")
+                errors += 1
+            seen_ids[rule['id']] = i
+
+        # Check severity values
+        severity = rule.get('severity', '')
+        if severity and severity not in valid_severities:
+            print(f"ERROR: {rid}: invalid severity '{severity}' (must be 'blocking' or 'advisory')")
+            errors += 1
+
+        # Check regex compilation
+        pattern = rule.get('pattern', '')
+        if pattern:
+            try:
+                re.compile(pattern)
+            except re.error as e:
+                print(f"ERROR: {rid}: invalid regex: {e}")
+                errors += 1
+
+    if errors:
+        print(f"\n{errors} error(s) found in {len(rules)} rules")
+        return 1
+    else:
+        print(f"OK: {len(rules)} rules validated")
+        return 0
+
+
 def main():
+    # Handle --validate mode
+    if len(sys.argv) >= 3 and sys.argv[1] == '--validate':
+        sys.exit(validate_rules(sys.argv[2]))
+
     if len(sys.argv) < 3:
         print("Usage: apply-patterns.py RULES_YAML EXTENSION_DIR", file=sys.stderr)
+        print("       apply-patterns.py --validate RULES_YAML", file=sys.stderr)
         sys.exit(1)
 
     rules_file = sys.argv[1]

@@ -16,6 +16,19 @@ FIXTURES_DIR="$SCRIPT_DIR/tests/fixtures"
 
 # --- Prompts ---
 
+read -rp "Category prefix (e.g. SEC, SLOP, QUAL, WEB, DEPR): " category_prefix
+if [[ -n "$category_prefix" ]]; then
+    category_prefix_upper="$(echo "$category_prefix" | tr '[:lower:]' '[:upper:]')"
+    highest=$(grep -oP "id: R-${category_prefix_upper}-\\K\\d+" "$RULES_FILE" 2>/dev/null | sort -n | tail -1)
+    if [[ -n "$highest" ]]; then
+        next=$((highest + 1))
+        printf "  Suggestion: R-%s-%02d (highest existing: R-%s-%02d)\n" "$category_prefix_upper" "$next" "$category_prefix_upper" "$highest"
+    else
+        printf "  No existing R-%s-* rules found. Starting at 01.\n" "$category_prefix_upper"
+        printf "  Suggestion: R-%s-01\n" "$category_prefix_upper"
+    fi
+fi
+
 read -rp "Rule ID (e.g. R-SEC-24): " rule_id
 if [[ -z "$rule_id" ]]; then
     echo "ERROR: Rule ID is required." >&2
