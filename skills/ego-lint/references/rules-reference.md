@@ -2516,3 +2516,111 @@ Rules for APIs removed or changed in specific GNOME Shell versions. These rules 
 - **Checked by**: check-metadata.py
 - **Rule**: Warns when `shell-version` contains a version not in the known GNOME releases list.
 - **Rationale**: Typos or fictional versions in shell-version waste reviewer time and may cause confusion.
+
+---
+
+## Disclosures (R-DISC)
+
+Rules for capability disclosure in metadata description.
+
+### R-DISC-01: Clipboard usage disclosure
+- **Severity**: advisory
+- **Checked by**: check-disclosures.py
+- **Rule**: If code uses `St.Clipboard`, the metadata description should mention clipboard access.
+- **Rationale**: EGO reviewers expect capabilities to be disclosed so users know what the extension accesses.
+- **Fix**: Add a mention of clipboard access to the `description` field in `metadata.json`.
+
+### R-DISC-02: Network usage disclosure
+- **Severity**: advisory
+- **Checked by**: check-disclosures.py
+- **Rule**: If code uses `Soup.Session`, `Soup.Message`, or `GLib.Uri`, the metadata description should mention network access.
+- **Rationale**: Network access is a sensitive capability. Reviewers check that it's disclosed and justified.
+- **Fix**: Add keywords like "network", "online", "http", or "api" to the metadata description.
+
+### R-DISC-03: pkexec usage disclosure
+- **Severity**: advisory
+- **Checked by**: check-disclosures.py
+- **Rule**: If code uses `pkexec` or `polkit`, the metadata description should disclose privileged access.
+- **Rationale**: Privilege escalation requires explicit disclosure and reviewer scrutiny.
+- **Fix**: Mention "pkexec", "privileged", or "root" in the metadata description.
+
+### R-DISC-04: Private API disclosure
+- **Severity**: advisory
+- **Checked by**: check-disclosures.py
+- **Rule**: If code accesses private APIs (`Main.panel._*`, `statusArea._*`, `quickSettings._*`), the description should disclose it.
+- **Rationale**: Private APIs may break between GNOME versions. Reviewers need to know the extension relies on unstable internals.
+- **Fix**: Mention "private" or "internal" API usage in the metadata description.
+
+### R-DISC-05: File I/O disclosure
+- **Severity**: advisory
+- **Checked by**: check-disclosures.py
+- **Rule**: If code performs file operations (`Gio.File.new_for_path`, `load_contents`, `replace_contents`, `monitor_file`), the description should mention file access.
+- **Rationale**: File I/O beyond GSettings indicates the extension reads or writes to the filesystem, which reviewers flag.
+- **Fix**: Mention "file", "read", "write", or "storage" in the metadata description.
+
+---
+
+## Polkit (R-POLKIT)
+
+Rules for polkit action ID validation.
+
+### R-POLKIT-01: Action ID match
+- **Severity**: blocking
+- **Checked by**: check-polkit.py
+- **Rule**: Action IDs in `.policy` XML must match those referenced in `.rules` JS files.
+- **Rationale**: Mismatched action IDs mean the polkit rules won't apply to the correct policy, potentially leaving privileged operations unprotected or always denied.
+- **Fix**: Ensure the `action.id` in your `.rules` file exactly matches the `<action id="...">` in your `.policy` file.
+
+### R-POLKIT-02: Action ID prefix convention
+- **Severity**: advisory
+- **Checked by**: check-polkit.py
+- **Rule**: Polkit action IDs should follow the `org.gnome.shell.extensions.*` namespace convention.
+- **Rationale**: Using the standard namespace prevents collisions with other extensions and system polkit actions.
+- **Fix**: Rename action IDs to `org.gnome.shell.extensions.your-extension.action-name`.
+
+### R-POLKIT-03: Helper script exists
+- **Severity**: advisory
+- **Checked by**: check-polkit.py
+- **Rule**: Helper script paths referenced in `.rules` should exist in the extension directory.
+- **Rationale**: If the rules file references a helper script that doesn't exist, the polkit rule will silently fail.
+- **Fix**: Ensure the script path in your `.rules` file matches the actual file location in your extension.
+
+---
+
+## Schema Usage (R-SCHEMA)
+
+Rules for GSettings schema key usage.
+
+### R-SCHEMA-10: Unused schema key
+- **Severity**: advisory
+- **Checked by**: check-schema-usage.py
+- **Rule**: Schema keys defined in `.gschema.xml` should be referenced in code.
+- **Rationale**: Unused schema keys add bloat, confuse reviewers, and suggest the schema was generated without review.
+- **Fix**: Remove unused keys from the schema, or add code that reads/writes them.
+
+### R-SCHEMA-11: Undefined key reference
+- **Severity**: blocking
+- **Checked by**: check-schema-usage.py
+- **Rule**: Key names referenced in code (`get_*`, `set_*`, `bind`, `connect('changed::...')`) must exist in the schema.
+- **Rationale**: Accessing a key that doesn't exist in the schema causes a runtime crash (GLib-GIO-ERROR).
+- **Fix**: Add the missing key to your `.gschema.xml`, or fix the key name in your code.
+
+---
+
+## Accessibility (R-A11Y)
+
+Rules for basic accessibility compliance.
+
+### R-A11Y-01: Icon-only button without accessible_name
+- **Severity**: advisory
+- **Checked by**: check-accessibility.py
+- **Rule**: `new St.Button({icon_name: ...})` without `accessible_name` or `label` property.
+- **Rationale**: Screen readers cannot announce icon-only buttons to users. Adding `accessible_name` provides a text description for assistive technologies.
+- **Fix**: Add `accessible_name: _('Button description')` to the constructor.
+
+### R-A11Y-02: Custom widget without accessible_role
+- **Severity**: advisory
+- **Checked by**: check-accessibility.py
+- **Rule**: Classes extending `St.Widget` directly should set `accessible_role`.
+- **Rationale**: Without an accessible role, screen readers don't know what kind of widget it is. Subclasses of concrete widgets (St.Button, St.BoxLayout) inherit sensible defaults.
+- **Fix**: Set `accessible_role` in the GObject.registerClass Properties or in the constructor.

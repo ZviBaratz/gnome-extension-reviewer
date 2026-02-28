@@ -339,6 +339,24 @@ The following areas are now covered through Tier 3 review checklists:
 
 ---
 
+## New Coverage Added (2026-02-28) — Disclosures, Polkit, Schema Usage, Accessibility
+
+| Area | New Rules/Checks | Where |
+|---|---|---|
+| Disclosure matrix (R-DISC-01 through R-DISC-05) | WARN when clipboard/network/pkexec/private-API/file-IO usage detected without metadata description disclosure | check-disclosures.py (migrated from check-quality.py) |
+| Polkit action ID cross-reference (R-POLKIT-01 through R-POLKIT-03) | FAIL on action ID mismatch between .policy and .rules; WARN on non-standard prefix; WARN on missing helper scripts | check-polkit.py |
+| Schema key usage (R-SCHEMA-10, R-SCHEMA-11) | WARN for unused schema keys; FAIL for undefined keys referenced in code | check-schema-usage.py |
+| Accessibility (R-A11Y-01, R-A11Y-02) | WARN for icon-only St.Button without accessible_name; WARN for St.Widget subclass without accessible_role | check-accessibility.py |
+| Code metrics | [METRIC] output: js-files, total-lines, largest-file, css-lines, schema-keys | ego-lint.sh compute_metrics() |
+| Resource graph summary | `--summary` flag for human-readable resource balance output | build-resource-graph.py |
+
+**Gaps closed:**
+- Polkit action ID validation (previously in "Known Limitations")
+- Schema key usage cross-reference (new capability)
+- Consolidated disclosure checks (clipboard + network migrated, 3 new capabilities added)
+
+---
+
 ## Rejection Case Studies
 
 Real-world EGO rejections that informed the plugin's detection rules:
