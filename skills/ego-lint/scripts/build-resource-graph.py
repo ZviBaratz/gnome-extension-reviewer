@@ -634,18 +634,62 @@ def build_resource_graph(ext_dir):
     }
 
 
+def format_summary(graph):
+    """Format the resource graph as a human-readable summary."""
+    summary = graph['summary']
+    files = graph['files']
+
+    # Count resources by type
+    type_counts = {}
+    for file_data in files.values():
+        for create in file_data.get('creates', []):
+            rtype = create['type']
+            type_counts[rtype] = type_counts.get(rtype, 0) + 1
+
+    lines = []
+    lines.append(f"Files scanned: {summary['files_scanned']}")
+
+    if type_counts:
+        parts = [f"{count} {rtype}" for rtype, count in sorted(type_counts.items())]
+        lines.append(f"Resources: {', '.join(parts)}")
+
+    lines.append(f"Total: {summary['total_creates']} creates, "
+                 f"{summary['total_destroys']} destroys")
+    lines.append(f"Orphans: {summary['orphan_count']}")
+
+    if summary['orphan_count'] == 0:
+        lines.append("Balance: All resources have matching cleanup")
+    else:
+        lines.append(f"Balance: {summary['orphan_count']} resource(s) without cleanup")
+        for orphan in graph['orphans'][:5]:
+            lines.append(f"  - {orphan['file']}:{orphan['line']} "
+                         f"({orphan['type']}): {orphan['reason']}")
+
+    lines.append(f"Ownership depth: {summary['ownership_depth']}")
+
+    return '\n'.join(lines)
+
+
 def main():
-    if len(sys.argv) < 2:
-        print("Usage: build-resource-graph.py EXTENSION_DIR", file=sys.stderr)
+    summary_mode = '--summary' in sys.argv
+    args = [a for a in sys.argv[1:] if a != '--summary']
+
+    if not args:
+        print("Usage: build-resource-graph.py [--summary] EXTENSION_DIR",
+              file=sys.stderr)
         sys.exit(1)
 
-    ext_dir = os.path.realpath(sys.argv[1])
+    ext_dir = os.path.realpath(args[0])
     if not os.path.isdir(ext_dir):
         print(f"Error: {ext_dir} is not a directory", file=sys.stderr)
         sys.exit(1)
 
     graph = build_resource_graph(ext_dir)
-    print(json.dumps(graph, indent=2))
+
+    if summary_mode:
+        print(format_summary(graph))
+    else:
+        print(json.dumps(graph, indent=2))
 
 
 if __name__ == '__main__':

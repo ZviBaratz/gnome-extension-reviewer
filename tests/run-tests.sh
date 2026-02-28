@@ -70,6 +70,8 @@ assert_output_contains "no binary files" "\[PASS\].*no-binary-files"
 assert_output_contains "license exists" "\[PASS\].*license"
 assert_output_contains "schema checks pass" "\[PASS\].*schema/exists"
 assert_output_contains "import checks pass" "\[PASS\].*imports/segregation"
+assert_output_contains "outputs JS file count" "\[METRIC\] js-files:"
+assert_output_contains "outputs total lines" "\[METRIC\] total-lines:"
 echo ""
 
 # --- bad-metadata ---
@@ -261,7 +263,7 @@ echo ""
 echo "=== clipboard-access ==="
 run_lint "clipboard-access@test"
 assert_exit_code "exits with 0 (advisory only)" 0
-assert_output_contains "warns on clipboard non-disclosure" "\[WARN\].*quality/clipboard-disclosure"
+assert_output_contains "warns on clipboard non-disclosure" "\[WARN\].*disclosure/clipboard"
 assert_output_not_contains "R-SEC-07 removed" "\[WARN\].*R-SEC-07"
 echo ""
 
