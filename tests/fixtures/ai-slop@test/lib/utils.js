@@ -2,6 +2,7 @@
 
 let _cache = null;
 let _count = 0;
+let _leaked = {};
 
 /**
  * @param {string} path - File path

@@ -5,3 +5,4 @@ node_modules/
 !tests/fixtures/**/*.zip
 .claude/
 tests/fixtures/*/node_modules/
+tests/assertions/local-regression.sh

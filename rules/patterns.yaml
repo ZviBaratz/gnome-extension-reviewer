@@ -366,13 +366,22 @@
   fix: "Gtk.HeaderBar → Adw.HeaderBar, Gtk.StackSwitcher → Adw.ViewSwitcher, Gtk.Notebook → Adw.ViewStack, Gtk.InfoBar → Adw.Banner"
 
 - id: R-PREFS-04b
-  pattern: "\\bnew\\s+Gtk\\.(Grid|ScrolledWindow|Frame|ComboBoxText|RadioButton|Stack|Revealer|Expander|FlowBox|Overlay|Paned|ListBox)\\b"
+  pattern: "\\bnew\\s+Gtk\\.(Frame|ComboBoxText|RadioButton|Revealer|Expander|FlowBox|Overlay|Paned)\\b"
   scope: ["prefs.js"]
   severity: advisory
-  message: "GTK container widget in prefs.js — Adwaita replacement available for GNOME 45+"
+  message: "GTK widget in prefs.js — Adwaita replacement available for GNOME 45+"
   category: prefs
   deduplicate: true
-  fix: "Gtk.Grid → Adw rows, Gtk.ScrolledWindow → Adw.PreferencesPage (auto-scrolls), Gtk.Frame → Adw.PreferencesGroup, Gtk.ComboBoxText → Adw.ComboRow, Gtk.RadioButton → Adw.ActionRow, Gtk.Stack → Adw.ViewStack, Gtk.Revealer → Adw.ExpanderRow, Gtk.Expander → Adw.ExpanderRow, Gtk.FlowBox → Adw.PreferencesGroup, Gtk.ListBox → Adw.PreferencesGroup (for static lists)"
+  fix: "Gtk.Frame → Adw.PreferencesGroup, Gtk.ComboBoxText → Adw.ComboRow, Gtk.RadioButton → Adw.ActionRow, Gtk.Revealer → Adw.ExpanderRow, Gtk.Expander → Adw.ExpanderRow, Gtk.FlowBox → Adw.PreferencesGroup"
+
+- id: R-PREFS-04c
+  pattern: "\\bnew\\s+Gtk\\.(Grid|ScrolledWindow|Stack|ListBox)\\b"
+  scope: ["prefs.js"]
+  severity: advisory
+  message: "GTK layout widget in prefs.js — verify no Adw equivalent for this specific use case"
+  category: prefs
+  deduplicate: true
+  fix: "Gtk.ListBox with boxed-list CSS is valid for dynamic lists. Gtk.ScrolledWindow is valid for constrained-height content. Gtk.Grid/Stack may have Adw equivalents depending on usage."
 
 # --- Translation (advisory) ---
 # Template literals and concatenation inside gettext break xgettext extraction.

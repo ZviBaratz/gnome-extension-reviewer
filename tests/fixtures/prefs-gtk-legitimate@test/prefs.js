@@ -14,6 +14,9 @@ export default class TestPrefs extends ExtensionPreferences {
         const combo = new Gtk.ComboBoxText({});
         const expander = new Gtk.Expander({ label: 'More' });
 
+        // Advisory: legitimate GTK layout widget (R-PREFS-04c)
+        const scroll = new Gtk.ScrolledWindow({});
+
         page.add(group);
         window.add(page);
     }

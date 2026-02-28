@@ -192,8 +192,11 @@ def check_module_state(ext_dir, js_files):
                 m = re.match(r'\s*(let|var)\s+(\w+)', line)
                 if m:
                     var_name = m.group(2)
-                    # Check if var is reset to null elsewhere
-                    reset_re = re.compile(rf'\b{re.escape(var_name)}\s*=\s*null\b')
+                    # Check if var is reset to a known initial value elsewhere
+                    reset_re = re.compile(
+                        rf'\b{re.escape(var_name)}\s*=\s*'
+                        r'(?:null|undefined|0|false|true|(?:\'\'|"")|Promise\.resolve\(\))\s*[;\n]'
+                    )
                     if reset_re.search(content):
                         continue  # Variable is cleaned up
                     found.append(f"{rel}:{i + 1}")
@@ -560,6 +563,9 @@ def check_notification_volume(ext_dir, js_files):
                     continue
                 total += len(re.findall(r'Main\.notify\s*\(', line))
 
+    # Threshold is intentionally higher than ego-simulate's taxonomy (>3) — automated lint
+    # checks require more conservative thresholds to reduce noise for developers who run
+    # ego-lint on every change. The simulation uses lower thresholds since it's AI-guided.
     if total > 5:
         result("WARN", "quality/notification-volume",
                f"{total} Main.notify() call sites — reviewers consider excessive "

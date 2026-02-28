@@ -1691,12 +1691,19 @@ Rules for `prefs.js` validation and EGO compliance.
 - **Rationale**: The GNOME HIG prefers Adwaita widgets (PreferencesPage, PreferencesGroup, ActionRow, SwitchRow, ComboRow) which provide consistent styling and behavior. Raw GTK widgets (Box, Label, Switch, Grid, etc.) work but look inconsistent with other GNOME preferences dialogs.
 - **Fix**: Use `Adw.PreferencesPage`, `Adw.PreferencesGroup`, `Adw.ActionRow`, `Adw.SwitchRow`, `Adw.ComboRow` instead of raw GTK widget constructors.
 
-### R-PREFS-04b: Raw GTK widgets advisory (non-blocking)
+### R-PREFS-04b: GTK widgets with Adwaita replacements (advisory)
 - **Severity**: advisory
 - **Checked by**: apply-patterns.py
-- **Rule**: `prefs.js` uses raw GTK widgets (Label, Button, SpinButton, etc.) instead of Adwaita equivalents.
-- **Rationale**: While R-PREFS-04 blocks on high-impact GTK widgets (ListBox, HeaderBar, StackSwitcher, Notebook, InfoBar) that cause significant visual inconsistency, many other GTK widgets (Label, Button, Switch, Entry, Grid, etc.) are acceptable but could benefit from Adwaita equivalents where available.
-- **Fix**: Consider using `Adw.PreferencesPage`, `Adw.PreferencesGroup`, `Adw.ActionRow`, `Adw.SwitchRow`, `Adw.ComboRow` where suitable.
+- **Rule**: `prefs.js` uses GTK widgets that have direct Adwaita equivalents (Frame, ComboBoxText, RadioButton, Revealer, Expander, FlowBox, Overlay, Paned).
+- **Rationale**: These widgets have well-established Adwaita replacements that provide better visual consistency with other GNOME preferences dialogs.
+- **Fix**: `Gtk.Frame` → `Adw.PreferencesGroup`, `Gtk.ComboBoxText` → `Adw.ComboRow`, `Gtk.RadioButton` → `Adw.ActionRow`, `Gtk.Revealer`/`Gtk.Expander` → `Adw.ExpanderRow`, `Gtk.FlowBox` → `Adw.PreferencesGroup`.
+
+### R-PREFS-04c: GTK layout widgets in prefs (advisory)
+- **Severity**: advisory
+- **Checked by**: apply-patterns.py
+- **Rule**: `prefs.js` uses GTK layout widgets (Grid, ScrolledWindow, Stack, ListBox) that may or may not have Adwaita equivalents depending on usage.
+- **Rationale**: These widgets are often legitimate in Adwaita prefs: `Gtk.ListBox` with `boxed-list` CSS is the recommended pattern for dynamic lists, `Gtk.ScrolledWindow` is valid for constrained-height content, and `Gtk.Grid`/`Gtk.Stack` serve layout roles that Adwaita doesn't always cover. However, some usages do have Adwaita equivalents.
+- **Fix**: Verify your specific usage doesn't have an Adwaita equivalent. `Gtk.ListBox` with `boxed-list` CSS and `Gtk.ScrolledWindow` for constrained areas are generally fine.
 
 ### R-PREFS-05: Prefs memory leak (GObject instances without cleanup)
 - **Severity**: advisory

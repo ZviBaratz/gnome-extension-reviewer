@@ -653,6 +653,11 @@ if [[ -f "$ASSERTIONS_DIR/quick-wins.sh" ]]; then
     source "$ASSERTIONS_DIR/quick-wins.sh"
 fi
 
+# Local-only assertion files (not committed — for personal regression testing)
+if [[ -f "$ASSERTIONS_DIR/local-regression.sh" ]]; then
+    source "$ASSERTIONS_DIR/local-regression.sh"
+fi
+
 # --- Summary ---
 echo "============================================"
 echo "  Results: $PASS_COUNT passed, $FAIL_COUNT failed"
