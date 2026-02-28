@@ -1,6 +1,6 @@
 # EGO Rejection Taxonomy
 
-22 common rejection reasons weighted by severity. Use these weights to compute
+23 common rejection reasons weighted by severity. Use these weights to compute
 a simulation score.
 
 ## Weight 10 — Hard Blockers (automatic rejection)
@@ -34,6 +34,7 @@ a simulation score.
 | 15 | Import segregation | GTK in `extension.js` or Shell modules in `prefs.js` |
 | 16 | InjectionManager leak | `new InjectionManager()` without `.clear()` in disable |
 | 17 | Mock/test code shipped | `MockDevice.js`, test files in production package |
+| 23 | ESLint errors | Code that fails ESLint with errors (undefined references, syntax errors, missing imports) |
 
 ## Weight 3 — Style/Quality
 
@@ -67,3 +68,5 @@ a simulation score.
   the rejection threshold
 - Hard blockers are independently sufficient for rejection
 - When multiple reasons in the same weight class trigger, sum all their weights
+- ego-lint runs ESLint as part of its automated checks. If ESLint reports
+  errors (not warnings), reason #23 is triggered with weight 5.
