@@ -1,3 +1,5 @@
+> **Archived**: Findings consolidated into [field-test-hara-hachi-bu.md](field-test-hara-hachi-bu.md) (F-001 through F-005). Kept for detailed root-cause analysis.
+
 # ego-lint False Positives and Improvement Opportunities
 
 > **All items resolved in v0.1.0 (commit 7ecc386).** Archived for transparency.

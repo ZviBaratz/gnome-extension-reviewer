@@ -44,10 +44,10 @@ echo ""
 
 # Source the regression assertions
 ASSERTIONS_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/assertions"
-if [[ -f "$ASSERTIONS_DIR/hara-hachi-bu-regression.sh" ]]; then
-    source "$ASSERTIONS_DIR/hara-hachi-bu-regression.sh"
+if [[ -f "$ASSERTIONS_DIR/local-regression.sh" ]]; then
+    source "$ASSERTIONS_DIR/local-regression.sh"
 else
-    echo "Assertion file not found: $ASSERTIONS_DIR/hara-hachi-bu-regression.sh"
+    echo "Assertion file not found: $ASSERTIONS_DIR/local-regression.sh"
     exit 1
 fi
 

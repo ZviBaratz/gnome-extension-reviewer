@@ -1,3 +1,5 @@
+> **Note**: hara-hachi-bu findings from this document are consolidated in [field-test-hara-hachi-bu.md](field-test-hara-hachi-bu.md) (F-012 through F-021).
+
 # gnome-extension-reviewer: Review Feedback (2026-02-28)
 
 ## Source

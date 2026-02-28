@@ -1,3 +1,5 @@
+> **Archived**: Findings consolidated into [field-test-hara-hachi-bu.md](field-test-hara-hachi-bu.md) (F-006 through F-011). Kept for detailed analysis and code snippets.
+
 # ego-lint v0.2.0 Improvement Suggestions
 
 > Findings from a full EGO submission pipeline run (ego-lint → ego-review → ego-simulate → package validation) on [hara-hachi-bu](https://github.com/ZviBaratz/hara-hachi-bu) v1.0 (18 JS files, 7,662 non-blank lines), performed 2026-02-28.
