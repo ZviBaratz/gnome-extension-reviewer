@@ -1,0 +1,1 @@
+{"uuid": "polkit-mismatch@test", "name": "Polkit Mismatch Test", "description": "Tests polkit action ID mismatch detection with pkexec and privileged access", "shell-version": ["48"], "url": "https://github.com/test/polkit-mismatch"}
