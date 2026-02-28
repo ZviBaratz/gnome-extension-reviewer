@@ -168,6 +168,15 @@ The four skills above use Claude to analyze extension source code via Anthropic'
 
 This project is looking for community co-maintainers among EGO reviewers. If you'd like to help shape the rules — add checks for rejection patterns you see often, adjust severity, or improve heuristics — open an issue or PR. See [GOVERNANCE.md](GOVERNANCE.md) for how rule decisions are made.
 
+### Help Wanted
+
+Self-contained improvements where reviewer expertise would be especially valuable:
+
+- **Polkit action ID validation** — verify `.policy` file exists with `org.gnome.shell.extensions.*` ID when `pkexec` is used
+- **Schema filename validation** — ensure `.gschema.xml` filename matches the schema ID inside
+- **Module-scope mutable state** — detect `Map`/`Set` at module level (mutable state outside `enable()`/`disable()`)
+- **New rejection patterns** — if you see a common rejection reason not covered by ego-lint, [open an issue](https://github.com/ZviBaratz/gnome-extension-reviewer/issues) with the pattern
+
 ## Roadmap
 
 - [ ] Polkit action ID validation (verify `.policy` file when `pkexec` is used)

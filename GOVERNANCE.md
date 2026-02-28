@@ -41,6 +41,12 @@ The project is actively looking for 2–3 EGO reviewers as co-maintainers to:
 - Validate heuristic checks against real review experience
 - Help prioritize which rejection patterns to automate next
 
+### Onboarding path
+
+1. **Contribute 2–3 rules or fixes** — pattern rules, false-positive reports, or severity adjustments
+2. **Discuss write access** — after contributions demonstrate familiarity with the rule system and testing conventions
+3. **Responsibilities**: rule PR review, severity validation against real extensions, false-positive triage
+
 If you're an active EGO reviewer and interested, open an issue or reach out.
 
 ## Decision Process
