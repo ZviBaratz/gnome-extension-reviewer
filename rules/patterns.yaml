@@ -240,14 +240,6 @@
   category: security
   fix: "Remove run_dispose() call. If genuinely needed, add a comment explaining why."
 
-- id: R-SEC-07
-  pattern: "\\bSt\\.Clipboard\\b"
-  scope: ["*.js"]
-  severity: advisory
-  message: "Clipboard access must be disclosed in metadata.json description"
-  category: security
-  fix: "Add clipboard usage disclosure to your extension description on EGO."
-
 - id: R-SEC-08
   pattern: "\\b(analytics|telemetry|trackEvent|trackPage|GA_TRACKING_ID|gtag)\\b"
   scope: ["*.js"]
@@ -282,7 +274,7 @@
 
 - id: R-SEC-20
   pattern: "\\bpkexec\\b"
-  scope: ["*.js", "*.sh"]
+  scope: ["*.js"]
   severity: advisory
   message: "pkexec usage will receive extra reviewer scrutiny; ensure a valid polkit policy is included"
   category: security

@@ -22,7 +22,7 @@
 
 `ego-lint.sh` is a bash script that runs all automated checks (Tiers 1 and 2)
 against an extension directory. It first invokes `run_pattern_rules()`, which
-calls `apply-patterns.py` with `rules/patterns.yaml` to evaluate 114 regex
+calls `apply-patterns.py` with `rules/patterns.yaml` to evaluate 113 regex
 rules against every JS file. Then it calls `run_subscript()` for each of the 13
 Tier 2 scripts -- Python and bash programs that perform structural analysis
 (metadata validation, lifecycle symmetry, resource tracking, etc.). Each
@@ -88,7 +88,7 @@ creates without matching destroys -- as FAIL or WARN depending on resource type.
 ```
 ego-lint                        CLI wrapper (top-level entry point)
 rules/
-  patterns.yaml                 Tier 1: 114 regex rules (18 sections)
+  patterns.yaml                 Tier 1: 113 regex rules (18 sections)
 skills/
   ego-lint/
     SKILL.md                    Skill definition for Claude

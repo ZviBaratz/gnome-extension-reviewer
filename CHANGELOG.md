@@ -4,7 +4,7 @@
 
 ### What's Included
 
-- **114 pattern rules** in `rules/patterns.yaml` covering web APIs, deprecated APIs, security, import segregation, AI slop detection, GNOME 44–50 migration, and more
+- **113 pattern rules** in `rules/patterns.yaml` covering web APIs, deprecated APIs, security, import segregation, AI slop detection, GNOME 44–50 migration, and more
 - **13 structural check scripts** (Python/bash) for metadata validation, lifecycle symmetry, resource graph construction, async safety, GObject patterns, preferences validation, schema checks, and package validation
 - **Cross-file resource tracking** — builds a resource graph (signals, timeouts, widgets, D-Bus, file monitors, GSettings) and detects orphaned resources
 - **Version-gated rules** — GNOME 44–50 migration rules that only fire when the extension's declared `shell-version` includes the relevant version

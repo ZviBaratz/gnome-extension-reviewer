@@ -1469,13 +1469,6 @@ destroy() {
 - **Fix**: Remove `run_dispose()` call. If genuinely needed, add a comment explaining why.
 - **Tested by**: `tests/fixtures/hallucinated-apis@test/`
 
-### R-SEC-07: Clipboard access disclosure
-- **Severity**: advisory
-- **Checked by**: apply-patterns.py
-- **Rule**: Extensions using `St.Clipboard` must disclose clipboard access in the `metadata.json` description.
-- **Rationale**: Clipboard access is a sensitive permission. EGO reviewers expect the extension description to mention it so users can make an informed decision before installing.
-- **Fix**: Add clipboard usage disclosure to your extension description on EGO (e.g., "This extension reads/writes the system clipboard").
-
 ### R-SEC-08: No telemetry or analytics
 - **Severity**: advisory
 - **Checked by**: apply-patterns.py

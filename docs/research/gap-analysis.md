@@ -125,7 +125,7 @@
 
 | Guideline Requirement | Severity | Currently Covered? | By Which Rule/Check? | Gap Notes |
 |---|---|---|---|---|
-| Clipboard access MUST be declared in description | **MUST** | Partial | R-SEC-07 (pattern: `St.Clipboard`) | Detects clipboard usage and advises disclosure. Does NOT verify that the metadata description actually contains disclosure text. |
+| Clipboard access MUST be declared in description | **MUST** | Covered | quality/clipboard-disclosure (check-quality.py) | Detects `St.Clipboard` and verifies metadata description mentions clipboard. R-SEC-07 removed (was redundant). |
 | MUST NOT share clipboard data with third parties without explicit user interaction | **MUST** | Tier 3 Only | security-checklist.md | Requires semantic review of clipboard + network code flow. |
 | MUST NOT ship with default keyboard shortcuts for clipboard interaction | **MUST** | Covered | R-SEC-16 (check-lifecycle.py `clipboard-keybinding`) | Cross-references St.Clipboard and addKeybinding in same file. |
 | MUST NOT use telemetry tools to track users | **MUST** | Covered | R-SEC-08 (pattern: analytics/telemetry/trackEvent/etc.) | Pattern-based detection of common telemetry identifiers. |
@@ -245,7 +245,7 @@ These requirements have checks that catch some but not all violations:
 | AI-generated code detection (R-SLOP-*) | Pattern-based; misses novel AI patterns | Inherent limitation; Tier 3 checklist compensates | Open (inherent) |
 | Code obfuscation (R-FILE-06) | Only catches minification (long lines); not variable mangling or encoding | Add checks for high entropy variable names or base64-encoded strings | Open |
 | run_dispose comment requirement | Detects usage but not comment | Add lookahead for comment on preceding/same line | **Done** (R-QUAL-21) |
-| Clipboard disclosure verification (R-SEC-07) | Detects clipboard usage; does not verify description text | Cross-reference with metadata.json description content | **Done** (R-QUAL-22) |
+| Clipboard disclosure verification | Detects clipboard usage; does not verify description text | Cross-reference with metadata.json description content | **Done** (quality/clipboard-disclosure; R-SEC-07 removed as redundant) |
 | License file validation (R-FILE-03) | Checks existence only; not content | Parse LICENSE file for GPL-compatible license identifiers (SPDX) | **Fixed** (GPL-compatibility scanning) |
 | Prefs extends ExtensionPreferences (R-PREFS-02) | Checks `export default class` but not the extends clause | Regex for `export default class \w+ extends ExtensionPreferences` | **Fixed** (R-PREFS-02 strengthened) |
 | Prefs method requirement | Detects dual-pattern conflict; does not fail when neither method present | Add FAIL if prefs.js has no `fillPreferencesWindow` and no `getPreferencesWidget` | **Done** (prefs/missing-prefs-method) |

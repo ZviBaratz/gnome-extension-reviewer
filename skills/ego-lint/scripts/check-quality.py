@@ -599,14 +599,11 @@ def check_private_api(ext_dir, js_files):
                 prev_line = line
 
     if matches:
-        for rel, lineno, desc in matches[:5]:
-            result("WARN", "quality/private-api",
-                   f"{rel}:{lineno}: {desc} — requires reviewer justification "
-                   f"and version pinning")
-        remaining = len(matches) - 5
-        if remaining > 0:
-            result("WARN", "quality/private-api",
-                   f"...and {remaining} more private API access(es)")
+        locs = ', '.join(f"{rel}:{lineno}" for rel, lineno, _ in matches[:5])
+        overflow = f" (+{len(matches) - 5} more)" if len(matches) > 5 else ""
+        result("WARN", "quality/private-api",
+               f"{locs}{overflow}: {matches[0][2]} — requires reviewer "
+               f"justification and version pinning")
     else:
         result("PASS", "quality/private-api",
                "No private GNOME Shell API access detected")
@@ -639,7 +636,7 @@ def check_gettext_pattern(ext_dir, js_files):
         result("WARN", "quality/gettext-pattern",
                f"Uses Gettext.dgettext() directly ({locs}) — "
                f"hardcoded gettext domain creates maintenance burden if domain changes; "
-               f"use this.gettext() from the Extension base class")
+               f"use import {{gettext as _}} from the Extension/ExtensionPreferences module")
     else:
         result("PASS", "quality/gettext-pattern",
                "Gettext usage follows recommended pattern")

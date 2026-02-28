@@ -261,7 +261,8 @@ echo ""
 echo "=== clipboard-access ==="
 run_lint "clipboard-access@test"
 assert_exit_code "exits with 0 (advisory only)" 0
-assert_output_contains "warns on St.Clipboard" "\[WARN\].*R-SEC-07"
+assert_output_contains "warns on clipboard non-disclosure" "\[WARN\].*quality/clipboard-disclosure"
+assert_output_not_contains "R-SEC-07 removed" "\[WARN\].*R-SEC-07"
 echo ""
 
 # --- telemetry-patterns ---

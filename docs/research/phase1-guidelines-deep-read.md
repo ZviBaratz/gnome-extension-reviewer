@@ -356,7 +356,7 @@
 ### Finding: Clipboard access -- three distinct requirements
 - **Guideline text:** (1) "MUST declare it in the description", (2) "MUST NOT share clipboard data with a third-party without explicit user interaction", (3) "MUST NOT ship with default keyboard shortcuts for interacting with clipboard data"
 - **Severity:** MUST (hard reject for all three)
-- **Current coverage:** Covered - R-SEC-07 (clipboard detection), R-QUAL-22 (description cross-ref), R-SEC-16 (clipboard + keybinding)
+- **Current coverage:** Covered - quality/clipboard-disclosure (detection + description cross-ref), R-SEC-16 (clipboard + keybinding). R-SEC-07 removed (redundant with quality/clipboard-disclosure).
 - **Gap:** Requirement (2) -- "MUST NOT share clipboard data with third-party" -- is only Tier 3 (security-checklist.md). No automated check cross-references clipboard access with network requests (Soup, Gio.SocketClient).
 - **Impact:** Medium -- this is a security-critical requirement.
 
@@ -969,7 +969,7 @@
 | sudo vs pkexec distinction | R-SEC-04 | sudo should be FAIL, pkexec should be WARN |
 | shell-version entry format validation | check-metadata.py | "45.0" format not flagged for GNOME 40+ |
 | donations array length limit | check-metadata.py | Max 3 entries per key may not be validated |
-| Clipboard + network data exfiltration | R-SEC-07 | No cross-reference of clipboard with Soup/network |
+| Clipboard + network data exfiltration | quality/clipboard-disclosure | No cross-reference of clipboard with Soup/network |
 
 ### Documentation-Only Items (No Rule Needed)
 

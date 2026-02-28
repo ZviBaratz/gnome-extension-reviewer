@@ -18,7 +18,7 @@ output="$(bash "$LINT" "$HHB_DIR" 2>&1)" || exit_code=$?
 # Known legitimate findings that MUST remain
 assert_output_contains "known: R-SEC-20 (pkexec advisory)" "\[WARN\].*R-SEC-20"
 assert_output_contains "known: R-PREFS-04 (GTK widgets)" "\[WARN\].*R-PREFS-04"
-assert_output_contains "known: R-SEC-07 (clipboard)" "\[WARN\].*R-SEC-07"
+assert_output_not_contains "no R-SEC-07 (removed — covered by quality/clipboard-disclosure)" "\[WARN\].*R-SEC-07"
 assert_output_contains "known: async/missing-cancellable (null cancellables)" "\[WARN\].*async/missing-cancellable"
 # New checks MUST NOT produce false positives
 assert_output_not_contains "no init-safety false positive on registerClass" "\[FAIL\].*init/shell-modification"

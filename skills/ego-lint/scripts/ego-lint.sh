@@ -26,7 +26,7 @@ Options:
   -h, --help       Show this help message and exit
   -v, --verbose    Show verbose report with grouped results and verdict
 
-Checks (114 pattern rules + 13 structural scripts):
+Checks (113 pattern rules + 13 structural scripts):
   metadata         UUID, required fields, shell-version, session-modes, GNOME trademark
   imports          GTK/Shell import segregation, transitive dependency analysis
   schema           Schema ID, path format, glib-compile-schemas dry-run
@@ -558,12 +558,13 @@ if [[ "$VERBOSE" == true ]]; then
 
     echo ""
     echo "--- VERDICT ---"
+    UNIQUE_WARN_COUNT=$(grep "^WARN|" "$RESULTS_FILE" | cut -d'|' -f2 | sort -u | wc -l)
     if [[ $FAIL_COUNT -gt 0 ]]; then
         echo "  WILL BE REJECTED: $FAIL_COUNT blocking issue(s) found"
-    elif [[ $WARN_COUNT -gt 5 ]]; then
-        echo "  LIKELY REJECTED: $WARN_COUNT warnings suggest quality concerns"
-    elif [[ $WARN_COUNT -gt 0 ]]; then
-        echo "  MAY PASS WITH COMMENTS: $WARN_COUNT advisory warning(s)"
+    elif [[ $UNIQUE_WARN_COUNT -gt 8 ]]; then
+        echo "  LIKELY REJECTED: $UNIQUE_WARN_COUNT checks flagged ($WARN_COUNT total findings)"
+    elif [[ $UNIQUE_WARN_COUNT -gt 0 ]]; then
+        echo "  MAY PASS WITH COMMENTS: $UNIQUE_WARN_COUNT checks flagged ($WARN_COUNT total findings)"
     else
         echo "  LIKELY TO PASS: No issues found"
     fi
