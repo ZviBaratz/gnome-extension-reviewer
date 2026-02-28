@@ -483,12 +483,12 @@
   fix: "Remove the redundant instanceof check."
 
 - id: R-SLOP-17
-  pattern: "typeof\\s+super\\.\\w+\\s*===?\\s*['\"]function['\"]"
+  pattern: "typeof\\s+(?:super|this(?:\\.\\w+)+)\\.\\w+\\s*===?\\s*['\"]function['\"]"
   scope: ["*.js"]
   severity: advisory
-  message: "typeof super.method === 'function' is unnecessary on GObject classes; methods always exist"
+  message: "typeof method guard — verify this check is necessary; GObject and well-typed objects have known methods"
   category: ai-slop
-  fix: "Remove the typeof check and call super.method() directly"
+  fix: "Remove the typeof check. Use a null/undefined guard on the object instead, or add a comment if duck-typing is intentional."
 
 - id: R-SLOP-18
   pattern: "^\\s*//\\s*(Important|Note|Remember|TODO):\\s*(Make sure|Ensure|Always|Don't forget|Handle)"

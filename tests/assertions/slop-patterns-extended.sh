@@ -35,3 +35,11 @@ run_lint "non-executable-script@test"
 assert_output_contains "warns on non-executable shell script" "\[WARN\].*script-permissions"
 assert_output_contains "keeps non-gjs as PASS with pkexec" "\[PASS\].*non-gjs-scripts"
 echo ""
+
+# --- typeof-this-obj-method ---
+echo "=== typeof-this-obj-method ==="
+run_lint "typeof-this-obj-method@test"
+assert_exit_code "exits with 0 (advisory only)" 0
+assert_output_contains "warns on typeof this._obj.method" "\[WARN\].*R-SLOP-17"
+assert_output_not_contains "no R-SLOP-30 on this._obj.method" "\[FAIL\].*R-SLOP-30"
+echo ""

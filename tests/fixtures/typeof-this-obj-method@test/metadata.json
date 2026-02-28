@@ -1,0 +1,7 @@
+{
+  "uuid": "typeof-this-obj-method@test",
+  "name": "Typeof This Obj Method Test",
+  "description": "Test fixture for typeof this._obj.method AI slop detection",
+  "shell-version": ["47"],
+  "url": "https://example.com"
+}

@@ -1422,12 +1422,12 @@ destroy() {
 - **Rationale**: `GLib.file_get_contents()` does not exist in GJS. LLMs hallucinate this from the C API (`g_file_get_contents`), but GJS does not expose it. The correct approach is to use `Gio.File` methods.
 - **Fix**: Use `const file = Gio.File.new_for_path(path); const [ok, contents] = file.load_contents(null);` then `new TextDecoder().decode(contents)` to get a string.
 
-### R-SLOP-17: typeof super.method === 'function' guard
+### R-SLOP-17: typeof method guard on known objects
 - **Severity**: advisory
 - **Checked by**: patterns.yaml
-- **Rule**: `typeof super.method === 'function'` is unnecessary on GObject classes where methods always exist.
-- **Rationale**: AI-generated code defensively checks if superclass methods exist. In GObject hierarchies, inherited methods are always present.
-- **Fix**: Remove the typeof check and call `super.method()` directly.
+- **Rule**: `typeof super.method === 'function'` or `typeof this._obj.method === 'function'` is likely unnecessary when the object type is known.
+- **Rationale**: AI-generated code defensively checks if methods exist. In GObject hierarchies, inherited methods are always present. For typed sub-objects (e.g., `this._device`), the null check already suffices. Legitimate uses: checking optional methods on D-Bus proxies, duck-typing external interfaces.
+- **Fix**: Remove the typeof check. Use a null guard on the object instead, or comment if duck-typing is intentional.
 
 ### R-SLOP-18: LLM prompt-style comments
 - **Severity**: advisory
@@ -2481,6 +2481,13 @@ Rules for APIs removed or changed in specific GNOME Shell versions. These rules 
 - **Checked by**: check-lifecycle.py
 - **Rule**: Detects `getSettings()`/`new Gio.Settings()` assignments not nulled in `disable()`.
 - **Rationale**: GSettings objects hold references that should be released when the extension is disabled.
+
+### R-ASYNC-03: .catch() on non-async method
+- **Severity**: advisory
+- **Checked by**: check-async.py
+- **Rule**: `.catch()` or `.then()` on a method that is not declared `async` in the same file.
+- **Rationale**: Calling `.catch()` on `undefined` (the return of a sync method) throws TypeError in GJS, silently crashing the callback.
+- **Fix**: Use try/catch for synchronous methods. Only use .catch() on Promises.
 
 ### metadata/gettext-domain-mismatch: Gettext domain consistency
 - **Severity**: advisory
