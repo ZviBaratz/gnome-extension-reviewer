@@ -618,6 +618,8 @@ let msg = _(`Found ${count} items`);
 let msg = _('Found %d items').format(count);
 ```
 
+> **Not a defect**: Extensions may use `Gettext.dgettext` in extension-only files and `GLib.dgettext` in files shared with prefs.js. Both are correct for their context. `Gettext.dgettext` works only in the GNOME Shell extension process, while `GLib.dgettext` works in both extension and GTK4 prefs contexts. Only flag if a shared file (imported by both extension.js and prefs.js) uses `Gettext.dgettext`, which would fail in the prefs GTK4 context.
+
 ---
 
 ## Real Rejection Examples
