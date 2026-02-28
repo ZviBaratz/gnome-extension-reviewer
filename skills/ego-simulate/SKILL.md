@@ -3,7 +3,7 @@ name: ego-simulate
 description: >-
   Simulate an EGO review submission — produces a readiness report based on
   published review criteria. Triages the extension in reviewer order, applies
-  a 22-reason rejection taxonomy with weighted scoring, and generates a
+  a 23-reason rejection taxonomy with weighted scoring, and generates a
   structured report with a pass/fail verdict. Use before EGO submission to
   assess review readiness.
 ---
@@ -63,7 +63,7 @@ monologue style: "I see X but Y is missing" or "This looks clean."
 
 Read `references/rejection-taxonomy.md` before scoring.
 
-Apply the 22-reason rejection taxonomy. For each reason:
+Apply the 23-reason rejection taxonomy. For each reason:
 - Check whether the extension triggers it
 - If triggered, record the weight and the specific evidence (file:line)
 - Each reason contributes its weight ONCE regardless of occurrence count
@@ -112,7 +112,7 @@ monologue. What did they notice first? What's their gut feeling?]
 
 Read these reference documents before generating the report:
 - `references/reviewer-persona.md` — How reviewers triage submissions
-- `references/rejection-taxonomy.md` — 22 rejection reasons with weights
+- `references/rejection-taxonomy.md` — 23 rejection reasons with weights
 - `references/approved-examples.md` — Idiomatic patterns reviewers like
 
 ## Important
