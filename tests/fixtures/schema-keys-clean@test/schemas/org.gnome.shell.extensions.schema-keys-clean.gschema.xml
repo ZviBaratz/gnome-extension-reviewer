@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schemalist>
+  <schema id="org.gnome.shell.extensions.schema-keys-clean"
+          path="/org/gnome/shell/extensions/schema-keys-clean/">
+    <key name="enabled" type="b">
+      <default>true</default>
+    </key>
+    <key name="refresh-interval" type="i">
+      <default>30</default>
+    </key>
+  </schema>
+</schemalist>

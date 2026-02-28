@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schemalist>
+  <schema id="org.gnome.shell.extensions.schema-unused-key"
+          path="/org/gnome/shell/extensions/schema-unused-key/">
+    <key name="used-key" type="b">
+      <default>true</default>
+    </key>
+    <key name="orphan-key" type="s">
+      <default>""</default>
+    </key>
+  </schema>
+</schemalist>
