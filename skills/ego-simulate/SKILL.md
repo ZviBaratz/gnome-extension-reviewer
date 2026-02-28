@@ -70,6 +70,20 @@ Apply the 23-reason rejection taxonomy. For each reason:
 
 Sum the weights to compute the total score.
 
+### Integration with ego-lint results
+
+After computing the taxonomy score, cross-reference with ego-lint results
+from Step 1:
+
+- Each ego-lint **FAIL** that doesn't already map to a taxonomy reason adds
+  weight 5 to the score (structural issue equivalent)
+- ego-lint **WARN** results do not add to the score but should be mentioned
+  in the Advisory Notes section of the report
+- If ego-lint reports 0 FAIL, no adjustment needed
+
+This ensures the simulation verdict reflects automated check failures that
+a real reviewer would catch immediately.
+
 Also read `references/approved-examples.md` to calibrate — note where the
 extension follows or deviates from idiomatic patterns.
 
