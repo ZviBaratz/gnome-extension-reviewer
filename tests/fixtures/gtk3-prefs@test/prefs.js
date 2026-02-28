@@ -3,8 +3,8 @@ import {ExtensionPreferences} from 'resource:///org/gnome/Shell/Extensions/js/ex
 
 export default class Gtk3PrefsExtension extends ExtensionPreferences {
     fillPreferencesWindow(window) {
-        const box = new Gtk.Box({orientation: Gtk.Orientation.VERTICAL});
+        const grid = new Gtk.Grid({column_spacing: 12});
         const label = new Gtk.Label({label: 'Settings'});
-        box.append(label);
+        grid.attach(label, 0, 0, 1, 1);
     }
 }

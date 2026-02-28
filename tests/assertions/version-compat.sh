@@ -29,6 +29,13 @@ assert_exit_code "exits with 0 (advisory only)" 0
 assert_output_contains "warns on non-repo URL" "\[WARN\].*metadata/url-format"
 echo ""
 
+# --- css-dual-selector ---
+echo "=== css-dual-selector ==="
+run_lint "css-dual-selector@test"
+assert_exit_code "exits with 0 (dual selector is backward-compatible)" 0
+assert_output_not_contains "dual-selector passes R-VER48-07" "\[FAIL\].*R-VER48-07"
+echo ""
+
 # --- gsettings-bind-flags ---
 echo "=== gsettings-bind-flags ==="
 run_lint "gsettings-bind-flags@test"

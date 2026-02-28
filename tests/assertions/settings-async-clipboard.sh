@@ -13,6 +13,12 @@ run_lint "async-no-cancellable@test"
 assert_output_contains "warns on async without cancellable" "\[WARN\].*async/missing-cancellable"
 echo ""
 
+# --- async-destroyed-guard ---
+echo "=== async-destroyed-guard ==="
+run_lint "async-destroyed-guard@test"
+assert_output_not_contains "no missing-cancellable when _destroyed used" "\[WARN\].*async/missing-cancellable"
+echo ""
+
 # --- clipboard-network ---
 echo "=== clipboard-network ==="
 run_lint "clipboard-network@test"

@@ -6,6 +6,14 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 Claude Code plugin for GNOME Shell extension EGO (extensions.gnome.org) review compliance. It provides five skills (`ego-lint`, `ego-review`, `ego-scaffold`, `ego-simulate`, `ego-submit`). This is **not** a GNOME extension itself — it's a set of tools that validate GNOME extensions against EGO submission requirements. Load it with `claude --plugin-dir <path-to-this-repo>`.
 
+## Running ego-lint
+
+```bash
+./ego-lint /path/to/extension@username        # top-level wrapper
+./ego-lint --help                              # check categories, exit codes
+./ego-lint --verbose /path/to/extension        # grouped report + verdict
+```
+
 ## Testing
 
 ```bash
@@ -22,8 +30,10 @@ bash skills/ego-lint/scripts/ego-lint.sh tests/fixtures/<fixture-name>
 
 ### Plugin structure
 
+- `ego-lint` — Top-level CLI wrapper (runs `skills/ego-lint/scripts/ego-lint.sh`)
 - `.claude-plugin/plugin.json` — Plugin manifest (minimal: `name`, `description`, `version`)
 - `skills/` — Five skills, each with a `SKILL.md` (skill definition + instructions for Claude) and supporting files. Auto-discovered by Claude Code.
+- `docs/ci-integration.md` — GitHub Actions and GitLab CI examples
 
 ### Skill hierarchy
 
@@ -33,7 +43,7 @@ bash skills/ego-lint/scripts/ego-lint.sh tests/fixtures/<fixture-name>
 
 `ego-lint.sh` is the main orchestrator. It uses a three-tier rule system (pattern → structural → semantic) and delegates to sub-scripts via `run_subscript`:
 
-- `rules/patterns.yaml` — Tier 1 pattern rules (114 regex-based, declarative rules)
+- `rules/patterns.yaml` — Tier 1 pattern rules (113 regex-based, declarative rules)
 - `apply-patterns.py` — Tier 1 pattern engine (inline YAML parser, no PyYAML dependency)
 - `check-quality.py` — Tier 2 heuristic AI slop detection (try-catch density, impossible states, pendulum patterns, empty catches, _destroyed density, mock detection, constructor resources, run_dispose comment, clipboard disclosure, network disclosure, excessive null checks, repeated getSettings, obfuscated names, mixed indentation, excessive logging, code provenance)
 - `check-metadata.py` — JSON validity, required fields, UUID format/match, shell-version (with VALID_GNOME_VERSIONS allowlist), session-modes, settings-schema, version-name, donations, gettext-domain consistency
@@ -57,7 +67,7 @@ Additional tooling:
 
 ### Three-tier rule system
 
-- **Tier 1 (patterns.yaml)**: 114 regex rules in YAML, processed by `apply-patterns.py`. Covers web APIs, deprecated APIs, security (telemetry, curl/gsettings spawn, base64), logging, import segregation, AI slop signals, subprocess safety, i18n, GSettings bind flags, GNOME 44-50 migration, code quality advisories. Add new rules by editing `rules/patterns.yaml`. Supports version-gating via `min-version`/`max-version` fields.
+- **Tier 1 (patterns.yaml)**: 113 regex rules in YAML, processed by `apply-patterns.py`. Covers web APIs, deprecated APIs, security (telemetry, curl/gsettings spawn, base64), logging, import segregation, AI slop signals, subprocess safety, i18n, GSettings bind flags, GNOME 44-50 migration, code quality advisories. Add new rules by editing `rules/patterns.yaml`. Supports version-gating via `min-version`/`max-version` fields.
 - **Tier 2 (scripts)**: 13 structural heuristic check scripts in Python/bash. `check-quality.py` (AI slop heuristics), `check-init.py` (init-time safety), `check-lifecycle.py` (enable/disable symmetry + timeout verification), `check-resources.py` + `build-resource-graph.py` (cross-file resource tracking), plus metadata, prefs, GObject, async, CSS, imports, schema, and package checks. `ego-lint.sh` also has an inline minified JS check.
 - **Tier 3 (checklists)**: 6 semantic review checklists in `skills/ego-review/references/`: lifecycle, security, code-quality (with 10 additional quality items), ai-slop (46-item scoring model), licensing, accessibility (7 items). Applied by Claude during `ego-review` phases.
 

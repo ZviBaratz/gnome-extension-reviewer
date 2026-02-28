@@ -1,0 +1,7 @@
+{
+    "uuid": "mock-excluded-by-package@test",
+    "name": "Mock Excluded By Package Test",
+    "description": "Tests that mock files excluded by package.sh are not warned",
+    "shell-version": ["48"],
+    "url": "https://example.com"
+}

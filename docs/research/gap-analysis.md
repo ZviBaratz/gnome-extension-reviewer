@@ -125,7 +125,7 @@
 
 | Guideline Requirement | Severity | Currently Covered? | By Which Rule/Check? | Gap Notes |
 |---|---|---|---|---|
-| Clipboard access MUST be declared in description | **MUST** | Partial | R-SEC-07 (pattern: `St.Clipboard`) | Detects clipboard usage and advises disclosure. Does NOT verify that the metadata description actually contains disclosure text. |
+| Clipboard access MUST be declared in description | **MUST** | Covered | quality/clipboard-disclosure (check-quality.py) | Detects `St.Clipboard` and verifies metadata description mentions clipboard. R-SEC-07 removed (was redundant). |
 | MUST NOT share clipboard data with third parties without explicit user interaction | **MUST** | Tier 3 Only | security-checklist.md | Requires semantic review of clipboard + network code flow. |
 | MUST NOT ship with default keyboard shortcuts for clipboard interaction | **MUST** | Covered | R-SEC-16 (check-lifecycle.py `clipboard-keybinding`) | Cross-references St.Clipboard and addKeybinding in same file. |
 | MUST NOT use telemetry tools to track users | **MUST** | Covered | R-SEC-08 (pattern: analytics/telemetry/trackEvent/etc.) | Pattern-based detection of common telemetry identifiers. |
@@ -245,7 +245,7 @@ These requirements have checks that catch some but not all violations:
 | AI-generated code detection (R-SLOP-*) | Pattern-based; misses novel AI patterns | Inherent limitation; Tier 3 checklist compensates | Open (inherent) |
 | Code obfuscation (R-FILE-06) | Only catches minification (long lines); not variable mangling or encoding | Add checks for high entropy variable names or base64-encoded strings | Open |
 | run_dispose comment requirement | Detects usage but not comment | Add lookahead for comment on preceding/same line | **Done** (R-QUAL-21) |
-| Clipboard disclosure verification (R-SEC-07) | Detects clipboard usage; does not verify description text | Cross-reference with metadata.json description content | **Done** (R-QUAL-22) |
+| Clipboard disclosure verification | Detects clipboard usage; does not verify description text | Cross-reference with metadata.json description content | **Done** (quality/clipboard-disclosure; R-SEC-07 removed as redundant) |
 | License file validation (R-FILE-03) | Checks existence only; not content | Parse LICENSE file for GPL-compatible license identifiers (SPDX) | **Fixed** (GPL-compatibility scanning) |
 | Prefs extends ExtensionPreferences (R-PREFS-02) | Checks `export default class` but not the extends clause | Regex for `export default class \w+ extends ExtensionPreferences` | **Fixed** (R-PREFS-02 strengthened) |
 | Prefs method requirement | Detects dual-pattern conflict; does not fail when neither method present | Add FAIL if prefs.js has no `fillPreferencesWindow` and no `getPreferencesWidget` | **Done** (prefs/missing-prefs-method) |
@@ -271,6 +271,27 @@ These requirements have checks that catch some but not all violations:
 10. ~~**Prefs ExtensionPreferences extends check** -- verify extends clause, not just default export~~ **Done** (R-PREFS-02 strengthened)
 11. ~~**Clipboard disclosure cross-reference** -- check metadata description for clipboard disclosure when St.Clipboard detected~~ **Done** (R-QUAL-22)
 12. ~~**run_dispose comment check** -- verify adjacent comment when run_dispose detected~~ **Done** (R-QUAL-21)
+
+---
+
+## Known False Positives and Noise Reduction
+
+These are known false positives and high-noise warnings identified by running ego-lint against [hara-hachi-bu](https://github.com/ZviBaratz/hara-hachi-bu), an 11-module extension used as the regression baseline. Each item includes the root cause and a suggested improvement.
+
+| Rule / Check | Description | Impact | Suggested Fix |
+|---|---|---|---|
+| R-PREFS-04b (GTK widget spam) | Every `new Gtk.Label()`, `Gtk.Button()`, etc. fires WARN even inside Adw containers. No Adw replacement exists for these widgets. | ~43 warnings (48% of output) | Whitelist GTK widgets with no Adw equivalent, or deduplicate to one summary warning |
+| R-PREFS-04 (Gtk.ListBox) | `Gtk.ListBox` flagged as blocking, but is valid inside `Adw.PreferencesGroup` for dynamic lists | 1 false FAIL | Downgrade to advisory, or suppress when `Adw.PreferencesGroup` present in same file |
+| R-SEC-20 (pkexec repetition) | Every `pkexec` string fires WARN across JS, SH, and packaging scripts | ~10 identical warnings | Deduplicate to one summary, or correlate with polkit policy presence |
+| quality/module-state | Cache variables (`_cachedProfiles`, `_queueDepth`) flagged despite having explicit `resetCache()` / `destroy()` cleanup | Low count, misleading | Check for reset/cleanup function that nulls the flagged variables |
+| quality/mock-in-production | `MockDevice.js` flagged but explicitly excluded from `package.sh` | 2 warnings | Cross-reference with package exclusion list |
+| quality/constructor-resources | `.connect()` in `Adw.ActionRow` subclass constructors flagged despite being standard GTK widget construction | ~3 false positives | Expand widget subclass exemption to cover Adw.* classes |
+| quality/gettext-pattern | `GLib.dgettext()` flagged in lib modules where `this.gettext()` is not available | 1 warning (5 locations) | Only flag in extension.js/prefs.js; lib modules correctly use `GLib.dgettext()` |
+| quality/logging-volume | 91 `console.*` calls across 11 modules (1 per 84 lines) flagged as excessive; threshold of 30 is too low for large extensions | 1 warning | Scale threshold by code volume (e.g., 1 call per 100 non-blank lines, minimum 30) |
+| async/missing-cancellable | `null` cancellable flagged when function uses callback-based cancellation (`isCancelled` parameter) instead of `Gio.Cancellable` | 5 warnings | Suppress when function signature includes cancellation callback parameter |
+| quality/private-api | `quickSettings._indicators` flagged with no suppression mechanism; no public API exists for indicator reordering | 11 warnings | Support inline `// ego-lint-ignore: quality/private-api` suppression comments |
+
+**Estimated impact of fixing the top 2 items (R-PREFS-04b + R-SEC-20)**: ~53 fewer warnings out of 90 total (59% noise reduction).
 
 ---
 

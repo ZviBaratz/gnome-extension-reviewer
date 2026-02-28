@@ -141,9 +141,93 @@ def _version_gate_applies(rule, shell_versions):
 
 
 
+def _is_suppressed(line, prev_line, rule_id):
+    """Check if a line is suppressed via ego-lint-ignore comment.
+
+    Supports:
+      // ego-lint-ignore: R-XXX-NN  (same line or previous line, specific rule)
+      // ego-lint-ignore             (same line or previous line, blanket)
+      // ego-lint-ignore-next-line: R-XXX-NN  (previous line only)
+      // ego-lint-ignore-next-line             (previous line, blanket)
+    """
+    # Check current line for inline suppression
+    if 'ego-lint-ignore' in line:
+        m = re.search(r'ego-lint-ignore(?:-next-line)?(?::\s*(\S+))?', line)
+        if m:
+            specified = m.group(1)
+            if not specified or specified == rule_id:
+                return True
+
+    # Check previous line for next-line suppression
+    if prev_line and 'ego-lint-ignore' in prev_line:
+        m = re.search(r'ego-lint-ignore(?:-next-line)?(?::\s*(\S+))?', prev_line)
+        if m:
+            specified = m.group(1)
+            if not specified or specified == rule_id:
+                return True
+
+    return False
+
+
+def validate_rules(rules_file):
+    """Validate patterns.yaml for common errors. Returns exit code."""
+    if not os.path.isfile(rules_file):
+        print(f"ERROR: File not found: {rules_file}", file=sys.stderr)
+        return 1
+
+    rules = parse_rules(rules_file)
+    errors = 0
+    seen_ids = {}
+    required_fields = ('id', 'pattern', 'scope', 'severity', 'message')
+    valid_severities = ('blocking', 'advisory')
+
+    for i, rule in enumerate(rules):
+        rid = rule.get('id', f'(rule #{i+1})')
+
+        # Check required fields
+        for field in required_fields:
+            if field not in rule:
+                print(f"ERROR: {rid}: missing required field '{field}'")
+                errors += 1
+
+        # Check duplicate IDs
+        if 'id' in rule:
+            if rule['id'] in seen_ids:
+                print(f"ERROR: {rid}: duplicate ID (first seen at rule #{seen_ids[rule['id']]+1})")
+                errors += 1
+            seen_ids[rule['id']] = i
+
+        # Check severity values
+        severity = rule.get('severity', '')
+        if severity and severity not in valid_severities:
+            print(f"ERROR: {rid}: invalid severity '{severity}' (must be 'blocking' or 'advisory')")
+            errors += 1
+
+        # Check regex compilation
+        pattern = rule.get('pattern', '')
+        if pattern:
+            try:
+                re.compile(pattern)
+            except re.error as e:
+                print(f"ERROR: {rid}: invalid regex: {e}")
+                errors += 1
+
+    if errors:
+        print(f"\n{errors} error(s) found in {len(rules)} rules")
+        return 1
+    else:
+        print(f"OK: {len(rules)} rules validated")
+        return 0
+
+
 def main():
+    # Handle --validate mode
+    if len(sys.argv) >= 3 and sys.argv[1] == '--validate':
+        sys.exit(validate_rules(sys.argv[2]))
+
     if len(sys.argv) < 3:
         print("Usage: apply-patterns.py RULES_YAML EXTENSION_DIR", file=sys.stderr)
+        print("       apply-patterns.py --validate RULES_YAML", file=sys.stderr)
         sys.exit(1)
 
     rules_file = sys.argv[1]
@@ -161,18 +245,19 @@ def main():
         scopes = rule.get('scope', ['*.js'])
         severity = rule.get('severity', 'advisory')
         message = rule.get('message', rid)
+        deduplicate = rule.get('deduplicate', '') == 'true'
 
         # Version gating: skip rules that don't apply to declared shell versions
         if not _version_gate_applies(rule, shell_versions):
             print(f"SKIP|{rid}|Not applicable for declared shell-version(s)")
             continue
 
-
         if isinstance(scopes, str):
             scopes = [scopes]
 
         status = 'FAIL' if severity == 'blocking' else 'WARN'
         found = False
+        dedup_files = set()  # For deduplicate mode
 
         try:
             compiled = re.compile(pattern)
@@ -198,19 +283,45 @@ def main():
                 seen.add(filepath)
                 try:
                     with open(filepath, encoding='utf-8', errors='replace') as f:
-                        for lineno, line in enumerate(f, 1):
-                            if compiled.search(line):
-                                rel = os.path.relpath(filepath, ext_dir)
+                        file_content = f.read()
+
+                    # Check replacement-pattern: if both old and new patterns
+                    # exist in the same file, it's backward-compatible — skip
+                    replacement = rule.get('replacement-pattern', '')
+                    if replacement and replacement in file_content:
+                        continue
+
+                    prev_line = ''
+                    for lineno, line in enumerate(file_content.splitlines(True), 1):
+                        if compiled.search(line):
+                            # Check for inline suppression
+                            if _is_suppressed(line, prev_line, rid):
+                                prev_line = line
+                                continue
+                            rel = os.path.relpath(filepath, ext_dir)
+                            if deduplicate:
+                                dedup_files.add(rel)
+                                found = True
+                            else:
                                 fix = rule.get('fix', '')
                                 if fix:
                                     print(f"{status}|{rid}|{rel}:{lineno}: {message}|fix: {fix}")
                                 else:
                                     print(f"{status}|{rid}|{rel}:{lineno}: {message}")
                                 found = True
+                        prev_line = line
                 except OSError:
                     continue
 
-        if not found:
+        if deduplicate and dedup_files:
+            files_list = ', '.join(sorted(dedup_files))
+            fix = rule.get('fix', '')
+            summary = f"{message} in {len(dedup_files)} file(s): {files_list}"
+            if fix:
+                print(f"{status}|{rid}|{summary}|fix: {fix}")
+            else:
+                print(f"{status}|{rid}|{summary}")
+        elif not found:
             print(f"PASS|{rid}|No matches")
 
 

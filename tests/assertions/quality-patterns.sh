@@ -19,3 +19,16 @@ run_lint "shell-class-override@test"
 assert_exit_code "exits with 1 (has failures)" 1
 assert_output_contains "fails on shell class override" "\[FAIL\].*css/shell-class-override"
 echo ""
+
+# --- mock-excluded-by-package ---
+echo "=== mock-excluded-by-package ==="
+run_lint "mock-excluded-by-package@test"
+assert_output_not_contains "no mock warning when excluded by package.sh" "\[WARN\].*quality/mock-in-production"
+echo ""
+
+# --- empty-catch-commented ---
+echo "=== empty-catch-commented ==="
+run_lint "empty-catch-commented@test"
+assert_exit_code "exits with 0 (commented catch is intentional)" 0
+assert_output_not_contains "no empty-catch warning for commented catches" "\[WARN\].*quality/empty-catch"
+echo ""

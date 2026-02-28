@@ -626,7 +626,7 @@ let msg = _('Found %d items').format(count);
 
 > **"Wechsel" (April 2024):** Rejected for "unnecessary version specifications in metadata.json" and including `package.json` in the ZIP.
 
-> **AI slop blog post (December 2025):** Reviewer Javad Rahmatzadeh cited `typeof super.destroy === 'function'` as a dead giveaway of AI-generated code. The correct pattern is simply `super.destroy()`.
+> **AI slop blog post (December 2025):** The EGO AI policy blog post (December 2025) cited `typeof super.destroy === 'function'` as a dead giveaway of AI-generated code. The correct pattern is simply `super.destroy()`.
 
 **Key lesson:** Reviewers cite specific line numbers in rejection feedback. "Remove line 556-558" is a typical review comment style.
 

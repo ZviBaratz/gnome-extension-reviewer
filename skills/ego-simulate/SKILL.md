@@ -1,11 +1,11 @@
 ---
 name: ego-simulate
 description: >-
-  Simulate an EGO review submission — produces a reviewer's-eye-view report
-  with verdict and score. Adopts the persona of a real EGO reviewer, triages
-  the extension in reviewer order, applies a 22-reason rejection taxonomy with
-  weighted scoring, and generates a structured report with a pass/fail verdict.
-  Use before EGO submission to predict reviewer response.
+  Simulate an EGO review submission — produces a readiness report based on
+  published review criteria. Triages the extension in reviewer order, applies
+  a 22-reason rejection taxonomy with weighted scoring, and generates a
+  structured report with a pass/fail verdict. Use before EGO submission to
+  assess review readiness.
 ---
 
 # EGO Review Simulation
@@ -13,8 +13,8 @@ description: >-
 Simulate how an EGO (extensions.gnome.org) reviewer would evaluate this GNOME
 Shell extension submission. Unlike ego-review (which is a thorough code review)
 or ego-submit (which is a packaging pipeline), this skill focuses on
-**predicting the reviewer's response** using their actual triage order and
-rejection patterns.
+**assessing the extension against known review criteria and published rejection
+patterns**.
 
 ## Prerequisites
 

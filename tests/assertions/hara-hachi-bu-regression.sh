@@ -18,7 +18,7 @@ output="$(bash "$LINT" "$HHB_DIR" 2>&1)" || exit_code=$?
 # Known legitimate findings that MUST remain
 assert_output_contains "known: R-SEC-20 (pkexec advisory)" "\[WARN\].*R-SEC-20"
 assert_output_contains "known: R-PREFS-04 (GTK widgets)" "\[WARN\].*R-PREFS-04"
-assert_output_contains "known: R-SEC-07 (clipboard)" "\[WARN\].*R-SEC-07"
+assert_output_not_contains "no R-SEC-07 (removed — covered by quality/clipboard-disclosure)" "\[WARN\].*R-SEC-07"
 assert_output_contains "known: async/missing-cancellable (null cancellables)" "\[WARN\].*async/missing-cancellable"
 # New checks MUST NOT produce false positives
 assert_output_not_contains "no init-safety false positive on registerClass" "\[FAIL\].*init/shell-modification"
@@ -66,4 +66,9 @@ assert_output_not_contains "no widget-destroy false positive" "\[WARN\].*lifecyc
 assert_output_not_contains "no settings-cleanup false positive" "\[WARN\].*lifecycle/settings-cleanup"
 assert_output_not_contains "no gettext-domain-mismatch false positive" "\[WARN\].*gettext-domain-mismatch"
 assert_output_not_contains "no excessive-logging false positive" "\[WARN\].*quality/excessive-logging"
+assert_output_not_contains "no compiled-schemas-dir false positive" "\[WARN\].*compiled-schemas-dir"
+assert_output_not_contains "no logging-volume false positive" "\[WARN\].*quality/logging-volume"
+assert_output_not_contains "no file-complexity false positive" "\[WARN\].*quality/file-complexity"
+assert_output_not_contains "no R-VER48-07 false positive (dual selector)" "\[FAIL\].*R-VER48-07"
+assert_output_not_contains "no empty-catch false positive" "\[WARN\].*quality/empty-catch"
 echo ""

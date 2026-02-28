@@ -14,10 +14,48 @@ set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
+show_help() {
+    cat <<'HELPEOF'
+Usage: ego-lint [OPTIONS] [EXTENSION_DIR]
+
+GNOME Shell extension compliance checker for EGO (extensions.gnome.org)
+submission. Runs deterministic checks — bash + python only, no AI, no
+network access.
+
+Options:
+  -h, --help       Show this help message and exit
+  -v, --verbose    Show verbose report with grouped results and verdict
+
+Checks (113 pattern rules + 13 structural scripts):
+  metadata         UUID, required fields, shell-version, session-modes, GNOME trademark
+  imports          GTK/Shell import segregation, transitive dependency analysis
+  schema           Schema ID, path format, glib-compile-schemas dry-run
+  lifecycle        enable/disable symmetry, signals, timeouts, D-Bus, widgets
+  async            _destroyed guards, cancellable usage
+  gobject          GObject.registerClass patterns, GTypeName validation
+  resources        Cross-file resource graph, orphan detection
+  security         Subprocess validation, pkexec, clipboard/network disclosure
+  deprecated       Mainloop, Lang, ByteArray, ExtensionUtils, legacy imports
+  version-compat   GNOME 44-50 migration rules (version-gated)
+  css              Unscoped classes, !important, Shell theme overrides
+  quality          AI slop detection, code provenance scoring, obfuscation
+  package          Forbidden/required files, compiled schemas
+  preferences      ExtensionPreferences base class, GTK4/Adwaita, memory leaks
+
+Exit codes:
+  0  No blocking issues found
+  1  Blocking issues found (likely rejection)
+HELPEOF
+    exit 0
+}
+
 VERBOSE=false
 EXT_DIR=""
 while [[ $# -gt 0 ]]; do
     case "$1" in
+        --help|-h)
+            show_help
+            ;;
         --verbose|-v)
             VERBOSE=true
             shift
@@ -163,16 +201,6 @@ else
 fi
 
 # ---------------------------------------------------------------------------
-# Compiled schemas in directory check
-# ---------------------------------------------------------------------------
-
-if [[ -f "$EXT_DIR/schemas/gschemas.compiled" ]]; then
-    print_result "WARN" "compiled-schemas-dir" "schemas/gschemas.compiled found — unnecessary for GNOME 44+ (auto-compiled by Shell); remove from distribution"
-else
-    print_result "PASS" "compiled-schemas-dir" "No unnecessary compiled schemas in directory"
-fi
-
-# ---------------------------------------------------------------------------
 # console.log check
 # ---------------------------------------------------------------------------
 
@@ -312,7 +340,7 @@ if [[ -n "$non_gjs_scripts" ]]; then
         fi
     done < <(find "$EXT_DIR" -name '*.js' -not -path '*/node_modules/*' -not -path '*/.git/*' -print0 2>/dev/null)
     if [[ "$has_pkexec" == true ]]; then
-        print_result "WARN" "non-gjs-scripts" "Found $hit_count non-GJS script(s) — scripts MUST be written in GJS unless absolutely necessary (pkexec helper detected)"
+        print_result "PASS" "non-gjs-scripts" "Found $hit_count non-GJS script(s) — pkexec helper detected, scripts support privileged operations"
     else
         print_result "FAIL" "non-gjs-scripts" "Found $hit_count non-GJS script(s) — scripts MUST be written in GJS; no pkexec/privileged helper justification found"
     fi
@@ -530,12 +558,13 @@ if [[ "$VERBOSE" == true ]]; then
 
     echo ""
     echo "--- VERDICT ---"
+    UNIQUE_WARN_COUNT=$(grep "^WARN|" "$RESULTS_FILE" | cut -d'|' -f2 | sort -u | wc -l)
     if [[ $FAIL_COUNT -gt 0 ]]; then
         echo "  WILL BE REJECTED: $FAIL_COUNT blocking issue(s) found"
-    elif [[ $WARN_COUNT -gt 5 ]]; then
-        echo "  LIKELY REJECTED: $WARN_COUNT warnings suggest quality concerns"
-    elif [[ $WARN_COUNT -gt 0 ]]; then
-        echo "  MAY PASS WITH COMMENTS: $WARN_COUNT advisory warning(s)"
+    elif [[ $UNIQUE_WARN_COUNT -gt 8 ]]; then
+        echo "  LIKELY REJECTED: $UNIQUE_WARN_COUNT checks flagged ($WARN_COUNT total findings)"
+    elif [[ $UNIQUE_WARN_COUNT -gt 0 ]]; then
+        echo "  MAY PASS WITH COMMENTS: $UNIQUE_WARN_COUNT checks flagged ($WARN_COUNT total findings)"
     else
         echo "  LIKELY TO PASS: No issues found"
     fi

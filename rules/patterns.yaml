@@ -240,14 +240,6 @@
   category: security
   fix: "Remove run_dispose() call. If genuinely needed, add a comment explaining why."
 
-- id: R-SEC-07
-  pattern: "\\bSt\\.Clipboard\\b"
-  scope: ["*.js"]
-  severity: advisory
-  message: "Clipboard access must be disclosed in metadata.json description"
-  category: security
-  fix: "Add clipboard usage disclosure to your extension description on EGO."
-
 - id: R-SEC-08
   pattern: "\\b(analytics|telemetry|trackEvent|trackPage|GA_TRACKING_ID|gtag)\\b"
   scope: ["*.js"]
@@ -282,11 +274,12 @@
 
 - id: R-SEC-20
   pattern: "\\bpkexec\\b"
-  scope: ["*.js", "*.sh"]
+  scope: ["*.js"]
   severity: advisory
   message: "pkexec usage will receive extra reviewer scrutiny; ensure a valid polkit policy is included"
   category: security
   fix: "Verify the polkit .policy file is present and the action ID matches. Consider udev rules for hardware access."
+  deduplicate: true
 
 - id: R-SEC-23
   pattern: "\\b(atob|btoa)\\s*\\("
@@ -360,20 +353,21 @@
 # --- Prefs.js GTK3 widget detection (blocking/advisory) ---
 
 - id: R-PREFS-04
-  pattern: "\\bnew\\s+Gtk\\.(ListBox|HeaderBar|StackSwitcher|Notebook|InfoBar)\\b"
+  pattern: "\\bnew\\s+Gtk\\.(HeaderBar|StackSwitcher|Notebook|InfoBar)\\b"
   scope: ["prefs.js"]
   severity: blocking
   message: "GTK widget with direct Adw replacement used in prefs.js — use the Adwaita equivalent"
   category: prefs
-  fix: "Gtk.ListBox → Adw.PreferencesGroup, Gtk.HeaderBar → Adw.HeaderBar, Gtk.StackSwitcher → Adw.ViewSwitcher, Gtk.Notebook → Adw.ViewStack, Gtk.InfoBar → Adw.Banner"
+  fix: "Gtk.HeaderBar → Adw.HeaderBar, Gtk.StackSwitcher → Adw.ViewSwitcher, Gtk.Notebook → Adw.ViewStack, Gtk.InfoBar → Adw.Banner"
 
 - id: R-PREFS-04b
-  pattern: "\\bnew\\s+Gtk\\.(Box|Label|Switch|Button|Entry|Grid|ScrolledWindow|Frame|Separator|SpinButton|ComboBoxText|CheckButton|RadioButton|ToggleButton|Stack|Revealer|Expander|FlowBox|Overlay|Paned|ActionBar|ProgressBar|Scale|LevelBar|SearchEntry|SearchBar|DropDown|Image|Adjustment)\\b"
+  pattern: "\\bnew\\s+Gtk\\.(Grid|ScrolledWindow|Frame|ComboBoxText|RadioButton|Stack|Revealer|Expander|FlowBox|Overlay|Paned|ListBox)\\b"
   scope: ["prefs.js"]
   severity: advisory
-  message: "Raw GTK widget in prefs.js — consider Adwaita (Adw) widgets where possible for GNOME 45+"
+  message: "GTK container widget in prefs.js — Adwaita replacement available for GNOME 45+"
   category: prefs
-  fix: "Use Adw.PreferencesPage, Adw.PreferencesGroup, Adw.ActionRow, Adw.SwitchRow, Adw.ComboRow where suitable"
+  deduplicate: true
+  fix: "Gtk.Grid → Adw rows, Gtk.ScrolledWindow → Adw.PreferencesPage (auto-scrolls), Gtk.Frame → Adw.PreferencesGroup, Gtk.ComboBoxText → Adw.ComboRow, Gtk.RadioButton → Adw.ActionRow, Gtk.Stack → Adw.ViewStack, Gtk.Revealer → Adw.ExpanderRow, Gtk.Expander → Adw.ExpanderRow, Gtk.FlowBox → Adw.PreferencesGroup, Gtk.ListBox → Adw.PreferencesGroup (for static lists)"
 
 # --- Translation (advisory) ---
 
@@ -492,7 +486,7 @@
   pattern: "^\\s*//\\s*(Important|Note|Remember|TODO):\\s*(Make sure|Ensure|Always|Don't forget|Handle)"
   scope: ["*.js"]
   severity: advisory
-  message: "Comment reads like an LLM prompt — reviewers flag these as AI-generated"
+  message: "Imperative comment pattern ('Important: Make sure...') draws reviewer scrutiny"
   category: ai-slop
   fix: "Remove or rewrite to explain 'why', not 'what to do'"
 
@@ -548,7 +542,7 @@
   pattern: "typeof super\\.\\w+\\s*===\\s*['\"]function['\"]"
   scope: ["*.js"]
   severity: blocking
-  message: "typeof super.method check is unnecessary — GObject parent methods always exist (AI-generated pattern)"
+  message: "typeof super.method check is unnecessary — GObject parent methods always exist; reviewers flag this pattern"
   category: ai-slop
   fix: "Remove the typeof check and call super.method() directly."
 
@@ -852,6 +846,7 @@
   category: version-compat
   fix: "Replace .quick-menu-toggle with .quick-toggle-has-menu"
   min-version: 48
+  replacement-pattern: "quick-toggle-has-menu"
 
 # --- GNOME 49 migration (version-gated) ---
 

@@ -1,0 +1,7 @@
+{
+    "uuid": "async-destroyed-guard@test",
+    "name": "Async Destroyed Guard Test",
+    "description": "Tests that _destroyed pattern suppresses missing-cancellable warnings",
+    "shell-version": ["48"],
+    "url": "https://example.com"
+}

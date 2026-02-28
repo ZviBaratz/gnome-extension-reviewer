@@ -1376,7 +1376,7 @@ export default class MyExtension extends Extension {
 - **Severity**: advisory
 - **Checked by**: apply-patterns.py
 - **Rule**: `typeof super.destroy === 'function'` check is unnecessary — super.destroy() always exists on GObject classes.
-- **Rationale**: Canonical AI slop signal identified by JustPerfection in the GNOME AI policy blog post.
+- **Rationale**: Canonical AI slop signal identified in the GNOME AI policy blog post (December 2025).
 - **Fix**: Remove the typeof check and call `super.destroy()` directly.
 - **Tested by**: `tests/fixtures/hallucinated-apis@test/`
 
@@ -1468,13 +1468,6 @@ destroy() {
 - **Rationale**: `run_dispose()` forcefully disposes GObject resources and can cause issues if not used carefully.
 - **Fix**: Remove `run_dispose()` call. If genuinely needed, add a comment explaining why.
 - **Tested by**: `tests/fixtures/hallucinated-apis@test/`
-
-### R-SEC-07: Clipboard access disclosure
-- **Severity**: advisory
-- **Checked by**: apply-patterns.py
-- **Rule**: Extensions using `St.Clipboard` must disclose clipboard access in the `metadata.json` description.
-- **Rationale**: Clipboard access is a sensitive permission. EGO reviewers expect the extension description to mention it so users can make an informed decision before installing.
-- **Fix**: Add clipboard usage disclosure to your extension description on EGO (e.g., "This extension reads/writes the system clipboard").
 
 ### R-SEC-08: No telemetry or analytics
 - **Severity**: advisory

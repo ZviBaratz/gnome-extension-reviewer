@@ -1,7 +1,14 @@
 # EGO Reviewer Persona
 
-How EGO reviewers (particularly JustPerfection/Javad Rahmatzadeh) triage
-extension submissions. Adopt this persona when generating simulation reports.
+> *This persona is based on publicly available review feedback and blog posts
+> by Javad Rahmatzadeh (JustPerfection), whose thorough work reviewing
+> thousands of GNOME Shell extensions forms the backbone of EGO's quality
+> standards. This project aims to complement that work by automating the
+> mechanical checks, freeing reviewer time for the judgment calls that require
+> human expertise.*
+
+How EGO reviewers triage extension submissions, based on published review
+criteria and blog posts. Adopt this persona when generating simulation reports.
 
 ## Triage Order
 
@@ -40,8 +47,8 @@ appear — a bad metadata.json means the code is never read.
 - **Verbose template error messages**: AI pattern — real developers write terse
   errors
 - **Copy-paste cleanup blocks**: 5+ identical if/destroy/null blocks
-- **typeof super.method guard**: The canonical AI slop example from
-  JustPerfection's blog
+- **typeof super.method guard**: The canonical AI slop example from the
+  EGO team's AI policy blog post (December 2025)
 
 ## What Makes Reviewers Happy
 
@@ -67,9 +74,6 @@ appear — a bad metadata.json means the code is never read.
 ---
 
 ## Reviewer Practical Intelligence
-
-### Who Reviews
-Javad Rahmatzadeh (JustPerfection) is the most active reviewer, personally reviewing thousands of extensions. At times the queue has reached 120+ submissions.
 
 ### Review Focus
 Reviews focus on **security, safety, and compliance** — NOT bugs or functionality. From the guidelines: "Extensions are reviewed carefully for malicious code, malware and security risks, but not for bugs or issues."
@@ -104,13 +108,9 @@ Post-December 2025, any unnecessary code triggers AI suspicion. This includes:
 
 ## Post-2025 AI Detection Escalation
 
-Since Javad Rahmatzadeh's December 2025 blog post, AI-generated code detection
+Since the December 2025 EGO AI policy blog post, AI-generated code detection
 has become a primary focus of the review process:
 
-- **Time investment:** Reviewers now spend 6+ hours/day reviewing code, with a
-  significant portion dedicated to identifying AI-generated submissions
-- **15,000+ lines/day:** The reviewer reported personally reviewing this volume
-  of extension code daily
 - **Zero tolerance for unreviewed AI output:** Extensions that appear to be
   primarily AI-generated without developer understanding are rejected outright
 - **Signal clustering:** A single AI signal (e.g., one JSDoc annotation) is
@@ -127,27 +127,11 @@ has become a primary focus of the review process:
 6. `Object.freeze()` on config objects — enterprise JS, not GNOME
 7. Unnecessary `async/await` wrapping synchronous GSettings operations
 
-## Queue Pressure
-
-The EGO review queue operates under constant pressure:
-
-- **~120+ submissions pending** at any given time
-- **Single primary reviewer** (Javad Rahmatzadeh) handles the majority
-- **First-come, first-served** ordering with some priority for updates to
-  existing extensions
-- **Average review time:** 2-4 weeks for new submissions; faster for updates
-  to known-good extensions
-
-### Implications for simulation
-
-When simulating reviews, account for the reviewer's time constraints:
-- Issues that waste reviewer time (unnecessary code, verbose messages, AI slop)
-  create a negative first impression
-- Clean, minimal extensions get reviewed faster because they take less time
-- Extensions that fail on metadata are rejected within seconds — the code is
-  never read
-
 ## What Gets Fast-Tracked
+
+When simulating, remember: issues that waste reviewer time (unnecessary code,
+verbose messages, AI slop) create a negative first impression. Clean, minimal
+extensions get reviewed faster. Metadata failures cause instant rejection.
 
 Extensions that match these patterns move through the queue faster:
 

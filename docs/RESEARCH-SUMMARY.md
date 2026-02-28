@@ -7,7 +7,7 @@ This document summarizes the research behind gnome-extension-reviewer's rules an
 | Source | Approach | Yield |
 |--------|----------|-------|
 | [gjs.guide](https://gjs.guide) review guidelines | Deep-read, requirement extraction | 109 requirements |
-| EGO reviews on extensions.gnome.org | Analysis of 9 real reviews by JustPerfection | 26 findings, 8 unwritten rules |
+| EGO reviews on extensions.gnome.org | Analysis of 9 real EGO reviews by active reviewers | 26 findings, 8 unwritten rules |
 | GNOME Shell GitLab | Guideline evolution tracking across GNOME 44–50 | Version-gated rule parameters |
 | Popular approved extensions | Reverse-engineering of 5 extensions | 15 cross-extension patterns |
 | hara-hachi-bu (real 11-module extension) | Regression baseline testing | 4 false positives found and fixed |
@@ -40,7 +40,7 @@ These rules are consistently enforced by reviewers but not documented in officia
 
 | Tier | Type | Count | Description |
 |------|------|-------|-------------|
-| 1 | Pattern rules (YAML) | 114 | Regex-based, declarative, version-gated |
+| 1 | Pattern rules (YAML) | 113 | Regex-based, declarative, version-gated |
 | 2 | Structural scripts | 13 | Python/bash heuristic analysis |
 | 3 | Semantic checklists | 6 | Applied by Claude during ego-review |
 
@@ -75,7 +75,5 @@ Seven findings were independently confirmed across multiple research sources:
 - [`phase1-discourse-findings.md`](research/phase1-discourse-findings.md) — Real EGO review analysis (26 findings)
 - [`phase1-gitlab-guideline-evolution.md`](research/phase1-gitlab-guideline-evolution.md) — Guideline version tracking
 - [`phase1-gold-standards.md`](research/phase1-gold-standards.md) — Popular extension analysis
-- [`phase1-hara-hachi-bu-diagnosis.md`](research/phase1-hara-hachi-bu-diagnosis.md) — Regression baseline
-- [`phase2-synthesis.md`](research/phase2-synthesis.md) — Cross-source synthesis (25 gaps, implementation plan)
 - [`ego-review-guidelines-research.md`](research/ego-review-guidelines-research.md) — Initial guidelines research
 - [`gap-analysis.md`](research/gap-analysis.md) — Current coverage gaps

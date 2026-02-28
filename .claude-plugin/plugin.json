@@ -1,5 +1,10 @@
 {
     "name": "gnome-extension-reviewer",
     "description": "EGO (extensions.gnome.org) review compliance tools for GNOME Shell extension developers. Lint, review, scaffold, and validate extensions before submission.",
-    "version": "0.1.0"
+    "version": "0.1.0",
+    "author": "Zvi Baratz",
+    "homepage": "https://github.com/ZviBaratz/gnome-extension-reviewer",
+    "repository": "https://github.com/ZviBaratz/gnome-extension-reviewer",
+    "license": "GPL-2.0-or-later",
+    "keywords": ["gnome", "extensions", "ego", "lint", "review", "compliance"]
 }
