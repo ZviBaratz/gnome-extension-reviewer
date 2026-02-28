@@ -144,19 +144,41 @@ Then add a test fixture and assertion (see Testing below).
 
 ### Option 2: Structural Check (Python/Bash Script)
 
-For checks that need code structure analysis (e.g., "flag excessive try-catch density"), modify the appropriate script in `skills/ego-lint/scripts/`:
+For checks that need code structure analysis (e.g., "flag excessive try-catch density"), modify the appropriate script in `skills/ego-lint/scripts/`.
 
-- `check-metadata.py` — metadata.json validation
-- `check-quality.py` — code quality heuristics (Tier 2)
-- `check-imports.sh` — import segregation
-- `check-schema.sh` — GSettings schema validation
-- `check-package.sh` — zip package validation
+**Which script to modify:**
 
-Use the standard output format:
+| You want to check... | Extend this script |
+|---|---|
+| metadata.json fields, UUID, shell-version | `check-metadata.py` |
+| Code quality, AI slop heuristics, code provenance | `check-quality.py` |
+| enable/disable symmetry, signal cleanup, timeouts | `check-lifecycle.py` |
+| Init-time Shell modifications, GObject constructors | `check-init.py` |
+| Preferences file, ExtensionPreferences, GTK4 | `check-prefs.py` |
+| GObject.registerClass, GTypeName | `check-gobject.py` |
+| Async/await safety, _destroyed guards, cancellables | `check-async.py` |
+| CSS class scoping, !important, theme overrides | `check-css.py` |
+| Cross-file resource orphans (signals, timeouts, etc.) | `check-resources.py` |
+| Resource graph construction (create/destroy sites) | `build-resource-graph.py` |
+| Import segregation (GTK in extension.js, etc.) | `check-imports.sh` |
+| GSettings schema ID/path, glib-compile-schemas | `check-schema.sh` |
+| Zip contents, forbidden/required files | `check-package.sh` |
+
+**Output contract:** Every check emits pipe-delimited lines:
 ```
 STATUS|check-name|detail
 ```
-Where `STATUS` is one of `PASS`, `FAIL`, `WARN`, or `SKIP`.
+Where `STATUS` is one of `PASS`, `FAIL`, `WARN`, or `SKIP`. The `check-name` uses `category/specific-check` format (e.g., `quality/try-catch-density`, `lifecycle/signal-balance`).
+
+**Function pattern** (from `check-quality.py`):
+```python
+def check_something(ext_dir, js_files):
+    """Check description."""
+    # ... analysis ...
+    result("WARN", "quality/something", f"{rel}:{lineno}: detail message")
+```
+
+The `result()` helper handles the pipe-delimited output format. Each check function takes the extension directory and list of JS files, then calls `result()` for each finding.
 
 ### Option 3: Semantic Checklist Item (Markdown — No Code)
 

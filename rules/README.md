@@ -169,3 +169,33 @@ Always prefer fixing the issue over suppressing it.
 | R-PKG | Package contents | blocking | check-package.sh |
 | R-I18N | Internationalization | advisory | patterns.yaml |
 | R-VER44–R-VER50 | GNOME version migration | blocking or advisory | patterns.yaml (version-gated) |
+
+## Troubleshooting
+
+### Pattern doesn't match
+
+- **YAML escaping**: Word boundaries need double-escaping: `\\b` not `\b`. In YAML double-quoted strings, `\b` is a backspace character.
+- **Scope mismatch**: Check that your `scope` includes the file type you're testing. `["*.js"]` won't match `metadata.json`.
+- **Regex syntax**: Test your pattern inline: `python3 -c "import re; print(re.search(r'your_pattern', 'test string'))"`
+
+### Rule fires but test assertion fails
+
+- **UUID mismatch**: The fixture directory name must exactly match the `uuid` in `metadata.json` and must contain `@`.
+- **Missing required files**: Every fixture needs a `LICENSE` file with `SPDX-License-Identifier: GPL-2.0-or-later` and a `url` field in `metadata.json`.
+- **Validate your fixture**: Run `bash scripts/validate-fixture.sh tests/fixtures/your-fixture@test`
+
+### Multi-line patterns don't work
+
+Tier 1 pattern rules are **per-line only** — each line is tested independently against the regex. For patterns spanning multiple lines, use a Tier 2 structural check script (Python/bash) instead. See [CONTRIBUTING.md](../CONTRIBUTING.md) for the Tier 2 guide.
+
+### Quick regex test
+
+```bash
+python3 -c "
+import re
+pattern = r'\\byourPattern\\b'
+test = 'code containing yourPattern here'
+m = re.search(pattern, test)
+print('Match!' if m else 'No match')
+"
+```
