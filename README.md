@@ -224,7 +224,7 @@ The four skills above use Claude to analyze extension source code via Anthropic'
 
 Found a false positive? Rule missing a common rejection reason? [Open an issue](https://github.com/ZviBaratz/gnome-extension-reviewer/issues) with the rule ID and a code sample. False positives in blocking rules are treated as high priority.
 
-**CI integration**: Pure bash + python, exits 0/1, no network access, no dependencies beyond coreutils. Tested against 144 fixtures with 378 assertions. See [docs/ci-integration.md](docs/ci-integration.md) for GitHub Actions and GitLab CI examples.
+**CI integration**: Pure bash + python, exits 0/1, no network access, no dependencies beyond coreutils. Tested against 153 fixtures with 416 assertions. See [docs/ci-integration.md](docs/ci-integration.md) for GitHub Actions and GitLab CI examples.
 
 ## Troubleshooting
 

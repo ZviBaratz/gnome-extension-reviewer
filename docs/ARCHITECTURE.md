@@ -11,7 +11,7 @@
                  |                |                |
          patterns.yaml      check-*.py/sh     ego-review refs/
               |                   |                |
-       apply-patterns.py    13 sub-scripts    6 checklists
+       apply-patterns.py    17 sub-scripts    6 checklists
        (113 rules, YAML)    (structural)      (semantic, AI)
                  |                |                |
                  +--- PASS/FAIL/WARN/SKIP --------+
@@ -23,10 +23,11 @@
 `ego-lint.sh` is a bash script that runs all automated checks (Tiers 1 and 2)
 against an extension directory. It first invokes `run_pattern_rules()`, which
 calls `apply-patterns.py` with `rules/patterns.yaml` to evaluate 113 regex
-rules against every JS file. Then it calls `run_subscript()` for each of the 13
+rules against every JS file. Then it calls `run_subscript()` for each of the 17
 Tier 2 scripts -- Python and bash programs that perform structural analysis
-(metadata validation, lifecycle symmetry, resource tracking, etc.). Each
-sub-script is passed the extension directory and runs independently.
+(metadata validation, lifecycle symmetry, resource tracking, disclosure checks,
+polkit validation, schema usage, accessibility, etc.). Each sub-script is passed
+the extension directory and runs independently.
 
 Every sub-script outputs pipe-delimited lines in the format
 `STATUS|check-name|detail`, where STATUS is one of PASS, FAIL, WARN, or SKIP.
@@ -119,7 +120,7 @@ skills/
 tests/
   run-tests.sh                  Test runner
   assertions/                   Assertion files (sourced by runner)
-  fixtures/                     144 test fixtures
+  fixtures/                     153 test fixtures
 docs/
   ci-integration.md             GitHub Actions / GitLab CI examples
   ARCHITECTURE.md               This file

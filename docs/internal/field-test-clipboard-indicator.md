@@ -104,7 +104,7 @@ These are all package-level concerns. The source-level linter correctly focuses 
 |--------|--------|-------|
 | Clipboard Indicator | 27 FAIL | 1 FAIL (TP) |
 | hara-hachi-bu | 0 FAIL, 8 WARN | 0 FAIL, 6 WARN |
-| Test suite | 378 pass | 391 pass |
+| Test suite | 378 pass (pre-session) | 416 pass (post-session, includes parallel work) |
 
 ## Changes Made
 
