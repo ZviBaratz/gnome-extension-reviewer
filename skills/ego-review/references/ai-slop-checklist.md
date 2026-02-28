@@ -10,6 +10,8 @@ it. The scoring model at the bottom determines severity.
 
 ### 1. Excessive try-catch
 
+**Automated:** Yes — `quality/try-catch-density` in ego-lint
+
 Is the try-catch ratio unnaturally high? Are `.destroy()` calls individually
 wrapped in try-catch?
 
@@ -39,6 +41,8 @@ async _loadConfig() {
 
 ### 2. Empty catch blocks
 
+**Automated:** Yes — `quality/empty-catch` in ego-lint
+
 Are errors silently swallowed?
 
 - **Red flag:** `catch { }` or `catch (e) { }` with no logging or handling
@@ -58,6 +62,8 @@ try {
 ```
 
 ### 3. Over-defensive error handling
+
+**Automated:** No — manual review only
 
 Are there try-catch blocks in places that cannot throw?
 
@@ -85,6 +91,8 @@ try {
 ## Category 2: State & Lifecycle
 
 ### 4. _pendingDestroy + _initializing coordination
+
+**Automated:** Yes — `quality/pendulum-pattern` in ego-lint
 
 Over-engineered async teardown with multiple coordinating state flags.
 
@@ -137,6 +145,8 @@ disable() {
 
 ### 5. isLocked check without lock session-mode
 
+**Automated:** Yes — `quality/impossible-state` in ego-lint
+
 Checking for impossible states. If the extension does not declare lock-screen
 session modes, it is never active on the lock screen.
 
@@ -165,6 +175,8 @@ enable() {
 
 ### 6. Unnecessary null guards
 
+**Automated:** Partial — `quality/excessive-null-checks` counts density, but individual false guards require manual review
+
 Checking for null before operations that cannot produce null.
 
 - **Red flag:** `if (this._indicator !== null) this._indicator.destroy()` when
@@ -190,6 +202,8 @@ disable() {
 ```
 
 ### 7. Session mode checks in disable()
+
+**Automated:** No — manual review only
 
 Checking session mode during cleanup. `disable()` must always perform full
 cleanup regardless of the current session mode.
@@ -220,6 +234,8 @@ enable() {
 
 ### 8. TypeScript-style JSDoc
 
+**Automated:** Yes — `R-SLOP-01` in ego-lint pattern rules
+
 Systematic `@param {Type}` and `@returns {Type}` annotations throughout the
 codebase.
 
@@ -246,6 +262,8 @@ _createIndicator() { ... }
 
 ### 9. Verbose error messages
 
+**Automated:** No — manual review only
+
 Over-descriptive template literals in catch blocks with constructor names and
 method context baked in.
 
@@ -271,6 +289,8 @@ catch (e) {
 ```
 
 ### 10. Defensive programming idioms
+
+**Automated:** Partial — `quality/excessive-null-checks` detects density
 
 Enterprise-style null checks and type guards that are unnecessary in GJS.
 
@@ -303,6 +323,8 @@ _onDBusSignal(proxy, sender, params) {
 
 ### 11. Browser API usage
 
+**Automated:** Yes — `R-WEB-*` pattern rules in ego-lint (version-gated for GNOME 45+)
+
 `setTimeout`, `setInterval`, `fetch`, `document.*`, `window.*`.
 
 - **Red flag:** Any use of browser APIs
@@ -311,6 +333,8 @@ _onDBusSignal(proxy, sender, params) {
 
 ### 12. Deprecated module imports
 
+**Automated:** Yes — `R-DEPR-*` pattern rules + inline `no-deprecated-modules` check
+
 `Mainloop`, `ByteArray`, `Lang`, `ExtensionUtils`, `Tweener`.
 
 - **Red flag:** Any use of deprecated modules in a GNOME 45+ extension
@@ -318,6 +342,8 @@ _onDBusSignal(proxy, sender, params) {
   [deprecated modules](code-quality-checklist.md#deprecated-modules-and-their-replacements))
 
 ### 13. Non-idiomatic GLib usage
+
+**Automated:** No — manual review only
 
 Wrong approach to common tasks.
 
@@ -357,6 +383,8 @@ disable() {
 
 ### 14. Non-standard fields
 
+**Automated:** Yes — `metadata/non-standard-field` in ego-lint
+
 `version-name`, `homepage`, `bug-report-url`, `author`, `license` in
 `metadata.json`.
 
@@ -366,6 +394,8 @@ disable() {
 
 ### 15. Deprecated version field
 
+**Automated:** Yes — `metadata/deprecated-version` in ego-lint
+
 `"version": 1` in `metadata.json` for GNOME 45+ extensions.
 
 - **Red flag:** `version` field present -- EGO auto-assigns version numbers;
@@ -373,6 +403,8 @@ disable() {
 - **Note:** Automated by `ego-lint` metadata checks
 
 ### 16. UUID format
+
+**Automated:** Partial — `metadata/uuid-at-sign` checks format; generic naming requires manual review
 
 Missing `@` sign, generic names.
 
@@ -385,6 +417,8 @@ Missing `@` sign, generic names.
 ## Category 6: Undeclared/Hallucinated
 
 ### 17. References to non-existent APIs
+
+**Automated:** Partial — `R-SLOP-08` through `R-SLOP-17` detect common hallucinated APIs
 
 Calling methods that do not exist in GNOME Shell.
 
@@ -400,6 +434,8 @@ code quality checklist.
 
 ### 18. Root/elevated operations
 
+**Automated:** Yes — `R-SEC-20` (pkexec advisory) + `polkit-files` check in ego-lint
+
 Using `pkexec` or polkit without justification.
 
 - **Red flag:** `pkexec` calls, `Gio.Subprocess` running commands with `sudo`
@@ -413,6 +449,8 @@ in the security checklist.
 ## Category 7: Additional AI Signals
 
 ### 19. typeof super.destroy guard
+
+**Automated:** Yes — `R-SLOP-17` (advisory) in ego-lint pattern rules
 
 Checking if `super.destroy` is a function before calling it.
 
@@ -441,6 +479,8 @@ This is the canonical example from the EGO AI policy blog post (December 2025).
 
 ### 20. Redundant instanceof this
 
+**Automated:** Yes — `R-SLOP-13` in ego-lint pattern rules
+
 Checking `this instanceof ClassName` inside a method of that class.
 
 - **Red flag:** `if (this instanceof MyExtension)` inside `MyExtension`'s methods
@@ -463,6 +503,8 @@ _processWidget(widget) {
 
 ### 21. Excessive comment density
 
+**Automated:** Yes — `quality/comment-density` in ego-lint
+
 Comments explaining obvious code on nearly every line.
 
 - **Red flag:** >40% of lines are comments (after first 10 lines), especially
@@ -471,6 +513,8 @@ Comments explaining obvious code on nearly every line.
   workarounds for known bugs
 
 ### 22. console.log instead of console.debug
+
+**Automated:** Yes — `no-console-log` inline check in ego-lint
 
 Using `console.log()` in production code.
 
@@ -481,6 +525,8 @@ Using `console.log()` in production code.
 
 ### 23. var declarations
 
+**Automated:** Yes — `R-DEPR-09` in ego-lint pattern rules
+
 Using `var` instead of `const`/`let`.
 
 - **Red flag:** `var` declarations in GNOME 45+ extension code
@@ -489,6 +535,8 @@ Using `var` instead of `const`/`let`.
   includes older JavaScript.
 
 ### 24. Wrong resource path in prefs.js
+
+**Automated:** Yes — `imports/resource-path-case` in ego-lint
 
 Using the extension.js resource path in prefs.js.
 
@@ -499,6 +547,8 @@ Using the extension.js resource path in prefs.js.
 
 ### 25. Missing SOURCE_REMOVE return in timeout
 
+**Automated:** Yes — `R-SLOP-07` in ego-lint pattern rules
+
 Timeout callbacks without explicit return value.
 
 - **Red flag:** `GLib.timeout_add(..., () => { doStuff(); })` with no return
@@ -507,6 +557,8 @@ Timeout callbacks without explicit return value.
   In GLib, missing return causes infinite repetition.
 
 ### 26. Both getPreferencesWidget and fillPreferencesWindow
+
+**Automated:** Yes — `prefs/dual-prefs-pattern` in ego-lint
 
 Defining both prefs methods in prefs.js.
 
@@ -517,6 +569,8 @@ Defining both prefs methods in prefs.js.
 
 ### 27. Generic extension name in UUID
 
+**Automated:** No — manual review only (UUID format checked, but generic naming is subjective)
+
 Using template-like names in the UUID.
 
 - **Red flag:** UUID like `my-extension@user`, `gnome-tool@dev`, `extension@test`
@@ -524,6 +578,8 @@ Using template-like names in the UUID.
 - **Note:** AI-generated scaffolds often use generic placeholder UUIDs.
 
 ### 28. Comments that read like instructions to an AI model
+
+**Automated:** Yes — `R-SLOP-20` in ego-lint pattern rules + `quality/comment-prompt-density`
 
 Imperative comments that tell the code what to do rather than explaining why.
 
@@ -545,6 +601,8 @@ Imperative comments that tell the code what to do rather than explaining why.
 
 ### 29. Inconsistent code style within the same file
 
+**Automated:** Partial — `quality/mixed-indentation` detects tab/space mixing; naming consistency in `quality/code-provenance`
+
 Mixed naming conventions, formatting patterns, or idioms suggesting copy-paste
 from multiple AI sessions.
 
@@ -554,6 +612,8 @@ from multiple AI sessions.
   conventions (style is fixable; inconsistency signals lack of review)
 
 ### 30. Overly uniform structure (copy-paste with variations)
+
+**Automated:** Partial — `quality/redundant-cleanup` detects repetitive destroy patterns
 
 Structurally identical code blocks with only variable names changed.
 
@@ -583,6 +643,8 @@ disable() {
 
 ### 31. Error handling that adds no value
 
+**Automated:** No — manual review only
+
 Catch-and-rethrow or catch-and-log-only patterns.
 
 - **Red flag:** `catch (e) { console.error(e); throw e; }` — logs and rethrows,
@@ -611,6 +673,8 @@ try {
 
 ### 32. Methods that exist for "completeness" but are never called
 
+**Automated:** No — manual review only (requires call graph analysis)
+
 Dead methods that appear to exist because the AI generated a "complete" class.
 
 - **Red flag:** Methods like `toString()`, `toJSON()`, `valueOf()`, `equals()`,
@@ -619,6 +683,8 @@ Dead methods that appear to exist because the AI generated a "complete" class.
   that are called by the framework
 
 ### 33. Documentation describing what code obviously does
+
+**Automated:** Partial — `quality/comment-density` catches high ratio, but content quality is manual
 
 Comments that restate the code rather than explaining intent.
 
@@ -643,6 +709,8 @@ box.add_child(this._label);
 
 ### 34. Unnecessary async/await wrapping
 
+**Automated:** Yes — `R-SLOP-08` in ego-lint pattern rules (detects `async` on sync operations)
+
 Wrapping synchronous operations in async/await for no reason.
 
 - **Red flag:** `async enable() { await this._settings.set_int('key', value); }` —
@@ -665,6 +733,8 @@ async _loadData() {
 ```
 
 ### 35. Object.freeze() on configuration objects
+
+**Automated:** No — manual review only
 
 Using `Object.freeze()` on configuration or constants objects — an enterprise
 JavaScript pattern not used in GNOME extensions.
@@ -689,6 +759,8 @@ const MAX_RETRIES = 3;
 
 ### 36. Excessive null/undefined checks instead of optional chaining
 
+**Automated:** Yes — `quality/excessive-null-checks` in ego-lint
+
 Using `=== null`, `!== null`, `=== undefined`, `typeof x !== 'undefined'`
 extensively instead of optional chaining (`?.`) or nullish coalescing (`??`).
 
@@ -710,6 +782,8 @@ value = this._settings?.get_int('key') ?? defaultValue;
 ```
 
 ### 37. Unnecessary defensive copies (spread operator on class properties)
+
+**Automated:** No — manual review only
 
 Using `{ ...this._config }` to create shallow copies of internal objects
 when the extension should just pass references.
@@ -733,6 +807,8 @@ _getConfig() {
 
 ### 38. Over-specified parameter names (20+ character camelCase descriptive)
 
+**Automated:** No — manual review only
+
 Using extremely long parameter names like `extensionPreferencesWindowInstance`
 or `currentlyActiveDisplayMonitorIndex`.
 
@@ -742,6 +818,8 @@ or `currentlyActiveDisplayMonitorIndex`.
   `proxy`, `window`
 
 ### 39. Gratuitous enum-like const objects for 2-3 values
+
+**Automated:** No — manual review only
 
 Creating `const States = Object.freeze({ IDLE: 0, RUNNING: 1, DONE: 2 })`
 for simple state tracking that could use boolean flags.
@@ -760,6 +838,8 @@ this._enabled = true;
 ```
 
 ### 40. Unnecessary Promise wrappers around already-async operations
+
+**Automated:** No — manual review only
 
 Wrapping operations that already return Promises or are synchronous in
 `new Promise()`.
@@ -784,6 +864,8 @@ _getValue() {
 ```
 
 ### 41. Empty destroy() override
+
+**Automated:** Yes — `R-SLOP-29` in ego-lint pattern rules
 
 `destroy() { super.destroy(); }` with no additional cleanup logic.
 
@@ -810,6 +892,8 @@ destroy() {
 
 ### 42. Custom Logger class
 
+**Automated:** Yes — `R-QUAL-26` in ego-lint pattern rules
+
 AI-generated code often includes a custom Logger abstraction wrapping
 `console` methods.
 
@@ -832,6 +916,8 @@ console.error('MyExt: failed:', e.message);
 
 ### 43. Underscore-prefixed exports
 
+**Automated:** No — manual review only
+
 `export { _helper }` pattern suggesting generated code with artificial
 encapsulation.
 
@@ -852,6 +938,8 @@ export { helper, utils };
 ```
 
 ### 44. typeof super.method guard
+
+**Automated:** Yes — `R-SLOP-30` (blocking) in ego-lint pattern rules
 
 Checking if a parent method exists before calling it. In GJS/GObject, parent
 class methods are guaranteed to exist.
@@ -877,6 +965,8 @@ destroy() {
 
 ### 45. Unused/dead code functions
 
+**Automated:** No — manual review only (requires call graph analysis)
+
 Methods that are defined but never called anywhere in the extension.
 
 - **Red flag:** `toString()`, `toJSON()`, `clone()`, `reset()`, or custom
@@ -886,6 +976,8 @@ Methods that are defined but never called anywhere in the extension.
   (`enable`, `disable`, `destroy`) that are called by the framework
 
 ### 46. Boilerplate configuration objects with only default values
+
+**Automated:** No — manual review only
 
 Configuration constants that define defaults matching the built-in behavior,
 adding no value.

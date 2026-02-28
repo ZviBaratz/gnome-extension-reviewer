@@ -14,13 +14,25 @@ Complete pre-submission pipeline for extensions.gnome.org.
 This skill orchestrates the full validation sequence before EGO submission,
 combining automated checks with manual review in a structured pipeline.
 
+## Parallelization Strategy
+
+For extensions with 10+ JS files, run phases in parallel using 3 agents:
+
+- **Agent 1:** ego-lint + package validation (Phase 1, Phase 3)
+- **Agent 2:** ego-review lifecycle + signal + security (ego-review Phases 2-4)
+- **Agent 3:** ego-review quality + AI patterns + metadata (ego-review Phases 5-5a, Phase 4)
+
+This reduces wall-clock time from ~10 minutes (sequential) to ~4 minutes. For
+smaller extensions (<10 JS files), sequential execution is fine.
+
 ## Pipeline Phases
 
-### Pre-flight: Review Simulation (optional)
+### Pre-flight: Review Simulation (skip if running full pipeline)
 
-Offer to run `gnome-extension-reviewer:ego-simulate` before the full pipeline.
-This gives the developer a quick reviewer's-eye-view with a pass/fail score
-before investing time in the full validation sequence.
+`gnome-extension-reviewer:ego-simulate` provides a quick (<1 min) reviewer's-eye-view
+with a pass/fail score. Use it for iterative development during active coding;
+skip it when running the full submission pipeline since Phases 1-5 provide
+strictly more coverage.
 
 - If the simulation score is **10+**: strongly recommend fixing blocking issues
   before proceeding with the full pipeline
@@ -47,12 +59,16 @@ Invoke `gnome-extension-reviewer:ego-review` against the extension directory.
 
 ### Phase 3: Package Validation
 
+ego-lint's `check-package.sh` already covers forbidden files, required files,
+nested structure, and compiled schemas. Phase 3 only needs to cover:
+
 1. Check if a distribution zip exists
-2. If yes, validate contents via ego-lint's package check
-3. If no, advise the developer to create one:
+2. If no, advise the developer to create one:
    - List what should be included (extension.js, metadata.json, schemas/, stylesheet.css, LICENSE, locale/)
    - List what should NOT be included (node_modules/, .git/, CLAUDE.md, .claude/, *.pot, tests/, docs/)
+3. Verify extension-specific inclusions (e.g., `resources/`, `locale/`, helper scripts)
 4. Check zip file size (warn if > 5MB)
+5. Scan for secrets or dev artifacts not caught by `check-package.sh`
 
 ### Phase 4: Submission Metadata
 
@@ -61,7 +77,8 @@ Review the metadata and suggest improvements:
 1. **Description quality**: Is it clear what the extension does? Are permissions disclosed?
 2. **Screenshots**: Does the extension have screenshots ready? (not checked automatically)
 3. **Shell versions**: Are the listed versions actually tested?
-4. **Reviewer notes**: Draft notes for the EGO reviewer, especially for:
+4. **Reviewer notes**: Draft notes for the EGO reviewer using
+   [reviewer-notes-template.md](references/reviewer-notes-template.md), especially for:
    - pkexec/polkit usage
    - Private API usage
    - Network access
@@ -74,41 +91,8 @@ Review the metadata and suggest improvements:
 
 ### Phase 5: Readiness Report
 
-Generate a final report:
-
-```
-## EGO Submission Readiness Report
-
-### Status: READY TO SUBMIT | NEEDS FIXES
-
-### Automated Checks
-- X passed, Y failed, Z warnings
-
-### Code Metrics
-- Total JS files: N
-- Total non-blank lines: N
-- Largest file: filename (N lines)
-
-### Code Review
-- X blocking, Y advisory, Z info
-
-### AI Pattern Analysis
-- Items checked: N
-- Items triggered: N
-  - [triggered item descriptions]
-- Assessment: PASS | ADVISORY | BLOCKING
-
-### Package
-- Valid | Not created | Issues found
-
-### Reviewer Notes (include in EGO submission)
-- [note 1]
-- [note 2]
-
-### Action Items
-1. [action needed]
-2. [action needed]
-```
+Generate a final report using
+[readiness-report-template.md](references/readiness-report-template.md).
 
 ## Reference
 
