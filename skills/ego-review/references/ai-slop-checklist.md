@@ -90,6 +90,11 @@ Over-engineered async teardown with multiple coordinating state flags.
 
 - **Red flag:** Both `_pendingDestroy` and `_initializing` flags used together,
   or elaborate state machines for initialization/destruction sequencing
+- **NOT a signal:** `_destroyed` combined with `_initializing` where
+  `_initializing` only serves as a re-entrancy guard (prevents `enable()`
+  from starting a parallel init while the first is in-flight). The red flag
+  targets additional deferred-cleanup flags like `_pendingDestroy` that
+  coordinate between enable/disable beyond the standard `_destroyed` check.
 - **Acceptable:** Simple `_destroyed` flag checked at async resume points
   (see the [lifecycle checklist](lifecycle-checklist.md#the-_destroyed-flag-pattern))
 
