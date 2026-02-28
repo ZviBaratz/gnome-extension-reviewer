@@ -145,7 +145,7 @@ The rules and checks are grounded in analysis of real EGO review behavior — no
 - Cross-referenced [gjs.guide](https://gjs.guide) guidelines (109 extracted requirements) with actual reviewer behavior
 - Traced GNOME Shell guideline evolution across versions 44–50 via GitLab history
 - Reverse-engineered patterns from 5 popular approved extensions
-- Regression-tested all checks against [hara-hachi-bu](https://github.com/ZviBaratz/hara-hachi-bu) (an 11-module power management extension, submitted to EGO) as baseline
+- Regression-tested all checks against [hara-hachi-bu](https://github.com/ZviBaratz/hara-hachi-bu) (an 11-module power management extension whose initial EGO submission was rejected) as baseline
 
 Key unwritten rules discovered:
 1. No "GNOME" in UUID, extension name, or schema ID (trademark)
@@ -205,10 +205,6 @@ claude plugins add github:ZviBaratz/gnome-extension-reviewer
 ```
 
 The four skills above use Claude to analyze extension source code via Anthropic's API. ego-lint itself makes no API calls — it's the same deterministic tool whether or not you use the plugin.
-
-## Author
-
-Built by [Zvi Baratz](https://github.com/ZviBaratz), author of [hara-hachi-bu](https://github.com/ZviBaratz/hara-hachi-bu) (a GNOME Shell extension for power management, submitted to EGO). Motivated by review round-trip friction — the mechanical checks that delay approval shouldn't require human time on either side. Built entirely with [Claude Code](https://docs.anthropic.com/en/docs/claude-code).
 
 ## Reporting Issues
 
