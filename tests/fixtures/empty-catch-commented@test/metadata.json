@@ -1,0 +1,7 @@
+{
+    "uuid": "empty-catch-commented@test",
+    "name": "Empty Catch Commented Test",
+    "description": "Tests that commented catch blocks are not flagged",
+    "shell-version": ["48"],
+    "url": "https://example.com"
+}

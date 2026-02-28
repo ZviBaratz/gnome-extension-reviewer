@@ -854,6 +854,7 @@
   category: version-compat
   fix: "Replace .quick-menu-toggle with .quick-toggle-has-menu"
   min-version: 48
+  replacement-pattern: "quick-toggle-has-menu"
 
 # --- GNOME 49 migration (version-gated) ---
 

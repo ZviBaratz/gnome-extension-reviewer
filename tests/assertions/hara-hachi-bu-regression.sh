@@ -69,4 +69,6 @@ assert_output_not_contains "no excessive-logging false positive" "\[WARN\].*qual
 assert_output_not_contains "no compiled-schemas-dir false positive" "\[WARN\].*compiled-schemas-dir"
 assert_output_not_contains "no logging-volume false positive" "\[WARN\].*quality/logging-volume"
 assert_output_not_contains "no file-complexity false positive" "\[WARN\].*quality/file-complexity"
+assert_output_not_contains "no R-VER48-07 false positive (dual selector)" "\[FAIL\].*R-VER48-07"
+assert_output_not_contains "no empty-catch false positive" "\[WARN\].*quality/empty-catch"
 echo ""

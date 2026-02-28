@@ -1,0 +1,7 @@
+{
+    "uuid": "css-dual-selector@test",
+    "name": "CSS Dual Selector Test",
+    "description": "Tests backward-compatible CSS with both old and new class names",
+    "shell-version": ["48"],
+    "url": "https://github.com/test/css-dual-selector"
+}

@@ -227,25 +227,33 @@ def main():
                 seen.add(filepath)
                 try:
                     with open(filepath, encoding='utf-8', errors='replace') as f:
-                        prev_line = ''
-                        for lineno, line in enumerate(f, 1):
-                            if compiled.search(line):
-                                # Check for inline suppression
-                                if _is_suppressed(line, prev_line, rid):
-                                    prev_line = line
-                                    continue
-                                rel = os.path.relpath(filepath, ext_dir)
-                                if deduplicate:
-                                    dedup_files.add(rel)
-                                    found = True
+                        file_content = f.read()
+
+                    # Check replacement-pattern: if both old and new patterns
+                    # exist in the same file, it's backward-compatible — skip
+                    replacement = rule.get('replacement-pattern', '')
+                    if replacement and replacement in file_content:
+                        continue
+
+                    prev_line = ''
+                    for lineno, line in enumerate(file_content.splitlines(True), 1):
+                        if compiled.search(line):
+                            # Check for inline suppression
+                            if _is_suppressed(line, prev_line, rid):
+                                prev_line = line
+                                continue
+                            rel = os.path.relpath(filepath, ext_dir)
+                            if deduplicate:
+                                dedup_files.add(rel)
+                                found = True
+                            else:
+                                fix = rule.get('fix', '')
+                                if fix:
+                                    print(f"{status}|{rid}|{rel}:{lineno}: {message}|fix: {fix}")
                                 else:
-                                    fix = rule.get('fix', '')
-                                    if fix:
-                                        print(f"{status}|{rid}|{rel}:{lineno}: {message}|fix: {fix}")
-                                    else:
-                                        print(f"{status}|{rid}|{rel}:{lineno}: {message}")
-                                    found = True
-                            prev_line = line
+                                    print(f"{status}|{rid}|{rel}:{lineno}: {message}")
+                                found = True
+                        prev_line = line
                 except OSError:
                     continue
 

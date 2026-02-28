@@ -231,12 +231,16 @@ def check_empty_catch(ext_dir, js_files):
         # Match catch blocks that are empty or contain only whitespace/comments
         for m in re.finditer(r'\bcatch\s*(?:\([^)]*\))?\s*\{([\s\S]*?)\}', content):
             body = m.group(1).strip()
-            # Empty or only comments
-            if not body or all(
-                line.strip().startswith('//') or line.strip().startswith('*')
-                or not line.strip()
-                for line in body.split('\n')
-            ):
+            stripped_lines = [l.strip() for l in body.split('\n') if l.strip()]
+            is_empty = not body or not stripped_lines
+            has_only_comments = (stripped_lines and all(
+                l.startswith('//') or l.startswith('*')
+                for l in stripped_lines))
+
+            if has_only_comments:
+                continue  # Developer documented why catch is empty — intentional
+
+            if is_empty:
                 # Check if try-body contains cleanup calls
                 # Look backwards from catch to find the try block
                 before_catch = content[:m.start()]
@@ -334,8 +338,18 @@ def check_mock_in_production(ext_dir, js_files):
                     continue
                 mock_triggers.append(f"{rel}:{lineno}")
 
+    # Check if package.sh exists and read its content for exclusion checks
+    package_sh = os.path.join(ext_dir, 'package.sh')
+    pkg_content = ''
+    if os.path.isfile(package_sh):
+        with open(package_sh, encoding='utf-8', errors='replace') as pf:
+            pkg_content = pf.read()
+
     found = False
     for mf in mock_files:
+        # If filename appears in package.sh, it's likely excluded from the zip
+        if pkg_content and os.path.basename(mf) in pkg_content:
+            continue
         result("WARN", "quality/mock-in-production",
                f"{mf}: mock/test file should not ship in production extension")
         found = True

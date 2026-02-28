@@ -96,7 +96,13 @@ def check_async_inline_cancellable(ext_dir, js_files):
     for filepath in js_files:
         rel = os.path.relpath(filepath, ext_dir)
         with open(filepath, encoding='utf-8', errors='replace') as f:
-            lines = f.readlines()
+            content = f.read()
+            lines = content.splitlines(True)
+
+        # If file uses _destroyed pattern, it has an alternative async safety
+        # mechanism — suppress missing-cancellable warnings for this file
+        if '_destroyed' in content:
+            continue
 
         # Track whether current scope has a cancellable parameter
         has_cancellable_param = False
