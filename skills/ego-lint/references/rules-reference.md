@@ -1376,7 +1376,7 @@ export default class MyExtension extends Extension {
 - **Severity**: advisory
 - **Checked by**: apply-patterns.py
 - **Rule**: `typeof super.destroy === 'function'` check is unnecessary — super.destroy() always exists on GObject classes.
-- **Rationale**: Canonical AI slop signal identified by JustPerfection in the GNOME AI policy blog post.
+- **Rationale**: Canonical AI slop signal identified in the GNOME AI policy blog post (December 2025).
 - **Fix**: Remove the typeof check and call `super.destroy()` directly.
 - **Tested by**: `tests/fixtures/hallucinated-apis@test/`
 

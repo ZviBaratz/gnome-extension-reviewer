@@ -432,7 +432,7 @@ destroy() {
 }
 ```
 
-This is the canonical example from JustPerfection's AI policy blog post.
+This is the canonical example from the EGO AI policy blog post (December 2025).
 
 ### 20. Redundant instanceof this
 
@@ -854,8 +854,8 @@ class methods are guaranteed to exist.
 - **Red flag:** `if (typeof super.destroy === 'function') super.destroy()` or
   `if (typeof super.enable !== 'undefined') super.enable()`
 - **Acceptable:** Calling `super.destroy()`, `super.enable()` directly
-- **Note:** This is the canonical AI slop example cited in JustPerfection's
-  AI policy blog post. Automatically detected by ego-lint (R-SLOP-30).
+- **Note:** This is the canonical AI slop example cited in the EGO AI policy blog
+  post (December 2025). Automatically detected by ego-lint (R-SLOP-30).
 
 ```javascript
 // RED FLAG: unnecessary type guard
@@ -911,9 +911,9 @@ const SCHEMA_DEFAULTS = {
 
 ## Real-World AI Detection Intelligence
 
-**Reviewer perspective (Javad Rahmatzadeh, December 2025):**
+**Reviewer perspective (EGO AI policy blog post, December 2025):**
 
-The reviewer reported spending "more than 6 hours a day reviewing over 15,000 lines of extension code" due to AI-generated submissions. The primary detection signals:
+The review team reported significant time spent identifying AI-generated submissions. The primary detection signals:
 
 1. **Try-catch around guaranteed APIs** — wrapping `super.destroy()` in try-catch is the single biggest tell
 2. **Inconsistent style** — mixing patterns suggests copy-paste from different AI generations
