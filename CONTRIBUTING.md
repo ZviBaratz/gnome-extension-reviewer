@@ -66,6 +66,8 @@ export default class TestExtension extends Extension {
 SPDX-License-Identifier: GPL-2.0-or-later
 ```
 
+**Verify your fixture** before continuing — run `bash scripts/validate-fixture.sh` to catch common mistakes (missing `@`, UUID mismatch, missing URL/LICENSE).
+
 ### Step 3: Add a test assertion
 
 Create a new file `tests/assertions/your-category.sh` (or add to an existing one):
@@ -79,25 +81,7 @@ assert_output_contains "fails on navigator.clipboard" "\[FAIL\].*R-WEB-12"
 echo ""
 ```
 
-If you created a new assertion file, source it in `tests/run-tests.sh` by adding before the summary section:
-
-```bash
-if [[ -f "$ASSERTIONS_DIR/your-category.sh" ]]; then
-    source "$ASSERTIONS_DIR/your-category.sh"
-fi
-```
-
-### Before running tests: Verify your fixture
-
-Common fixture mistakes that cause confusing failures:
-
-- Directory name contains `@` (e.g., `my-rule@test`)
-- `uuid` in metadata.json matches directory name exactly
-- metadata.json includes a `"url"` field
-- LICENSE file exists with SPDX identifier
-- UUID/name does not contain "gnome" (trademark check will fail)
-
-Or run `bash scripts/validate-fixture.sh` to check all of the above automatically.
+New files in `tests/assertions/` are automatically discovered — no need to edit `run-tests.sh`.
 
 ### Step 4: Run tests
 
@@ -106,6 +90,12 @@ bash tests/run-tests.sh
 ```
 
 All existing tests must still pass alongside your new assertion.
+
+To test just your fixture in isolation (without running the full suite):
+
+```bash
+./ego-lint tests/fixtures/your-rule@test --verbose
+```
 
 ### Debugging tips
 

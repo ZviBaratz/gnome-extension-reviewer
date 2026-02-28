@@ -1,3 +1,5 @@
+![Tests](https://github.com/ZviBaratz/gnome-extension-reviewer/actions/workflows/test.yml/badge.svg)
+
 # gnome-extension-reviewer
 
 Automated pre-submission checks for GNOME Shell extensions, built from analysis of real EGO review decisions. ego-lint catches the mechanical issues that cause the most common rejections — so extensions arrive cleaner and reviewers spend less time on round-trips.
@@ -171,6 +173,18 @@ Full research: [docs/research/](docs/research/) | Coverage gaps: [docs/research/
 
 The rules belong to whoever shapes them. Reviewers who contribute checks, adjust severity, or report false positives define what ego-lint enforces and how. If you see a rejection pattern that ego-lint misses, [adding it](CONTRIBUTING.md) is a 4-line YAML change. See [GOVERNANCE.md](GOVERNANCE.md) for how rule decisions are made.
 
+### Discussion
+
+Join the conversation in [#extensions:gnome.org](https://matrix.to/#/#extensions:gnome.org) on Matrix.
+
+### Ways to Contribute
+
+Beyond writing new rules:
+
+- **Validate existing rules** — run ego-lint on extensions from your queue and report where it gets things right or wrong
+- **Propose severity changes** — if a WARN should be a FAIL (or vice versa), open an issue with your reasoning
+- **Report missing patterns** — rejection reasons ego-lint doesn't catch yet
+
 ### Help Wanted
 
 Self-contained improvements where reviewer expertise would be especially valuable:
@@ -189,9 +203,9 @@ Self-contained improvements where reviewer expertise would be especially valuabl
 
 Full gap list: [docs/research/gap-analysis.md](docs/research/gap-analysis.md)
 
-## Advanced: Claude Code Plugin (Optional)
+## Complete Toolkit
 
-ego-lint is the primary offering — it works standalone without Claude Code or any AI. The skills below are experimental extras for developers who use [Claude Code](https://docs.anthropic.com/en/docs/claude-code).
+ego-lint is the standalone core — deterministic, no dependencies, works in CI. The Claude Code skills extend it with AI-powered analysis for developers who want deeper review coverage:
 
 | Skill | Description |
 |-------|-------------|
