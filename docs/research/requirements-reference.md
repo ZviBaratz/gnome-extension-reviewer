@@ -1,8 +1,8 @@
-# EGO Review Guidelines - Comprehensive Research Document
+# EGO Review Requirements Reference
 
-**Date:** 2026-02-25
-**Sources:** Official gjs.guide documentation, GNOME wiki archives, GNOME blog posts, community discussions
-**Purpose:** Serve as a persistent reference for all GNOME Shell extension review requirements
+**Sources:** Official [gjs.guide](https://gjs.guide) documentation, GNOME wiki archives, GNOME blog posts, community discussions
+**Provenance:** Consolidated from two research passes — an initial guidelines synthesis (2026-02-25) and a line-by-line MUST/SHOULD extraction from every gjs.guide page (2026-02-26). Sections 1–28 come from the synthesis; sections 29–33 incorporate additional findings from the deep-read pass.
+**Purpose:** Persistent reference for all GNOME Shell extension review requirements
 
 ---
 
@@ -39,7 +39,8 @@
 29. [Notification and Dialog Lifecycle](#29-notification-and-dialog-lifecycle)
 30. [Search Provider Contract](#30-search-provider-contract)
 31. [Accessibility Requirements](#31-accessibility-requirements)
-32. [Sources](#32-sources)
+32. [Updates and Breakage Philosophy](#32-updates-and-breakage-philosophy)
+33. [Sources](#33-sources)
 
 ---
 
@@ -1198,6 +1199,10 @@ disable() {
 }
 ```
 
+### Cancellable Handling
+
+All asynchronous search provider methods (`getInitialResultSet`, `getSubsearchResultSet`, `getResultMetas`) receive a `Gio.Cancellable` parameter. Implementations MUST respect cancellation signals — when the user types a new character, the Shell cancels the previous search.
+
 ### Icon Scaling
 
 `createIcon(size)` receives the logical icon size. The implementation MUST account for the display scaling factor when creating icons from custom sources (e.g., cairo surfaces, pixel buffers). Standard `Gio.Icon` implementations handle scaling automatically.
@@ -1261,7 +1266,33 @@ All interactive elements MUST be reachable via Tab/Shift+Tab and activatable via
 
 ---
 
-## 32. Sources
+## 32. Updates and Breakage Philosophy
+
+> From [Updates and Breakage](https://gjs.guide/extensions/overview/updates-and-breakage.html)
+
+### There Is No Stable Extension API
+
+Extensions are patches, not plugins: "there is no way to prevent an extension from patching and breaking any API that could be devised." This is why version-gated checks are essential — every GNOME release can break any extension.
+
+### Risk Tiers
+
+| Risk | Description | Example |
+|------|-------------|---------|
+| **Non-invasive** | Adds UI elements without modifying underlying code | Adding a panel button, indicator |
+| **Moderately invasive** | Patches Shell methods with InjectionManager | Overriding `Panel.prototype.toggleCalendar` |
+| **Highly invasive** | Replaces or removes built-in components | Replacing the dash, modifying overview layout |
+
+Non-invasive patching presents minimal breakage risk. Highly invasive patching is most likely to break across GNOME versions.
+
+### Platform API Stability
+
+- **Extremely stable:** GLib, GObject, GIO — rarely change
+- **Quite stable:** Clutter, Mutter, St, Shell — stable but subject to change each release
+- **Unstable:** GNOME Shell JS internals (`js/ui/*`) — no stability guarantees
+
+---
+
+## 33. Sources
 
 ### Primary Official Sources
 
