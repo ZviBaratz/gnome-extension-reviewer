@@ -113,6 +113,7 @@
   fix: "Ensure _destroyed is checked after the race resolves. Consider simpler alternatives."
 
 # --- Deprecated APIs (blocking/advisory) ---
+# APIs removed or superseded in GNOME 45+.
 
 - id: R-DEPR-04
   pattern: "\\bimports\\.(ui|gi|misc)\\."
@@ -181,6 +182,7 @@
   fix: "Replace format() calls with template literals: `my ${variable} string`."
 
 # --- Import segregation (blocking) ---
+# prefs.js runs in a separate process and cannot import Shell/Clutter/Meta/St.
 
 - id: R-IMPORT-08
   pattern: "resource:///org/gnome/shell/ui/"
@@ -191,6 +193,7 @@
   fix: "Preferences must only use GTK/Adw/Gio/GLib. Shell UI modules run in a different process."
 
 # --- Security (blocking/advisory) ---
+# eval(), dynamic code, telemetry, insecure paths, privilege escalation.
 
 - id: R-SEC-01
   pattern: "\\beval\\s*\\("
@@ -290,6 +293,7 @@
   fix: "If used legitimately (e.g., data URIs), add a comment explaining the purpose"
 
 # --- Subprocess safety (blocking/advisory) ---
+# Synchronous spawning blocks the main loop; curl/gsettings via subprocess banned.
 
 - id: R-SEC-14
   pattern: "\\bspawn_sync\\b"
@@ -351,6 +355,7 @@
   fix: "Remove automatic package installation. Document manual installation steps for required system packages."
 
 # --- Prefs.js GTK3 widget detection (blocking/advisory) ---
+# GTK3 widgets with direct Adwaita replacements should use the Adw equivalent.
 
 - id: R-PREFS-04
   pattern: "\\bnew\\s+Gtk\\.(HeaderBar|StackSwitcher|Notebook|InfoBar)\\b"
@@ -370,6 +375,7 @@
   fix: "Gtk.Grid → Adw rows, Gtk.ScrolledWindow → Adw.PreferencesPage (auto-scrolls), Gtk.Frame → Adw.PreferencesGroup, Gtk.ComboBoxText → Adw.ComboRow, Gtk.RadioButton → Adw.ActionRow, Gtk.Stack → Adw.ViewStack, Gtk.Revealer → Adw.ExpanderRow, Gtk.Expander → Adw.ExpanderRow, Gtk.FlowBox → Adw.PreferencesGroup, Gtk.ListBox → Adw.PreferencesGroup (for static lists)"
 
 # --- Translation (advisory) ---
+# Template literals and concatenation inside gettext break xgettext extraction.
 
 - id: R-I18N-01
   pattern: "_\\(\\`[^`]*\\$\\{"
@@ -388,6 +394,7 @@
   fix: "Use _('Hello %s').format(name) instead of _('Hello ' + name)"
 
 # --- Logging (advisory) ---
+# Legacy log()/print()/printerr() should use console.debug/error in GNOME 45+.
 
 - id: R-LOG-02
   pattern: "(?<![.\\w])log\\s*\\("
@@ -406,6 +413,7 @@
   fix: "Replace print()/printerr() with console.debug() or console.error()."
 
 # --- GSettings (advisory) ---
+# Common GSettings API misuse: wrong bind flag enum, missing settings cleanup.
 
 - id: R-QUAL-23
   pattern: "\\.bind\\s*\\([^)]*GObject\\.BindingFlags"
@@ -614,6 +622,7 @@
   fix: "Use Shell.ActionMode.NORMAL for most keybindings, or Shell.ActionMode.OVERVIEW | Shell.ActionMode.NORMAL for multi-mode"
 
 # --- Code quality (advisory/blocking) ---
+# Module-scope GObject construction, unnecessary patterns, code smell detection.
 
 - id: R-QUAL-04b
   pattern: "^(let|var)\\s+\\w+\\s*=\\s*new\\s+(St|Gio|GLib|Clutter|Meta|Shell|GObject)\\."
@@ -680,6 +689,7 @@
   fix: "Remove ?version= from the import; only Soup, Gtk, Gdk, and Adw require version specifiers"
 
 # --- GNOME 44-46 migration (version-gated) ---
+# APIs removed or renamed in GNOME 44-46 transition to ESM.
 
 - id: R-VER44-01
   pattern: "\\bMeta\\.later_add\\b"
@@ -763,6 +773,7 @@
   min-version: 46
 
 # --- GNOME 47 migration (version-gated) ---
+# Clutter.Color removed in GNOME 47; use Cogl.Color.
 
 - id: R-VER47-01
   pattern: "\\bClutter\\.Color\\b"
@@ -774,6 +785,7 @@
   min-version: 47
 
 # --- GNOME 48 migration (version-gated) ---
+# Clutter.Image, Meta display functions, CSS class renames.
 
 - id: R-VER48-01
   pattern: "\\bClutter\\.Image\\b"
@@ -849,6 +861,7 @@
   replacement-pattern: "quick-toggle-has-menu"
 
 # --- GNOME 49 migration (version-gated) ---
+# Clutter action classes replaced by gesture equivalents; Meta.Rectangle → Mtk.
 
 - id: R-VER49-01
   pattern: "\\bMeta\\.Rectangle\\b"
