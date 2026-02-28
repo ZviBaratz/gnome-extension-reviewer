@@ -85,9 +85,11 @@ print_result() {
     local status="$1"
     local check="$2"
     local detail="$3"
+    local display_detail="${detail%%|fix:*}"
 
-    # Fixed-width formatting: [STATUS] check-name  detail
-    printf "[%-4s] %-38s %s\n" "$status" "$check" "$detail"
+    # Fixed-width formatting: [STATUS] check-name  detail (fix text stripped)
+    printf "[%-4s] %-38s %s\n" "$status" "$check" "$display_detail"
+    # Results file preserves fix text for verbose report
     echo "${status}|${check}|${detail}" >> "$RESULTS_FILE"
 
     case "$status" in
@@ -536,6 +538,9 @@ echo "----------------------------------------------------------------"
 TOTAL=$((PASS_COUNT + FAIL_COUNT + WARN_COUNT + SKIP_COUNT))
 echo "  Results: $TOTAL checks — $PASS_COUNT passed, $FAIL_COUNT failed, $WARN_COUNT warnings, $SKIP_COUNT skipped"
 echo "----------------------------------------------------------------"
+if [[ "$VERBOSE" != true ]]; then
+    echo "  (run with --verbose for grouped report and fix suggestions)"
+fi
 
 if [[ "$VERBOSE" == true ]]; then
     echo ""
@@ -547,14 +552,33 @@ if [[ "$VERBOSE" == true ]]; then
     echo ""
     echo "--- BLOCKING ISSUES (FAIL) ---"
     grep "^FAIL|" "$RESULTS_FILE" | while IFS='|' read -r _ check detail; do
+        detail="${detail%%|fix:*}"
         echo "  ✗ $check: $detail"
     done || true
 
     echo ""
     echo "--- WARNINGS ---"
     grep "^WARN|" "$RESULTS_FILE" | while IFS='|' read -r _ check detail; do
+        detail="${detail%%|fix:*}"
         echo "  ⚠ $check: $detail"
     done || true
+
+    # Collect fix suggestions from results that have |fix: fields
+    fix_lines=""
+    while IFS='|' read -r _ check detail_with_fix; do
+        case "$detail_with_fix" in
+            *"|fix:"*)
+                fix="${detail_with_fix#*|fix:}"
+                fix="${fix#"${fix%%[![:space:]]*}"}"
+                fix_lines+="  $check: $fix"$'\n'
+                ;;
+        esac
+    done < "$RESULTS_FILE"
+    if [[ -n "$fix_lines" ]]; then
+        echo ""
+        echo "--- FIX SUGGESTIONS ---"
+        printf '%s' "$fix_lines"
+    fi
 
     echo ""
     echo "--- VERDICT ---"
