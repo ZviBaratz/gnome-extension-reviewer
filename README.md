@@ -42,6 +42,12 @@ This tool encodes the mechanical checks you already do by hand — import segreg
 
 You are invited to shape the rules, adjust severity, and add checks for rejection patterns you see often.
 
+## How This Was Built
+
+- **Claude Code wrote the code** — scripts, rules, tests, and docs were developed using [Claude Code](https://docs.anthropic.com/en/docs/claude-code) (Anthropic's AI coding tool). Every design decision was human-reviewed. The AI slop detection rules are based on patterns observed in real EGO rejections of AI-generated submissions.
+- **Research was AI-assisted** — Discourse mining, guideline extraction, cross-source synthesis, and gap analysis were performed with Claude Code and verified against real EGO reviews on extensions.gnome.org, [gjs.guide](https://gjs.guide) requirements, and GNOME Shell GitLab history. Regression-tested against a real 11-module extension as baseline.
+- **ego-lint itself is AI-free** — The output artifact is deterministic bash + python + YAML. No API calls. No network access. No model inference. AI was the development tool, not the runtime tool.
+
 ## Where to Start
 
 - **Adding rules**: [CONTRIBUTING.md](CONTRIBUTING.md) — 5-minute workflow for adding a check
@@ -139,7 +145,7 @@ The rules and checks are grounded in analysis of real EGO review behavior — no
 - Cross-referenced [gjs.guide](https://gjs.guide) guidelines (109 extracted requirements) with actual reviewer behavior
 - Traced GNOME Shell guideline evolution across versions 44–50 via GitLab history
 - Reverse-engineered patterns from 5 popular approved extensions
-- Regression-tested all checks against a real 11-module extension as baseline
+- Regression-tested all checks against [hara-hachi-bu](https://github.com/ZviBaratz/hara-hachi-bu) (an 11-module power management extension, submitted to EGO) as baseline
 
 Key unwritten rules discovered:
 1. No "GNOME" in UUID, extension name, or schema ID (trademark)
@@ -163,7 +169,7 @@ Full research: [docs/RESEARCH-SUMMARY.md](docs/RESEARCH-SUMMARY.md) | Detailed f
 
 ## Community
 
-This project is looking for community co-maintainers among EGO reviewers. If you'd like to help shape the rules — add checks for rejection patterns you see often, adjust severity, or improve heuristics — open an issue or PR. See [GOVERNANCE.md](GOVERNANCE.md) for how rule decisions are made.
+The rules belong to whoever shapes them. Reviewers who contribute checks, adjust severity, or report false positives define what ego-lint enforces and how. If you see a rejection pattern that ego-lint misses, [adding it](CONTRIBUTING.md) is a 4-line YAML change. See [GOVERNANCE.md](GOVERNANCE.md) for how rule decisions are made.
 
 ### Help Wanted
 
@@ -182,12 +188,6 @@ Self-contained improvements where reviewer expertise would be especially valuabl
 - [ ] Per-extension configuration (`.ego-lint.yml` for rule overrides)
 
 Full gap list: [docs/research/gap-analysis.md](docs/research/gap-analysis.md)
-
-## How This Was Built
-
-- **Claude Code wrote the code** — scripts, rules, tests, and docs were developed using [Claude Code](https://docs.anthropic.com/en/docs/claude-code) (Anthropic's AI coding tool). Every design decision was human-reviewed. The AI slop detection rules are based on patterns observed in real EGO rejections of AI-generated submissions.
-- **Research was AI-assisted** — Discourse mining, guideline extraction, cross-source synthesis, and gap analysis were performed with Claude Code and verified against real EGO reviews on extensions.gnome.org, [gjs.guide](https://gjs.guide) requirements, and GNOME Shell GitLab history. Regression-tested against a real 11-module extension as baseline.
-- **ego-lint itself is AI-free** — The output artifact is deterministic bash + python + YAML. No API calls. No network access. No model inference. AI was the development tool, not the runtime tool.
 
 ## Advanced: Claude Code Plugin (Optional)
 

@@ -2,6 +2,16 @@
 
 ## Unreleased
 
+### Changed
+
+- Moved "How This Was Built" section earlier in README for transparency
+- Promoted `scripts/new-rule.sh` as primary contribution workflow in CONTRIBUTING.md
+- Added fixture validation checklist and debugging tips to CONTRIBUTING.md
+- Separated hara-hachi-bu regression into `tests/run-regression.sh`
+- Named hara-hachi-bu as regression baseline in README
+- Strengthened community ownership messaging in README
+- Updated stale assertion/fixture counts in docs
+
 ### Bug Fixes
 
 - **ego-review**: Added "NOT a signal" exception to ai-slop checklist item #4 — `_destroyed` + `_initializing` (re-entrancy guard) is not the over-engineered state machine anti-pattern (#1, PR #4)

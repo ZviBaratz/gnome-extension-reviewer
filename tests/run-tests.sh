@@ -653,11 +653,6 @@ if [[ -f "$ASSERTIONS_DIR/quick-wins.sh" ]]; then
     source "$ASSERTIONS_DIR/quick-wins.sh"
 fi
 
-# Hara-hachi-bu regression (conditional)
-if [[ -f "$ASSERTIONS_DIR/hara-hachi-bu-regression.sh" ]]; then
-    source "$ASSERTIONS_DIR/hara-hachi-bu-regression.sh"
-fi
-
 # --- Summary ---
 echo "============================================"
 echo "  Results: $PASS_COUNT passed, $FAIL_COUNT failed"

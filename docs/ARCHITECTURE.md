@@ -119,7 +119,7 @@ skills/
 tests/
   run-tests.sh                  Test runner
   assertions/                   Assertion files (sourced by runner)
-  fixtures/                     142 test fixtures
+  fixtures/                     144 test fixtures
 docs/
   ci-integration.md             GitHub Actions / GitLab CI examples
   ARCHITECTURE.md               This file

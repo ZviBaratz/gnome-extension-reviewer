@@ -8,6 +8,8 @@ Thank you for your interest in improving GNOME extension review tooling.
 
 ## For Reviewers: Add a Check in 5 Minutes
 
+> **Fastest path:** Run `bash scripts/new-rule.sh` — it scaffolds the YAML rule, test fixture, and assertion file interactively (with next-ID suggestion). The walkthrough below explains what it creates, so you understand the pieces.
+
 You just rejected an extension because it uses `navigator.clipboard` (a browser API that doesn't exist in GJS). Here's how to encode that rejection so ego-lint catches it automatically next time.
 
 ### Step 1: Add the rule to `rules/patterns.yaml`
@@ -85,6 +87,18 @@ if [[ -f "$ASSERTIONS_DIR/your-category.sh" ]]; then
 fi
 ```
 
+### Before running tests: Verify your fixture
+
+Common fixture mistakes that cause confusing failures:
+
+- Directory name contains `@` (e.g., `my-rule@test`)
+- `uuid` in metadata.json matches directory name exactly
+- metadata.json includes a `"url"` field
+- LICENSE file exists with SPDX identifier
+- UUID/name does not contain "gnome" (trademark check will fail)
+
+Or run `bash scripts/validate-fixture.sh` to check all of the above automatically.
+
 ### Step 4: Run tests
 
 ```bash
@@ -93,7 +107,11 @@ bash tests/run-tests.sh
 
 All existing tests must still pass alongside your new assertion.
 
-**Shortcut:** Use `scripts/new-rule.sh` to scaffold all of the above interactively, or `scripts/validate-fixture.sh` to check that your fixtures meet the structural requirements.
+### Debugging tips
+
+- **Pattern doesn't match?** Test your rule in isolation: `bash scripts/validate-rule.sh R-XXXX-NN tests/fixtures/your-fixture@test`
+- **Fixture fails validation?** Run `bash scripts/validate-fixture.sh` to identify structural issues
+- **Not sure which check fires?** Run `./ego-lint tests/fixtures/your-fixture@test --verbose` and look for your rule ID in the output
 
 ## First Contribution Workflow
 
