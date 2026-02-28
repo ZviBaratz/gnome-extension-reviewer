@@ -53,6 +53,27 @@ security, code-quality, ai-slop, licensing, accessibility) are applied by Claude
 during `ego-review`. This tier catches things regex and heuristics cannot --
 logical errors, incomplete cleanup, architectural issues.
 
+## Why AI Is Only in Tier 3
+
+Tiers 1 and 2 are fully deterministic: bash, python, YAML regex. No API calls,
+no network access, no model inference. This is deliberate:
+
+1. **Reproducibility** — Two runs on the same extension produce identical output
+2. **Auditability** — Every rule is readable YAML or a standalone script
+3. **Trust boundary** — Deterministic tools can be validated against known-good
+   extensions; AI tools cannot offer the same guarantee
+4. **Offline operation** — No API keys, no internet, no vendor dependency
+
+Tier 3 (semantic checklists applied by Claude during `ego-review`) is explicitly
+optional. ego-lint makes zero AI calls.
+
+### What ego-lint deliberately skips
+
+- Logic correctness or functionality testing
+- Approval/rejection recommendations
+- Code review judgment (is this the right approach?)
+- Anything requiring running the extension
+
 ## Resource Graph
 
 `build-resource-graph.py` scans all JS files and builds a JSON graph of resource
@@ -98,7 +119,7 @@ skills/
 tests/
   run-tests.sh                  Test runner
   assertions/                   Assertion files (sourced by runner)
-  fixtures/                     138 test fixtures
+  fixtures/                     142 test fixtures
 docs/
   ci-integration.md             GitHub Actions / GitLab CI examples
   ARCHITECTURE.md               This file

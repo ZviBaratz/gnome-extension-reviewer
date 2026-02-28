@@ -120,14 +120,7 @@ For simple regex-based checks (e.g., "flag usage of X API"), add a rule to `rule
   category: category-name
 ```
 
-Fields:
-- `id`: Unique rule ID following the `R-CATEGORY-NN` convention (e.g., R-WEB-10, R-DEPR-08)
-- `pattern`: Python `re` regex syntax (double-escape backslashes in YAML)
-- `scope`: Glob patterns for which files to check (e.g., `["*.js"]`, `["metadata.json"]`)
-- `severity`: `blocking` (FAIL) or `advisory` (WARN)
-- `message`: Human-readable explanation shown to the user
-- `category`: Group name for the rule (web-apis, deprecated, ai-slop)
-- `fix`: Optional — how to fix the issue
+See [`rules/README.md`](rules/README.md) for the full field reference, category prefixes, advanced fields (version-gating, conditional suppression), and inline suppression syntax.
 
 Then add a test fixture and assertion (see Testing below).
 

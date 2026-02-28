@@ -4,6 +4,10 @@ Automated pre-submission checks for GNOME Shell extensions, built from analysis 
 
 ego-lint is fully deterministic: bash + python + YAML rules. No AI at runtime, no network access, no dependencies beyond coreutils.
 
+### For EGO Reviewers
+
+This tool encodes the mechanical checks you already do by hand — import segregation, lifecycle symmetry, metadata validation, resource cleanup — into automated, reproducible rules. The rules are grounded in [real EGO review analysis](docs/research/) and designed to be co-owned: adding a new check is [4 lines of YAML](CONTRIBUTING.md). You are invited to shape the rules, adjust severity, and add checks for rejection patterns you see often.
+
 ## Quick Start
 
 ```bash
@@ -36,13 +40,13 @@ ego-lint does **not**:
 - Check logic correctness or functionality
 - Replace human review judgment
 
-**CI integration**: Pure bash + python, exits 0/1, no network access, no dependencies beyond coreutils. Tested against 138 fixtures with 364 assertions. See [docs/ci-integration.md](docs/ci-integration.md) for GitHub Actions and GitLab CI examples.
+**CI integration**: Pure bash + python, exits 0/1, no network access, no dependencies beyond coreutils. Tested against 142 fixtures with 372 assertions. See [docs/ci-integration.md](docs/ci-integration.md) for GitHub Actions and GitLab CI examples.
 
 ## How This Was Built
 
-1. **Research and implementation done using Claude Code.** The Discourse mining, guideline analysis, cross-source synthesis, and code were produced with [Claude Code](https://docs.anthropic.com/en/docs/claude-code) (Anthropic's AI coding tool). The AI slop detection rules are based on patterns observed in real EGO rejections of AI-generated submissions.
-2. **Every rule traces back to real data.** EGO reviews on extensions.gnome.org, [gjs.guide](https://gjs.guide) requirements, or GNOME Shell GitLab history. Regression-tested against a real 11-module extension as baseline.
-3. **ego-lint itself is AI-free.** Bash + python + YAML. Deterministic. No API calls. No network access. Runs anywhere with `bash` and `python3`.
+- **Claude Code wrote the code** — scripts, rules, tests, and docs were produced under human direction using [Claude Code](https://docs.anthropic.com/en/docs/claude-code) (Anthropic's AI coding tool). Every design decision was human-reviewed. The AI slop detection rules are based on patterns observed in real EGO rejections of AI-generated submissions.
+- **Research was AI-assisted** — Discourse mining, guideline extraction, cross-source synthesis, and gap analysis were performed with Claude Code and verified against real EGO reviews on extensions.gnome.org, [gjs.guide](https://gjs.guide) requirements, and GNOME Shell GitLab history. Regression-tested against a real 11-module extension as baseline.
+- **ego-lint itself is AI-free** — The output artifact is deterministic bash + python + YAML. No API calls. No network access. No model inference. AI was the development tool, not the runtime tool.
 
 ## What Gets Checked
 
@@ -163,6 +167,20 @@ The four skills above use Claude to analyze extension source code via Anthropic'
 ## Community
 
 This project is looking for community co-maintainers among EGO reviewers. If you'd like to help shape the rules — add checks for rejection patterns you see often, adjust severity, or improve heuristics — open an issue or PR. See [GOVERNANCE.md](GOVERNANCE.md) for how rule decisions are made.
+
+## Roadmap
+
+- [ ] Polkit action ID validation (verify `.policy` file when `pkexec` is used)
+- [ ] Schema filename validation (ensure `.gschema.xml` filename matches schema ID)
+- [ ] Module-scope mutable state detection (`Map`/`Set` at module level)
+- [ ] False positive reduction (R-PREFS-04b GTK widget spam, R-SEC-20 deduplication)
+- [ ] Per-extension configuration (`.ego-lint.yml` for rule overrides)
+
+Full gap list: [docs/research/gap-analysis.md](docs/research/gap-analysis.md)
+
+## Author
+
+Built by [Zvi Baratz](https://github.com/ZviBaratz), author of [hara-hachi-bu](https://github.com/ZviBaratz/hara-hachi-bu) (a GNOME Shell extension for power management, currently in EGO review). Motivated by review round-trip friction — the mechanical checks that delay approval shouldn't require human time on either side. Built entirely with [Claude Code](https://docs.anthropic.com/en/docs/claude-code).
 
 ## Requirements
 

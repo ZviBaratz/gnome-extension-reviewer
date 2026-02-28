@@ -76,6 +76,58 @@ bash tests/run-tests.sh
 bash scripts/validate-rule.sh R-XXXX-NN tests/fixtures/<fixture-name>@test
 ```
 
+## Advanced Fields
+
+Beyond the basic fields, pattern rules support version-gating and conditional suppression.
+
+### Version-Gating (`min-version` / `max-version`)
+
+Rules can target specific GNOME versions using `min-version` and/or `max-version`. The rule only fires when the extension's `shell-version` in `metadata.json` includes a version within range.
+
+```yaml
+- id: R-VER48-01
+  pattern: "\\bMeta\\.DisplayDirection\\b"
+  scope: ["*.js"]
+  severity: blocking
+  message: "Meta.DisplayDirection removed in GNOME 48; use Meta.Direction instead"
+  category: gnome-48
+  fix: "Replace Meta.DisplayDirection with Meta.Direction"
+  min-version: 48
+```
+
+This rule only fires for extensions that declare `shell-version` including `48` or later. An extension targeting only `["47"]` won't see this check.
+
+Use `max-version` for rules about APIs that were deprecated but not yet removed:
+
+```yaml
+- id: R-VER49-01
+  pattern: "\\bClutter\\.ClickAction\\b"
+  scope: ["*.js"]
+  severity: advisory
+  message: "Clutter.ClickAction deprecated; will be removed in GNOME 50"
+  category: gnome-49
+  min-version: 49
+  max-version: 49
+```
+
+### Conditional Suppression (`replacement-pattern`)
+
+A rule can be suppressed when a replacement pattern also exists in the same file. This prevents false positives when extensions maintain backward compatibility by supporting both old and new patterns.
+
+```yaml
+- id: R-VER48-07
+  pattern: "\\.panel-button\\b"
+  scope: ["*.css"]
+  severity: advisory
+  message: ".panel-button renamed to .panel-icon in GNOME 48"
+  category: gnome-48
+  fix: "Use .panel-icon instead of .panel-button"
+  min-version: 48
+  replacement-pattern: "\\.panel-icon\\b"
+```
+
+If a CSS file contains both `.panel-button` and `.panel-icon` (dual selectors for backward compatibility), the rule is suppressed for that file. The replacement check is file-level — if the replacement pattern appears anywhere in the file, the match is skipped.
+
 ## Inline Suppression
 
 Add `ego-lint-ignore` comments to suppress specific findings on a per-line basis.
@@ -101,12 +153,19 @@ Always prefer fixing the issue over suppressing it.
 
 ## Category Prefixes
 
-| Prefix | Category | Severity |
-|--------|----------|----------|
-| R-WEB | Browser/web APIs | blocking |
-| R-DEPR | Deprecated GNOME APIs | blocking or advisory |
-| R-SEC | Security concerns | blocking |
-| R-IMPORT | Import segregation | blocking |
-| R-LOG | Logging patterns | advisory |
-| R-SLOP | AI-generated code signals | advisory |
-| R-META | Metadata fields | see rules-reference.md |
+| Prefix | Category | Severity | Source |
+|--------|----------|----------|--------|
+| R-WEB | Browser/web APIs | blocking | patterns.yaml |
+| R-DEPR | Deprecated GNOME APIs | blocking or advisory | patterns.yaml |
+| R-SEC | Security concerns | blocking or advisory | patterns.yaml |
+| R-IMPORT | Import segregation | blocking | patterns.yaml + check-imports.sh |
+| R-LOG | Logging patterns | advisory | patterns.yaml |
+| R-SLOP | AI-generated code signals | advisory | patterns.yaml |
+| R-META | Metadata fields | varies | check-metadata.py |
+| R-QUAL | Code quality | advisory | patterns.yaml + check-quality.py |
+| R-PREFS | Preferences validation | blocking or advisory | patterns.yaml + check-prefs.py |
+| R-INIT | Init-time safety | blocking | check-init.py |
+| R-LIFE | Lifecycle (enable/disable) | blocking or advisory | check-lifecycle.py |
+| R-PKG | Package contents | blocking | check-package.sh |
+| R-I18N | Internationalization | advisory | patterns.yaml |
+| R-VER44–R-VER50 | GNOME version migration | blocking or advisory | patterns.yaml (version-gated) |
