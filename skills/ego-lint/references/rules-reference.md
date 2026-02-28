@@ -404,11 +404,17 @@ import {Extension} from 'resource:///org/gnome/shell/extensions/extension.js';
 
 Rules for browser/Node.js APIs that are not available in GJS.
 
+> **Note**: R-WEB-01, R-WEB-02, R-WEB-10, and R-WEB-11 (timer APIs) are version-gated
+> to `max-version: 44`. GJS added native `setTimeout`/`setInterval`/`clearTimeout`/
+> `clearInterval` as global polyfills in GNOME 45. These rules are SKIP for extensions
+> targeting GNOME 45+.
+
 ### R-WEB-01: No setTimeout()
-- **Severity**: blocking
-- **Checked by**: ego-lint.sh
+- **Severity**: blocking (GNOME ≤44 only)
+- **Version gate**: max-version 44
+- **Checked by**: apply-patterns.py
 - **Rule**: Extension code must not use `setTimeout()`.
-- **Rationale**: `setTimeout` is a browser/Node.js API that does not exist in GJS. Some polyfills may add it, but EGO reviewers reject extensions that rely on non-standard globals.
+- **Rationale**: `setTimeout` is a browser/Node.js API that was not available in GJS before GNOME 45. GJS 45+ provides a native polyfill, so this rule only applies to extensions supporting GNOME 44 or earlier.
 - **Fix**: Replace `setTimeout(callback, ms)` with `GLib.timeout_add(GLib.PRIORITY_DEFAULT, ms, () => { callback(); return GLib.SOURCE_REMOVE; })`. Remember to store the returned ID and call `GLib.Source.remove(id)` in `destroy()`.
 
 #### Example
@@ -440,10 +446,11 @@ disable() {
 ```
 
 ### R-WEB-02: No setInterval()
-- **Severity**: blocking
-- **Checked by**: ego-lint.sh
+- **Severity**: blocking (GNOME ≤44 only)
+- **Version gate**: max-version 44
+- **Checked by**: apply-patterns.py
 - **Rule**: Extension code must not use `setInterval()`.
-- **Rationale**: Same as `setTimeout` — it is not a native GJS API.
+- **Rationale**: Same as `setTimeout` — not available in GJS before GNOME 45.
 - **Fix**: Replace `setInterval(callback, ms)` with `GLib.timeout_add(GLib.PRIORITY_DEFAULT, ms, () => { callback(); return GLib.SOURCE_CONTINUE; })`. Store the ID and remove it in `destroy()`.
 
 #### Example
@@ -692,20 +699,22 @@ Additional web/browser API rules detected by pattern matching.
 - **Fix**: Replace `require('module')` with `import ... from 'gi://Module'` or the appropriate GJS import syntax.
 
 ### R-WEB-10: No clearTimeout()
-- **Severity**: blocking
+- **Severity**: blocking (GNOME ≤44 only)
+- **Version gate**: max-version 44
 - **Checked by**: apply-patterns.py
 - **Rule**: Extension code must not use `clearTimeout()`.
-- **Rationale**: `clearTimeout` is a browser API not available in GJS. GLib timer sources are removed with `GLib.Source.remove()`.
+- **Rationale**: `clearTimeout` is a browser API. GJS added it natively in GNOME 45. For GNOME ≤44, use `GLib.Source.remove()`.
 - **Fix**: Store the return value of `GLib.timeout_add()` and pass it to `GLib.Source.remove(sourceId)`.
-- **Tested by**: `tests/fixtures/web-apis/`
+- **Tested by**: `tests/fixtures/web-apis/`, `tests/fixtures/timer-apis-g45@test/`
 
 ### R-WEB-11: No clearInterval()
-- **Severity**: blocking
+- **Severity**: blocking (GNOME ≤44 only)
+- **Version gate**: max-version 44
 - **Checked by**: apply-patterns.py
 - **Rule**: Extension code must not use `clearInterval()`.
-- **Rationale**: Same as R-WEB-10. `clearInterval` is a browser API. Use `GLib.Source.remove()`.
+- **Rationale**: Same as R-WEB-10. GJS added `clearInterval` natively in GNOME 45.
 - **Fix**: Store the return value of `GLib.timeout_add()` and pass it to `GLib.Source.remove(sourceId)`.
-- **Tested by**: `tests/fixtures/web-apis/`
+- **Tested by**: `tests/fixtures/web-apis/`, `tests/fixtures/timer-apis-g45@test/`
 
 ### R-WEB-12: Promise.race() without destroyed guards
 - **Severity**: advisory

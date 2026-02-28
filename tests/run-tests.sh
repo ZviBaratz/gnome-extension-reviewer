@@ -65,7 +65,7 @@ assert_output_not_contains "no FAIL results" "\[FAIL\]"
 assert_output_contains "metadata passes" "\[PASS\].*metadata/valid-json"
 assert_output_contains "no console.log" "\[PASS\].*no-console-log"
 assert_output_contains "no deprecated modules" "\[PASS\].*no-deprecated-modules"
-assert_output_contains "no web APIs" "\[PASS\].*R-WEB-01"
+assert_output_contains "R-WEB-01 skipped for GNOME 45+" "\[SKIP\].*R-WEB-01"
 assert_output_contains "no binary files" "\[PASS\].*no-binary-files"
 assert_output_contains "license exists" "\[PASS\].*license"
 assert_output_contains "schema checks pass" "\[PASS\].*schema/exists"
@@ -563,8 +563,27 @@ echo ""
 echo "=== ego-lint-ignore ==="
 run_lint "ego-lint-ignore@test"
 assert_exit_code "exits with 0 (suppressed rules)" 0
-assert_output_not_contains "R-WEB-01 suppressed by next-line" "\[FAIL\].*R-WEB-01"
-assert_output_not_contains "R-WEB-10 suppressed by inline" "\[FAIL\].*R-WEB-10"
+assert_output_not_contains "R-WEB-04 suppressed by next-line" "\[FAIL\].*R-WEB-04"
+assert_output_not_contains "R-WEB-06 suppressed by inline" "\[FAIL\].*R-WEB-06"
+echo ""
+
+# --- timer-apis-g45 (version-gated timer rules) ---
+echo "=== timer-apis-g45 ==="
+run_lint "timer-apis-g45@test"
+assert_exit_code "exits with 0 (timer APIs allowed in GNOME 45+)" 0
+assert_output_contains "R-WEB-01 skipped for GNOME 45+" "\[SKIP\].*R-WEB-01"
+assert_output_contains "R-WEB-02 skipped for GNOME 45+" "\[SKIP\].*R-WEB-02"
+assert_output_contains "R-WEB-10 skipped for GNOME 45+" "\[SKIP\].*R-WEB-10"
+assert_output_contains "R-WEB-11 skipped for GNOME 45+" "\[SKIP\].*R-WEB-11"
+assert_output_not_contains "no FAIL for timer APIs" "\[FAIL\].*R-WEB-0[12]"
+assert_output_not_contains "no FAIL for clear APIs" "\[FAIL\].*R-WEB-1[01]"
+echo ""
+
+# --- license-rst (LICENSE.rst variant) ---
+echo "=== license-rst ==="
+run_lint "license-rst@test"
+assert_exit_code "exits with 0 (LICENSE.rst recognized)" 0
+assert_output_contains "LICENSE.rst detected" "\[PASS\].*license"
 echo ""
 
 # Extended assertion files (auto-sourced from assertions/ directory)

@@ -1,0 +1,7 @@
+{
+    "uuid": "license-rst@test",
+    "name": "License RST Test",
+    "description": "Tests LICENSE.rst variant detection",
+    "shell-version": ["48"],
+    "url": "https://example.com"
+}

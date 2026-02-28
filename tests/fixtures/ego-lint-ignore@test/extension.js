@@ -2,9 +2,9 @@ import {Extension} from 'resource:///org/gnome/shell/extensions/extension.js';
 
 export default class IgnoreTest extends Extension {
     enable() {
-        // ego-lint-ignore-next-line: R-WEB-01
-        setTimeout(() => {}, 1000);
-        clearTimeout(this._id); // ego-lint-ignore: R-WEB-10
+        // ego-lint-ignore-next-line: R-WEB-04
+        const xhr = new XMLHttpRequest();
+        document.querySelector('.foo'); // ego-lint-ignore: R-WEB-06
     }
 
     disable() {

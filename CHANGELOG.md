@@ -4,6 +4,9 @@
 
 ### Changed
 
+- **ego-lint**: Version-gated R-WEB-01/02/10/11 (setTimeout/setInterval/clearTimeout/clearInterval) to `max-version: 44` — GJS provides native polyfills since GNOME 45
+- **ego-lint**: Extended license check to recognize LICENSE.rst/.md/.txt and COPYING variants
+- **ego-lint**: Downgraded `uuid-matches-dir` from FAIL to WARN — cloned repos don't match UUID
 - Moved "How This Was Built" section earlier in README for transparency
 - Promoted `scripts/new-rule.sh` as primary contribution workflow in CONTRIBUTING.md
 - Added fixture validation checklist and debugging tips to CONTRIBUTING.md

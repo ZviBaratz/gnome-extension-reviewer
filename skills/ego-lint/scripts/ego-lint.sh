@@ -188,10 +188,15 @@ fi
 # License check
 # ---------------------------------------------------------------------------
 
-if [[ -f "$EXT_DIR/LICENSE" ]] || [[ -f "$EXT_DIR/COPYING" ]]; then
-    license_file=""
-    [[ -f "$EXT_DIR/LICENSE" ]] && license_file="$EXT_DIR/LICENSE"
-    [[ -f "$EXT_DIR/COPYING" ]] && license_file="$EXT_DIR/COPYING"
+license_file=""
+for candidate in LICENSE COPYING LICENSE.rst LICENSE.md LICENSE.txt COPYING.rst COPYING.md COPYING.txt; do
+    if [[ -f "$EXT_DIR/$candidate" ]]; then
+        license_file="$EXT_DIR/$candidate"
+        break
+    fi
+done
+
+if [[ -n "$license_file" ]]; then
     head_content=$(head -5 "$license_file" 2>/dev/null || true)
     if echo "$head_content" | grep -qiE '(GPL|LGPL|MIT|BSD|Apache|MPL|ISC|Artistic)'; then
         print_result "PASS" "license" "License file found (appears GPL-compatible)"

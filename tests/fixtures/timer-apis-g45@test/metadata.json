@@ -1,0 +1,7 @@
+{
+    "uuid": "timer-apis-g45@test",
+    "name": "Timer APIs Test (45+)",
+    "description": "Tests that timer APIs are allowed in 45+",
+    "shell-version": ["48"],
+    "url": "https://example.com"
+}

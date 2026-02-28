@@ -172,11 +172,11 @@ def main():
         else:
             result("FAIL", "metadata/uuid-format", f"UUID contains invalid characters: {uuid}")
 
-        # UUID matches directory name
+        # UUID matches directory name (advisory — cloned repos often differ)
         if uuid == dir_name:
             result("PASS", "metadata/uuid-matches-dir", f"UUID matches directory name")
         else:
-            result("FAIL", "metadata/uuid-matches-dir", f"UUID '{uuid}' does not match directory '{dir_name}'")
+            result("WARN", "metadata/uuid-matches-dir", f"UUID '{uuid}' does not match directory '{dir_name}' — must match when installed")
 
         # No @gnome.org namespace
         if "@gnome.org" in uuid:

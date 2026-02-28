@@ -13,13 +13,15 @@
 #
 # Add new rules by appending to this file. See CONTRIBUTING.md for details.
 
-# --- Web APIs (blocking) ---
-# These browser APIs are not available in GJS.
+# --- Web APIs (blocking for GNOME ≤44, suppressed for 45+) ---
+# GJS added native setTimeout/setInterval/clearTimeout/clearInterval in GNOME 45.
+# These are only flagged for extensions targeting GNOME 44 or earlier.
 
 - id: R-WEB-01
   pattern: "\\bsetTimeout\\s*\\("
   scope: ["*.js"]
   severity: blocking
+  max-version: 44
   message: "setTimeout is a browser API; use GLib.timeout_add() or GLib.timeout_add_seconds()"
   category: web-apis
   fix: "GLib.timeout_add_seconds(GLib.PRIORITY_DEFAULT, seconds, callback)"
@@ -28,6 +30,7 @@
   pattern: "\\bsetInterval\\s*\\("
   scope: ["*.js"]
   severity: blocking
+  max-version: 44
   message: "setInterval is a browser API; use GLib.timeout_add() with GLib.SOURCE_CONTINUE"
   category: web-apis
   fix: "GLib.timeout_add_seconds(GLib.PRIORITY_DEFAULT, seconds, () => { ...; return GLib.SOURCE_CONTINUE; })"
@@ -92,6 +95,7 @@
   pattern: "\\bclearTimeout\\s*\\("
   scope: ["*.js"]
   severity: blocking
+  max-version: 44
   message: "clearTimeout is a browser API; use GLib.Source.remove(sourceId)"
   category: web-apis
   fix: "Store the return value of GLib.timeout_add() and pass it to GLib.Source.remove()."
@@ -100,6 +104,7 @@
   pattern: "\\bclearInterval\\s*\\("
   scope: ["*.js"]
   severity: blocking
+  max-version: 44
   message: "clearInterval is a browser API; use GLib.Source.remove(sourceId)"
   category: web-apis
   fix: "Store the return value of GLib.timeout_add() and pass it to GLib.Source.remove()."
