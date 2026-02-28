@@ -199,3 +199,24 @@ m = re.search(pattern, test)
 print('Match!' if m else 'No match')
 "
 ```
+
+## Common Pattern Recipes
+
+Quick-reference for the most common regex patterns used in existing rules. Copy, adapt, and test.
+
+| What to match | Pattern | Matches | Doesn't match |
+|---------------|---------|---------|----------------|
+| Exact function call | `\\bfunctionName\\s*\\(` | `functionName(x)` | `myFunctionName(x)` |
+| Property access | `\\bobject\\.property\\b` | `object.property` | `myobject.property` |
+| String literal | `['"]string['"]` | `"string"`, `'string'` | `substring` |
+| Either-or | `\\b(oldApi\|newApi)\\b` | `oldApi`, `newApi` | `oldApis` |
+| Method chain | `\\.method\\s*\\(` | `obj.method()` | `method()` |
+| Constructor | `\\bnew\\s+ClassName\\b` | `new ClassName()` | `ClassName()` |
+| Import statement | `from\\s+['"]gi://Lib['"]` | `from 'gi://Lib'` | `from 'gi://LibExtra'` |
+| Start-of-line declaration | `^\\s*(let\|var)\\s+` | `let x = 1` | `const x = 1` |
+
+**Tips:**
+- `\\b` = word boundary — prevents partial matches (e.g., `\\bLog\\b` matches `Log` but not `Login`)
+- `\\s*` = optional whitespace — handles `func()` and `func ()` both
+- Always double-escape in YAML: write `\\b` not `\b` (YAML interprets `\b` as backspace)
+- Test inline: `python3 -c "import re; print(re.search(r'\\byourPattern\\b', 'test string'))"`
