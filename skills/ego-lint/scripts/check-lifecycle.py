@@ -146,16 +146,16 @@ def check_untracked_timeouts(ext_dir):
             # Skip comments
             if stripped.startswith('//') or stripped.startswith('*'):
                 continue
-            # Match timeout_add or idle_add calls
-            if re.search(r'(timeout_add|idle_add)\s*\(', stripped):
+            # Match timeout_add, idle_add, setTimeout, or setInterval calls
+            if re.search(r'(timeout_add|idle_add|setTimeout|setInterval)\s*\(', stripped):
                 # Check if the return value is assigned
-                if not re.search(r'(=|return)\s*.*(timeout_add|idle_add)', stripped):
+                if not re.search(r'(=|return)\s*.*(timeout_add|idle_add|setTimeout|setInterval)', stripped):
                     untracked.append(f"{rel}:{lineno}")
 
     if untracked:
         for loc in untracked:
             result("WARN", "lifecycle/untracked-timeout",
-                   f"{loc}: timeout_add/idle_add return value not stored — "
+                   f"{loc}: timer/idle return value not stored — "
                    f"cannot be removed in disable()")
     else:
         result("PASS", "lifecycle/untracked-timeout",
@@ -574,41 +574,50 @@ def check_timeout_removal_in_disable(ext_dir):
 
     content = strip_comments(read_file(ext_js))
 
-    # Find stored timeout IDs: this._foo = ...timeout_add... or this._foo = ...idle_add...
+    # Find stored timeout IDs: this._foo = ...timeout_add/idle_add/setTimeout/setInterval...
     stored_ids = set()
-    for m in re.finditer(r'this\.(_\w+)\s*=\s*.*?(timeout_add|idle_add)', content):
+    for m in re.finditer(r'this\.(_\w+)\s*=\s*.*?(timeout_add|idle_add|setTimeout|setInterval)', content):
         stored_ids.add(m.group(1))
 
     if not stored_ids:
         return  # No stored timeouts to check
 
-    # Extract disable() body
-    disable_match = re.search(r'\bdisable\s*\(\s*\)\s*\{', content)
-    if not disable_match:
+    # Extract disable() and destroy() bodies (cleanup may be in either)
+    cleanup_body = ''
+    for method_pat in [r'\bdisable\s*\(\s*\)\s*\{', r'\bdestroy\s*\(\s*\)\s*\{']:
+        for m_method in re.finditer(method_pat, content):
+            start = m_method.end()
+            depth = 1
+            pos = start
+            while pos < len(content) and depth > 0:
+                if content[pos] == '{':
+                    depth += 1
+                elif content[pos] == '}':
+                    depth -= 1
+                pos += 1
+            cleanup_body += content[start:pos] + '\n'
+
+    if not cleanup_body:
         return  # check_enable_disable handles missing disable()
 
-    # Extract body using brace depth
-    start = disable_match.end()
-    depth = 1
-    pos = start
-    while pos < len(content) and depth > 0:
-        if content[pos] == '{':
-            depth += 1
-        elif content[pos] == '}':
-            depth -= 1
-        pos += 1
-    disable_body = content[start:pos]
-
-    # Check if Source.remove is called in disable() for each stored ID
-    has_remove = bool(re.search(r'(Source\.remove|source_remove)\s*\(', disable_body))
+    # Check if Source.remove/clearTimeout/clearInterval is called in cleanup methods
+    has_remove = bool(re.search(
+        r'(Source\.remove|source_remove|clearTimeout|clearInterval)\s*\(', cleanup_body))
 
     missing = []
     for var_name in stored_ids:
-        # Check if this specific ID is passed to Source.remove() or if there's a general remove
+        # Check cleanup methods first, then fall back to file-wide search
+        # (cleanup may be in a helper method called from disable/destroy)
         var_removed = bool(re.search(
-            rf'(Source\.remove|source_remove)\s*\(\s*this\.{re.escape(var_name)}',
-            disable_body
+            rf'(Source\.remove|source_remove|clearTimeout|clearInterval)\s*\(\s*this\.{re.escape(var_name)}',
+            cleanup_body
         ))
+        if not var_removed:
+            # Also check the entire file — helper methods may clear timers
+            var_removed = bool(re.search(
+                rf'(Source\.remove|source_remove|clearTimeout|clearInterval)\s*\(\s*this\.{re.escape(var_name)}',
+                content
+            ))
         if not var_removed and not has_remove:
             missing.append(var_name)
 
@@ -762,21 +771,21 @@ def check_timeout_reassignment(ext_dir):
         lines = content.splitlines()
 
         for i, line in enumerate(lines):
-            # Match: this._xxx = GLib.timeout_add( or this._xxx = GLib.idle_add(
-            m = re.search(r'(this\._\w+)\s*=\s*.*?(timeout_add|idle_add)\s*\(', line)
+            # Match: this._xxx = ...timeout_add/idle_add/setTimeout/setInterval(
+            m = re.search(r'(this\._\w+)\s*=\s*.*?(timeout_add|idle_add|setTimeout|setInterval)\s*\(', line)
             if not m:
                 continue
             prop = m.group(1)
             # Check if this property is assigned timeout/idle elsewhere too (reassignment pattern)
             assign_count = len(re.findall(
-                re.escape(prop) + r'\s*=\s*.*?(timeout_add|idle_add)\s*\(',
+                re.escape(prop) + r'\s*=\s*.*?(timeout_add|idle_add|setTimeout|setInterval)\s*\(',
                 content
             ))
             if assign_count < 2:
                 continue  # Single assignment, not a reassignment pattern
             # Look back 5 lines for Source.remove(this._xxx)
             lookback = '\n'.join(lines[max(0, i - 5):i])
-            remove_pat = r'(Source\.remove|source_remove)\s*\(\s*' + re.escape(prop)
+            remove_pat = r'(Source\.remove|source_remove|clearTimeout|clearInterval)\s*\(\s*' + re.escape(prop)
             if not re.search(remove_pat, lookback):
                 violations.append(f"{rel}:{i + 1}")
                 break  # One per file
