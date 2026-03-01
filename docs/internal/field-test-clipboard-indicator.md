@@ -1,6 +1,6 @@
 # Field Test: Clipboard Indicator
 
-**Date**: 2026-02-28
+**Date**: 2026-02-28 (updated 2026-03-01)
 **Target**: [Clipboard Indicator](https://github.com/Tudmotu/gnome-shell-extension-clipboard-indicator) v? (latest main)
 **Extension**: `clipboard-indicator@tudmotu.com` — GNOME 46-49, 6 JS files, MIT license
 
@@ -165,3 +165,40 @@ These are all package-level concerns. The source-level linter correctly focuses 
 
 ### Reviewer Triage (simulated)
 The reviewer's internal monologue correctly identified: mature codebase, human-written, main concern is the stage leak, CSS is scoped enough to be borderline. The setTimeout usage was correctly identified as acceptable for GNOME 45+.
+
+---
+
+## 2026-03-01 Update: Re-run After 17 New Checks
+
+### Results Comparison
+
+| | Previous (02-28) | Current (03-01 pre-fix) | Post-fix |
+|---|---|---|---|
+| Total checks | 216 | 233 | 236 |
+| PASS | 179 | 188 | 190 |
+| FAIL | 1 | 1 | 2 |
+| WARN | 24 | 27 | 27 |
+| SKIP | 12 | 17 | 17 |
+
+The 17 new checks come from: accessibility, disclosures, polkit, schema-usage, and code metrics.
+
+### False Positives Found and Fixed
+
+1. **quality/constructor-resources on prefs.js** (2 WARNs): `.connect()` in prefs.js constructors flagged with "move to enable()" — but prefs.js has no enable()/disable(). GTK widget signals auto-cleanup with the window. **Fix**: Skip prefs.js in `check_constructor_resources`.
+
+2. **disclosure/private-api on own widget** (1 WARN): `this.historySection._getMenuItems()` flagged as Shell private API access — but `historySection` is the extension's own PopupMenu widget. **Fix**: Scoped `_getMenuItems()` and `_getTopMenu()` patterns to require Shell global prefixes (`Main.panel`, `statusArea`, `quickSettings`).
+
+### New Findings (Post-fix)
+
+- **R-DEPR-11** (FAIL): `Shell.KeyBindingMode` — dead code, removed before GNOME 40
+- **R-LIFE-19** (WARN): `global.stage.add_child()` without matching `remove_child()` in disable
+- **R-QUAL-34** (WARN): `enumerate_children()` synchronous I/O blocking the Shell main loop
+- **accessibility/accessible-name** (WARN): Widget missing accessible name — true positive
+- **R-SLOP-40** (WARN): Promise wrapper pattern — existed but newly triggered
+
+### Coverage Gap Closure
+
+The new rules close 3 gaps identified by ego-review:
+1. `global.stage.add_child` leak → R-LIFE-19 now detects this pattern
+2. `Shell.KeyBindingMode` dead code → R-DEPR-11 now flags it as blocking
+3. Synchronous file enumeration → R-QUAL-34 now advises async alternative
