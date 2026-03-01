@@ -7,6 +7,13 @@ run_lint "dbus-export-leak@test"
 assert_output_contains "fails on DBus export without unexport" "\[FAIL\].*lifecycle/dbus-export-leak"
 echo ""
 
+# --- bus-name-leak (R-LIFE-20) ---
+echo "=== bus-name-leak ==="
+run_lint "bus-name-leak@test"
+assert_exit_code "exits with 0 (advisory only)" 0
+assert_output_contains "warns on missing bus_unown_name" "\[WARN\].*lifecycle/bus-name-ownership"
+echo ""
+
 # --- timeout-reassign ---
 echo "=== timeout-reassign ==="
 run_lint "timeout-reassign@test"

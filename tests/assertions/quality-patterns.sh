@@ -26,6 +26,13 @@ run_lint "mock-excluded-by-package@test"
 assert_output_not_contains "no mock warning when excluded by package.sh" "\[WARN\].*quality/mock-in-production"
 echo ""
 
+# --- dbus-sync-call (R-QUAL-35) ---
+echo "=== dbus-sync-call ==="
+run_lint "dbus-sync-call@test"
+assert_exit_code "exits with 0 (advisory only)" 0
+assert_output_contains "warns on synchronous D-Bus call" "\[WARN\].*R-QUAL-35"
+echo ""
+
 # --- empty-catch-commented ---
 echo "=== empty-catch-commented ==="
 run_lint "empty-catch-commented@test"

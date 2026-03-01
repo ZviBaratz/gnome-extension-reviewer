@@ -55,6 +55,7 @@ CREATE_PATTERNS = {
     'signal': [
         re.compile(r'\.connect\s*\('),
         re.compile(r'\.connectObject\s*\('),
+        re.compile(r'\.connectSmart\s*\('),
     ],
     'timeout': [
         re.compile(r'timeout_add\s*\('),
@@ -86,6 +87,7 @@ DESTROY_PATTERNS = {
     'signal': [
         re.compile(r'\.disconnect\s*\('),
         re.compile(r'\.disconnectObject\s*\('),
+        re.compile(r'\.disconnectSmart\s*\('),
     ],
     'timeout': [
         re.compile(r'Source\.remove\s*\('),

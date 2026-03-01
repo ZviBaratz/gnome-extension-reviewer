@@ -1,0 +1,7 @@
+{
+    "uuid": "constructor-smart-cleanup@test",
+    "name": "Constructor Smart Cleanup Test",
+    "description": "Tests that constructor-resources skips classes using connectSmart",
+    "shell-version": ["48"],
+    "url": "https://github.com/test/constructor-smart-cleanup"
+}

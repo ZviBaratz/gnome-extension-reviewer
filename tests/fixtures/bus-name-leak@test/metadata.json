@@ -1,0 +1,7 @@
+{
+    "uuid": "bus-name-leak@test",
+    "name": "Bus Name Leak Test",
+    "description": "Tests detection of missing bus_unown_name",
+    "shell-version": ["48"],
+    "url": "https://github.com/test/bus-name-leak"
+}

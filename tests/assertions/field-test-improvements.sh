@@ -64,6 +64,13 @@ assert_exit_code "exits with 0 (advisory only)" 0
 assert_output_contains "warns on synchronous enumerate_children" "\[WARN\].*R-QUAL-34"
 echo ""
 
+# --- constructor-smart-cleanup (connectSmart constructor skip) ---
+echo "=== constructor-smart-cleanup ==="
+run_lint "constructor-smart-cleanup@test"
+assert_exit_code "exits with 0 (no failures)" 0
+assert_output_not_contains "no constructor-resources WARN for connectSmart class" "\[WARN\].*quality/constructor-resources"
+echo ""
+
 # --- native-timer-untracked (lifecycle native timer) ---
 echo "=== native-timer-untracked ==="
 run_lint "native-timer-untracked@test"

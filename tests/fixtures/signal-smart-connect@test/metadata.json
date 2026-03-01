@@ -1,0 +1,7 @@
+{
+    "uuid": "signal-smart-connect@test",
+    "name": "Signal Smart Connect Test",
+    "description": "Tests connectSmart recognition in signal balance",
+    "shell-version": ["48"],
+    "url": "https://github.com/test/signal-smart-connect"
+}

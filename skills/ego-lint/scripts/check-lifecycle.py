@@ -22,6 +22,7 @@ Checks:
   - R-LIFE-16: DBus export without unexport in disable/destroy
   - R-LIFE-17: Timeout ID reassignment without prior Source.remove()
   - R-LIFE-18: Subprocess without cancellation in disable/destroy
+  - R-LIFE-20: Bus name ownership without release
   - R-SEC-16: Clipboard + keybinding cross-reference
   - R-FILE-07: Missing export default class
 
@@ -108,28 +109,40 @@ def check_signal_balance(ext_dir):
     pure_connects = 0
     pure_disconnects = 0
     connect_objects = 0
+    smart_connects = 0
+
+    # Check for SignalTracker/SignalManager — file-level auto-cleanup recognition
+    has_signal_tracker = False
 
     for filepath in js_files:
-        for line in read_file(filepath).splitlines():
+        content = read_file(filepath)
+        if re.search(r'\b(SignalTracker|SignalManager)\b', content):
+            has_signal_tracker = True
+        for line in content.splitlines():
             if re.search(r'\.connectObject\s*\(', line):
                 connect_objects += 1
+            elif re.search(r'\.connectSmart\s*\(', line):
+                smart_connects += 1
             elif re.search(r'\.connect\s*\(', line) and not re.search(r'\.disconnect', line):
                 pure_connects += 1
             if re.search(r'\.disconnectObject\s*\(', line):
                 pass  # auto-cleanup
+            elif re.search(r'\.disconnectSmart\s*\(', line):
+                pass  # auto-cleanup
             elif re.search(r'\.disconnect\s*\(', line) and not re.search(r'\.connect\s*\(', line):
                 pure_disconnects += 1
 
-    # connectObject calls auto-disconnect, so only manual connects need matching disconnects
+    # connectObject/connectSmart calls auto-disconnect, so only manual connects need matching disconnects
+    auto_managed = connect_objects + smart_connects
     imbalance = pure_connects - pure_disconnects
-    if imbalance > 1:
+    if imbalance > 1 and not has_signal_tracker:
         result("WARN", "lifecycle/signal-balance",
                f"{pure_connects} manual .connect() calls but only {pure_disconnects} "
                f".disconnect() calls — verify all signals are disconnected in disable()")
     else:
         result("PASS", "lifecycle/signal-balance",
                f"Signal balance OK ({pure_connects} connects, {pure_disconnects} disconnects, "
-               f"{connect_objects} connectObject)")
+               f"{auto_managed} auto-managed)")
 
 
 def check_untracked_timeouts(ext_dir):
@@ -173,7 +186,7 @@ def check_connect_object_migration(ext_dir):
 
     for filepath in js_files:
         content = read_file(filepath)
-        if re.search(r'\.connectObject\s*\(', content):
+        if re.search(r'\.(connectObject|connectSmart)\s*\(', content):
             has_connect_object = True
         # Count lines that store a connect ID
         manual_pairs += len(re.findall(
@@ -882,6 +895,34 @@ def check_soup_session_abort(ext_dir):
     # If no session, skip silently
 
 
+def check_bus_name_lifecycle(ext_dir):
+    """R-LIFE-20: D-Bus bus name ownership must be released in disable()/destroy()."""
+    js_files = find_js_files(ext_dir, exclude_prefs=True)
+    if not js_files:
+        return
+
+    has_own = False
+    has_unown = False
+
+    for filepath in js_files:
+        content = strip_comments(read_file(filepath))
+        if (re.search(r'\bbus_own_name\b', content) or
+                re.search(r'\.own_name\s*\(', content)):
+            has_own = True
+        if (re.search(r'\bbus_unown_name\b', content) or
+                re.search(r'\.unown_name\s*\(', content)):
+            has_unown = True
+
+    if has_own and not has_unown:
+        result("WARN", "lifecycle/bus-name-ownership",
+               "Gio.bus_own_name() found but no bus_unown_name() — "
+               "bus name will not be released after disable()")
+    elif has_own and has_unown:
+        result("PASS", "lifecycle/bus-name-ownership",
+               "Bus name own/unown lifecycle OK")
+    # If no bus name ownership, skip silently
+
+
 def check_widget_lifecycle(ext_dir):
     """Detect widgets created in enable() but not destroyed in disable()."""
     ext_file = os.path.join(ext_dir, 'extension.js')
@@ -1002,6 +1043,7 @@ def main():
     check_clipboard_keybinding(ext_dir)
     check_pkexec_user_writable(ext_dir)
     check_dbus_export_lifecycle(ext_dir)
+    check_bus_name_lifecycle(ext_dir)
     check_timeout_reassignment(ext_dir)
     check_subprocess_cancellation(ext_dir)
     check_clipboard_network(ext_dir)

@@ -1091,9 +1091,10 @@ Rules for security-sensitive patterns that will cause EGO rejection.
 ### R-QUAL-08: No resource allocation in constructors
 - **Severity**: advisory
 - **Checked by**: check-quality.py
-- **Rule**: Constructors should not call `this.getSettings()`, `.connect()`, `.connectObject()`, `timeout_add`, or `new Gio.DBusProxy()`.
+- **Rule**: Constructors should not call `this.getSettings()`, `.connect()`, `.connectObject()`, `timeout_add`, or `new Gio.DBusProxy()`. Skips classes with `destroy()` method or `connectSmart`/`disconnectSmart` (lifecycle-aware).
 - **Rationale**: GNOME Shell extensions should perform resource allocation in `enable()` and cleanup in `disable()`. Allocating resources in constructors means they persist across enable/disable cycles, leading to resource leaks and zombie signal handlers.
 - **Fix**: Move resource allocation from `constructor()`/`_init()` to `enable()`. Move cleanup to `disable()`.
+- **Tested by**: `tests/fixtures/constructor-smart-cleanup@test/`
 
 ---
 
@@ -1127,10 +1128,10 @@ Rules for extension lifecycle management: enable/disable hooks, signal cleanup, 
 ### R-LIFE-01: Signal Balance
 - **Severity**: advisory
 - **Checked by**: check-lifecycle.py
-- **Rule**: Detects imbalance between manual `.connect()` and `.disconnect()` calls (threshold: >2 imbalance).
+- **Rule**: Detects imbalance between manual `.connect()` and `.disconnect()` calls (threshold: >2 imbalance). Recognizes `connectObject()`, `connectSmart()`, and `SignalTracker`/`SignalManager` as auto-cleanup patterns.
 - **Rationale**: Unmatched signal connections are the #1 cause of extension rejections. Leaked signals cause memory leaks and crash loops.
-- **Fix**: For each `.connect()` call, ensure a matching `.disconnect()` in disable/destroy. Consider using `connectObject()` for automatic cleanup.
-- **Tested by**: `tests/fixtures/lifecycle-basic@test/`
+- **Fix**: For each `.connect()` call, ensure a matching `.disconnect()` in disable/destroy. Consider using `connectObject()` or a custom signal tracker for automatic cleanup.
+- **Tested by**: `tests/fixtures/lifecycle-basic@test/`, `tests/fixtures/signal-smart-connect@test/`
 
 #### Example
 
@@ -1313,9 +1314,10 @@ Rules for code that runs at module load or constructor time, before `enable()` i
 
 - **Severity**: blocking
 - **Checked by**: check-init.py
-- **Rule**: Must not create GObjects from any GI namespace (St, Clutter, Gio, GLib, GObject, Meta, Shell, Pango, Soup, Cogl, Atk, GdkPixbuf) at module scope or in constructor()
+- **Rule**: Must not create GObjects from any GI namespace (St, Clutter, Gio, GLib, GObject, Meta, Shell, Pango, Soup, Cogl, Atk, GdkPixbuf) at module scope or in `extension.js` constructors. GObject constructors in helper file constructors are not flagged (runtime-only, instantiated from `enable()`). Shell globals are flagged everywhere.
 - **Rationale**: GObjects created before enable() cannot be properly cleaned up; #1 rejection cause
 - **Fix**: Move all GObject creation to enable()
+- **Tested by**: `tests/fixtures/init-modification@test/`, `tests/fixtures/init-helper-constructor@test/`
 
 #### Example
 
@@ -2051,6 +2053,14 @@ Rules for APIs removed or changed in specific GNOME Shell versions. These rules 
 - **Fix**: In `disable()`, call `global.stage.remove_child(this._actor); this._actor = null;`.
 - **Tested by**: `tests/fixtures/stage-add-child@test/`
 
+### R-LIFE-20: Bus name ownership without release
+- **Severity**: advisory
+- **Checked by**: check-lifecycle.py
+- **Rule**: `Gio.bus_own_name()` or `.own_name()` must have a matching `bus_unown_name()` / `.unown_name()`.
+- **Rationale**: D-Bus bus names claimed with `bus_own_name()` persist after `disable()` if not explicitly released. This prevents other extensions or future enable() cycles from claiming the same name, and leaks the associated D-Bus service.
+- **Fix**: In `disable()`, call `Gio.bus_unown_name(this._ownerId)`.
+- **Tested by**: `tests/fixtures/bus-name-leak@test/`
+
 ---
 
 ## Security (R-SEC) — continued
@@ -2394,8 +2404,8 @@ Rules for APIs removed or changed in specific GNOME Shell versions. These rules 
 ### R-SLOP-38: Over-long identifier in function call
 - **Severity**: advisory
 - **Checked by**: apply-patterns.py
-- **Rule**: Identifiers 21+ characters (starting with lowercase) inside function call parentheses.
-- **Rationale**: AI-generated code tends to use excessively descriptive camelCase names like `currentBatteryThresholdValue` or `updatedNotificationMessage`. Human-written GNOME code favors concise names (`threshold`, `message`). The lowercase-start filter avoids false positives on PascalCase class names and UPPER_SNAKE constants.
+- **Rule**: Identifiers 26+ characters (starting with lowercase) inside function call parentheses.
+- **Rationale**: AI-generated code tends to use excessively descriptive camelCase names like `currentBatteryThresholdValue` or `updatedNotificationMessage`. Human-written GNOME code favors concise names (`threshold`, `message`). The lowercase-start filter avoids false positives on PascalCase class names and UPPER_SNAKE constants. Threshold raised from 20 to 25 to avoid FPs on standard Clutter API names (e.g., `brightnessContrastEffect` at 24 chars).
 - **Fix**: Shorten parameter/argument names to be concise but clear.
 - **Tested by**: `tests/fixtures/slop-long-params@test/`
 
@@ -2516,6 +2526,14 @@ Rules for APIs removed or changed in specific GNOME Shell versions. These rules 
 - **Rationale**: `enumerate_children()` performs synchronous I/O on the calling thread — in GNOME Shell, that's the main loop. On slow filesystems or large directories, this freezes the entire desktop until the operation completes.
 - **Fix**: Use `file.enumerate_children_async(attributes, flags, priority, cancellable, callback)` instead.
 - **Tested by**: `tests/fixtures/sync-file-io@test/`
+
+### R-QUAL-35: Synchronous D-Bus call
+- **Severity**: advisory
+- **Checked by**: apply-patterns.py
+- **Rule**: `.call_sync()`, `.get_sync()`, `.set_sync()`, `.call_with_unix_fd_list_sync()` on D-Bus connections/proxies.
+- **Rationale**: Synchronous D-Bus calls block the compositor main loop, freezing the entire desktop until the remote service responds. This is especially dangerous for system bus calls to slow services (e.g., UPower, NetworkManager).
+- **Fix**: Use the async variant (`.call()`, `.get()`, `.set()`) with a callback or `Gio._promisify()`.
+- **Tested by**: `tests/fixtures/dbus-sync-call@test/`
 
 ---
 

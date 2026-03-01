@@ -23,6 +23,14 @@ assert_output_contains "detects init-time Shell modification" "\[FAIL\].*init/sh
 assert_output_contains "detects init-time GObject constructor" "\[FAIL\].*init/shell-modification.*helper.js"
 echo ""
 
+# --- init-helper-constructor (GObject in helper.js constructor is OK) ---
+echo "=== init-helper-constructor ==="
+run_lint "init-helper-constructor@test"
+assert_exit_code "exits with 0 (helper constructors not flagged)" 0
+assert_output_not_contains "no FAIL for helper.js constructor" "\[FAIL\].*init/shell-modification.*helper.js"
+assert_output_contains "init check passes" "\[PASS\].*init/shell-modification"
+echo ""
+
 # --- constructor-gobject ---
 echo "=== constructor-gobject ==="
 run_lint "constructor-gobject@test"

@@ -1,0 +1,7 @@
+{
+    "uuid": "dbus-sync-call@test",
+    "name": "D-Bus Sync Call Test",
+    "description": "Tests detection of synchronous D-Bus calls",
+    "shell-version": ["48"],
+    "url": "https://github.com/test/dbus-sync-call"
+}

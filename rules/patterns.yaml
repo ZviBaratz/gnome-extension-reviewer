@@ -595,12 +595,12 @@
   guard-pattern: "\\b(const|export\\s+const)\\s+\\w+\\s*=\\s*Object\\.freeze"
 
 - id: R-SLOP-38
-  pattern: "\\(\\s*[a-z]\\w{20,}\\s*[,)]"
+  pattern: "\\(\\s*[a-z]\\w{25,}\\s*[,)]"
   scope: ["*.js"]
   severity: advisory
-  message: "Over-long identifier (>20 chars) is an AI verbosity indicator"
+  message: "Over-long identifier (>25 chars) is an AI verbosity indicator"
   category: ai-slop
-  fix: "Shorten parameter names to be concise but clear (e.g., currentBatteryThreshold → threshold)"
+  fix: "Shorten parameter names to be concise but clear (e.g., currentBatteryThresholdValue → threshold)"
 
 - id: R-SLOP-40
   pattern: "new\\s+Promise\\s*\\(\\s*\\(\\s*resolve\\s*,\\s*reject\\s*\\)"
@@ -769,6 +769,14 @@
   message: "enumerate_children() is synchronous — use enumerate_children_async() to avoid blocking the Shell main loop"
   category: code-quality
   fix: "Use file.enumerate_children_async(attributes, flags, priority, cancellable, callback)"
+
+- id: R-QUAL-35
+  pattern: "\\.(call_sync|get_sync|set_sync|call_with_unix_fd_list_sync)\\s*\\("
+  scope: ["*.js"]
+  severity: advisory
+  message: "Synchronous D-Bus call blocks the compositor main loop — use async variant"
+  category: code-quality
+  fix: "Use .call() / .get() / .set() with async callback or Gio._promisify() instead of _sync()"
 
 # --- Lifecycle (advisory) ---
 # Pattern-based lifecycle checks (complement script-based checks in check-lifecycle.py).

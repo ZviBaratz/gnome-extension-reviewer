@@ -135,24 +135,17 @@ Exit code: 1 (6 true positives remain, 3 init-time FPs, 2 borderline)
 
 ## Detection Gaps Identified
 
-### 1. `connectSmart`/`disconnectSmart` invisible to resource graph
+### 1. ~~`connectSmart`/`disconnectSmart` invisible to resource graph~~ **RESOLVED (session 21)**
 
-The extension's primary signal management abstraction (`Util.connectSmart`) is used 30+ times across 6 files. `build-resource-graph.py` doesn't recognize it as a signal connect/disconnect, so:
-- Resource graph reports 84 creates (only tracks raw `.connect()` calls)
-- `lifecycle/signal-balance` reports 66 connects vs 18 disconnects (a 48-signal deficit that doesn't exist)
-- The actual signal cleanup is sound — `connectSmart` auto-disconnects on either source or target destroy
+~~The extension's primary signal management abstraction (`Util.connectSmart`) is used 30+ times across 6 files. `build-resource-graph.py` doesn't recognize it.~~
 
-**Impact**: High noise. Any extension using custom signal abstractions will show false signal balance warnings.
+**Fixed**: `connectSmart`/`disconnectSmart` added to `build-resource-graph.py` signal patterns, `check-lifecycle.py` signal balance, and `check-quality.py` constructor-resources skip.
 
-**Fix needed**: `build-resource-graph.py` should recognize common signal abstraction patterns (`connectSmart`, `connectObject`, `SignalTracker`, `SignalManager`).
+### 2. ~~Bus name ownership lifecycle not tracked~~ **RESOLVED (session 21)**
 
-### 2. Bus name ownership lifecycle not tracked
+~~`check-lifecycle.py` tracks `export()`/`unexport()` symmetry but NOT `Gio.DBus.session.own_name()`/`Gio.DBus.session.unown_name()`.~~
 
-`check-lifecycle.py` tracks `export()`/`unexport()` symmetry but NOT `Gio.DBus.session.own_name()`/`Gio.DBus.session.unown_name()`. AppIndicator correctly pairs these (lines 53 and 268 of statusNotifierWatcher.js), but the check can't verify this.
-
-**Impact**: Low currently (bus name leaks are rare), but important for D-Bus service extensions.
-
-**Fix needed**: Add `own_name`/`unown_name` symmetry check to `check-lifecycle.py`.
+**Fixed**: New `check_bus_name_lifecycle()` function (R-LIFE-20) in `check-lifecycle.py`.
 
 ### 3. R-SLOP-16 (`GLib.file_get_contents`) is wrong
 
@@ -166,11 +159,11 @@ The rule claims this API "does not exist in GJS", but it does — it's a valid G
 
 **Fix needed**: Replace `/* */` content with equivalent whitespace (one newline per removed line) to preserve line numbers.
 
-### 5. `check-init.py` too aggressive for non-Extension constructors
+### 5. ~~`check-init.py` too aggressive for non-Extension constructors~~ **RESOLVED (session 21)**
 
-The check flags `new GLib.Error()` and `new Gio.Cancellable()` in constructors of non-GObject classes that are only instantiated at runtime (from enable() flow). It can't distinguish init-time construction from runtime construction.
+~~The check flags `new GLib.Error()` and `new Gio.Cancellable()` in constructors of non-GObject classes that are only instantiated at runtime.~~
 
-**Fix needed**: Consider only flagging constructors that match common extension patterns (classes extending `Extension`, module-scope `new` expressions), not all non-registerClass constructors.
+**Fixed**: GObject constructor check in `check-init.py` now scoped to `extension.js` only. Shell globals still flagged in all files.
 
 ### 6. Version-gated pattern rules can't see runtime guards
 
@@ -196,17 +189,17 @@ PanelMenu.Button and other Shell base classes use `_onDestroy()` as a signal han
 
 **Fix needed**: Suppress R-QUAL-31 when the method is connected via `this.connect('destroy', ...)` pattern.
 
-### 10. `quality/constructor-resources` needs scope awareness
+### 10. `quality/constructor-resources` needs scope awareness — **PARTIALLY RESOLVED (session 21)**
 
 The check flags `.connect()` in any constructor, but constructors of runtime-only utility classes (CancellablePromise, IndicatorStatusIcon) are only called within enable() flow and have proper cleanup via destroy/cancel.
 
-**Fix needed**: Only flag `.connect()` in constructors of the Extension class itself, or constructors of classes instantiated at module scope.
+**Partial fix**: Classes using `connectSmart`/`disconnectSmart` are now skipped (recognized as lifecycle management). Classes with `destroy()` were already skipped. Remaining FPs require full scope/call-graph analysis.
 
-### 11. No `call_sync()` detection
+### 11. ~~No `call_sync()` detection~~ **RESOLVED (session 21)**
 
-No rule flags synchronous D-Bus method calls (`call_sync()`, `get_sync()`, etc.) that block the main loop. AppIndicator avoids this (uses async throughout), but many extensions don't.
+~~No rule flags synchronous D-Bus method calls (`call_sync()`, `get_sync()`, etc.) that block the main loop.~~
 
-**Fix needed**: New pattern rule for `call_sync()`, `get_sync()`, `set_sync()` on D-Bus proxies.
+**Fixed**: New R-QUAL-35 pattern rule in `patterns.yaml` detects `.call_sync()`, `.get_sync()`, `.set_sync()`, `.call_with_unix_fd_list_sync()` as advisory.
 
 ## Comparison with Prior Field Tests
 
@@ -282,8 +275,22 @@ The field test validates that ego-lint works well for "typical" extensions but r
 - All 440 existing test assertions pass
 - New `guard-pattern` feature reusable for future rules
 
-### Remaining Known FPs (not fixed in this session)
+### Remaining Known FPs (not fixed in session 20)
 - init/shell-modification ×3: Constructors of non-Extension classes still flagged (needs call-graph analysis)
 - lifecycle/signal-balance: `connectSmart` not recognized (needs resource graph enhancement)
 - R-SLOP-38 ×4: Domain-specific identifiers flagged as "over-long" (hard to fix without semantic analysis)
 - quality/constructor-resources ×6: Runtime-only constructors flagged (needs scope awareness)
+
+### Session 21 Changes (2026-03-01)
+
+1. `skills/ego-lint/scripts/check-lifecycle.py`: `check_signal_balance()` now recognizes `connectSmart`/`disconnectSmart` and `SignalTracker`/`SignalManager` — eliminates signal-balance FP
+2. `skills/ego-lint/scripts/build-resource-graph.py`: `connectSmart`/`disconnectSmart` added to signal CREATE/DESTROY patterns — resource graph now tracks them
+3. `skills/ego-lint/scripts/check-quality.py`: `check_constructor_resources()` recognizes `connectSmart`/`disconnectSmart` as lifecycle management — reduces constructor-resources FPs
+4. `skills/ego-lint/scripts/check-init.py`: GObject constructor check scoped to `extension.js` only — eliminates 3 init/shell-modification FPs for helper file constructors
+5. `rules/patterns.yaml`: R-SLOP-38 threshold raised from 20 to 25 chars — eliminates `brightnessContrastEffect` and similar standard API name FPs
+6. `skills/ego-lint/scripts/check-lifecycle.py`: New `check_bus_name_lifecycle()` (R-LIFE-20) — detects missing `bus_unown_name()` (detection gap #2 closed)
+7. `rules/patterns.yaml`: New R-QUAL-35 — detects synchronous D-Bus calls (`.call_sync()`, `.get_sync()`, etc.) that block compositor (detection gap #11 closed)
+
+### Remaining Known FPs (after session 21)
+- quality/constructor-resources: Some runtime-only constructors still flagged (only connectSmart skip added, not full scope analysis)
+- lifecycle/untracked-timeout: promiseUtils.js GSource-based promise timeout not recognized

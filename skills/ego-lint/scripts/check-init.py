@@ -179,13 +179,16 @@ def check_init_modifications(ext_dir):
                 violations.append(f"{rel}:{lineno}")
 
         # Check constructor() lines
+        # GObject constructors in helper file constructors are runtime-only
+        # (only run when instantiated from enable()), so only flag in extension.js
+        is_extension_js = os.path.basename(filepath) == 'extension.js'
         ctor_lines = extract_constructor_lines(lines)
         for lineno, line in ctor_lines:
             if is_skip_line(line):
                 continue
             if SHELL_GLOBALS.search(line):
                 violations.append(f"{rel}:{lineno}")
-            elif GOBJECT_CONSTRUCTORS.search(line):
+            elif is_extension_js and GOBJECT_CONSTRUCTORS.search(line):
                 violations.append(f"{rel}:{lineno}")
 
     if violations:

@@ -1,0 +1,7 @@
+{
+    "uuid": "init-helper-constructor@test",
+    "name": "Init Helper Constructor Test",
+    "description": "Tests that GObject constructors in helper files are not flagged",
+    "shell-version": ["48"],
+    "url": "https://github.com/test/init-helper-constructor"
+}

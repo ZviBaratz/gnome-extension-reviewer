@@ -441,6 +441,8 @@ def check_constructor_resources(ext_dir, js_files):
                 class_body = content[class_start:class_end]
                 if re.search(r'\bdestroy\s*\(\s*\)\s*\{', class_body):
                     continue  # Class manages its own lifecycle
+                if re.search(r'\.(connectSmart|disconnectSmart)\s*\(', class_body):
+                    continue  # Class uses smart signal management
 
             # Extract the constructor body (find matching brace)
             start = m.end()

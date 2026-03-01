@@ -41,6 +41,14 @@ run_lint "manual-prototype-override@test"
 assert_output_contains "warns on prototype override" "\[WARN\].*lifecycle/prototype-override"
 echo ""
 
+# --- signal-smart-connect (connectSmart recognition) ---
+echo "=== signal-smart-connect ==="
+run_lint "signal-smart-connect@test"
+assert_exit_code "exits with 0 (no failures)" 0
+assert_output_contains "signal balance passes with connectSmart" "\[PASS\].*lifecycle/signal-balance"
+assert_output_contains "no connectObject migration warning" "\[PASS\].*lifecycle/connectObject-migration"
+echo ""
+
 # --- prefs-no-method ---
 echo "=== prefs-no-method ==="
 run_lint "prefs-no-method@test"
