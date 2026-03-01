@@ -43,7 +43,7 @@ bash skills/ego-lint/scripts/ego-lint.sh tests/fixtures/<fixture-name>
 
 `ego-lint.sh` is the main orchestrator. It uses a three-tier rule system (pattern → structural → semantic) and delegates to sub-scripts via `run_subscript`:
 
-- `rules/patterns.yaml` — Tier 1 pattern rules (124 regex-based, declarative rules)
+- `rules/patterns.yaml` — Tier 1 pattern rules (124 regex-based, declarative rules). Note: at project root, not under `skills/ego-lint/`
 - `apply-patterns.py` — Tier 1 pattern engine (inline YAML parser, no PyYAML dependency)
 - `check-quality.py` — Tier 2 heuristic AI slop detection (try-catch density, impossible states, pendulum patterns, empty catches, _destroyed density, mock detection, constructor resources, run_dispose comment, clipboard disclosure, network disclosure, excessive null checks, repeated getSettings, obfuscated names, mixed indentation, excessive logging, code provenance)
 - `check-metadata.py` — JSON validity, required fields, UUID format/match, shell-version (with VALID_GNOME_VERSIONS allowlist), session-modes, settings-schema, version-name, donations, gettext-domain consistency
@@ -85,6 +85,10 @@ Prompt-driven with templates in `assets/` using `${PLACEHOLDER}` syntax. Claude 
 
 All automated checks use: `STATUS|check-name|detail` where STATUS is PASS/FAIL/WARN/SKIP.
 
+### Severity changes
+
+Upgrading advisory→blocking changes `[WARN]` to `[FAIL]` and exit code 0→1. Always grep for existing test assertions on the rule ID before changing severity. Changing `CURRENT_STABLE` in `ego-lint.sh` shifts version arithmetic — update fixtures that depend on version boundaries.
+
 ### Adding a new lint rule
 
 Choose the appropriate tier:
@@ -98,6 +102,13 @@ Then for Tier 1 and 2:
 1. Document it in `skills/ego-lint/references/rules-reference.md` using the `R-XXXX-NN` format with severity, rationale, and fix
 2. Add a test fixture in `tests/fixtures/` with minimal files to trigger the check
 3. Add assertions to `tests/run-tests.sh`
+
+### Test fixture conventions
+
+- Directory name must exactly match the `uuid` in `metadata.json`
+- UUID/name must not contain "gnome" (trademark check will FAIL)
+- Avoid `.sh` files in fixtures (non-GJS script check flags them)
+- See `rules/README.md` for required files, metadata template, and troubleshooting
 
 ### Commit messages
 
