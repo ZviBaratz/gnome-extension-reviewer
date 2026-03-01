@@ -398,6 +398,14 @@ import {Extension} from 'resource:///org/gnome/shell/extensions/extension.js';
 - **Rationale**: The `imports.format` module is deprecated and was removed in modern GJS. It provided a `format()` string method that is superseded by ES6 template literals.
 - **Fix**: Replace `format()` calls with template literals: `` `my ${variable} string` ``.
 
+### R-DEPR-11: No Shell.KeyBindingMode
+- **Severity**: blocking
+- **Checked by**: apply-patterns.py
+- **Rule**: Extension code must not use `Shell.KeyBindingMode`.
+- **Rationale**: `Shell.KeyBindingMode` was removed before GNOME 40 and replaced by `Shell.ActionMode`. Any reference is dead code that will cause runtime errors.
+- **Fix**: Replace `Shell.KeyBindingMode` with `Shell.ActionMode`.
+- **Tested by**: `tests/fixtures/shell-keybinding-mode@test/`
+
 ---
 
 ## Web APIs (R-WEB)
@@ -2035,6 +2043,14 @@ Rules for APIs removed or changed in specific GNOME Shell versions. These rules 
 - **Fix**: Add `this._session.abort()` before nullifying the session reference in `disable()`.
 - **Tested by**: `tests/fixtures/soup-session-no-abort@test/`
 
+### R-LIFE-19: global.stage.add_child() without matching remove_child()
+- **Severity**: advisory
+- **Checked by**: apply-patterns.py
+- **Rule**: `global.stage.add_child()` must have a matching `remove_child()` in `disable()` or `destroy()`.
+- **Rationale**: Actors added to `global.stage` persist on the compositor stage across enable/disable cycles. Unlike container widgets that are destroyed with their parent, stage children must be explicitly removed or they leak — causing visual artifacts and memory growth.
+- **Fix**: In `disable()`, call `global.stage.remove_child(this._actor); this._actor = null;`.
+- **Tested by**: `tests/fixtures/stage-add-child@test/`
+
 ---
 
 ## Security (R-SEC) — continued
@@ -2492,6 +2508,14 @@ Rules for APIs removed or changed in specific GNOME Shell versions. These rules 
 - **Rationale**: `Gio._promisify()` replaces a GIO class method with a Promise-returning version at the prototype level. This mutation is global and permanent — it cannot be undone in `disable()`. This is acceptable (and even recommended for GIO async), but the module-scope placement should be documented with a comment explaining why.
 - **Fix**: Add a comment above the `Gio._promisify()` call explaining it's intentionally at module scope because it permanently mutates a shared prototype.
 - **Tested by**: `tests/fixtures/promisify-module-scope@test/`
+
+### R-QUAL-34: Synchronous enumerate_children()
+- **Severity**: advisory
+- **Checked by**: apply-patterns.py
+- **Rule**: `Gio.File.enumerate_children()` is synchronous and blocks the Shell main loop.
+- **Rationale**: `enumerate_children()` performs synchronous I/O on the calling thread — in GNOME Shell, that's the main loop. On slow filesystems or large directories, this freezes the entire desktop until the operation completes.
+- **Fix**: Use `file.enumerate_children_async(attributes, flags, priority, cancellable, callback)` instead.
+- **Tested by**: `tests/fixtures/sync-file-io@test/`
 
 ---
 

@@ -186,6 +186,14 @@
   category: deprecated
   fix: "Replace format() calls with template literals: `my ${variable} string`."
 
+- id: R-DEPR-11
+  pattern: "\\bShell\\.KeyBindingMode\\b"
+  scope: ["*.js"]
+  severity: blocking
+  message: "Shell.KeyBindingMode was removed before GNOME 40; use Shell.ActionMode"
+  category: deprecated
+  fix: "Replace Shell.KeyBindingMode with Shell.ActionMode"
+
 # --- Import segregation (blocking) ---
 # prefs.js runs in a separate process and cannot import Shell/Clutter/Meta/St.
 
@@ -750,6 +758,25 @@
   category: code-quality
   fix: "Gio._promisify() is fine but cannot be undone on disable(); add a comment explaining the module-scope placement"
   deduplicate: true
+
+- id: R-QUAL-34
+  pattern: "\\.enumerate_children\\s*\\("
+  scope: ["*.js"]
+  severity: advisory
+  message: "enumerate_children() is synchronous — use enumerate_children_async() to avoid blocking the Shell main loop"
+  category: code-quality
+  fix: "Use file.enumerate_children_async(attributes, flags, priority, cancellable, callback)"
+
+# --- Lifecycle (advisory) ---
+# Pattern-based lifecycle checks (complement script-based checks in check-lifecycle.py).
+
+- id: R-LIFE-19
+  pattern: "global\\.stage\\.add_child\\s*\\("
+  scope: ["*.js"]
+  severity: advisory
+  message: "global.stage.add_child() — ensure matching remove_child() in disable()/destroy()"
+  category: lifecycle
+  fix: "In disable(), call global.stage.remove_child(this._actor); this._actor = null;"
 
 # --- GNOME 44-46 migration (version-gated) ---
 # APIs removed or renamed in GNOME 44-46 transition to ESM.
