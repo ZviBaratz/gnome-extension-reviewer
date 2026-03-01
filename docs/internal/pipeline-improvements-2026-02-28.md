@@ -1,14 +1,14 @@
 > **Archived**: Findings consolidated into [field-test-hara-hachi-bu.md](field-test-hara-hachi-bu.md) (F-006 through F-011). Kept for detailed analysis and code snippets.
 
-# ego-lint v0.2.0 Improvement Suggestions
+# ego-lint Pipeline Improvement Suggestions
 
 > Findings from a full EGO submission pipeline run (ego-lint → ego-review → ego-simulate → package validation) on [hara-hachi-bu](https://github.com/ZviBaratz/hara-hachi-bu) v1.0 (18 JS files, 7,662 non-blank lines), performed 2026-02-28.
 >
-> Previous round: [false-positive-analysis-v0.1.0.md](false-positive-analysis-v0.1.0.md) (all resolved).
+> Previous round: [false-positive-analysis-2026-02-27.md](false-positive-analysis-2026-02-27.md) (all resolved).
 
 ## Results Summary
 
-**Post-v0.1.0 fixes**: 191 passed, 0 failed, 6 warnings, 17 skipped.
+**Post-fix (2026-02-27)**: 191 passed, 0 failed, 6 warnings, 17 skipped.
 **ego-simulate score**: 1 (advisory #22 for notification volume). Verdict: "Likely to pass with minor comments."
 
 The 6 remaining warnings are all advisory-level. None would cause EGO rejection, but they reduce signal-to-noise for developers who want a clean lint pass.
@@ -234,9 +234,9 @@ The two tools should use consistent thresholds, or the taxonomy should explicitl
 |---|-------|------|--------|--------|----------|--------|
 | 1 | quality/module-state | False positive | 1 WARN eliminated | Low | High | **Done** — broadened reset regex |
 | 2 | R-PREFS-04b | False positive | 1 WARN eliminated | Low | High | **Done** — split into R-PREFS-04b + R-PREFS-04c |
-| 3 | quality/gettext-pattern | False positive | 1 WARN eliminated | Low | Medium | Already implemented (pre-v0.2.0) |
-| 4 | quality/logging-volume | False positive | 1 WARN eliminated | Low | Medium | Already implemented (pre-v0.2.0) |
-| 5 | async/missing-cancellable | False positive | Variable | Medium | Low | Already implemented (pre-v0.2.0) |
+| 3 | quality/gettext-pattern | False positive | 1 WARN eliminated | Low | Medium | Already implemented (2026-02-28) |
+| 4 | quality/logging-volume | False positive | 1 WARN eliminated | Low | Medium | Already implemented (2026-02-28) |
+| 5 | async/missing-cancellable | False positive | Variable | Medium | Low | Already implemented (2026-02-28) |
 | 6 | Taxonomy alignment | Consistency | None (docs) | Low | Low | **Done** — added threshold comment |
 
 **Estimated impact**: Implementing items 1-4 would reduce hara-hachi-bu's warning count from 6 to 2 (R-SEC-20 and polkit-files, both correct informational warnings). This would bring ego-lint's output into full alignment with ego-simulate's "likely to pass" verdict.
@@ -247,6 +247,6 @@ The two tools should use consistent thresholds, or the taxonomy should explicitl
 
 These are things the **extension** can do to reduce warnings without changes to ego-lint:
 
-1. **`quality/private-api`**: Add `// ego-lint-ignore: quality/private-api` comments on `_indicators` access lines. Suppression is already supported (added in v0.1.0).
+1. **`quality/private-api`**: Add `// ego-lint-ignore: quality/private-api` comments on `_indicators` access lines. Suppression is already supported (added 2026-02-27).
 
 2. **`async/missing-cancellable`**: Already resolved — added `cancellable` parameters to `readFileAsync`, `readFileIntAsync`, and `DeviceManager.getDevice()` (commit 83da11f).

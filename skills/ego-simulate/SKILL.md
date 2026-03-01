@@ -116,6 +116,12 @@ monologue. What did they notice first? What's their gut feeling?]
 - 5-9: May pass, but expect revision requests
 - 10+: Will be rejected — address blocking issues first
 
+> **Note:** ego-simulate uses a fast heuristic based on the 23-reason rejection
+> taxonomy with fixed weights. ego-review uses a different scale (risk points
+> from finding categories). The two scores are not directly comparable — a
+> simulate score of 5 does not equal an ego-review risk score of 5. Use
+> ego-simulate for quick triage and ego-review for authoritative assessment.
+
 ### Suggested Fixes (priority order)
 1. [Most impactful fix — the one that drops the score the most]
 2. [Next fix]

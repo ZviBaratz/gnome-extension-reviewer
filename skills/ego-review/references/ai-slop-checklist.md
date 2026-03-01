@@ -1027,9 +1027,9 @@ Count the number of triggered items out of the 46 above.
 ### Standard thresholds (extensions with <10 JS files)
 
 ```
-1-3 triggered:  ADVISORY  -- note them, extension may still pass
-4-6 triggered:  BLOCKING  -- suggests insufficient code review
-7+  triggered:  BLOCKING  -- likely unreviewed AI output
+0-3 triggered:  PASS      -- no AI concern, do not mention in review
+4-5 triggered:  ADVISORY  -- note them, extension may still pass
+6+  triggered:  BLOCKING  -- likely unreviewed AI output
 ```
 
 ### Size-adjusted thresholds (extensions with 10+ JS files)
@@ -1037,17 +1037,31 @@ Count the number of triggered items out of the 46 above.
 Large extensions naturally trigger more items due to volume. Raise thresholds:
 
 ```
-1-4 triggered:  ADVISORY  -- note them, extension may still pass
-5-8 triggered:  BLOCKING  -- suggests insufficient code review
-9+  triggered:  BLOCKING  -- likely unreviewed AI output
+0-4 triggered:  PASS      -- no AI concern, do not mention in review
+5-7 triggered:  ADVISORY  -- note them, extension may still pass
+8+  triggered:  BLOCKING  -- likely unreviewed AI output
 ```
+
+### Provenance Score
+
+ego-lint's `quality/code-provenance` check reports a provenance score on a 0-5
+scale based on hand-written code indicators:
+
+| Score | Meaning | Signals |
+|-------|---------|---------|
+| 0 | No indicators | No domain vocabulary, no algorithms, inconsistent style |
+| 1 | Minimal | Some domain terms or basic patterns |
+| 2 | Moderate | Domain vocabulary OR nontrivial algorithms present |
+| 3 | Strong | Domain vocabulary AND algorithms, consistent naming |
+| 4 | Very strong | Rich domain vocabulary, complex algorithms, cohesive style |
+| 5 | Unmistakable | Extensive domain expertise, novel implementations, unique idioms |
 
 ### Provenance adjustment
 
 If ego-lint reports `quality/code-provenance` with `provenance-score >= 3`
 (strong hand-written indicators), apply a **+2 credit** to the BLOCKING
-threshold. For example, a large extension with strong provenance needs 7+
-triggers (not 5) to reach BLOCKING.
+threshold. For example, a large extension with strong provenance needs 10+
+triggers (not 8) to reach BLOCKING.
 
 **Independently blocking items:** Regardless of total count, any hallucinated
 API (items 11, 17) or impossible state check (item 5) is independently blocking

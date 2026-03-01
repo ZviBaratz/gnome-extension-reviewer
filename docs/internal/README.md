@@ -12,7 +12,7 @@ Tested repeatedly across development sessions. Findings accumulate in a living d
 
 | Extension | Document | Current Status | Findings |
 |-----------|----------|---------------|----------|
-| [hara-hachi-bu](field-test-hara-hachi-bu.md) | Living document | 193 PASS, 0 FAIL, 5 WARN | 21 findings (F-001 through F-021) |
+| [hara-hachi-bu](field-test-hara-hachi-bu.md) | Living document | 201 PASS, 0 FAIL, 8 WARN | 21 findings (F-001 through F-021) |
 
 ### One-Shot Field Tests
 
@@ -34,6 +34,6 @@ Patterns discovered across field tests — encode here so future rules avoid rep
 
 ## Other Artifacts
 
-- `false-positive-analysis-v0.1.0.md` — Detailed root-cause analysis for v0.1.0 false positives (archived; see field-test-hara-hachi-bu.md F-001–F-005)
-- `improvements-v0.2.0.md` — Detailed analysis and code snippets for v0.2.0 improvements (archived; see field-test-hara-hachi-bu.md F-006–F-011)
+- `false-positive-analysis-2026-02-27.md` — Detailed root-cause analysis for initial false positives (archived; see field-test-hara-hachi-bu.md F-001–F-005)
+- `pipeline-improvements-2026-02-28.md` — Detailed analysis and code snippets for pipeline improvements (archived; see field-test-hara-hachi-bu.md F-006–F-011)
 - `review-feedback-2026-02-28.md` — Full pipeline improvement proposals from ego-submit run (see field-test-hara-hachi-bu.md F-012–F-021)

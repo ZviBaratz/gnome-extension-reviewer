@@ -2,7 +2,7 @@
 
 # ego-lint False Positives and Improvement Opportunities
 
-> **All items resolved in v0.1.0 (commit 7ecc386).** Archived for transparency.
+> **All items resolved (commit 7ecc386, 2026-02-27).** Archived for transparency.
 
 Discovered during a full EGO submission pipeline run on the
 [hara-hachi-bu](https://github.com/ZviBaratz/hara-hachi-bu) extension

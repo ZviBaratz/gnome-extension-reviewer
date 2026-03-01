@@ -17,14 +17,14 @@ This is the consolidated findings registry for the project's calibration baselin
 
 ## Current Baseline
 
-Latest ego-lint results (2026-02-28, v0.2.0):
+Latest ego-lint results (2026-03-01):
 
 | Status | Count |
 |--------|-------|
-| PASS | 193 |
+| PASS | 201 |
 | FAIL | 0 |
-| WARN | 5 |
-| SKIP | 17 |
+| WARN | 8 |
+| SKIP | 23 |
 | Exit | 0 |
 
 **ego-simulate score**: 1 (advisory #22 for notification volume). Verdict: "Likely to pass with minor comments."
@@ -34,10 +34,13 @@ Latest ego-lint results (2026-02-28, v0.2.0):
 | Warning | Nature |
 |---------|--------|
 | R-SEC-20 | pkexec scrutiny advisory — correct |
-| R-PREFS-04b | GTK widget advisory — correct after split |
+| R-PREFS-04c | GTK layout widget advisory — correct (Gtk.Grid in prefs) |
+| R-SLOP-40 | Promise wrapper advisory — correct (powerProfileController.js) |
+| R-QUAL-33 | Gio._promisify() module-scope advisory — correct |
+| eslint | ESLint config error — external tool issue |
+| metadata/shell-version-current | GNOME 49 not in shell-version — correct (extension targets 48) |
 | quality/private-api | Private API with inline justification — suppressible |
 | polkit-files | Informational — polkit files present |
-| async/missing-cancellable | Advisory — `_destroyed` pattern used as alternative |
 
 **Resource graph**: 17 files, 72 creates, 108 destroys, 0 orphans, depth 3
 
@@ -53,17 +56,17 @@ Each finding has a stable ID (F-NNN) that never changes. New findings always get
 
 | ID | Rule/Check | Status | Added |
 |----|-----------|--------|-------|
-| F-001 | R-SEC-07 | Fixed (v0.1.0) | 2026-02-27 |
-| F-002 | Verdict threshold | Fixed (v0.1.0) | 2026-02-27 |
-| F-003 | quality/gettext-pattern | Fixed (v0.1.0) | 2026-02-27 |
-| F-004 | R-SEC-20 | Fixed (v0.1.0) | 2026-02-27 |
-| F-005 | quality/private-api | Fixed (v0.1.0) | 2026-02-27 |
-| F-006 | quality/module-state | Fixed (v0.2.0) | 2026-02-28 |
-| F-007 | R-PREFS-04b | Fixed (v0.2.0) | 2026-02-28 |
-| F-008 | quality/gettext-pattern | Fixed (v0.2.0) | 2026-02-28 |
-| F-009 | quality/logging-volume | Fixed (v0.2.0) | 2026-02-28 |
-| F-010 | async/missing-cancellable | Fixed (v0.2.0) | 2026-02-28 |
-| F-011 | ego-simulate threshold | Fixed (v0.2.0) | 2026-02-28 |
+| F-001 | R-SEC-07 | Fixed (2026-02-27) | 2026-02-27 |
+| F-002 | Verdict threshold | Fixed (2026-02-27) | 2026-02-27 |
+| F-003 | quality/gettext-pattern | Fixed (2026-02-27) | 2026-02-27 |
+| F-004 | R-SEC-20 | Fixed (2026-02-27) | 2026-02-27 |
+| F-005 | quality/private-api | Fixed (2026-02-27) | 2026-02-27 |
+| F-006 | quality/module-state | Fixed (2026-02-28) | 2026-02-28 |
+| F-007 | R-PREFS-04b | Fixed (2026-02-28) | 2026-02-28 |
+| F-008 | quality/gettext-pattern | Fixed (2026-02-28) | 2026-02-28 |
+| F-009 | quality/logging-volume | Fixed (2026-02-28) | 2026-02-28 |
+| F-010 | async/missing-cancellable | Fixed (2026-02-28) | 2026-02-28 |
+| F-011 | ego-simulate threshold | Fixed (2026-02-28) | 2026-02-28 |
 
 **F-001: R-SEC-07 fires even when disclosure is present**
 R-SEC-07 (pattern rule) fired WARN for any `St.Clipboard` match, while `quality/clipboard-disclosure` (heuristic) correctly PASSed when metadata.json disclosed clipboard usage. The two checks didn't cross-reference. **Fix**: Removed R-SEC-07 entirely — `quality/clipboard-disclosure` is a strict superset.
@@ -102,10 +105,10 @@ ego-simulate scored notification volume at >3 `Main.notify` sites, but ego-lint'
 
 | ID | Gap | Status | Added |
 |----|-----|--------|-------|
-| F-012 | Disclosure matrix | Fixed (v0.2.0) | 2026-02-28 |
-| F-013 | Polkit action IDs | Fixed (v0.2.0) | 2026-02-28 |
-| F-014 | Schema key usage | Fixed (v0.2.0) | 2026-02-28 |
-| F-015 | Accessibility checks | Fixed (v0.2.0) | 2026-02-28 |
+| F-012 | Disclosure matrix | Fixed (2026-02-28) | 2026-02-28 |
+| F-013 | Polkit action IDs | Fixed (2026-02-28) | 2026-02-28 |
+| F-014 | Schema key usage | Fixed (2026-02-28) | 2026-02-28 |
+| F-015 | Accessibility checks | Fixed (2026-02-28) | 2026-02-28 |
 
 **F-012: Disclosure matrix not automated**
 Cross-referencing code capabilities (clipboard, network, pkexec) vs. metadata.json disclosures was entirely manual. **Fix**: Added `check-disclosures.py` — scans for capabilities, reads metadata, cross-references.
@@ -123,30 +126,30 @@ The A1-A7 checklist was entirely manual. Some items (accessible-role usage, acce
 
 | ID | Improvement | Status | Added |
 |----|------------|--------|-------|
-| F-016 | Parallelization strategy | Open | 2026-02-28 |
-| F-017 | Code metrics | Fixed (v0.2.0) | 2026-02-28 |
-| F-018 | Resource graph too large | Open | 2026-02-28 |
-| F-019 | Reviewer notes template | Open | 2026-02-28 |
-| F-020 | Readiness report format | Open | 2026-02-28 |
-| F-021 | AI slop overlap | Open | 2026-02-28 |
+| F-016 | Parallelization strategy | Fixed (2026-03-01) | 2026-02-28 |
+| F-017 | Code metrics | Fixed (2026-02-28) | 2026-02-28 |
+| F-018 | Resource graph too large | Fixed (2026-03-01) | 2026-02-28 |
+| F-019 | Reviewer notes template | Fixed (2026-03-01) | 2026-02-28 |
+| F-020 | Readiness report format | Fixed (2026-03-01) | 2026-02-28 |
+| F-021 | AI slop overlap | Fixed (2026-03-01) | 2026-02-28 |
 
 **F-016: Parallelization strategy missing from ego-submit**
-ego-submit describes sequential phases, but they're largely independent. A 3-agent parallel approach (lifecycle+signals, security+quality, package+metadata) cut wall-clock time from ~10 to ~4 minutes. **Status**: Open — needs parallelization strategy section in `skills/ego-submit/SKILL.md`.
+ego-submit describes sequential phases, but they're largely independent. A 3-agent parallel approach (lifecycle+signals, security+quality, package+metadata) cut wall-clock time from ~10 to ~4 minutes. **Fix**: Added "Parallel Execution Protocol" section to `skills/ego-submit/SKILL.md` with agent roles, no-early-stopping rule, and deduplication strategy.
 
 **F-017: Code metrics not in ego-lint output**
 ego-submit requires code metrics for readiness reports but ego-lint didn't output them. **Fix**: Added metrics to ego-lint verbose output.
 
 **F-018: Resource graph output too large for manual review**
-`build-resource-graph.py` outputs raw JSON (39KB for hara-hachi-bu). ego-review instructs reviewers to run it, producing output too large to meaningfully review. **Status**: Open — needs `--summary` flag for human-readable output.
+`build-resource-graph.py` outputs raw JSON (39KB for hara-hachi-bu). ego-review instructs reviewers to run it, producing output too large to meaningfully review. **Fix**: Added `--summary` flag producing human-readable output (files, resource counts, orphans, depth). Also added "Resource Graph Interpretation" guide to `lifecycle-checklist.md`.
 
 **F-019: Reviewer notes template missing**
-ego-submit says to "draft reviewer notes" but provides no template, producing inconsistent structure. **Status**: Open — needs `reviewer-notes-template.md` in `skills/ego-submit/references/`.
+ego-submit says to "draft reviewer notes" but provides no template, producing inconsistent structure. **Fix**: Added `reviewer-notes-template.md` in `skills/ego-submit/references/`.
 
 **F-020: Readiness report format not standardized**
-ego-submit says to produce a "readiness report" but doesn't define format. **Status**: Open — needs `readiness-report-template.md` in `skills/ego-submit/references/`.
+ego-submit says to produce a "readiness report" but doesn't define format. **Fix**: Added `readiness-report-template.md` in `skills/ego-submit/references/`.
 
 **F-021: AI slop overlap between ego-lint and ego-review**
-`check-quality.py` covers some AI patterns, but the 46-item `ai-slop-checklist.md` doesn't indicate which items are automated. Reviewer agents re-check automated items. **Status**: Open — needs automation mapping column in checklist.
+`check-quality.py` covers some AI patterns, but the 46-item `ai-slop-checklist.md` doesn't indicate which items are automated. Reviewer agents re-check automated items. **Fix**: Added `**Automated:**` field to each checklist item with Yes/No/Partial and the ego-lint check name.
 
 ### EGO Reviewer Feedback
 
@@ -171,11 +174,12 @@ ego-submit says to produce a "readiness report" but doesn't define format. **Sta
 
 ## Pipeline Run History
 
-| Date | Version | PASS | FAIL | WARN | SKIP | ego-simulate | Notes |
-|------|---------|------|------|------|------|-------------|-------|
-| 2026-02-27 | v0.1.0 (pre-fix) | 177 | 0 | 14 | 17 | 0 | Misleading "LIKELY REJECTED" verdict |
-| 2026-02-27 | v0.1.0 (post-fix) | 191 | 0 | 6 | 17 | 0 | F-001 through F-005 fixed |
-| 2026-02-28 | v0.2.0 | 193 | 0 | 5 | 17 | 1 | F-006 through F-015 fixed; 4 new Tier 2 scripts |
+| Date | PASS | FAIL | WARN | SKIP | ego-simulate | Notes |
+|------|------|------|------|------|-------------|-------|
+| 2026-02-27 (pre-fix) | 177 | 0 | 14 | 17 | 0 | Misleading "LIKELY REJECTED" verdict |
+| 2026-02-27 (post-fix) | 191 | 0 | 6 | 17 | 0 | F-001 through F-005 fixed |
+| 2026-02-28 | 193 | 0 | 5 | 17 | 1 | F-006 through F-015 fixed; 4 new Tier 2 scripts |
+| 2026-03-01 | 201 | 0 | 8 | 23 | — | 6 new pattern rules, +3 WARNs (R-SLOP-40, R-QUAL-33, R-PREFS-04c), +6 SKIP (VER49/50) |
 
 ---
 
@@ -189,8 +193,8 @@ ego-submit says to produce a "readiness report" but doesn't define format. **Sta
 
 ## Related Documents
 
-- [false-positive-analysis-v0.1.0.md](false-positive-analysis-v0.1.0.md) — Detailed root-cause analysis for F-001 through F-005
-- [improvements-v0.2.0.md](improvements-v0.2.0.md) — Detailed analysis and code snippets for F-006 through F-011
+- [false-positive-analysis-2026-02-27.md](false-positive-analysis-2026-02-27.md) — Detailed root-cause analysis for F-001 through F-005
+- [pipeline-improvements-2026-02-28.md](pipeline-improvements-2026-02-28.md) — Detailed analysis and code snippets for F-006 through F-011
 - [review-feedback-2026-02-28.md](review-feedback-2026-02-28.md) — Full pipeline improvement proposals (F-012 through F-021)
 - [field-test-clipboard-indicator.md](field-test-clipboard-indicator.md) — One-shot field test (different format)
 - [Gap analysis](../research/gap-analysis.md) — "Known False Positives and Noise Reduction" section

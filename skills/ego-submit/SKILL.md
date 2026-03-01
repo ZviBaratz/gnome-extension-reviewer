@@ -29,6 +29,28 @@ during individual agent work.
 This reduces wall-clock time from ~10 minutes (sequential) to ~4 minutes. For
 smaller extensions (<10 JS files), sequential execution is fine.
 
+### Parallel Execution Protocol
+
+When running in parallel mode:
+
+- **Agent 1**: ego-lint + Phase 3 package validation. Reports lint summary
+  (PASS/FAIL/WARN/SKIP counts) and package status.
+- **Agent 2**: ego-review Phases 2-4 (lifecycle, signals, security). Skips
+  Phase 0 since Agent 1 handles the ego-lint baseline.
+- **Agent 3**: ego-review Phases 5-5a (quality, AI patterns) + Phase 4 metadata
+  + disclosure matrix + reviewer notes draft.
+
+**No early stopping**: All agents complete regardless of findings. If Agent 1
+reports FAILs, the final readiness report verdict is NEEDS FIXES with FAIL
+items listed first as blocking action items.
+
+**Deduplication**: The orchestrator merges results from all agents. When ego-lint
+and ego-review flag the same issue (e.g., both catch a missing signal
+disconnect), prefer ego-lint's categorization (it has the rule ID).
+
+**STOP condition**: Applied by the orchestrator after all agents complete, not
+by individual agents during their work.
+
 ## Pipeline Phases
 
 ### Pre-flight: Review Simulation (skip if running full pipeline)
@@ -50,7 +72,11 @@ The simulation is advisory — it does not block the pipeline.
 Invoke `gnome-extension-reviewer:ego-lint` against the extension directory.
 
 - Run all automated checks
-- If any FAIL results: **STOP** — fix failures before proceeding
+- **Sequential mode**: If any FAIL results: **STOP** — fix failures before
+  proceeding to Phase 2
+- **Parallel mode**: All agents complete regardless. If FAILs are found, the
+  final readiness report verdict is NEEDS FIXES with FAIL items listed first
+  as blocking action items
 - Report all WARN results for the developer to review
 
 ### Phase 2: Manual Code Review

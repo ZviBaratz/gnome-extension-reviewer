@@ -286,6 +286,18 @@ Calculate based on findings:
 - 7-12 points: **LIKELY REJECTED** — significant issues
 - 13+ points: **LIKELY REJECTED** — fundamental problems or AI-generated
 
+**Rough correspondence with ego-simulate scores:**
+
+| ego-review risk | ego-simulate score | Interpretation |
+|-----------------|-------------------|----------------|
+| 0-2 | 0-4 | Likely to pass |
+| 3-6 | 5-9 | May need revision |
+| 7+ | 10+ | Likely rejected |
+
+The scales use different inputs (ego-review: finding category points;
+ego-simulate: taxonomy weights), so this mapping is approximate. When both
+tools are run, prefer ego-review's assessment as the authoritative verdict.
+
 ## When to Use
 
 - Before submitting to extensions.gnome.org

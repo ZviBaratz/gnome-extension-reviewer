@@ -123,6 +123,48 @@ class MyController {
 
 > **Reviewer says:** "Your extension has async operations but I don't see a `_destroyed` flag check after the await points. If the extension is disabled during the async call, the callback will act on torn-down state."
 
+## Resource Graph Interpretation
+
+ego-lint's `build-resource-graph.py` tracks resource ownership across files.
+Run it with `--summary` for a human-readable overview, or without for raw JSON.
+
+### Output format
+
+**Summary mode** (`--summary`):
+```
+Files scanned: 17
+Resources: 5 dbus, 3 filemonitor, 1 gsettings, 39 signal, 15 timeout, 9 widget
+Total: 72 creates, 108 destroys
+Orphans: 0
+Balance: All resources have matching cleanup
+Ownership depth: 3
+```
+
+**JSON mode** (default): Per-file `creates` and `destroys` arrays with resource
+type, method, and line number for each entry.
+
+### What to look for
+
+- **Orphans**: A resource created but never destroyed in any `destroy()`,
+  `disable()`, or cleanup method. Any orphan count > 0 requires manual review.
+- **Ownership depth**: How many levels of delegation exist (e.g., Extension →
+  Controller → Helper). Depth > 4 suggests review of the cleanup chain.
+- **Create/destroy ratio**: Destroys should equal or exceed creates (some
+  resources like `connectObject` clean up multiple connections at once).
+
+### Known false positives
+
+Not all "orphans" are real leaks. Common false positives:
+- **Module-scope `Gio._promisify()`**: Cannot be undone, but this is by design —
+  it permanently patches GJS prototypes. Safe to ignore.
+- **GObject class registrations** (`GObject.registerClass`): One-time setup,
+  never cleaned up. Normal.
+- **Global singletons** (e.g., `Main.panel`): Owned by GNOME Shell, not the
+  extension. References are cleared, not destroyed.
+
+When reviewing orphans, check whether the resource is a true extension-owned
+allocation or a reference to a global/shared object.
+
 ## Session Mode Handling
 
 If `metadata.json` declares `session-modes` (e.g., `["user", "unlock-dialog"]`),
