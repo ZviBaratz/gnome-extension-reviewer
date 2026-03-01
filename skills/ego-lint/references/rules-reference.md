@@ -2294,6 +2294,14 @@ Rules for APIs removed or changed in specific GNOME Shell versions. These rules 
 - **Fix**: Remove the empty `destroy()` override entirely — GObject chains automatically.
 - **Tested by**: `tests/fixtures/empty-destroy-override@test/`
 
+### R-SLOP-29b: Empty destroy() body
+- **Severity**: advisory
+- **Checked by**: apply-patterns.py
+- **Rule**: `destroy() {}` with a completely empty body (no super call, no cleanup).
+- **Rationale**: A variant of R-SLOP-29 — where R-SLOP-29 catches `destroy()` that only calls super, this catches `destroy()` that does nothing at all. GObject chains `destroy()` automatically, so an empty override is a no-op. AI tools often scaffold these as "placeholder" methods.
+- **Fix**: Remove the empty `destroy()` override entirely.
+- **Tested by**: `tests/fixtures/slop-empty-destroy@test/`
+
 ---
 
 ## GNOME 50 (R-VER50)
@@ -2358,6 +2366,38 @@ Rules for APIs removed or changed in specific GNOME Shell versions. These rules 
 - **Rule**: `typeof super.method === 'function'` checks are unnecessary in GObject inheritance.
 - **Rationale**: In GObject, parent class methods always exist. Checking `typeof super.destroy === 'function'` before calling it is a hallmark of AI-generated code that applies JavaScript prototype-chain uncertainty to a framework where inheritance is guaranteed by the type system.
 - **Fix**: Remove the `typeof` check and call `super.method()` directly.
+
+### R-SLOP-35: Object.freeze() usage
+- **Severity**: advisory
+- **Checked by**: apply-patterns.py
+- **Rule**: `Object.freeze()` on config objects is an AI code smell.
+- **Rationale**: GNOME extensions rarely need frozen objects. AI tools add `Object.freeze()` to configuration objects as a "best practice" from other ecosystems, but in GJS the pattern is unusual and signals generated code.
+- **Fix**: Remove `Object.freeze()`; use `const` declarations for immutability instead.
+- **Tested by**: `tests/fixtures/slop-object-freeze@test/`
+
+### R-SLOP-38: Over-long identifier in function call
+- **Severity**: advisory
+- **Checked by**: apply-patterns.py
+- **Rule**: Identifiers 21+ characters (starting with lowercase) inside function call parentheses.
+- **Rationale**: AI-generated code tends to use excessively descriptive camelCase names like `currentBatteryThresholdValue` or `updatedNotificationMessage`. Human-written GNOME code favors concise names (`threshold`, `message`). The lowercase-start filter avoids false positives on PascalCase class names and UPPER_SNAKE constants.
+- **Fix**: Shorten parameter/argument names to be concise but clear.
+- **Tested by**: `tests/fixtures/slop-long-params@test/`
+
+### R-SLOP-40: Manual Promise wrapper
+- **Severity**: advisory
+- **Checked by**: apply-patterns.py
+- **Rule**: `new Promise((resolve, reject) =>` wrapping pattern.
+- **Rationale**: GJS provides `Gio._promisify()` to convert GIO async/finish methods into Promises. Manual Promise wrappers around GIO calls are verbose and error-prone (missing error handling, no cancellable support). However, non-GIO async patterns (e.g., D-Bus proxy init with timeout) may legitimately need manual wrapping.
+- **Fix**: Use `Gio._promisify()` for GIO async methods instead of manual Promise wrapping.
+- **Tested by**: `tests/fixtures/slop-promise-wrapper@test/`
+
+### R-SLOP-43: Underscore-prefixed export
+- **Severity**: advisory
+- **Checked by**: apply-patterns.py
+- **Rule**: `export function _foo` / `export class _Bar` / `export const _baz` — underscore convention conflicts with export.
+- **Rationale**: In JavaScript, underscore-prefixed names conventionally indicate private/internal identifiers. Exporting them contradicts this convention and signals confusion about module boundaries. AI tools sometimes generate `export function _helper()` without considering the semantic conflict.
+- **Fix**: Either remove the underscore (it's exported, so it's public) or don't export it.
+- **Tested by**: `tests/fixtures/slop-underscore-export@test/`
 
 ---
 
@@ -2444,6 +2484,14 @@ Rules for APIs removed or changed in specific GNOME Shell versions. These rules 
 - **Rule**: `?version=` in gi:// imports for libraries that don't need it.
 - **Rationale**: Only Soup, Gtk, Gdk, and Adw require version specifiers. Adding versions to GLib, Gio, St, etc. is unnecessary and can cause breakage.
 - **Fix**: Remove `?version=` from the import.
+
+### R-QUAL-33: Gio._promisify() prototype mutation
+- **Severity**: advisory
+- **Checked by**: apply-patterns.py (deduplicate: true)
+- **Rule**: `Gio._promisify()` calls permanently mutate shared GJS prototypes.
+- **Rationale**: `Gio._promisify()` replaces a GIO class method with a Promise-returning version at the prototype level. This mutation is global and permanent — it cannot be undone in `disable()`. This is acceptable (and even recommended for GIO async), but the module-scope placement should be documented with a comment explaining why.
+- **Fix**: Add a comment above the `Gio._promisify()` call explaining it's intentionally at module scope because it permanently mutates a shared prototype.
+- **Tested by**: `tests/fixtures/promisify-module-scope@test/`
 
 ---
 

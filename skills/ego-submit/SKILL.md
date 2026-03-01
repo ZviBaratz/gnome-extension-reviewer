@@ -22,6 +22,10 @@ For extensions with 10+ JS files, run phases in parallel using 3 agents:
 - **Agent 2:** ego-review lifecycle + signal + security (ego-review Phases 2-4)
 - **Agent 3:** ego-review quality + AI patterns + metadata (ego-review Phases 5-5a, Phase 4)
 
+When running in parallel, Agents 2-3 skip Phase 0 (ego-lint baseline) since
+Agent 1 handles it. The deduplication happens at report compilation time, not
+during individual agent work.
+
 This reduces wall-clock time from ~10 minutes (sequential) to ~4 minutes. For
 smaller extensions (<10 JS files), sequential execution is fine.
 

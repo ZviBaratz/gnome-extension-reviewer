@@ -1,0 +1,7 @@
+{
+    "uuid": "slop-underscore-export@test",
+    "name": "Underscore Export Test",
+    "description": "Tests underscore-prefixed export detection",
+    "shell-version": ["48"],
+    "url": "https://example.com"
+}

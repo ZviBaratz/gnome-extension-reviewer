@@ -1,0 +1,7 @@
+{
+    "uuid": "promisify-module-scope@test",
+    "name": "Promisify Module Scope Test",
+    "description": "Tests Gio._promisify module-scope detection",
+    "shell-version": ["48"],
+    "url": "https://example.com"
+}

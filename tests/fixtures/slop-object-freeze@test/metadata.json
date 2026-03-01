@@ -1,0 +1,7 @@
+{
+    "uuid": "slop-object-freeze@test",
+    "name": "Object.freeze Test",
+    "description": "Tests Object.freeze detection",
+    "shell-version": ["48"],
+    "url": "https://example.com"
+}

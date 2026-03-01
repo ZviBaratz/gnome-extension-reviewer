@@ -1,0 +1,7 @@
+{
+    "uuid": "slop-promise-wrapper@test",
+    "name": "Promise Wrapper Test",
+    "description": "Tests unnecessary Promise wrapper detection",
+    "shell-version": ["48"],
+    "url": "https://example.com"
+}

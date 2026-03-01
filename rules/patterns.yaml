@@ -560,6 +560,14 @@
   category: ai-slop
   fix: "Remove the destroy() override; GObject chains to super automatically"
 
+- id: R-SLOP-29b
+  pattern: "destroy\\s*\\(\\)\\s*\\{\\s*\\}"
+  scope: ["*.js"]
+  severity: advisory
+  message: "Empty destroy() override — GObject chains automatically; remove the no-op"
+  category: ai-slop
+  fix: "Remove the empty destroy() override; GObject handles cleanup chain automatically"
+
 - id: R-SLOP-30
   pattern: "typeof super\\.\\w+\\s*===\\s*['\"]function['\"]"
   scope: ["*.js"]
@@ -567,6 +575,38 @@
   message: "typeof super.method check is unnecessary — GObject parent methods always exist; reviewers flag this pattern"
   category: ai-slop
   fix: "Remove the typeof check and call super.method() directly."
+
+- id: R-SLOP-35
+  pattern: "Object\\.freeze\\s*\\("
+  scope: ["*.js"]
+  severity: advisory
+  message: "Object.freeze() on config objects is an AI code smell — GNOME extensions rarely need frozen objects"
+  category: ai-slop
+  fix: "Remove Object.freeze(); use const declarations for immutability instead"
+
+- id: R-SLOP-38
+  pattern: "\\(\\s*[a-z]\\w{20,}\\s*[,)]"
+  scope: ["*.js"]
+  severity: advisory
+  message: "Over-long identifier (>20 chars) is an AI verbosity indicator"
+  category: ai-slop
+  fix: "Shorten parameter names to be concise but clear (e.g., currentBatteryThreshold → threshold)"
+
+- id: R-SLOP-40
+  pattern: "new\\s+Promise\\s*\\(\\s*\\(\\s*resolve\\s*,\\s*reject\\s*\\)"
+  scope: ["*.js"]
+  severity: advisory
+  message: "new Promise(resolve, reject) wrapper — consider Gio._promisify() for GIO async methods"
+  category: ai-slop
+  fix: "Use Gio._promisify() to promisify GIO async methods instead of manual Promise wrapping"
+
+- id: R-SLOP-43
+  pattern: "export\\s+(function|class|const)\\s+_\\w+"
+  scope: ["*.js"]
+  severity: advisory
+  message: "Underscore-prefixed export — private convention conflicts with public export"
+  category: ai-slop
+  fix: "Either remove the underscore (it's exported, so it's public) or don't export it"
 
 # --- Hallucinated APIs (advisory/blocking) ---
 # LLMs frequently call methods that don't exist in GJS/GNOME Shell.
@@ -701,6 +741,15 @@
   message: "Unnecessary ?version= in gi:// import — this library does not require a version specifier"
   category: code-quality
   fix: "Remove ?version= from the import; only Soup, Gtk, Gdk, and Adw require version specifiers"
+
+- id: R-QUAL-33
+  pattern: "Gio\\._promisify\\s*\\("
+  scope: ["*.js"]
+  severity: advisory
+  message: "Gio._promisify() permanently mutates shared GJS prototypes — document module-scope placement"
+  category: code-quality
+  fix: "Gio._promisify() is fine but cannot be undone on disable(); add a comment explaining the module-scope placement"
+  deduplicate: true
 
 # --- GNOME 44-46 migration (version-gated) ---
 # APIs removed or renamed in GNOME 44-46 transition to ESM.

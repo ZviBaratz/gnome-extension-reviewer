@@ -36,6 +36,13 @@ assert_output_contains "warns on non-executable shell script" "\[WARN\].*script-
 assert_output_contains "keeps non-gjs as PASS with pkexec" "\[PASS\].*non-gjs-scripts"
 echo ""
 
+# --- slop-empty-destroy ---
+echo "=== slop-empty-destroy ==="
+run_lint "slop-empty-destroy@test"
+assert_exit_code "exits with 0 (advisory only)" 0
+assert_output_contains "warns on empty destroy override" "\[WARN\].*R-SLOP-29b"
+echo ""
+
 # --- typeof-this-obj-method ---
 echo "=== typeof-this-obj-method ==="
 run_lint "typeof-this-obj-method@test"

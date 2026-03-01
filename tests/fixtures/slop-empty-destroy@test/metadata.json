@@ -1,0 +1,7 @@
+{
+    "uuid": "slop-empty-destroy@test",
+    "name": "Empty Destroy Test",
+    "description": "Tests empty destroy override detection",
+    "shell-version": ["48"],
+    "url": "https://example.com"
+}

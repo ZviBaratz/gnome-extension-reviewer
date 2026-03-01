@@ -1,0 +1,7 @@
+{
+    "uuid": "slop-long-params@test",
+    "name": "Long Params Test",
+    "description": "Tests over-long parameter name detection",
+    "shell-version": ["48"],
+    "url": "https://example.com"
+}

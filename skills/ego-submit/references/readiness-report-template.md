@@ -24,6 +24,16 @@
 
 ---
 
+## Lifecycle & Resource Summary
+
+- Resource graph: _N_ resources tracked, _N_ orphans
+- Signal connections: _N_ balanced / _N_ unbalanced
+- Timers: _N_ tracked, _all/N_ have GLib.Source.remove in destroy
+- File monitors: _N_, _all/N_ cancel+disconnect in destroy
+- D-Bus proxies: _N_, _all/N_ disconnect+null in destroy
+
+---
+
 ## Code Review Findings
 
 ### Blocking
@@ -68,6 +78,7 @@ Triggered items:
 | Clipboard   | Yes/No        | Yes/No               | OK/WARN|
 | Network     | Yes/No        | Yes/No               | OK/WARN|
 | pkexec      | Yes/No        | Yes/No               | OK/WARN|
+| Subprocess  | Yes/No        | Yes/No               | OK/WARN|
 | Private API | Yes/No        | Yes/No               | OK/WARN|
 | File I/O    | Yes/No        | Yes/No               | OK/WARN|
 
