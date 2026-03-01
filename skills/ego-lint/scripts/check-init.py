@@ -22,9 +22,14 @@ def result(status, check, detail):
     print(f"{status}|{check}|{detail}")
 
 
+def _preserve_newlines(match):
+    """Replace block comment content with empty lines to preserve line numbers."""
+    return '\n' * match.group(0).count('\n')
+
+
 def strip_comments(content):
     """Remove single-line and block comments from JS content."""
-    content = re.sub(r'/\*.*?\*/', '', content, flags=re.DOTALL)
+    content = re.sub(r'/\*.*?\*/', _preserve_newlines, content, flags=re.DOTALL)
     content = re.sub(r'//.*$', '', content, flags=re.MULTILINE)
     return content
 

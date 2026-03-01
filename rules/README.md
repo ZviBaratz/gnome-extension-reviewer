@@ -128,6 +128,28 @@ A rule can be suppressed when a replacement pattern also exists in the same file
 
 If a CSS file contains both `.panel-button` and `.panel-icon` (dual selectors for backward compatibility), the rule is suppressed for that file. The replacement check is file-level — if the replacement pattern appears anywhere in the file, the match is skipped.
 
+### Line-Level Suppression (`guard-pattern`)
+
+A rule can be suppressed when a guard pattern matches the same line or the previous line. This handles runtime feature detection, polymorphic dispatch, and other cases where the flagged pattern is used safely.
+
+```yaml
+- id: R-VER46-01
+  pattern: "\\.add_actor\\s*\\("
+  scope: ["*.js"]
+  severity: blocking
+  message: "Clutter.Container.add_actor() removed in GNOME 46; use add_child()"
+  min-version: 46
+  guard-pattern: "\\bif\\s*\\(.*\\.add_actor\\b"
+```
+
+If a line calls `.add_actor(` but the same line (or previous line) has `if (obj.add_actor)` — a runtime capability check — the match is suppressed. The guard check is line-level: it checks both the current matched line and the immediately preceding line.
+
+**Use cases**:
+- Runtime feature detection: `if (obj.method)` before calling `obj.method()`
+- Polymorphic dispatch: `!(this instanceof Foo)` (negated instanceof is a type guard, not AI slop)
+- Enum constants: `const X = Object.freeze({` (const assignment + freeze is standard JS enum pattern)
+- Signal handler conventions: `.connect('destroy', ...this._onDestroy)` (handler, not method to rename)
+
 ## Inline Suppression
 
 Add `ego-lint-ignore` comments to suppress specific findings on a per-line basis.

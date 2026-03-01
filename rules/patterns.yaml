@@ -503,6 +503,7 @@
   message: "this instanceof check inside a class method is always true"
   category: ai-slop
   fix: "Remove the redundant instanceof check."
+  guard-pattern: "!\\s*\\(\\s*this\\s+instanceof"
 
 - id: R-SLOP-17
   pattern: "typeof\\s+(?:super|this(?:\\.\\w+)+)\\.\\w+\\s*===?\\s*['\"]function['\"]"
@@ -591,6 +592,7 @@
   message: "Object.freeze() on config objects is an AI code smell — GNOME extensions rarely need frozen objects"
   category: ai-slop
   fix: "Remove Object.freeze(); use const declarations for immutability instead"
+  guard-pattern: "\\b(const|export\\s+const)\\s+\\w+\\s*=\\s*Object\\.freeze"
 
 - id: R-SLOP-38
   pattern: "\\(\\s*[a-z]\\w{20,}\\s*[,)]"
@@ -654,10 +656,10 @@
 - id: R-SLOP-16
   pattern: "\\bGLib\\.file_get_contents\\b"
   scope: ["*.js"]
-  severity: blocking
-  message: "GLib.file_get_contents() does not exist in GJS; use Gio.File.load_contents()"
-  category: ai-slop
-  fix: "Use: const [ok, contents] = file.load_contents(null); then TextDecoder to decode."
+  severity: advisory
+  message: "GLib.file_get_contents() is synchronous and blocks the main loop; prefer Gio.File.load_contents() or load_contents_async()"
+  category: code-quality
+  fix: "Use: const file = Gio.File.new_for_path(path); const [ok, contents] = file.load_contents(null); then new TextDecoder().decode(contents)."
 
 - id: R-SLOP-24
   pattern: "\\bnew\\s+Gio\\.Settings\\s*\\("
@@ -741,6 +743,7 @@
   message: "_onDestroy() should be renamed to destroy() with super.destroy() at the end"
   category: code-quality
   fix: "Rename to destroy() { /* cleanup */; super.destroy(); }"
+  guard-pattern: "(\\.connect\\s*\\(|super\\._onDestroy)"
 
 - id: R-QUAL-32
   pattern: "gi://(GLib|Gio|GObject|St|Clutter|Meta|Shell|Pango|Graphene|Mtk)\\?version="
@@ -807,6 +810,7 @@
   category: version-compat
   fix: "Replace .add_actor(child) with .add_child(child)"
   min-version: 46
+  guard-pattern: "\\bif\\s*\\(.*\\.add_actor\\b"
 
 - id: R-VER46-02
   pattern: "\\.remove_actor\\s*\\("
@@ -816,6 +820,7 @@
   category: version-compat
   fix: "Replace .remove_actor(child) with .remove_child(child)"
   min-version: 46
+  guard-pattern: "\\bif\\s*\\(.*\\.remove_actor\\b"
 
 - id: R-VER46-03
   pattern: "\\bClutter\\.cairo_set_source_color\\b"

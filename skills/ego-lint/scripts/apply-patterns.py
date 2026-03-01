@@ -291,11 +291,21 @@ def main():
                     if replacement and replacement in file_content:
                         continue
 
+                    guard = rule.get('guard-pattern', '')
+                    guard_re = re.compile(guard) if guard else None
+
                     prev_line = ''
                     for lineno, line in enumerate(file_content.splitlines(True), 1):
                         if compiled.search(line):
                             # Check for inline suppression
                             if _is_suppressed(line, prev_line, rid):
+                                prev_line = line
+                                continue
+                            # Check guard-pattern: if guard matches
+                            # current or previous line, suppress
+                            # (runtime feature detection)
+                            if guard_re and (guard_re.search(line) or
+                                             guard_re.search(prev_line)):
                                 prev_line = line
                                 continue
                             rel = os.path.relpath(filepath, ext_dir)

@@ -1432,11 +1432,11 @@ destroy() {
 - **Fix**: Remove the redundant instanceof check.
 - **Tested by**: `tests/fixtures/hallucinated-apis@test/`
 
-### R-SLOP-16: Hallucinated GLib.file_get_contents
-- **Severity**: blocking
+### R-SLOP-16: Synchronous GLib.file_get_contents
+- **Severity**: advisory
 - **Checked by**: apply-patterns.py
-- **Rule**: Extension code must not use `GLib.file_get_contents()`.
-- **Rationale**: `GLib.file_get_contents()` does not exist in GJS. LLMs hallucinate this from the C API (`g_file_get_contents`), but GJS does not expose it. The correct approach is to use `Gio.File` methods.
+- **Rule**: Extension code should prefer `Gio.File.load_contents()` over `GLib.file_get_contents()`.
+- **Rationale**: `GLib.file_get_contents()` exists in GJS (GI binding for `g_file_get_contents`) but is synchronous — it blocks the main loop during file I/O. `Gio.File.load_contents()` is the idiomatic GJS approach and has an async variant (`load_contents_async`) that avoids blocking.
 - **Fix**: Use `const file = Gio.File.new_for_path(path); const [ok, contents] = file.load_contents(null);` then `new TextDecoder().decode(contents)` to get a string.
 
 ### R-SLOP-17: typeof method guard on known objects
