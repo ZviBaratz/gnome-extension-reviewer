@@ -3,7 +3,7 @@ import {Extension} from 'resource:///org/gnome/shell/extensions/extension.js';
 
 export default class PopupPrivateExtension extends Extension {
     enable() {
-        const items = this._menu._getMenuItems();
+        const items = Main.panel.statusArea.quickSettings._getMenuItems();
         this._count = items.length;
     }
 

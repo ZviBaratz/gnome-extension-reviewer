@@ -65,7 +65,9 @@ CAPABILITY_CHECKS = [
         'name': 'private-api',
         'code_patterns': [
             r'Main\.panel\._\w+', r'statusArea\._\w+', r'quickSettings\._\w+',
-            r'\._getMenuItems\(', r'\._getTopMenu\(', r'\._delegate\b',
+            r'(?:Main\.panel|statusArea|quickSettings)[\w.]*\._getMenuItems\(',
+            r'(?:Main\.panel|statusArea|quickSettings)[\w.]*\._getTopMenu\(',
+            r'\._delegate\b',
         ],
         'disclosure_keywords': ['private', 'internal', 'unstable'],
         'check': 'disclosure/private-api',
