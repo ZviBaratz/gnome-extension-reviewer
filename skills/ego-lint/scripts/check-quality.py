@@ -403,6 +403,10 @@ def check_constructor_resources(ext_dir, js_files):
 
     for filepath in js_files:
         rel = os.path.relpath(filepath, ext_dir)
+        # prefs.js has no enable()/disable() — widget signals in constructors
+        # auto-cleanup when the preferences window closes
+        if os.path.basename(filepath) == 'prefs.js':
+            continue
         with open(filepath, encoding='utf-8', errors='replace') as f:
             content = f.read()
 
