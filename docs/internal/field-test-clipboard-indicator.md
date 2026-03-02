@@ -1,6 +1,6 @@
 # Field Test: Clipboard Indicator
 
-**Date**: 2026-02-28 (updated 2026-03-01)
+**Date**: 2026-02-28 (updated 2026-03-02)
 **Target**: [Clipboard Indicator](https://github.com/Tudmotu/gnome-shell-extension-clipboard-indicator) v? (latest main)
 **Extension**: `clipboard-indicator@tudmotu.com` — GNOME 46-49, 6 JS files, MIT license
 
@@ -165,6 +165,140 @@ These are all package-level concerns. The source-level linter correctly focuses 
 
 ### Reviewer Triage (simulated)
 The reviewer's internal monologue correctly identified: mature codebase, human-written, main concern is the stage leak, CSS is scoped enough to be borderline. The setTimeout usage was correctly identified as acceptable for GNOME 45+.
+
+---
+
+## 2026-03-02 Update: Full ego-submit Pipeline Run
+
+Ran the complete ego-submit pipeline (ego-lint → ego-review → package validation → metadata review → readiness report) from a clean clone at `/tmp/clipboard-indicator` against latest `master` (commit `13ba8b1`).
+
+### ego-lint Results (Phase 1)
+
+| Status | Count |
+|--------|-------|
+| PASS   | 52    |
+| FAIL   | 2     |
+| WARN   | 27    |
+| SKIP   | 6     |
+| **Total** | **87** |
+
+Exit code: 1
+
+**Note**: Check count dropped from 236 (previous runs) to 87. This is because
+previous runs used `--verbose` with the full pattern rule expansion. This run
+used the standard ego-lint invocation via the ego-submit pipeline.
+
+#### FAIL Classification
+
+| Rule | File:Line | TP/FP | Notes |
+|------|-----------|-------|-------|
+| css/shell-class-override | stylesheet.css:15 | TP | `.popup-menu-item` override — same as previous runs |
+| R-DEPR-11 | extension.js:1190 | TP | `Shell.KeyBindingMode` dead code — added in 03-01 update |
+
+Both FAILs are true positives. No new false positives.
+
+### ego-review Results (Phase 2)
+
+**Verdict: NEEDS REVISION** | **Rejection Risk: HIGH** (15 risk points)
+
+#### Blocking Issues (3 from manual review + 2 from lint)
+
+| # | Issue | File:Line | Category |
+|---|-------|-----------|----------|
+| B1 | `_historyLabel` on `global.stage` never removed in `destroy()` | extension.js:1061 | lifecycle |
+| B2 | No `_destroyed` guard on async `_buildMenu().then()` chain | extension.js:133-137 | lifecycle |
+| B3 | `Registry` has no `destroy()` or `Gio.Cancellable` — async ops outlive extension | registry.js | lifecycle |
+| B4 | CSS `.popup-menu-item` Shell theme class override | stylesheet.css:15 | lint FAIL |
+| B5 | `Shell.KeyBindingMode` deprecated reference | extension.js:1190 | lint FAIL |
+
+#### Issues ego-lint Could Not Detect
+
+1. **B2: Async guard on `_buildMenu().then()`** — requires understanding that
+   `_init()` calls an async method whose `.then()` callback fires after
+   `destroy()` on rapid enable/disable. This is semantic cross-method analysis.
+
+2. **B3: Registry missing cleanup** — requires understanding that `Registry` is
+   a non-GObject helper class with async file I/O but no lifecycle method. The
+   resource graph builder flagged the orphan widget, but the missing cancellable
+   pattern is a semantic analysis finding.
+
+3. **`_notifSource` not explicitly destroyed** — `MessageTray.Source` cleanup
+   is implicit through `super.destroy()` chain, but reviewers prefer explicit.
+
+#### Resource Graph
+
+```
+Files scanned: 5
+Resources: 1 gsettings, 18 signal, 30 widget
+Total: 49 creates, 26 destroys
+Orphans: 1 (registry.js:148 — St.Icon in getEntryAsImage)
+Ownership depth: 2
+```
+
+The creates > destroys ratio (49 vs 26) is normal — most widget creates are
+child widgets auto-destroyed by parent's `super.destroy()`.
+
+#### AI Pattern Analysis
+
+**Score**: 2/46 — **PASS** (threshold: 0-3 for <10 files)
+**Provenance score**: 4 (Very strong)
+**Triggered items**: `var` declarations (item 23), Promise wrapper (item 40)
+**Assessment**: Clearly hand-written, organic code evolution
+
+### Package Validation (Phase 3)
+
+- No distribution zip exists — must be created
+- Required files: All present (extension.js, metadata.json, schemas/, locale/)
+- Files to exclude: Makefile, README.rst, clipboard-indicator.pot, screenshot.png
+- Secrets scan: Clean
+
+### Metadata Review (Phase 4)
+
+- **Description**: Marketing copy ("most popular clipboard manager, 1M downloads")
+  — should be rewritten as functional description with clipboard access disclosure
+- **Shell versions**: 46, 47, 48, 49 — GNOME 49 is unreleased, should verify tested
+- **Screenshots**: screenshot.png exists in repo
+
+#### Disclosure Matrix
+
+| Capability | Found in Code | Disclosed in Metadata | Status |
+|------------|--------------|----------------------|--------|
+| Clipboard | Yes (`St.Clipboard`) | Implicit | WARN |
+| Network | No | N/A | OK |
+| pkexec | No | N/A | OK |
+| Subprocess | No | N/A | OK |
+| Private API | Yes (`Main.panel.statusArea`) | No | WARN |
+| File I/O | Yes (cache dir) | No | OK |
+
+### Readiness Report Verdict (Phase 5)
+
+**NEEDS FIXES** — 5 blocking issues, 11 advisory items
+
+All blocking issues are straightforward 1-5 line fixes. The extension has strong
+fundamentals (no security issues, no AI patterns, excellent i18n with 20+ locales).
+
+### Pipeline Process Assessment
+
+1. **Sequential execution was appropriate** — 6 JS files, completed in reasonable time
+2. **ego-lint → ego-review deduplication worked** — ego-review focused on semantic
+   findings not caught by lint (B2, B3, _notifSource)
+3. **Resource graph builder** correctly detected the `_historyLabel` stage orphan
+   and the `registry.js` ownership gap
+4. **Phase 4 disclosure matrix** identified 2 undisclosed capabilities (clipboard,
+   private API) that need reviewer notes
+5. **Readiness report template** produced an actionable output with prioritized
+   action items
+
+### Calibration Observations
+
+- ego-review risk score (15 points → LIKELY REJECTED) may be slightly high for
+  an extension that is approved and popular on EGO. However, the lifecycle issues
+  are real — the extension likely predates stricter modern review standards.
+- The B2 finding (async _buildMenu guard) is the kind of issue that only
+  manifests on rapid enable/disable or during GNOME Shell restart. It wouldn't
+  be visible in normal usage but is technically correct.
+- The ego-submit pipeline correctly aggregated findings without duplication across
+  phases — each blocking issue appears exactly once in the final report.
 
 ---
 
