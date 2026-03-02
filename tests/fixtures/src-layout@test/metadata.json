@@ -1,0 +1,7 @@
+{
+    "uuid": "src-layout@test",
+    "name": "Test",
+    "description": "Test src/ subdirectory layout",
+    "shell-version": ["48"],
+    "url": "https://example.com"
+}

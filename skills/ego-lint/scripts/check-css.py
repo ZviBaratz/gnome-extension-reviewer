@@ -36,10 +36,19 @@ def strip_css_comments(content):
     return re.sub(r'/\*.*?\*/', '', content, flags=re.DOTALL)
 
 
+def find_stylesheet(ext_dir):
+    """Find stylesheet.css in common locations (root or src/)."""
+    for candidate in ['stylesheet.css', os.path.join('src', 'stylesheet.css')]:
+        path = os.path.join(ext_dir, candidate)
+        if os.path.isfile(path):
+            return path
+    return None
+
+
 def check_unscoped_classes(ext_dir):
     """WARN on bare generic CSS class names without prefix."""
-    css_path = os.path.join(ext_dir, 'stylesheet.css')
-    if not os.path.isfile(css_path):
+    css_path = find_stylesheet(ext_dir)
+    if not css_path:
         result("SKIP", "css/scoping", "No stylesheet.css found")
         return
 
@@ -72,8 +81,8 @@ def check_unscoped_classes(ext_dir):
 
 def check_important_usage(ext_dir):
     """WARN on !important usage in stylesheet."""
-    css_path = os.path.join(ext_dir, 'stylesheet.css')
-    if not os.path.isfile(css_path):
+    css_path = find_stylesheet(ext_dir)
+    if not css_path:
         return
 
     with open(css_path, encoding='utf-8', errors='replace') as f:
@@ -92,8 +101,8 @@ def check_important_usage(ext_dir):
 
 def check_shell_class_override(ext_dir):
     """WARN when a KNOWN_SHELL_CLASSES member appears as a top-level selector."""
-    css_path = os.path.join(ext_dir, 'stylesheet.css')
-    if not os.path.isfile(css_path):
+    css_path = find_stylesheet(ext_dir)
+    if not css_path:
         result("SKIP", "css/shell-class-override", "No stylesheet.css found")
         return
 

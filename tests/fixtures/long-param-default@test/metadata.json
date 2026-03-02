@@ -1,0 +1,7 @@
+{
+    "uuid": "long-param-default@test",
+    "name": "Test",
+    "description": "Test long parameter name with default value",
+    "shell-version": ["48"],
+    "url": "https://example.com"
+}

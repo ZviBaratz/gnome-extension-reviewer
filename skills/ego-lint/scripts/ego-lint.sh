@@ -174,6 +174,8 @@ echo ""
 
 if [[ -f "$EXT_DIR/extension.js" ]]; then
     print_result "PASS" "file-structure/extension.js" "extension.js exists"
+elif [[ -f "$EXT_DIR/src/extension.js" ]]; then
+    print_result "PASS" "file-structure/extension.js" "extension.js exists (in src/)"
 else
     print_result "FAIL" "file-structure/extension.js" "extension.js is missing"
 fi
@@ -575,8 +577,14 @@ compute_metrics() {
     done < <(find "$EXT_DIR" -name '*.js' -not -path '*/node_modules/*' -not -path '*/.git/*' -print0 2>/dev/null)
 
     # Count CSS lines
+    local css_file=""
     if [[ -f "$EXT_DIR/stylesheet.css" ]]; then
-        css_lines=$(wc -l < "$EXT_DIR/stylesheet.css" 2>/dev/null || echo 0)
+        css_file="$EXT_DIR/stylesheet.css"
+    elif [[ -f "$EXT_DIR/src/stylesheet.css" ]]; then
+        css_file="$EXT_DIR/src/stylesheet.css"
+    fi
+    if [[ -n "$css_file" ]]; then
+        css_lines=$(wc -l < "$css_file" 2>/dev/null || echo 0)
     fi
 
     # Count schema keys

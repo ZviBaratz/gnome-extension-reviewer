@@ -1,0 +1,7 @@
+{
+    "uuid": "system-gsettings@test",
+    "name": "Test",
+    "description": "Test non-extension GSettings access",
+    "shell-version": ["48"],
+    "url": "https://example.com"
+}

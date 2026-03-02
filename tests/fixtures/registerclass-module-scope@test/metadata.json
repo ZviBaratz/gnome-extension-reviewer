@@ -1,0 +1,7 @@
+{
+    "uuid": "registerclass-module-scope@test",
+    "name": "Test",
+    "description": "Test GObject.registerClass at module scope",
+    "shell-version": ["48"],
+    "url": "https://example.com"
+}

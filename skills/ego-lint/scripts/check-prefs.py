@@ -35,6 +35,8 @@ def main():
 
     ext_dir = os.path.realpath(sys.argv[1])
     prefs_path = os.path.join(ext_dir, 'prefs.js')
+    if not os.path.isfile(prefs_path):
+        prefs_path = os.path.join(ext_dir, 'src', 'prefs.js')
 
     if not os.path.isfile(prefs_path):
         result("SKIP", "prefs/exists", "No prefs.js found")

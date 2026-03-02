@@ -601,6 +601,7 @@
   message: "Over-long identifier (>25 chars) is an AI verbosity indicator"
   category: ai-slop
   fix: "Shorten parameter names to be concise but clear (e.g., currentBatteryThresholdValue → threshold)"
+  guard-pattern: "\\w{25,}\\s*="
 
 - id: R-SLOP-40
   pattern: "new\\s+Promise\\s*\\(\\s*\\(\\s*resolve\\s*,\\s*reject\\s*\\)"
@@ -668,6 +669,7 @@
   message: "new Gio.Settings() is incorrect in GNOME 45+; use this.getSettings() from Extension base class"
   category: ai-slop
   fix: "Use this.getSettings() in Extension subclass or this.getSettings() in ExtensionPreferences"
+  guard-pattern: "schema.*org\\.gnome\\.(?!shell\\.extensions\\.)"
 
 - id: R-SLOP-25
   pattern: "\\bMain\\.extensionManager\\.(enable|disable)\\s*\\("

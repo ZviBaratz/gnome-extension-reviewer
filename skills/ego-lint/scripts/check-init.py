@@ -74,6 +74,10 @@ GOBJECT_CONSTRUCTORS = re.compile(
     r'Soup\.\w+|Cogl\.\w+|Atk\.\w+|GdkPixbuf\.\w+)\b'
 )
 
+# GObject.registerClass returns a class constructor, not an instance —
+# it's class registration (type definition), not resource allocation.
+REGISTER_CLASS = re.compile(r'\bGObject\.registerClass\s*\(')
+
 
 def extract_module_scope_lines(content_lines):
     """Extract lines that are at module scope (outside any class/function body).
@@ -176,7 +180,9 @@ def check_init_modifications(ext_dir):
             if SHELL_GLOBALS.search(line):
                 violations.append(f"{rel}:{lineno}")
             elif GOBJECT_CONSTRUCTORS.search(line):
-                violations.append(f"{rel}:{lineno}")
+                # GObject.registerClass() returns a class, not an instance
+                if not REGISTER_CLASS.search(line):
+                    violations.append(f"{rel}:{lineno}")
 
         # Check constructor() lines
         # GObject constructors in helper file constructors are runtime-only
