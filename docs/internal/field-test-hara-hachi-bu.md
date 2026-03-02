@@ -9,42 +9,49 @@ This is the consolidated findings registry for the project's calibration baselin
 | **Name** | hara-hachi-bu |
 | **UUID** | `hara-hachi-bu@ZviBaratz` |
 | **Source** | [GitHub](https://github.com/ZviBaratz/hara-hachi-bu) |
-| **GNOME versions** | 48 |
-| **Size** | 17 JS files, ~8,800 lines |
-| **License** | GPL-2.0-or-later |
+| **GNOME versions** | 46, 47, 48 |
+| **Size** | 18 JS files, ~8,894 lines |
+| **License** | GPL-3.0-or-later |
 | **EGO status** | Submitted, in review (v1.0 was rejected) |
 | **Why baseline** | Exercises pkexec/polkit, D-Bus proxies, file monitors, GSettings, scheduled profiles, boost charge state machine, multi-battery support. Covers nearly all lint categories. |
 
 ## Current Baseline
 
-Latest ego-lint results (2026-03-01):
+Latest ego-lint results (2026-03-02):
 
 | Status | Count |
 |--------|-------|
-| PASS | 201 |
+| PASS | 206 |
 | FAIL | 0 |
-| WARN | 8 |
+| WARN | 7 |
 | SKIP | 23 |
 | Exit | 0 |
 
 **ego-simulate score**: 1 (advisory #22 for notification volume). Verdict: "Likely to pass with minor comments."
 
+**ego-submit verdict**: READY TO SUBMIT (0 blocking issues, 0 risk points).
+
 **Remaining WARNs** (all correct/expected):
 
 | Warning | Nature |
 |---------|--------|
-| R-SEC-20 | pkexec scrutiny advisory — correct |
-| R-PREFS-04c | GTK layout widget advisory — correct (Gtk.Grid in prefs) |
-| R-SLOP-40 | Promise wrapper advisory — correct (powerProfileController.js) |
-| R-QUAL-33 | Gio._promisify() module-scope advisory — correct |
-| eslint | ESLint config error — external tool issue |
-| metadata/shell-version-current | GNOME 49 not in shell-version — correct (extension targets 48) |
-| quality/private-api | Private API with inline justification — suppressible |
-| polkit-files | Informational — polkit files present |
+| polkit-files | Informational — 2 polkit files present (expected) |
+| R-SEC-20 | pkexec scrutiny advisory — correct, disclosed in metadata |
+| R-PREFS-04c | GTK layout widget advisory — correct (ListBox, SpinButton in prefs) |
+| R-SLOP-40 | Promise wrapper advisory — correct (D-Bus proxy constructor) |
+| R-QUAL-33 | Gio._promisify() module-scope advisory — correct (standard GJS pattern) |
+| metadata/shell-version-current | GNOME 49 not in shell-version — intentional (untested) |
+| quality/private-api | Private API with inline justification — disclosed in metadata |
 
-**Resource graph**: 17 files, 72 creates, 108 destroys, 0 orphans, depth 3
+**Resource graph**: 17 files scanned, depth 3, 0 orphans
 
 **Code provenance score**: 3 (244 domain vocab, 59 algorithms, consistent camelCase naming)
+
+**AI pattern analysis**: 1/46 triggered (pkexec usage — contextually justified). Verdict: PASS.
+
+**Disclosure matrix**: All 6 capabilities (clipboard, network, pkexec, subprocess, private API, file I/O) checked — all properly disclosed or N/A. No gaps.
+
+**Package**: 100.3 KB zip, 34 files. No forbidden files, no secrets, no dev artifacts. MockDevice.js correctly excluded.
 
 ---
 
@@ -180,6 +187,7 @@ ego-submit says to produce a "readiness report" but doesn't define format. **Fix
 | 2026-02-27 (post-fix) | 191 | 0 | 6 | 17 | 0 | F-001 through F-005 fixed |
 | 2026-02-28 | 193 | 0 | 5 | 17 | 1 | F-006 through F-015 fixed; 4 new Tier 2 scripts |
 | 2026-03-01 | 201 | 0 | 8 | 23 | — | 6 new pattern rules, +3 WARNs (R-SLOP-40, R-QUAL-33, R-PREFS-04c), +6 SKIP (VER49/50) |
+| 2026-03-02 | 206 | 0 | 7 | 23 | 1 | Full ego-submit pipeline (3-agent parallel). ESLint WARN resolved. +5 PASS. ego-submit: READY TO SUBMIT |
 
 ---
 
