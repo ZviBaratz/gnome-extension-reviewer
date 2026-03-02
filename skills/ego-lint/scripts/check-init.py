@@ -78,6 +78,11 @@ GOBJECT_CONSTRUCTORS = re.compile(
 # it's class registration (type definition), not resource allocation.
 REGISTER_CLASS = re.compile(r'\bGObject\.registerClass\s*\(')
 
+# Value types / data containers that don't hold system resources
+VALUE_TYPES = re.compile(
+    r'\bnew\s+GLib\.(Bytes|Variant|DateTime|TimeZone|Regex|Uri)\b'
+)
+
 
 def extract_module_scope_lines(content_lines):
     """Extract lines that are at module scope (outside any class/function body).
@@ -181,7 +186,8 @@ def check_init_modifications(ext_dir):
                 violations.append(f"{rel}:{lineno}")
             elif GOBJECT_CONSTRUCTORS.search(line):
                 # GObject.registerClass() returns a class, not an instance
-                if not REGISTER_CLASS.search(line):
+                if not REGISTER_CLASS.search(line) and \
+                        not VALUE_TYPES.search(line):
                     violations.append(f"{rel}:{lineno}")
 
         # Check constructor() lines

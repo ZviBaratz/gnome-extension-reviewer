@@ -1,0 +1,7 @@
+{
+    "uuid": "fetch-method-name@test",
+    "name": "Fetch Method Name Test",
+    "description": "Tests that .fetch() method calls and definitions do not trigger R-WEB-03",
+    "shell-version": ["48"],
+    "url": "https://github.com/test/fetch-method-name"
+}

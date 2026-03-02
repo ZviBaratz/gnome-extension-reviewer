@@ -1,0 +1,7 @@
+{
+    "uuid": "gio-unix-fallback@test",
+    "name": "GioUnix Fallback Test",
+    "description": "Tests that Gio.UnixInputStream in a GioUnix fallback pattern is not flagged",
+    "shell-version": ["48"],
+    "url": "https://github.com/test/gio-unix-fallback"
+}

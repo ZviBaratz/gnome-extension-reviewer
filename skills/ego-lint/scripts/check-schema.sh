@@ -94,8 +94,9 @@ done
 for schema_file in "${schema_files[@]}"; do
     schema_id="$(grep -oP 'id="[^"]*"' "$schema_file" | head -1 | sed 's/id="//;s/"//')"
     if [[ -n "$schema_id" ]]; then
-        # Strip the standard prefix, then check for 'gnome' in the extension-specific part
-        ext_part="${schema_id#org.gnome.shell.extensions.}"
+        # Strip the standard prefix (case-insensitive), then check for 'gnome' in the extension-specific part
+        lower_id="${schema_id,,}"
+        ext_part="${lower_id#org.gnome.shell.extensions.}"
         if echo "$ext_part" | grep -qi "gnome"; then
             echo "FAIL|schema/gnome-trademark|GNOME trademark must not appear in schema ID extension part: $schema_id"
         fi

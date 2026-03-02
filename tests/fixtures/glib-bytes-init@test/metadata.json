@@ -1,0 +1,7 @@
+{
+    "uuid": "glib-bytes-init@test",
+    "name": "GLib Bytes Init Test",
+    "description": "Tests that new GLib.Bytes() at module scope does not trigger init/shell-modification",
+    "shell-version": ["48"],
+    "url": "https://github.com/test/glib-bytes-init"
+}

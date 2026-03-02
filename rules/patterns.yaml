@@ -42,6 +42,7 @@
   message: "fetch is a browser API; use Soup.Session for HTTP requests"
   category: web-apis
   fix: "Import Soup from 'gi://Soup?version=3.0' and use Soup.Session"
+  guard-pattern: "\\.\\s*fetch\\s*\\(|\\basync\\s+fetch\\s*\\("
 
 - id: R-WEB-04
   pattern: "\\bXMLHttpRequest\\b"
@@ -849,6 +850,7 @@
   category: version-compat
   fix: "Import GioUnix from 'gi://GioUnix' and use GioUnix.InputStream"
   min-version: 46
+  guard-pattern: "\\bGioUnix\\b"
 
 - id: R-VER46-05
   pattern: "\\bExtensionState\\.(ENABLED|DISABLED|INITIALIZED|DEACTIVATING|ACTIVATING)\\b"
