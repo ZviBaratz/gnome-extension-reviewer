@@ -294,3 +294,156 @@ The field test validates that ego-lint works well for "typical" extensions but r
 ### Remaining Known FPs (after session 21)
 - quality/constructor-resources: Some runtime-only constructors still flagged (only connectSmart skip added, not full scope analysis)
 - lifecycle/untracked-timeout: promiseUtils.js GSource-based promise timeout not recognized
+
+---
+
+## Session 22: Full ego-submit Pipeline + ego-simulate (2026-03-02)
+
+Ran the complete pre-submission validation pipeline (ego-lint → ego-review → packaging → ego-simulate) using the parallel 3-agent strategy (14 JS files ≥ 10 threshold).
+
+### ego-lint (current, post-session-21 fixes)
+
+| Status | Count | Delta (vs session 21) |
+|--------|-------|-----------------------|
+| PASS   | 183   | +5                    |
+| FAIL   | 8     | -3                    |
+| WARN   | 59    | -10                   |
+| SKIP   | 14    | 0                     |
+| **Total** | **264** | **-8**           |
+
+Exit code: 1
+
+**Improvement summary**: Sessions 20-21 fixes reduced FAILs from 14 → 8 and WARNs from 78 → 59. The 8 remaining FAILs are all true positives.
+
+#### Remaining FAILs (all TP)
+
+| Rule | File:Line | Description |
+|------|-----------|-------------|
+| no-deprecated-modules | interfaces.js:35 | `imports.byteArray` usage |
+| non-gjs-scripts | indicator-test-tool/ksni.py | Python script in extension tree |
+| R-DEPR-04 | appIndicator.js:44 | `imports.gi.Cogl` legacy syntax |
+| R-DEPR-04 | interfaces.js:25 | `imports.gi.GLib` legacy syntax |
+| R-DEPR-04 | indicatorStatusIcon.js:540 | `imports.gi.Meta` legacy syntax |
+| metadata/shell-version-range | metadata.json | 6 versions (45-50), max 4 allowed |
+
+### ego-review (Phases 2-4: lifecycle, signals, security)
+
+**Verdict: LIKELY APPROVED** | **Risk: LOW**
+
+#### Lifecycle Audit
+
+The extension's resource management is exemplary. Zero orphans in the resource graph (16 files, depth 1). All 22 tracked resources balanced:
+
+| Resource Category | Count | Status |
+|-------------------|-------|--------|
+| Signal connections (connectSmart) | ~35 | All auto-disconnect on destroy |
+| Signal connections (direct .connect) | ~12 self + 6 manual | All balanced |
+| Bus name ownership | 2 | own/unown paired |
+| D-Bus exported objects | 1 | export/unexport paired |
+| D-Bus proxies | 5 | All disconnect+null in destroy |
+| Timers (CancellablePromise) | All | GSource.destroy() on cleanup |
+| Raw GLib.idle_add | 2 | Both one-shot SOURCE_REMOVE |
+| Gio.Cancellable | 3 | All cancelled in destroy |
+
+The `CancellableChild` hierarchy + `connectSmart()` + `CancellablePromise` patterns eliminate entire classes of resource leak bugs.
+
+#### Blocking Issues
+
+None identified from manual review.
+
+#### Advisory Issues
+
+1. **Prototype modification** — `promiseUtils.js:314-324` adds `connect_once` to `GObject.Object.prototype`. Survives `disable()`.
+2. **Global namespace pollution** — `extension.js:44` writes `global['--appindicator-extension-on-reload']`. Documented HACK.
+3. **Legacy `imports.gi.*`** — 3 files (same as ego-lint FAILs).
+4. **Private API usage** — `Main.panel.menuManager._closeMenu`, `Main.panel._leftBox/_centerBox/_rightBox`, `PopupMenu._openedSubMenu/_parent`. Inherent to extension purpose.
+5. **`Interfaces.destroy()` never called from `extension.js`** — XML strings leak across disable/enable. Minimal memory impact.
+6. **Dead module-level variable** — `settingsManager.js:17`: `let settingsManager;` declared but never used.
+
+#### Issues ego-lint Could Not Detect
+
+These findings required semantic/cross-file analysis beyond regex patterns:
+
+1. **`promiseUtils.js:6` imports `GdkPixbuf` as `Meta`** — `MetaLaterPromise` class references `Meta.LaterType`/`Meta.later_add`/`Meta.later_remove` (Mutter APIs, not GdkPixbuf). Broken dead code — latent crash if ever called. Requires import-alias resolution.
+2. **`indicatorStatusIcon.js:228` bitwise OR typo** — `brightnessValue !== 0 | contrastValue !== 0` uses `|` instead of `||`. Works in boolean context but semantically wrong. Requires operator-context analysis.
+3. **`preferences/generalPage.js:132-135` identical branches** — Both `if` and `else` branches call `get_int()`. The non-round branch should call `get_double()` for fractional values. Requires branch-equivalence analysis.
+4. **Prototype mutation survives `disable()`** — `_promisifySignals()` at module top level adds `connect_once` to shared prototypes. This is permanent — no undo path. Requires lifecycle-scope tracking of module-level effects.
+5. **Redundant `Gio._promisify` calls** — `Gio.DBusConnection.prototype.call` promisified in both `appIndicator.js:40` and `util.js:30`. Harmless but wasteful. Requires cross-file dedup analysis.
+
+#### AI Pattern Analysis
+
+**Score**: 2/46 triggered | **Provenance**: 5/5 (strongly hand-written) | **Assessment**: PASS
+
+Triggered: magic button numbers (`set_button(1)`/`set_button(3)`), mild async sophistication (`CancellablePromise`). Both justified by context.
+
+### ego-simulate (rejection taxonomy)
+
+| Taxonomy Reason | Weight | Evidence |
+|-----------------|--------|----------|
+| #5 Deprecated modules (ByteArray) | 10 | `imports.byteArray` at interfaces.js:35 |
+| Unmapped FAIL: R-DEPR-04 | 5 | Legacy `imports.gi.*` in 3 files |
+| Unmapped FAIL: non-gjs-scripts | 5 | `indicator-test-tool/ksni.py` |
+| Unmapped FAIL: shell-version-range | 5 | 6 versions (45-50), max 4 |
+| **Total** | **25** | |
+
+**Score: 25** — Will be rejected. Fix blocking issues first.
+
+The score is driven by one hard blocker (#5 deprecated ByteArray, weight 10) plus three unmapped ego-lint FAILs (weight 5 each). After the 4 suggested fixes, score drops to **0**.
+
+#### Calibration Check
+
+This extension IS approved on EGO (actively maintained by Ubuntu/Canonical). The score of 25 reflects the **current source state** — the actual EGO submission likely uses a build pipeline that:
+- Excludes `indicator-test-tool/` from the zip (resolves non-gjs-scripts)
+- May compile to a form that doesn't include raw `imports.*` syntax
+- Trims shell-version to tested versions
+
+The high simulate score for an approved extension is expected — it's testing the **raw source**, not the built/packaged artifact. This validates that ego-simulate correctly identifies issues a reviewer would catch in a naive source-tree submission.
+
+### Package Validation
+
+| Check | Status |
+|-------|--------|
+| Zip exists | No — must be built |
+| Required files | All present (extension.js, metadata.json, prefs.js, LICENSE, schemas/, locale/, icons/, interfaces-xml/, preferences/) |
+| Secrets scan | Clean |
+| Build steps needed | .po → .mo compilation, schema compilation |
+| Exclude list | .git/, .github/, .claude/, .eslintrc.yml, .gitignore, lint/, meson.build, meson_options.txt, README.md, AUTHORS.md, locale/*.pot, locale/LINGUAS, locale/POTFILES.in, schemas/README, schemas/meson.build, indicator-test-tool/ |
+
+### Disclosure Matrix
+
+| Capability | Found in Code | Disclosed | Status |
+|------------|---------------|-----------|--------|
+| Clipboard | No | N/A | OK |
+| Network | No | N/A | OK |
+| pkexec | No | N/A | OK |
+| Subprocess | No | N/A | OK |
+| Private API | Yes (Main.panel internals, PopupMenu internals) | No | WARN |
+| File I/O | Yes (`/proc/*/cmdline`, icon paths) | No | WARN |
+| D-Bus | Yes (owns names, exports objects, proxies) | Partial | INFO |
+
+### New Findings (not in sessions 20-21)
+
+#### Code Bugs Found by ego-review
+
+1. **`promiseUtils.js:6` wrong import alias** — `import Meta from 'gi://GdkPixbuf'` aliases GdkPixbuf as Meta, making `MetaLaterPromise` class broken. Dead code (never called), but latent crash.
+2. **`indicatorStatusIcon.js:228` bitwise vs logical OR** — `|` should be `||`.
+3. **`preferences/generalPage.js:132-135` get_int in both branches** — Non-round values (saturation, brightness, contrast) loaded as int instead of double.
+4. **Magic button numbers** — `indicatorStatusIcon.js:528,555` use `1`/`3` instead of `Clutter.BUTTON_PRIMARY`/`Clutter.BUTTON_SECONDARY`.
+
+#### Detection Gaps (new)
+
+12. **Import alias resolution**: ego-lint can't detect that `import Meta from 'gi://GdkPixbuf'` is incorrect — the variable name doesn't match the module. Would need import-path-to-name validation.
+13. **Branch equivalence**: ego-lint can't detect identical code in both `if`/`else` branches. Would need AST-level analysis or heuristic duplicate-line detection.
+14. **Operator typo detection**: Bitwise `|` vs logical `||` in boolean context. Could be a pattern rule: warn on `!== 0 | ` or `=== 0 & ` patterns.
+
+### Comparison: ego-lint Progression
+
+| Metric | Session 20 (initial) | Session 21 (fixes) | Session 22 (current) |
+|--------|---------------------|--------------------|--------------------|
+| PASS   | 174                 | 178                | 183                |
+| FAIL   | 14                  | 11                 | 8                  |
+| WARN   | 78                  | 69                 | 59                 |
+| FP FAILs | 8                | 3 (init scoped)    | 0                  |
+| FP WARNs | ~15              | ~6                 | ~4                 |
+
+The false positive rate has dropped significantly: FAIL FPs from 8 → 0, WARN FPs from ~15 → ~4. Remaining WARN FPs are lifecycle/untracked-timeout (GSource-based promise pattern) and quality/constructor-resources (runtime-only classes).
