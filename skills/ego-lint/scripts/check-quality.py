@@ -400,11 +400,18 @@ def check_constructor_resources(ext_dir, js_files):
 
     found = False
 
+    # Directories that don't have enable()/disable() lifecycle
+    non_lifecycle_dirs = {'service', 'preferences'}
+
     for filepath in js_files:
         rel = os.path.relpath(filepath, ext_dir)
         # prefs.js has no enable()/disable() — widget signals in constructors
         # auto-cleanup when the preferences window closes
         if os.path.basename(filepath) == 'prefs.js':
+            continue
+        # Service daemon and preferences dirs run outside the extension lifecycle
+        rel_parts = rel.replace(os.sep, '/').split('/')
+        if rel_parts[0] in non_lifecycle_dirs:
             continue
         with open(filepath, encoding='utf-8', errors='replace') as f:
             content = f.read()

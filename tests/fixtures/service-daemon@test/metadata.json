@@ -1,0 +1,7 @@
+{
+    "uuid": "service-daemon@test",
+    "name": "Service Daemon Test",
+    "description": "Tests that service/ directory files skip extension-specific checks",
+    "shell-version": ["47"],
+    "url": "https://example.com"
+}

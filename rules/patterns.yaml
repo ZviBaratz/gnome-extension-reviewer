@@ -671,6 +671,7 @@
   category: ai-slop
   fix: "Use this.getSettings() in Extension subclass or this.getSettings() in ExtensionPreferences"
   guard-pattern: "schema.*org\\.gnome\\.(?!shell\\.extensions\\.)"
+  exclude-dirs: ["service"]
 
 - id: R-SLOP-25
   pattern: "\\bMain\\.extensionManager\\.(enable|disable)\\s*\\("

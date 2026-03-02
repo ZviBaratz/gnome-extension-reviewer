@@ -35,8 +35,8 @@ def strip_comments(content):
 
 
 def find_js_files(ext_dir):
-    """Find all .js files excluding prefs.js."""
-    skip_dirs = {'node_modules', '.git', '__pycache__'}
+    """Find all .js files excluding prefs.js and service daemon directories."""
+    skip_dirs = {'node_modules', '.git', '__pycache__', 'service'}
     files = []
     for root, dirs, filenames in os.walk(ext_dir):
         dirs[:] = [d for d in dirs if d not in skip_dirs]

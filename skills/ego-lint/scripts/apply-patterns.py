@@ -258,6 +258,7 @@ def main():
         status = 'FAIL' if severity == 'blocking' else 'WARN'
         found = False
         dedup_files = set()  # For deduplicate mode
+        exclude_dirs = set(rule.get('exclude-dirs', []))
 
         try:
             compiled = re.compile(pattern)
@@ -280,6 +281,11 @@ def main():
                 rel = os.path.relpath(filepath, ext_dir)
                 if any(part in skip_dirs for part in rel.split(os.sep)):
                     continue
+                # Skip files in excluded directories (e.g., service daemons)
+                if exclude_dirs:
+                    rel_parts = rel.replace(os.sep, '/').split('/')
+                    if rel_parts[0] in exclude_dirs:
+                        continue
                 seen.add(filepath)
                 try:
                     with open(filepath, encoding='utf-8', errors='replace') as f:
