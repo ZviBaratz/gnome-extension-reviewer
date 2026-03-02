@@ -1,0 +1,7 @@
+{
+    "uuid": "import-graph@test",
+    "name": "Import Graph Test",
+    "description": "Tests import graph traversal for GTK import checks",
+    "shell-version": ["47", "48"],
+    "url": "https://github.com/test/import-graph"
+}
