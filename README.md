@@ -1,12 +1,14 @@
 ![Tests](https://github.com/ZviBaratz/gnome-extension-reviewer/actions/workflows/test.yml/badge.svg)
+![License: GPL-2.0-or-later](https://img.shields.io/badge/License-GPL--2.0--or--later-blue.svg)
+![Python 3](https://img.shields.io/badge/Python-3-blue.svg)
 
-# gnome-extension-reviewer
+# 🔍 gnome-extension-reviewer
 
-Automated pre-submission checks for GNOME Shell extensions, built from analysis of real EGO review decisions. ego-lint catches the mechanical issues that cause the most common rejections — so extensions arrive cleaner and reviewers spend less time on round-trips.
+**Automated pre-submission checks for GNOME Shell extensions**, built from analysis of real EGO review decisions. ego-lint catches the mechanical issues that cause the most common rejections — so extensions arrive cleaner and reviewers spend less time on round-trips.
 
-ego-lint is fully deterministic: bash + python + YAML rules. No AI at runtime, no network access, no dependencies beyond coreutils.
+> Fully deterministic: bash + python + YAML rules. No AI at runtime, no network access, no dependencies beyond coreutils.
 
-## Quick Start
+## 🚀 Quick Start
 
 ```bash
 git clone https://github.com/ZviBaratz/gnome-extension-reviewer.git
@@ -31,54 +33,7 @@ Try it on a bundled test fixture:
 
 > Runs in ~2 seconds on typical extensions, ~4 seconds on large ones (11 modules). No network access.
 
-## For EGO Reviewers
-
-This tool encodes the mechanical checks you already do by hand — import segregation, lifecycle symmetry, metadata validation, resource cleanup — into automated, reproducible rules. The rules are grounded in [real EGO review analysis](docs/research/) and designed to be co-owned: adding a new check is [4 lines of YAML](CONTRIBUTING.md).
-
-### Your First 10 Minutes
-
-1. Run `./ego-lint` on an extension from your review queue
-2. Compare findings against your own review notes
-3. If something is wrong: [open an issue](https://github.com/ZviBaratz/gnome-extension-reviewer/issues)
-4. If something is missing: add a [4-line YAML rule](CONTRIBUTING.md)
-
-You are invited to shape the rules, adjust severity, and add checks for rejection patterns you see often.
-
-## How This Was Built
-
-- **Claude Code wrote the code** — scripts, rules, tests, and docs were developed using [Claude Code](https://docs.anthropic.com/en/docs/claude-code) (Anthropic's AI coding tool). Every design decision was human-reviewed. The AI slop detection rules are based on patterns observed in real EGO rejections of AI-generated submissions.
-- **Research was AI-assisted** — Discourse mining, guideline extraction, cross-source synthesis, and gap analysis were performed with Claude Code and verified against real EGO reviews on extensions.gnome.org, [gjs.guide](https://gjs.guide) requirements, and GNOME Shell GitLab history. Regression-tested against a real 11-module extension as baseline.
-- **ego-lint itself is AI-free** — The output artifact is deterministic bash + python + YAML. No API calls. No network access. No model inference. AI was the development tool, not the runtime tool.
-
-## Where to Start
-
-- **Adding rules**: [CONTRIBUTING.md](CONTRIBUTING.md) — 5-minute workflow for adding a check
-- **Architecture**: [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) — three-tier rule system, script internals
-- **All rules**: [rules/patterns.yaml](rules/patterns.yaml) — 124 pattern rules with rationale
-
-## What Gets Checked
-
-| Category | Checks |
-|----------|--------|
-| **Metadata** | UUID format/match, required fields, shell-version format, session-modes, GNOME trademark, donations |
-| **Imports** | GTK/Gdk/Adw banned in extension.js; Clutter/Meta/St/Shell banned in prefs.js; transitive dependency analysis |
-| **Schema** | Schema ID matches metadata, path format, `glib-compile-schemas` dry-run |
-| **Lifecycle** | enable/disable symmetry, signal cleanup, timeout removal, InjectionManager, D-Bus unexport, widget destroy, settings null, subprocess cancellation |
-| **Async** | `_destroyed` guards, cancellable usage, per-call cancellable verification |
-| **GObject** | `GObject.registerClass` patterns, GTypeName validation |
-| **Resources** | Cross-file resource graph (signals, timeouts, widgets, D-Bus, file monitors, GSettings), orphan detection |
-| **Security** | Subprocess validation, pkexec targets, clipboard/network disclosure, `/tmp` writes, telemetry, curl/gsettings spawn |
-| **Deprecated** | Mainloop, Lang, ByteArray, ExtensionUtils, Tweener, legacy `imports.*` syntax |
-| **Web APIs** | setTimeout, setInterval, fetch, XMLHttpRequest, WebSocket, localStorage |
-| **Version Compat** | GNOME 44–50 migration rules (version-gated, only fire for declared shell-versions) |
-| **CSS** | Unscoped class names, `!important` usage, GNOME Shell theme class overrides |
-| **Code Quality** | AI slop detection (try-catch density, impossible states, empty catches, obfuscation, code provenance scoring) |
-| **Package** | Forbidden files in zip, required files, compiled schemas for GNOME 45+ |
-| **Preferences** | ExtensionPreferences base class, GTK4/Adwaita patterns, memory leak detection |
-
-Of the 124 pattern rules, 64 are blocking (FAIL) and 60 are advisory (WARN). Structural checks add further findings. See [`rules/patterns.yaml`](rules/patterns.yaml) for the full list with rationale.
-
-### Sample Output
+## 📋 Sample Output
 
 ```
 ================================================================
@@ -107,25 +62,44 @@ Extension: /path/to/my-extension@username
 ----------------------------------------------------------------
 ```
 
-## How This Helps the Review Queue
+## 🔍 What Gets Checked
 
-ego-lint automates the mechanical checks that cause the most common rejections. When developers run it before submitting, it catches issues that would otherwise require reviewer round-trips:
+200+ checks across 14 categories — 64 blocking rules (FAIL) and 60 advisory rules (WARN), plus structural checks.
 
-- **Transitive import analysis** — BFS from `prefs.js` through relative imports to catch indirect Shell runtime dependencies (`gi://St`, `gi://Clutter`, etc.)
-- **Cross-file resource tracking** — builds a resource graph (signals, timeouts, widgets, D-Bus, file monitors, GSettings) and detects orphans that aren't cleaned up
-- **AI pattern detection** — code provenance scoring, try-catch density, impossible state guards, `typeof super.method` checks, and 40+ other heuristic signals for AI-generated code (patterns identified as common in AI-generated submissions per the [December 2025 GNOME blog post](https://blogs.gnome.org/shell-dev/2025/12/18/extensions-and-ai/))
-- **Version-gated rules** — GNOME 44–50 migration rules that only fire when the extension's declared `shell-version` includes the relevant version
+<details>
+<summary>Full check categories (14)</summary>
 
-ego-lint does **not**:
+| Category | Checks |
+|----------|--------|
+| **Metadata** | UUID format/match, required fields, shell-version format, session-modes, GNOME trademark, donations |
+| **Imports** | GTK/Gdk/Adw banned in extension.js; Clutter/Meta/St/Shell banned in prefs.js; transitive dependency analysis |
+| **Schema** | Schema ID matches metadata, path format, `glib-compile-schemas` dry-run |
+| **Lifecycle** | enable/disable symmetry, signal cleanup, timeout removal, InjectionManager, D-Bus unexport, widget destroy, settings null, subprocess cancellation |
+| **Async** | `_destroyed` guards, cancellable usage, per-call cancellable verification |
+| **GObject** | `GObject.registerClass` patterns, GTypeName validation |
+| **Resources** | Cross-file resource graph (signals, timeouts, widgets, D-Bus, file monitors, GSettings), orphan detection |
+| **Security** | Subprocess validation, pkexec targets, clipboard/network disclosure, `/tmp` writes, telemetry, curl/gsettings spawn |
+| **Deprecated** | Mainloop, Lang, ByteArray, ExtensionUtils, Tweener, legacy `imports.*` syntax |
+| **Web APIs** | setTimeout, setInterval, fetch, XMLHttpRequest, WebSocket, localStorage |
+| **Version Compat** | GNOME 44–50 migration rules (version-gated, only fire for declared shell-versions) |
+| **CSS** | Unscoped class names, `!important` usage, GNOME Shell theme class overrides |
+| **Code Quality** | AI slop detection (try-catch density, impossible states, empty catches, obfuscation, code provenance scoring) |
+| **Package** | Forbidden files in zip, required files, compiled schemas for GNOME 45+ |
+| **Preferences** | ExtensionPreferences base class, GTK4/Adwaita patterns, memory leak detection |
 
-- Make approval/rejection decisions
-- Use AI inference or network access at runtime
-- Check logic correctness or functionality
-- Replace human review judgment
+See [`rules/patterns.yaml`](rules/patterns.yaml) for the full list with rationale.
 
-### Rules Format
+</details>
 
-Pattern rules are declared in [`rules/patterns.yaml`](rules/patterns.yaml) — adding a new check is 4 lines of YAML:
+## ⚙️ How It Works
+
+ego-lint uses a **three-tier rule system**:
+
+- **Tier 1 — Pattern rules** (`rules/patterns.yaml`): 124 regex-based rules in declarative YAML, with version-gating, guard patterns, and file-level suppression
+- **Tier 2 — Structural checks** (Python/bash scripts): Cross-file resource graph analysis, lifecycle symmetry verification, import BFS, AI slop heuristics
+- **Tier 3 — Semantic checklists** (Markdown): Applied by Claude during `ego-review` — lifecycle, security, code quality, AI slop, licensing, accessibility
+
+Adding a new Tier 1 check is 4 lines of YAML:
 
 ```yaml
 - id: R-DEPR-08
@@ -136,9 +110,68 @@ Pattern rules are declared in [`rules/patterns.yaml`](rules/patterns.yaml) — a
   category: deprecated
 ```
 
-See [CONTRIBUTING.md](CONTRIBUTING.md) for the full guide, including a 5-minute workflow for reviewers.
+ego-lint does **not**:
 
-## Research Background
+- Make approval/rejection decisions
+- Use AI inference or network access at runtime
+- Check logic correctness or functionality
+- Replace human review judgment
+
+See [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) for the full architecture, including why AI is only in Tier 3.
+
+## 👩‍💻 For Extension Developers
+
+Run ego-lint before submitting to EGO — it catches the mechanical issues that cause the most common rejections.
+
+**CI integration**: Pure bash + python, exits 0/1, no network access. Tested against 186 fixtures with 495 assertions. See [docs/ci-integration.md](docs/ci-integration.md) for GitHub Actions and GitLab CI examples.
+
+**All rules**: [`rules/patterns.yaml`](rules/patterns.yaml) — 124 pattern rules with rationale, plus [rules reference](skills/ego-lint/references/rules-reference.md) for the full `R-XXXX-NN` catalog.
+
+## 👁️ For EGO Reviewers
+
+This tool encodes the mechanical checks you already do by hand — import segregation, lifecycle symmetry, metadata validation, resource cleanup — into automated, reproducible rules. The rules are grounded in [real EGO review analysis](docs/research/) and designed to be co-owned: adding a new check is [4 lines of YAML](CONTRIBUTING.md).
+
+### Your First 10 Minutes
+
+1. Run `./ego-lint` on an extension from your review queue
+2. Compare findings against your own review notes
+3. If something is wrong: [open an issue](https://github.com/ZviBaratz/gnome-extension-reviewer/issues)
+4. If something is missing: add a [4-line YAML rule](CONTRIBUTING.md)
+
+You are invited to shape the rules, adjust severity, and add checks for rejection patterns you see often.
+
+## 🧰 Complete Toolkit
+
+ego-lint is the standalone core — deterministic, no dependencies, works in CI. The Claude Code skills extend it with AI-powered analysis for developers who want deeper review coverage:
+
+| Skill | Description |
+|-------|-------------|
+| `ego-review` | Multi-phase code review applying 6 semantic checklists (lifecycle, security, code quality, AI slop, licensing, accessibility) |
+| `ego-simulate` | Estimates review readiness using rejection taxonomy and published review criteria |
+| `ego-scaffold` | Generates EGO-compliant extension boilerplate from templates |
+| `ego-submit` | Full pipeline: lint → review → package validation → readiness report |
+
+```bash
+claude plugins add github:ZviBaratz/gnome-extension-reviewer
+```
+
+The four skills above use Claude to analyze extension source code via Anthropic's API. ego-lint itself makes no API calls — it's the same deterministic tool whether or not you use the plugin.
+
+## 📖 How This Was Built
+
+<details>
+<summary>AI transparency — development process and methodology</summary>
+
+- **Claude Code wrote the code** — scripts, rules, tests, and docs were developed using [Claude Code](https://docs.anthropic.com/en/docs/claude-code) (Anthropic's AI coding tool). Every design decision was human-reviewed. The AI slop detection rules are based on patterns observed in real EGO rejections of AI-generated submissions.
+- **Research was AI-assisted** — Discourse mining, guideline extraction, cross-source synthesis, and gap analysis were performed with Claude Code and verified against real EGO reviews on extensions.gnome.org, [gjs.guide](https://gjs.guide) requirements, and GNOME Shell GitLab history. Regression-tested against a real 11-module extension as baseline.
+- **ego-lint itself is AI-free** — The output artifact is deterministic bash + python + YAML. No API calls. No network access. No model inference. AI was the development tool, not the runtime tool.
+
+</details>
+
+## 📚 Research Background
+
+<details>
+<summary>Real EGO review analysis — 9 reviews, 26 findings, 8 unwritten rules</summary>
 
 The rules and checks are grounded in analysis of real EGO review behavior — not just the official documentation.
 
@@ -161,40 +194,12 @@ Key unwritten rules discovered:
 
 Full research: [docs/research/](docs/research/) | Coverage gaps: [docs/research/gap-analysis.md](docs/research/gap-analysis.md)
 
-## Known Limitations
+</details>
 
-- **Does not guarantee EGO approval** — use as guidance, not certification
-- Rules are based primarily on active EGO reviewer patterns; individual reviewers may have different preferences
-- Some checks are heuristic (AI slop detection, code quality scoring) and may produce false positives
-- Per-line `_async()` cancellable check is a heuristic — some `null` cancellable calls are valid
-- Full gap list: [docs/research/gap-analysis.md](docs/research/gap-analysis.md)
+## 🗺️ Roadmap
 
-## Community
-
-The rules belong to whoever shapes them. Reviewers who contribute checks, adjust severity, or report false positives define what ego-lint enforces and how. If you see a rejection pattern that ego-lint misses, [adding it](CONTRIBUTING.md) is a 4-line YAML change. See [GOVERNANCE.md](GOVERNANCE.md) for how rule decisions are made.
-
-### Discussion
-
-Join the conversation in [#extensions:gnome.org](https://matrix.to/#/#extensions:gnome.org) on Matrix.
-
-### Ways to Contribute
-
-Beyond writing new rules:
-
-- **Validate existing rules** — run ego-lint on extensions from your queue and report where it gets things right or wrong
-- **Propose severity changes** — if a WARN should be a FAIL (or vice versa), open an issue with your reasoning
-- **Report missing patterns** — rejection reasons ego-lint doesn't catch yet
-
-### Help Wanted
-
-Self-contained improvements where reviewer expertise would be especially valuable:
-
-- **Polkit action ID validation** — verify `.policy` file exists with `org.gnome.shell.extensions.*` ID when `pkexec` is used
-- **Schema filename validation** — ensure `.gschema.xml` filename matches the schema ID inside
-- **Module-scope mutable state** — detect `Map`/`Set` at module level (mutable state outside `enable()`/`disable()`)
-- **New rejection patterns** — if you see a common rejection reason not covered by ego-lint, [open an issue](https://github.com/ZviBaratz/gnome-extension-reviewer/issues) with the pattern
-
-## Roadmap
+<details>
+<summary>Planned improvements</summary>
 
 - [ ] Polkit action ID validation (verify `.policy` file when `pkexec` is used)
 - [ ] Schema filename validation (ensure `.gschema.xml` filename matches schema ID)
@@ -203,30 +208,25 @@ Self-contained improvements where reviewer expertise would be especially valuabl
 
 Full gap list: [docs/research/gap-analysis.md](docs/research/gap-analysis.md)
 
-## Complete Toolkit
+</details>
 
-ego-lint is the standalone core — deterministic, no dependencies, works in CI. The Claude Code skills extend it with AI-powered analysis for developers who want deeper review coverage:
+## ⚠️ Known Limitations
 
-| Skill | Description |
-|-------|-------------|
-| `ego-review` | Multi-phase code review applying 6 semantic checklists (lifecycle, security, code quality, AI slop, licensing, accessibility) |
-| `ego-simulate` | Estimates review readiness using rejection taxonomy and published review criteria |
-| `ego-scaffold` | Generates EGO-compliant extension boilerplate from templates |
-| `ego-submit` | Full pipeline: lint → review → package validation → readiness report |
+<details>
+<summary>Caveats and scope</summary>
 
-```bash
-claude plugins add github:ZviBaratz/gnome-extension-reviewer
-```
+- **Does not guarantee EGO approval** — use as guidance, not certification
+- Rules are based primarily on active EGO reviewer patterns; individual reviewers may have different preferences
+- Some checks are heuristic (AI slop detection, code quality scoring) and may produce false positives
+- Per-line `_async()` cancellable check is a heuristic — some `null` cancellable calls are valid
+- Full gap list: [docs/research/gap-analysis.md](docs/research/gap-analysis.md)
 
-The four skills above use Claude to analyze extension source code via Anthropic's API. ego-lint itself makes no API calls — it's the same deterministic tool whether or not you use the plugin.
+</details>
 
-## Reporting Issues
+## 🔧 Troubleshooting
 
-Found a false positive? Rule missing a common rejection reason? [Open an issue](https://github.com/ZviBaratz/gnome-extension-reviewer/issues) with the rule ID and a code sample. False positives in blocking rules are treated as high priority.
-
-**CI integration**: Pure bash + python, exits 0/1, no network access, no dependencies beyond coreutils. Tested against 153 fixtures with 416 assertions. See [docs/ci-integration.md](docs/ci-integration.md) for GitHub Actions and GitLab CI examples.
-
-## Troubleshooting
+<details>
+<summary>Common problems and fixes</summary>
 
 | Problem | Fix |
 |---------|-----|
@@ -235,14 +235,19 @@ Found a false positive? Rule missing a common rejection reason? [Open an issue](
 | ESLint check skipped | Install Node.js: `sudo apt install nodejs npm` or `sudo dnf install nodejs npm` |
 | `zipinfo: not found` | `sudo apt install unzip` or `sudo dnf install unzip` |
 
+</details>
+
 ## Requirements
 
 - **Required**: bash, python3
 - **Optional**: npm/node (ESLint checks), glib-compile-schemas (schema validation), zipinfo/unzip (package checks)
 
-## Contributing
+## 🤝 Contributing & Community
 
-See [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines on adding rules, reporting false positives, and the rule lifecycle.
+- **Add rules, report false positives**: [CONTRIBUTING.md](CONTRIBUTING.md)
+- **Governance and rule decisions**: [GOVERNANCE.md](GOVERNANCE.md)
+- **Join the conversation**: [#extensions:gnome.org](https://matrix.to/#/#extensions:gnome.org) on Matrix
+- **Report issues**: [GitHub Issues](https://github.com/ZviBaratz/gnome-extension-reviewer/issues) — false positives in blocking rules are high priority
 
 ## License
 

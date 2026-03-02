@@ -290,6 +290,23 @@ If ego-lint flags something incorrectly:
 
 False positives in blocking rules (FAIL) are treated as high priority. False positives in advisory rules (WARN) are tracked and addressed in batches.
 
+## Ways to Contribute
+
+Beyond writing new rules:
+
+- **Validate existing rules** — run ego-lint on extensions from your queue and report where it gets things right or wrong
+- **Propose severity changes** — if a WARN should be a FAIL (or vice versa), open an issue with your reasoning
+- **Report missing patterns** — rejection reasons ego-lint doesn't catch yet
+
+### Help Wanted
+
+Self-contained improvements where reviewer expertise would be especially valuable:
+
+- **Polkit action ID validation** — verify `.policy` file exists with `org.gnome.shell.extensions.*` ID when `pkexec` is used
+- **Schema filename validation** — ensure `.gschema.xml` filename matches the schema ID inside
+- **Module-scope mutable state** — detect `Map`/`Set` at module level (mutable state outside `enable()`/`disable()`)
+- **New rejection patterns** — if you see a common rejection reason not covered by ego-lint, [open an issue](https://github.com/ZviBaratz/gnome-extension-reviewer/issues) with the pattern
+
 ## Rule Lifecycle
 
 - New rules start as **advisory** (WARN) unless they correspond to a documented MUST requirement in the official guidelines
