@@ -1,0 +1,7 @@
+{
+    "uuid": "version-guard-boolean@test",
+    "name": "Version Guard Boolean Test",
+    "description": "Tests guard-pattern suppression for boolean feature detection",
+    "shell-version": ["49"],
+    "url": "https://example.com"
+}

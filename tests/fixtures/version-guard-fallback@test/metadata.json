@@ -1,0 +1,7 @@
+{
+    "uuid": "version-guard-fallback@test",
+    "name": "Version Guard Fallback Test",
+    "description": "Tests guard-pattern suppression for version-compat fallback idioms",
+    "shell-version": ["49"],
+    "url": "https://example.com"
+}

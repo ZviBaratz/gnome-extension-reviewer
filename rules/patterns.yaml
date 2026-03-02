@@ -812,6 +812,7 @@
   category: version-compat
   fix: "Use global.compositor.get_laters().removeLater(id)"
   min-version: 44
+  guard-pattern: "if\\s*\\(\\s*global\\.compositor\\s*\\)"
 
 - id: R-VER46-01
   pattern: "\\.add_actor\\s*\\("
@@ -878,6 +879,7 @@
   category: version-compat
   fix: "Use Clutter.Actor add_child/remove_child instead of Container interface methods"
   min-version: 46
+  guard-pattern: "!\\s*Clutter\\.Container"
 
 # --- GNOME 47 migration (version-gated) ---
 # Clutter.Color removed in GNOME 47; use Cogl.Color.
@@ -890,6 +892,7 @@
   category: version-compat
   fix: "Import Cogl from 'gi://Cogl' and use new Cogl.Color() instead"
   min-version: 47
+  guard-pattern: "Clutter\\.Color\\s*\\?"
 
 # --- GNOME 48 migration (version-gated) ---
 # Clutter.Image, Meta display functions, CSS class renames.
@@ -911,6 +914,7 @@
   category: version-compat
   fix: "Access via global.compositor instead of Meta directly"
   min-version: 48
+  guard-pattern: "if\\s*\\(\\s*Meta\\.disable_unredirect"
 
 - id: R-VER48-03
   pattern: "\\bCursorTracker\\.get_for_display\\b"
@@ -987,6 +991,7 @@
   category: version-compat
   fix: "Use new Clutter.ClickGesture() instead"
   min-version: 49
+  guard-pattern: "\\|\\|\\s*Clutter\\.Click(Gesture|Action)|if\\s*\\(\\s*Clutter\\.ClickAction"
 
 - id: R-VER49-03
   pattern: "\\bClutter\\.TapAction\\b"

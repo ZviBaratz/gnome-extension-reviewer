@@ -375,7 +375,6 @@ def check_constructor_resources(ext_dir, js_files):
     bad_patterns = [
         (r'this\.getSettings\s*\(', 'this.getSettings()'),
         (r'\.connect\s*\(', '.connect()'),
-        (r'\.connectObject\s*\(', '.connectObject()'),
         (r'timeout_add', 'GLib.timeout_add()'),
         (r'new\s+Gio\.DBusProxy', 'new Gio.DBusProxy()'),
     ]
@@ -429,20 +428,23 @@ def check_constructor_resources(ext_dir, js_files):
             if is_widget:
                 continue  # Skip widget constructors
 
-            # Skip if the class has a destroy() method (lifecycle-aware)
-            # Look for destroy() between this class and the next class (or EOF)
+            # Skip if the class has a destroy()/disable() method (lifecycle-aware)
+            # Look for cleanup between this class and the next class (or EOF)
             class_start = None
             for cm in re.finditer(r'class\s+\w+', content):
                 if cm.start() < m.start():
                     class_start = cm.start()
-            if class_start is not None:
-                next_class = re.search(r'\nclass\s+\w+', content[m.start():])
-                class_end = m.start() + next_class.start() if next_class else len(content)
-                class_body = content[class_start:class_end]
-                if re.search(r'\bdestroy\s*\(\s*\)\s*\{', class_body):
-                    continue  # Class manages its own lifecycle
-                if re.search(r'\.(connectSmart|disconnectSmart)\s*\(', class_body):
-                    continue  # Class uses smart signal management
+            if class_start is None:
+                continue  # No enclosing class — likely a prototype injection
+            next_class = re.search(r'\nclass\s+\w+', content[m.start():])
+            class_end = m.start() + next_class.start() if next_class else len(content)
+            class_body = content[class_start:class_end]
+            if re.search(r'\b(?:destroy|disable)\s*\(\s*\)\s*\{', class_body):
+                continue  # Class manages its own lifecycle
+            if re.search(r'\.(connectSmart|disconnectSmart)\s*\(', class_body):
+                continue  # Class uses smart signal management
+            if re.search(r'\.(connectObject|disconnectObject)\s*\(', class_body):
+                continue  # Class uses GObject auto-managed signals
 
             # Extract the constructor body (find matching brace)
             start = m.end()

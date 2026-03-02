@@ -1,0 +1,7 @@
+{
+    "uuid": "managed-constructor@test",
+    "name": "Managed Constructor Test",
+    "description": "Tests constructor-resources suppression for managed classes",
+    "shell-version": ["47"],
+    "url": "https://example.com"
+}
