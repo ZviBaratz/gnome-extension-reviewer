@@ -159,19 +159,11 @@ The four skills above use Claude to analyze extension source code via Anthropic'
 
 ## 📖 How This Was Built
 
-<details>
-<summary>AI transparency — development process and methodology</summary>
-
 - **Claude Code wrote the code** — scripts, rules, tests, and docs were developed using [Claude Code](https://docs.anthropic.com/en/docs/claude-code) (Anthropic's AI coding tool). Every design decision was human-reviewed. The AI slop detection rules are based on patterns observed in real EGO rejections of AI-generated submissions.
 - **Research was AI-assisted** — Discourse mining, guideline extraction, cross-source synthesis, and gap analysis were performed with Claude Code and verified against real EGO reviews on extensions.gnome.org, [gjs.guide](https://gjs.guide) requirements, and GNOME Shell GitLab history. Regression-tested against a real 11-module extension as baseline.
 - **ego-lint itself is AI-free** — The output artifact is deterministic bash + python + YAML. No API calls. No network access. No model inference. AI was the development tool, not the runtime tool.
 
-</details>
-
 ## 📚 Research Background
-
-<details>
-<summary>Real EGO review analysis — 9 reviews, 26 findings, 8 unwritten rules</summary>
 
 The rules and checks are grounded in analysis of real EGO review behavior — not just the official documentation.
 
@@ -194,12 +186,7 @@ Key unwritten rules discovered:
 
 Full research: [docs/research/](docs/research/) | Coverage gaps: [docs/research/gap-analysis.md](docs/research/gap-analysis.md)
 
-</details>
-
 ## 🗺️ Roadmap
-
-<details>
-<summary>Planned improvements</summary>
 
 - [ ] Polkit action ID validation (verify `.policy` file when `pkexec` is used)
 - [ ] Schema filename validation (ensure `.gschema.xml` filename matches schema ID)
@@ -208,12 +195,7 @@ Full research: [docs/research/](docs/research/) | Coverage gaps: [docs/research/
 
 Full gap list: [docs/research/gap-analysis.md](docs/research/gap-analysis.md)
 
-</details>
-
 ## ⚠️ Known Limitations
-
-<details>
-<summary>Caveats and scope</summary>
 
 - **Does not guarantee EGO approval** — use as guidance, not certification
 - Rules are based primarily on active EGO reviewer patterns; individual reviewers may have different preferences
@@ -221,12 +203,7 @@ Full gap list: [docs/research/gap-analysis.md](docs/research/gap-analysis.md)
 - Per-line `_async()` cancellable check is a heuristic — some `null` cancellable calls are valid
 - Full gap list: [docs/research/gap-analysis.md](docs/research/gap-analysis.md)
 
-</details>
-
 ## 🔧 Troubleshooting
-
-<details>
-<summary>Common problems and fixes</summary>
 
 | Problem | Fix |
 |---------|-----|
@@ -234,8 +211,6 @@ Full gap list: [docs/research/gap-analysis.md](docs/research/gap-analysis.md)
 | Schema check skipped | Install `glib-compile-schemas`: `sudo apt install libglib2.0-dev-bin` or `sudo dnf install glib2-devel` |
 | ESLint check skipped | Install Node.js: `sudo apt install nodejs npm` or `sudo dnf install nodejs npm` |
 | `zipinfo: not found` | `sudo apt install unzip` or `sudo dnf install unzip` |
-
-</details>
 
 ## Requirements
 
