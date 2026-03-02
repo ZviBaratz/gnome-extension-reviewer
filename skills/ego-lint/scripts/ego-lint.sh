@@ -557,6 +557,33 @@ fi
 run_subscript "$SCRIPT_DIR/check-package.sh"
 
 # ---------------------------------------------------------------------------
+# Provenance-gated WARN suppression
+# ---------------------------------------------------------------------------
+# When code provenance is high (score >= 4), JSDoc annotations (R-SLOP-01/02)
+# are intentional documentation, not AI slop signals. Suppress them post-hoc.
+# Future: move provenance awareness into apply-patterns.py for inline gating.
+
+provenance_score=0
+if provenance_line=$(grep 'quality/code-provenance' "$RESULTS_FILE" 2>/dev/null); then
+    if [[ "$provenance_line" =~ provenance-score=([0-9]+) ]]; then
+        provenance_score="${BASH_REMATCH[1]}"
+    fi
+fi
+
+if [[ "$provenance_score" -ge 4 ]]; then
+    slop_jsdoc_count=$(grep -cE '^WARN\|R-SLOP-0[12]\|' "$RESULTS_FILE" 2>/dev/null || echo 0)
+    if [[ "$slop_jsdoc_count" -gt 0 ]]; then
+        tmp_results="$(mktemp)"
+        grep -vE '^WARN\|R-SLOP-0[12]\|' "$RESULTS_FILE" > "$tmp_results"
+        mv "$tmp_results" "$RESULTS_FILE"
+        WARN_COUNT=$((WARN_COUNT - slop_jsdoc_count))
+        PASS_COUNT=$((PASS_COUNT + 1))
+        print_result "PASS" "provenance/jsdoc-suppressed" \
+            "Suppressed $slop_jsdoc_count JSDoc warnings (R-SLOP-01/02) — provenance score $provenance_score indicates hand-written code"
+    fi
+fi
+
+# ---------------------------------------------------------------------------
 # Code Metrics
 # ---------------------------------------------------------------------------
 

@@ -70,3 +70,32 @@ a simulation score.
 - When multiple reasons in the same weight class trigger, sum all their weights
 - ego-lint runs ESLint as part of its automated checks. If ESLint reports
   errors (not warnings), reason #23 is triggered with weight 5.
+
+## Scoring Modifiers
+
+Apply these adjustments after computing the base score:
+
+### Provenance Discount
+
+When ego-lint reports `provenance-score >= 4` (strong hand-written indicators),
+halve AI slop weights for reasons #7-#12. Round down (e.g., weight 8 becomes 4).
+Rationale: JSDoc and verbose patterns in high-provenance code reflect developer
+style, not AI generation.
+
+### Unmapped FAIL Adjustment
+
+Unmapped ego-lint FAILs (those not already covered by a taxonomy reason) normally
+add weight 5 each. Reduce to weight 3 when the FAIL matches these known
+FP-prone patterns:
+
+- `init/shell-modification` when caused by `GObject.registerClass` at module scope
+- `R-VER*` version-compatibility rules in multi-version extensions (3+ shell-versions)
+- `imports/no-gtk-in-extension` for version-compatibility fallback imports
+
+### Size Normalization
+
+For extensions with > 30 JS files, raw WARN counts are misleading. Instead:
+- Focus on the FAIL-to-PASS ratio (FAILs / total checks)
+- Count unique WARN check IDs, not total WARN occurrences
+- A large extension with 5 unique WARN types and 200 total findings is healthier
+  than a small extension with 5 unique WARN types and 20 total findings

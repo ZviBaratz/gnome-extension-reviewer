@@ -296,17 +296,17 @@ def scan_file(file_path, ext_dir):
                 'destroy_line': None,
             })
 
-    # Check if instantiated objects have .destroy() calls
+    # Check if instantiated objects have cleanup calls (.destroy() or .disable())
     for inst in instantiates:
         ref = inst['stored_as']
         if not ref:
             continue
-        # Look for ref.destroy() or ref?.destroy()
-        destroy_pat = re.compile(
-            re.escape(ref) + r'\??\.destroy\s*\('
+        # Look for ref.destroy(), ref?.destroy(), ref.disable(), ref?.disable()
+        cleanup_pat = re.compile(
+            re.escape(ref) + r'\??\.(?:destroy|disable)\s*\('
         )
         for lineno, line in enumerate(lines, 1):
-            if destroy_pat.search(line):
+            if cleanup_pat.search(line):
                 inst['has_destroy_call'] = True
                 inst['destroy_line'] = lineno
                 break

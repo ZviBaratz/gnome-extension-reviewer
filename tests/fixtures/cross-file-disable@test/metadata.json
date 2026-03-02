@@ -1,0 +1,7 @@
+{
+    "uuid": "cross-file-disable@test",
+    "name": "Cross File Disable Test",
+    "description": "Tests cross-file resource tracking with disable() cleanup",
+    "shell-version": ["47", "48"],
+    "url": "https://github.com/test/cross-file-disable"
+}

@@ -68,7 +68,9 @@ Apply the 23-reason rejection taxonomy. For each reason:
 - If triggered, record the weight and the specific evidence (file:line)
 - Each reason contributes its weight ONCE regardless of occurrence count
 
-Sum the weights to compute the total score.
+Sum the weights to compute the base score, then apply the Scoring Modifiers
+from `rejection-taxonomy.md` (provenance discount, unmapped FAIL adjustment,
+size normalization) to arrive at the final score.
 
 ### Integration with ego-lint results
 

@@ -54,7 +54,7 @@ bash skills/ego-lint/scripts/ego-lint.sh tests/fixtures/<fixture-name>
 - `check-async.py` — Async/await safety (_destroyed guards, cancellable usage, per-line _async() cancellable detection)
 - `check-css.py` — Stylesheet validation, shell class override detection (supports `src/` layout)
 - `check-resources.py` — Cross-file resource orphan detection (reads resource graph)
-- `build-resource-graph.py` — Cross-file resource graph builder (signals, timeouts, widgets, D-Bus, file monitors, GSettings)
+- `build-resource-graph.py` — Cross-file resource graph builder (signals, timeouts, widgets, D-Bus, file monitors, GSettings). Parent-child cleanup recognizes both `.destroy()` and `.disable()` calls.
 - `check-imports.sh` — Import segregation (no GTK in extension.js, no Shell libs in prefs.js, transitive BFS from prefs.js, resource path case validation)
 - `check-schema.sh` — GSettings schema ID/path validation, GNOME trademark in schema IDs (case-insensitive prefix strip), glib-compile-schemas dry-run
 - `check-package.sh` — Zip contents validation (forbidden files, required files, compiled schemas for GNOME 45+)
@@ -68,7 +68,7 @@ Additional tooling:
 ### Three-tier rule system
 
 - **Tier 1 (patterns.yaml)**: 124 regex rules in YAML, processed by `apply-patterns.py`. Covers web APIs, deprecated APIs, security (telemetry, curl/gsettings spawn, base64), logging, import segregation, AI slop signals, subprocess safety, i18n, GSettings bind flags, GNOME 44-50 migration, code quality advisories. Add new rules by editing `rules/patterns.yaml`. Supports version-gating via `min-version`/`max-version` fields.
-- **Tier 2 (scripts)**: 17 structural heuristic check scripts in Python/bash. `check-quality.py` (AI slop heuristics), `check-init.py` (init-time safety), `check-lifecycle.py` (enable/disable symmetry + timeout verification), `check-resources.py` + `build-resource-graph.py` (cross-file resource tracking), `check-disclosures.py` (clipboard/network disclosure), `check-polkit.py` (polkit policy validation), `check-schema-usage.py` (unused/undefined schema keys), `check-accessibility.py` (a11y checks), plus metadata, prefs, GObject, async, CSS, imports, schema, and package checks. `ego-lint.sh` also has an inline minified JS check and code metrics.
+- **Tier 2 (scripts)**: 17 structural heuristic check scripts in Python/bash. `check-quality.py` (AI slop heuristics), `check-init.py` (init-time safety), `check-lifecycle.py` (enable/disable symmetry + timeout verification), `check-resources.py` + `build-resource-graph.py` (cross-file resource tracking), `check-disclosures.py` (clipboard/network disclosure), `check-polkit.py` (polkit policy validation), `check-schema-usage.py` (unused/undefined schema keys), `check-accessibility.py` (a11y checks), plus metadata, prefs, GObject, async, CSS, imports, schema, and package checks. `ego-lint.sh` also has an inline minified JS check, code metrics, and a provenance-gated post-filter that suppresses R-SLOP-01/02 JSDoc warnings when `quality/code-provenance` score >= 4.
 - **Tier 3 (checklists)**: 6 semantic review checklists in `skills/ego-review/references/`: lifecycle, security, code-quality (with 10 additional quality items), ai-slop (46-item scoring model), licensing, accessibility (7 items). Applied by Claude during `ego-review` phases.
 
 ### ego-review internals

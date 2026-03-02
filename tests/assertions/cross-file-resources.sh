@@ -17,3 +17,12 @@ assert_exit_code "exits with 0 (no failures)" 0
 assert_output_contains "passes resource tracking" "\[PASS\].*resource-tracking/ownership"
 assert_output_not_contains "no orphan warnings" "resource-tracking/orphan"
 echo ""
+
+# --- cross-file-disable ---
+echo "=== cross-file-disable ==="
+run_lint "cross-file-disable@test"
+assert_exit_code "exits with 0 (no failures)" 0
+assert_output_contains "passes resource tracking" "\[PASS\].*resource-tracking/ownership"
+assert_output_not_contains "no orphan warnings" "resource-tracking/orphan"
+assert_output_not_contains "no destroy-not-called" "resource-tracking/destroy-not-called"
+echo ""

@@ -1,0 +1,7 @@
+{
+    "uuid": "high-provenance-jsdoc@test",
+    "name": "High Provenance JSDoc Test",
+    "description": "Tests provenance-gated suppression of JSDoc warnings",
+    "shell-version": ["47", "48"],
+    "url": "https://github.com/test/high-provenance-jsdoc"
+}
