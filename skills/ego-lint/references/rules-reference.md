@@ -1845,6 +1845,7 @@ Rules for APIs removed or changed in specific GNOME Shell versions. These rules 
 - **Rule**: `Meta.later_remove()` was removed in GNOME 44.
 - **Rationale**: Replaced by the new Laters API accessed via the compositor.
 - **Fix**: Use `global.compositor.get_laters().removeLater(id)`.
+- **Guard**: Suppressed when `if (global.compositor)` appears within 7 preceding lines (version-compat if/else block).
 
 ### R-VER46-06: Shell.BlurEffect.sigma replaced
 - **Severity**: blocking

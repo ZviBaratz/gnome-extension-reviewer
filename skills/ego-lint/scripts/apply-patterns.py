@@ -14,6 +14,7 @@ import json
 import os
 import re
 import sys
+from collections import deque
 
 
 def parse_rules(path):
@@ -212,6 +213,18 @@ def validate_rules(rules_file):
                 print(f"ERROR: {rid}: invalid regex: {e}")
                 errors += 1
 
+        # Check guard-window validity
+        gw = rule.get('guard-window', '')
+        if gw:
+            try:
+                gw_int = int(gw)
+                if gw_int < 1:
+                    print(f"ERROR: {rid}: guard-window must be >= 1, got {gw}")
+                    errors += 1
+            except (ValueError, TypeError):
+                print(f"ERROR: {rid}: guard-window must be an integer, got '{gw}'")
+                errors += 1
+
     if errors:
         print(f"\n{errors} error(s) found in {len(rules)} rules")
         return 1
@@ -266,6 +279,13 @@ def main():
             print(f"SKIP|{rid}|Invalid regex: {pattern}")
             continue
 
+        guard = rule.get('guard-pattern', '')
+        guard_re = re.compile(guard) if guard else None
+        try:
+            guard_window = max(1, int(rule.get('guard-window', '1')))
+        except (ValueError, TypeError):
+            guard_window = 1
+
         for scope in scopes:
             # Expand glob relative to extension dir
             matches = glob.glob(os.path.join(ext_dir, '**', scope), recursive=True)
@@ -297,22 +317,21 @@ def main():
                     if replacement and replacement in file_content:
                         continue
 
-                    guard = rule.get('guard-pattern', '')
-                    guard_re = re.compile(guard) if guard else None
-
-                    prev_line = ''
+                    line_buffer = deque(maxlen=guard_window)
                     for lineno, line in enumerate(file_content.splitlines(True), 1):
                         if compiled.search(line):
-                            # Check for inline suppression
+                            # Check for inline suppression (prev_line = last item in buffer)
+                            prev_line = line_buffer[-1] if line_buffer else ''
                             if _is_suppressed(line, prev_line, rid):
-                                prev_line = line
+                                line_buffer.append(line)
                                 continue
                             # Check guard-pattern: if guard matches
-                            # current or previous line, suppress
-                            # (runtime feature detection)
+                            # current line or any line in the lookback
+                            # window, suppress (runtime feature detection)
                             if guard_re and (guard_re.search(line) or
-                                             guard_re.search(prev_line)):
-                                prev_line = line
+                                             any(guard_re.search(bl)
+                                                 for bl in line_buffer)):
+                                line_buffer.append(line)
                                 continue
                             rel = os.path.relpath(filepath, ext_dir)
                             if deduplicate:
@@ -325,7 +344,7 @@ def main():
                                 else:
                                     print(f"{status}|{rid}|{rel}:{lineno}: {message}")
                                 found = True
-                        prev_line = line
+                        line_buffer.append(line)
                 except OSError:
                     continue
 

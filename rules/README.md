@@ -150,6 +150,32 @@ If a line calls `.add_actor(` but the same line (or previous line) has `if (obj.
 - Enum constants: `const X = Object.freeze({` (const assignment + freeze is standard JS enum pattern)
 - Signal handler conventions: `.connect('destroy', ...this._onDestroy)` (handler, not method to rename)
 
+### Extended Guard Lookback (`guard-window`)
+
+By default, `guard-pattern` checks only the current line and the immediately preceding line. For version-compat if/else blocks where the guard and the deprecated call are separated by several lines, use `guard-window` to extend the lookback:
+
+```yaml
+- id: R-VER44-02
+  pattern: "\\bMeta\\.later_remove\\b"
+  guard-pattern: "if\\s*\\(\\s*global\\.compositor\\s*\\)"
+  guard-window: 7
+```
+
+This checks the current line plus the 7 preceding lines for the guard pattern. The typical case is an if/else block:
+
+```js
+if (global.compositor) {
+    global.compositor.get_laters().removeLater(id);
+} else {
+    Meta.later_remove(id);  // 6 lines after guard — suppressed with guard-window: 7
+}
+```
+
+**Guidelines:**
+- Set `guard-window` to the maximum expected distance between the guard and the flagged pattern, plus 1
+- Only use when the default 1-line lookback is insufficient — most guards are on the same or previous line
+- Keep the window as small as practical to avoid false suppressions
+
 ## Inline Suppression
 
 Add `ego-lint-ignore` comments to suppress specific findings on a per-line basis.

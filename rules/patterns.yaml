@@ -10,6 +10,7 @@
 #     fix: "how to fix"        # Optional
 #     min-version: 46         # Optional: only check if extension targets this GNOME version or newer
 #     max-version: 45         # Optional: only check if extension targets this version or older
+#     guard-window: 7         # Optional: number of preceding lines to check for guard-pattern (default: 1)
 #
 # Add new rules by appending to this file. See CONTRIBUTING.md for details.
 
@@ -814,6 +815,7 @@
   fix: "Use global.compositor.get_laters().removeLater(id)"
   min-version: 44
   guard-pattern: "if\\s*\\(\\s*global\\.compositor\\s*\\)"
+  guard-window: 7
 
 - id: R-VER46-01
   pattern: "\\.add_actor\\s*\\("

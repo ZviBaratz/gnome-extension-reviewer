@@ -1,0 +1,7 @@
+{
+    "uuid": "guard-window-multiline@test",
+    "name": "Guard Window Multiline Test",
+    "description": "Tests multi-line guard-window lookback for guard-pattern suppression",
+    "shell-version": ["49"],
+    "url": "https://example.com"
+}
