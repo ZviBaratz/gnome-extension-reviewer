@@ -47,7 +47,7 @@ bash skills/ego-lint/scripts/ego-lint.sh tests/fixtures/<fixture-name>
 - `apply-patterns.py` — Tier 1 pattern engine (inline YAML parser, no PyYAML dependency)
 - `check-quality.py` — Tier 2 heuristic AI slop detection (try-catch density, impossible states, pendulum patterns, empty catches, _destroyed density, mock detection, constructor resources, run_dispose comment, clipboard disclosure, network disclosure, excessive null checks, repeated getSettings, obfuscated names, mixed indentation, excessive logging, code provenance)
 - `check-metadata.py` — JSON validity, required fields, UUID format/match, shell-version (with VALID_GNOME_VERSIONS allowlist), session-modes, settings-schema, version-name, donations, gettext-domain consistency
-- `check-init.py` — Init-time Shell modification, GObject constructor detection (extension.js only; all GI namespaces, GObject.registerClass exempt), Gio._promisify placement
+- `check-init.py` — Init-time Shell modification, GObject constructor detection (extension.js only; all GI namespaces, GObject.registerClass exempt, GLib value types exempt), Gio._promisify placement
 - `check-lifecycle.py` — enable/disable symmetry, signal cleanup (connectSmart/SignalTracker-aware), timeout removal verification, InjectionManager, lock screen signals, selective disable detection, unlock-dialog comment, clipboard+keybinding cross-ref, prototype override detection, pkexec target validation, Soup.Session abort, D-Bus export/unexport, bus name own/unown lifecycle, timeout reassignment, subprocess cancellation, clipboard+network cross-ref, widget lifecycle, settings cleanup
 - `check-prefs.py` — Preferences file validation (ExtensionPreferences base class, GTK4/Adwaita patterns, memory leak detection, supports `src/` layout)
 - `check-gobject.py` — GObject.registerClass patterns and GTypeName validation
@@ -56,7 +56,7 @@ bash skills/ego-lint/scripts/ego-lint.sh tests/fixtures/<fixture-name>
 - `check-resources.py` — Cross-file resource orphan detection (reads resource graph)
 - `build-resource-graph.py` — Cross-file resource graph builder (signals, timeouts, widgets, D-Bus, file monitors, GSettings)
 - `check-imports.sh` — Import segregation (no GTK in extension.js, no Shell libs in prefs.js, transitive BFS from prefs.js, resource path case validation)
-- `check-schema.sh` — GSettings schema ID/path validation, glib-compile-schemas dry-run
+- `check-schema.sh` — GSettings schema ID/path validation, GNOME trademark in schema IDs (case-insensitive prefix strip), glib-compile-schemas dry-run
 - `check-package.sh` — Zip contents validation (forbidden files, required files, compiled schemas for GNOME 45+)
 
 Sub-scripts output pipe-delimited lines (`STATUS|check-name|detail`) which `ego-lint.sh` parses and reformats.
@@ -107,6 +107,7 @@ Then for Tier 1 and 2:
 
 - Directory name must exactly match the `uuid` in `metadata.json`
 - UUID/name must not contain "gnome" (trademark check will FAIL)
+- Include a `LICENSE` file (single line `SPDX-License-Identifier: GPL-2.0-or-later`) or the license check will FAIL
 - Avoid `.sh` files in fixtures (non-GJS script check flags them)
 - See `rules/README.md` for required files, metadata template, and troubleshooting
 

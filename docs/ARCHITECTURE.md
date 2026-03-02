@@ -12,7 +12,7 @@
          patterns.yaml      check-*.py/sh     ego-review refs/
               |                   |                |
        apply-patterns.py    17 sub-scripts    6 checklists
-       (113 rules, YAML)    (structural)      (semantic, AI)
+       (124 rules, YAML)    (structural)      (semantic, AI)
                  |                |                |
                  +--- PASS/FAIL/WARN/SKIP --------+
                       (pipe-delimited output)
@@ -22,7 +22,7 @@
 
 `ego-lint.sh` is a bash script that runs all automated checks (Tiers 1 and 2)
 against an extension directory. It first invokes `run_pattern_rules()`, which
-calls `apply-patterns.py` with `rules/patterns.yaml` to evaluate 113 regex
+calls `apply-patterns.py` with `rules/patterns.yaml` to evaluate 124 regex
 rules against every JS file. Then it calls `run_subscript()` for each of the 17
 Tier 2 scripts -- Python and bash programs that perform structural analysis
 (metadata validation, lifecycle symmetry, resource tracking, disclosure checks,
@@ -89,7 +89,7 @@ creates without matching destroys -- as FAIL or WARN depending on resource type.
 ```
 ego-lint                        CLI wrapper (top-level entry point)
 rules/
-  patterns.yaml                 Tier 1: 113 regex rules (18 sections)
+  patterns.yaml                 Tier 1: 124 regex rules (19 sections)
 skills/
   ego-lint/
     SKILL.md                    Skill definition for Claude
@@ -109,6 +109,10 @@ skills/
       check-imports.sh          Import segregation
       check-schema.sh           GSettings schema validation
       check-package.sh          Zip contents validation
+      check-disclosures.py      Clipboard/network disclosure checks
+      check-polkit.py           Polkit policy validation
+      check-schema-usage.py     Unused/undefined schema keys
+      check-accessibility.py    Accessibility checks
     references/
       rules-reference.md        Rule ID catalog (R-XXXX-NN)
   ego-review/
@@ -119,8 +123,8 @@ skills/
   ego-submit/                   Submission orchestrator
 tests/
   run-tests.sh                  Test runner
-  assertions/                   Assertion files (sourced by runner)
-  fixtures/                     153 test fixtures
+  assertions/                   29 assertion files (sourced by runner)
+  fixtures/                     178 test fixtures
 docs/
   ci-integration.md             GitHub Actions / GitLab CI examples
   ARCHITECTURE.md               This file
