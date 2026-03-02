@@ -26,7 +26,7 @@ Options:
   -h, --help       Show this help message and exit
   -v, --verbose    Show verbose report with grouped results and verdict
 
-Checks (113 pattern rules + 13 structural scripts):
+Checks (124 pattern rules + 13 structural scripts):
   metadata         UUID, required fields, shell-version, session-modes, GNOME trademark
   imports          GTK/Shell import segregation, transitive dependency analysis
   schema           Schema ID, path format, glib-compile-schemas dry-run

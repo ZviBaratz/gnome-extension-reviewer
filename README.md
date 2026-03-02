@@ -54,7 +54,7 @@ You are invited to shape the rules, adjust severity, and add checks for rejectio
 
 - **Adding rules**: [CONTRIBUTING.md](CONTRIBUTING.md) — 5-minute workflow for adding a check
 - **Architecture**: [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) — three-tier rule system, script internals
-- **All rules**: [rules/patterns.yaml](rules/patterns.yaml) — 113 pattern rules with rationale
+- **All rules**: [rules/patterns.yaml](rules/patterns.yaml) — 124 pattern rules with rationale
 
 ## What Gets Checked
 
@@ -76,7 +76,7 @@ You are invited to shape the rules, adjust severity, and add checks for rejectio
 | **Package** | Forbidden files in zip, required files, compiled schemas for GNOME 45+ |
 | **Preferences** | ExtensionPreferences base class, GTK4/Adwaita patterns, memory leak detection |
 
-Of the 113 pattern rules, 64 are blocking (FAIL) and 49 are advisory (WARN). Structural checks add further findings. See [`rules/patterns.yaml`](rules/patterns.yaml) for the full list with rationale.
+Of the 124 pattern rules, 64 are blocking (FAIL) and 60 are advisory (WARN). Structural checks add further findings. See [`rules/patterns.yaml`](rules/patterns.yaml) for the full list with rationale.
 
 ### Sample Output
 
