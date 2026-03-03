@@ -947,6 +947,7 @@
   fix: "Replace {vertical: true} with {orientation: Clutter.Orientation.VERTICAL}"
   min-version: 48
   fix-min-version: 47
+  deduplicate: true
 
 - id: R-VER48-05
   pattern: "\\bShell\\.SnippetHook\\b"

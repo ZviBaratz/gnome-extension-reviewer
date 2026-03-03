@@ -72,10 +72,8 @@ Using [lifecycle-checklist.md](references/lifecycle-checklist.md):
    - Verify parent calls child's `destroy()` in its own `disable()`/`destroy()`
    - Verify destroy order is reverse of creation
    - Verify child's `destroy()` cleans up all its own resources
-7. **Build the resource tracking table** from graph data:
-
-   | Resource | File:Line (create) | File:Line (destroy) | Owner | Status |
-   |----------|-------------------|--------------------|---------|----|
+7. **Build the resource tracking table**: run `build-resource-graph.py --format=table`
+   to generate the markdown table for the report (or build manually from JSON if needed)
 
 8. **If the graph reports 0 orphans and complete ownership chains**: abbreviate
    this phase — focus on async guards and cleanup ordering below
@@ -87,25 +85,16 @@ Using [lifecycle-checklist.md](references/lifecycle-checklist.md):
 
 ### Phase 3: Signal & Resource Audit
 
-1. Grep for `connect(` / `connectObject(` — list all signal connections
-2. Grep for `timeout_add` / `timeout_add_seconds` / `idle_add` — list all timer sources
-3. Grep for `FileMonitor` / `monitor_file` — list all file monitors
-4. Grep for D-Bus proxy creation (`Gio.DBusProxy`, `new_for_bus`)
-5. Cross-reference: every creation must have a corresponding cleanup in destroy/disable
-
-**D-Bus proxy lifecycle:**
-- Disconnect all signal connections from the proxy
-- Null the proxy reference
-- Verify error handling for when the D-Bus service is unavailable
-
-**File monitor lifecycle:**
-- `monitor.cancel()` first
-- Then disconnect any signal handlers
-- Then null the reference
-
-**GSettings connections:**
-- Verify `disconnectObject(this)` or manual `disconnect(id)` for all settings connections
-- Check that settings reference is nulled after disconnect
+1. **Review the resource graph** from Phase 2 — if 0 orphans and complete
+   ownership chains, abbreviate this phase to spot-checks only
+2. **Spot-check**: pick 2-3 resource entries from the graph and verify by
+   reading the cited file:line that create/destroy are correctly paired
+3. **Check for resource types the graph may miss**:
+   - GSettings connections (`.connect('changed::...')` vs `.disconnectObject()`)
+   - Custom cleanup methods (`_cleanup()`, `_teardown()`, `_clear()`)
+   - Login manager / D-Bus signal connections via `connectSignal()` (not `connectObject()`)
+4. **Only do a full manual grep** if the graph reports orphans or incomplete
+   ownership
 
 ### Phase 4: Security Review
 
@@ -159,7 +148,12 @@ Using [code-quality-checklist.md](references/code-quality-checklist.md):
 
 Using [ai-slop-checklist.md](references/ai-slop-checklist.md) (46-item checklist):
 
-1. For each checklist item, search the extension source for the described pattern
+1. For each checklist item:
+   - If marked **Automated: Yes** → use ego-lint's result (from Phase 0)
+     instead of re-searching. Only verify if ego-lint reported a finding
+     for that check.
+   - If marked **Automated: No** or **Automated: Partial** → search the
+     extension source for the described pattern.
 2. Record whether it triggers, with file:line references
 3. Note whether the pattern is justified by context (check "NOT a signal" exceptions)
 4. Count JS files to determine threshold tier:

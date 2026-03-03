@@ -672,12 +672,67 @@ def format_summary(graph):
     return '\n'.join(lines)
 
 
+def format_table(graph):
+    """Format the resource graph as a markdown table."""
+    files = graph['files']
+    orphan_set = set()
+    for orphan in graph['orphans']:
+        orphan_set.add((orphan['file'], orphan['line'], orphan['type']))
+
+    # Build a mapping from (file, stored_as) -> destroy info
+    destroy_map = {}  # (file, ref) -> (line, pattern)
+    for rel, file_data in files.items():
+        for d in file_data.get('destroys', []):
+            ref = d.get('ref')
+            if ref:
+                destroy_map.setdefault((rel, ref), []).append(d)
+
+    # Build ownership lookup: child_file -> parent_file
+    parent_of = {}
+    for rel, refs in graph.get('ownership', {}).items():
+        for ref_info in refs.values():
+            child = ref_info.get('source_file')
+            if child:
+                parent_of[child] = rel
+
+    lines = []
+    lines.append('| Type | Name | File:Line (create) | File:Line (destroy) | Owner | Status |')
+    lines.append('|------|------|--------------------|---------------------|-------|--------|')
+
+    for rel in sorted(files.keys()):
+        file_data = files[rel]
+        owner = parent_of.get(rel, '(root)')
+        for c in file_data.get('creates', []):
+            stored = c.get('stored_as', '(anonymous)')
+            create_loc = f'{rel}:{c["line"]}'
+            rtype = c['type']
+
+            # Find matching destroy
+            destroy_loc = '—'
+            if stored and stored != '(anonymous)':
+                for d in file_data.get('destroys', []):
+                    d_ref = d.get('ref')
+                    if d_ref == stored or (stored in d.get('pattern', '')):
+                        destroy_loc = f'{rel}:{d["line"]}'
+                        break
+
+            is_orphan = (rel, c['line'], rtype) in orphan_set
+            status = 'ORPHAN' if is_orphan else 'OK'
+
+            lines.append(
+                f'| {rtype} | {stored} | {create_loc} | {destroy_loc} | {owner} | {status} |'
+            )
+
+    return '\n'.join(lines)
+
+
 def main():
     summary_mode = '--summary' in sys.argv
-    args = [a for a in sys.argv[1:] if a != '--summary']
+    table_mode = '--format=table' in sys.argv
+    args = [a for a in sys.argv[1:] if a not in ('--summary', '--format=table')]
 
     if not args:
-        print("Usage: build-resource-graph.py [--summary] EXTENSION_DIR",
+        print("Usage: build-resource-graph.py [--summary] [--format=table] EXTENSION_DIR",
               file=sys.stderr)
         sys.exit(1)
 
@@ -688,7 +743,9 @@ def main():
 
     graph = build_resource_graph(ext_dir)
 
-    if summary_mode:
+    if table_mode:
+        print(format_table(graph))
+    elif summary_mode:
         print(format_summary(graph))
     else:
         print(json.dumps(graph, indent=2))

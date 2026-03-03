@@ -17,13 +17,13 @@ This is the consolidated findings registry for the project's calibration baselin
 
 ## Current Baseline
 
-Latest ego-lint results (2026-03-02):
+Latest ego-lint results (2026-03-03, post F-027 dedup fix):
 
 | Status | Count |
 |--------|-------|
-| PASS | 206 |
+| PASS | 205 |
 | FAIL | 0 |
-| WARN | 7 |
+| WARN | 8 |
 | SKIP | 23 |
 | Exit | 0 |
 
@@ -40,6 +40,7 @@ Latest ego-lint results (2026-03-02):
 | R-PREFS-04c | GTK layout widget advisory — correct (ListBox, SpinButton in prefs) |
 | R-SLOP-40 | Promise wrapper advisory — correct (D-Bus proxy constructor) |
 | R-QUAL-33 | Gio._promisify() module-scope advisory — correct (standard GJS pattern) |
+| R-VER48-04b | vertical property deprecated advisory — correct (deduplicated to 1 per file) |
 | metadata/shell-version-current | GNOME 49 not in shell-version — intentional (untested) |
 | quality/private-api | Private API with inline justification — disclosed in metadata |
 
@@ -139,6 +140,13 @@ The A1-A7 checklist was entirely manual. Some items (accessible-role usage, acce
 | F-019 | Reviewer notes template | Fixed (2026-03-01) | 2026-02-28 |
 | F-020 | Readiness report format | Fixed (2026-03-01) | 2026-02-28 |
 | F-021 | AI slop overlap | Fixed (2026-03-01) | 2026-02-28 |
+| F-022 | Phase 3 rebuilds resource graph manually | Fixed (2026-03-03) | 2026-03-03 |
+| F-023 | Phase 5a re-checks automated AI patterns | Fixed (2026-03-03) | 2026-03-03 |
+| F-024 | check-disclosures.py missing 4 capabilities | Fixed (2026-03-03) | 2026-03-03 |
+| F-025 | Resource graph markdown table output | Fixed (2026-03-03) | 2026-03-03 |
+| F-026 | Parallel protocol prevents ego-lint reuse | Fixed (2026-03-03) | 2026-03-03 |
+| F-027 | R-VER48-04b deduplicate regression | Fixed (2026-03-03) | 2026-03-03 |
+| F-028 | Baseline suppression for known warnings | Deferred | 2026-03-03 |
 
 **F-016: Parallelization strategy missing from ego-submit**
 ego-submit describes sequential phases, but they're largely independent. A 3-agent parallel approach (lifecycle+signals, security+quality, package+metadata) cut wall-clock time from ~10 to ~4 minutes. **Fix**: Added "Parallel Execution Protocol" section to `skills/ego-submit/SKILL.md` with agent roles, no-early-stopping rule, and deduplication strategy.
@@ -157,6 +165,27 @@ ego-submit says to produce a "readiness report" but doesn't define format. **Fix
 
 **F-021: AI slop overlap between ego-lint and ego-review**
 `check-quality.py` covers some AI patterns, but the 46-item `ai-slop-checklist.md` doesn't indicate which items are automated. Reviewer agents re-check automated items. **Fix**: Added `**Automated:**` field to each checklist item with Yes/No/Partial and the ego-lint check name.
+
+**F-022: Phase 3 rebuilds resource graph manually**
+ego-review Phase 3 instructs agents to grep for signals, timeouts, file monitors, and D-Bus proxies — duplicating what `build-resource-graph.py` already computes in Phase 2. Agent 2 spent ~200s of 381s on this. **Fix**: Rewrite Phase 3 to verify the graph output rather than rebuild it. See [pipeline-review-2026-03-03.md](pipeline-review-2026-03-03.md).
+
+**F-023: Phase 5a re-checks automated AI patterns**
+Despite F-021 adding automation mapping to the AI slop checklist, Phase 5a instructions don't tell agents to skip automated items. Agent 3 searched for all 46 items. **Fix**: Update Phase 5a instructions to use ego-lint results for automated items.
+
+**F-024: check-disclosures.py missing 4 capabilities**
+F-012 added clipboard+network disclosure checking, but the 6-capability disclosure matrix (also pkexec, subprocess, private API, file I/O) is still partly manual. **Fix**: Extend check-disclosures.py to cover all 6. **Status**: Already fixed — check-disclosures.py covers all 6 capabilities (clipboard, network, pkexec, private-api, file-io, subprocess) at lines 35-99. The pipeline review observation was based on stale data from the F-012 description.
+
+**F-025: Resource graph markdown table output**
+Readiness report requires a per-resource tracking table. Agents manually format this from graph JSON. **Fix**: Add `--format=table` flag to output markdown directly.
+
+**F-026: Parallel protocol prevents ego-lint reuse**
+3-agent parallel protocol runs ego-lint concurrently with review agents, so Agents 2-3 can't use ego-lint results. **Fix**: Two-phase approach: run ego-lint first (~30s), then fan out 2 review agents with ego-lint output as context.
+
+**F-027: R-VER48-04b deduplicate regression**
+Rule fired twice for quickSettingsPanel.js (lines 100 and 909). Previous run showed single WARN coincidentally. **Fix**: Not a regression — rule never had `deduplicate: true`. Added the field to collapse per-file hits into a single advisory WARN.
+
+**F-028: Baseline suppression for known warnings**
+No mechanism to mark warnings as acknowledged. Every run produces the same 7-9 known WARNs, drowning new findings. **Deferred**: Existing inline `// ego-lint-ignore` suppression is sufficient. The known WARNs are correct warnings that flag real patterns reviewers will notice — suppressing them could mask regressions. Baseline feature would require changes to ego-lint.sh's output pipeline, JSON file management, and new CLI flags (medium effort, P2).
 
 ### EGO Reviewer Feedback
 
@@ -188,6 +217,8 @@ ego-submit says to produce a "readiness report" but doesn't define format. **Fix
 | 2026-02-28 | 193 | 0 | 5 | 17 | 1 | F-006 through F-015 fixed; 4 new Tier 2 scripts |
 | 2026-03-01 | 201 | 0 | 8 | 23 | — | 6 new pattern rules, +3 WARNs (R-SLOP-40, R-QUAL-33, R-PREFS-04c), +6 SKIP (VER49/50) |
 | 2026-03-02 | 206 | 0 | 7 | 23 | 1 | Full ego-submit pipeline (3-agent parallel). ESLint WARN resolved. +5 PASS. ego-submit: READY TO SUBMIT |
+| 2026-03-03 | 205 | 0 | 9 | 23 | — | Full ego-submit (3-agent parallel, fresh session). +2 WARNs (R-VER48-04b dedup regression). Pipeline efficiency review → F-022 through F-028 |
+| 2026-03-03 (post-fix) | 205 | 0 | 8 | 23 | — | F-022/F-023/F-025/F-026/F-027 fixed, F-024 closed, F-028 deferred. R-VER48-04b deduplicated (9→8 WARNs). 2-phase parallel protocol |
 
 ---
 
@@ -205,4 +236,5 @@ ego-submit says to produce a "readiness report" but doesn't define format. **Fix
 - [pipeline-improvements-2026-02-28.md](pipeline-improvements-2026-02-28.md) — Detailed analysis and code snippets for F-006 through F-011
 - [review-feedback-2026-02-28.md](review-feedback-2026-02-28.md) — Full pipeline improvement proposals (F-012 through F-021)
 - [field-test-clipboard-indicator.md](field-test-clipboard-indicator.md) — One-shot field test (different format)
+- [pipeline-review-2026-03-03.md](pipeline-review-2026-03-03.md) — Pipeline efficiency review: agent redundancy, parallel protocol redesign (F-022 through F-028)
 - [Gap analysis](../research/gap-analysis.md) — "Known False Positives and Noise Reduction" section

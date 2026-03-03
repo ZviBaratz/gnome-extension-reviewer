@@ -16,39 +16,39 @@ combining automated checks with manual review in a structured pipeline.
 
 ## Parallelization Strategy
 
-For extensions with 10+ JS files, run phases in parallel using 3 agents:
+For extensions with 10+ JS files, run in two phases:
 
-- **Agent 1:** ego-lint + package validation (Phase 1, Phase 3)
-- **Agent 2:** ego-review lifecycle + signal + security (ego-review Phases 2-4)
-- **Agent 3:** ego-review quality + AI patterns + metadata (ego-review Phases 5-5a, Phase 4)
+**Phase A — Automated baseline (sequential, ~30s):**
+Run ego-lint → capture full output (PASS/FAIL/WARN/SKIP counts, metrics,
+resource graph summary).
 
-When running in parallel, Agents 2-3 skip Phase 0 (ego-lint baseline) since
-Agent 1 handles it. The deduplication happens at report compilation time, not
-during individual agent work.
+**Phase B — Manual review (parallel, ~3-4 min):**
+- **Agent 1:** ego-review Phases 1-4 (discovery, licensing, lifecycle, signals,
+  security, accessibility). Receives ego-lint output as context.
+- **Agent 2:** ego-review Phases 5-5a (quality, AI patterns) + Phase 4 metadata
+  + disclosure matrix + package validation + readiness report draft.
+  Receives ego-lint output as context.
 
-This reduces wall-clock time from ~10 minutes (sequential) to ~4 minutes. For
-smaller extensions (<10 JS files), sequential execution is fine.
+Both agents use ego-lint results to skip already-covered checks (Phases 3, 5a).
+For smaller extensions (<10 JS files), sequential execution is fine.
 
 ### Parallel Execution Protocol
 
-When running in parallel mode:
+- **Phase A**: Run ego-lint + capture output. This is fast (~30s) and provides
+  the baseline for both review agents.
+- **Phase B**: Launch both agents with ego-lint output in their context.
+  Each agent skips checks already covered by ego-lint and focuses on semantic,
+  cross-file, and design-level issues.
 
-- **Agent 1**: ego-lint + Phase 3 package validation. Reports lint summary
-  (PASS/FAIL/WARN/SKIP counts) and package status.
-- **Agent 2**: ego-review Phases 2-4 (lifecycle, signals, security). Skips
-  Phase 0 since Agent 1 handles the ego-lint baseline.
-- **Agent 3**: ego-review Phases 5-5a (quality, AI patterns) + Phase 4 metadata
-  + disclosure matrix + reviewer notes draft.
-
-**No early stopping**: All agents complete regardless of findings. If Agent 1
+**No early stopping**: Both agents complete regardless of findings. If ego-lint
 reports FAILs, the final readiness report verdict is NEEDS FIXES with FAIL
 items listed first as blocking action items.
 
-**Deduplication**: The orchestrator merges results from all agents. When ego-lint
-and ego-review flag the same issue (e.g., both catch a missing signal
-disconnect), prefer ego-lint's categorization (it has the rule ID).
+**Deduplication**: Inherent — both agents see ego-lint results and skip covered
+items. The orchestrator merges remaining findings. When ego-lint and ego-review
+flag the same issue, prefer ego-lint's categorization (it has the rule ID).
 
-**STOP condition**: Applied by the orchestrator after all agents complete, not
+**STOP condition**: Applied by the orchestrator after both agents complete, not
 by individual agents during their work.
 
 ## Pipeline Phases
