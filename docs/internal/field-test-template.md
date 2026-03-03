@@ -2,7 +2,7 @@
 
 Use this template when running the ego-submit pipeline against a real extension. Copy this file as `field-test-<extension-name>.md` and fill in each section.
 
-> **Baseline extensions** tested repeatedly (e.g., hara-hachi-bu) use a living-document variant with a findings registry instead of this one-shot template. See `field-test-hara-hachi-bu.md` for the pattern.
+> The baseline extension (hara-hachi-bu) uses a living-document variant with a findings registry. See `field-test-hara-hachi-bu.md`. Other field tests use this template and can be re-run as the tool improves.
 
 ## Pre-flight
 

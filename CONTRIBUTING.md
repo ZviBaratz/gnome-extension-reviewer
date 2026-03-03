@@ -133,6 +133,10 @@ When proposing a new rule, cite the source (guideline section, review URL, or ob
 - **GNOME Discourse**: https://discourse.gnome.org/tag/extensions
 - **Existing research**: `docs/research/` contains extracted patterns from all the above
 
+### Calibration Data
+
+Field tests against 7 popular extensions document known FP patterns — see [docs/internal/](docs/internal/). Check the calibration lessons before adding rules to avoid repeating known false-positive classes.
+
 ## Contributing a Rule
 
 There are three ways to contribute a new rule, depending on complexity:
