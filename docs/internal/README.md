@@ -12,7 +12,7 @@ Tested repeatedly across development sessions. Findings accumulate in a living d
 
 | Extension | Document | Current Status | Findings |
 |-----------|----------|---------------|----------|
-| [hara-hachi-bu](field-test-hara-hachi-bu.md) | Living document | 201 PASS, 0 FAIL, 8 WARN | 21 findings (F-001 through F-021) |
+| [hara-hachi-bu](field-test-hara-hachi-bu.md) | Living document | 205 PASS, 0 FAIL, 8 WARN | 29 findings (F-001 through F-029) |
 
 ### One-Shot Field Tests
 

@@ -46,13 +46,13 @@ Latest ego-lint results (2026-03-03, post F-027 dedup fix):
 
 **Resource graph**: 17 files scanned, depth 3, 0 orphans
 
-**Code provenance score**: 3 (244 domain vocab, 59 algorithms, consistent camelCase naming)
+**Code provenance score**: 3 (217 domain vocab, 59 algorithms, consistent camelCase naming)
 
-**AI pattern analysis**: 1/46 triggered (pkexec usage — contextually justified). Verdict: PASS.
+**AI pattern analysis**: 0/46 triggered. Verdict: PASS.
 
 **Disclosure matrix**: All 6 capabilities (clipboard, network, pkexec, subprocess, private API, file I/O) checked — all properly disclosed or N/A. No gaps.
 
-**Package**: 100.3 KB zip, 34 files. No forbidden files, no secrets, no dev artifacts. MockDevice.js correctly excluded.
+**Package**: 103 KB zip, 34 files. No forbidden files, no secrets, no dev artifacts. MockDevice.js correctly excluded.
 
 ---
 
@@ -147,6 +147,7 @@ The A1-A7 checklist was entirely manual. Some items (accessible-role usage, acce
 | F-026 | Parallel protocol prevents ego-lint reuse | Fixed (2026-03-03) | 2026-03-03 |
 | F-027 | R-VER48-04b deduplicate regression | Fixed (2026-03-03) | 2026-03-03 |
 | F-028 | Baseline suppression for known warnings | Deferred | 2026-03-03 |
+| F-029 | disclosure/private-api regex too strict | Open | 2026-03-03 |
 
 **F-016: Parallelization strategy missing from ego-submit**
 ego-submit describes sequential phases, but they're largely independent. A 3-agent parallel approach (lifecycle+signals, security+quality, package+metadata) cut wall-clock time from ~10 to ~4 minutes. **Fix**: Added "Parallel Execution Protocol" section to `skills/ego-submit/SKILL.md` with agent roles, no-early-stopping rule, and deduplication strategy.
@@ -187,6 +188,9 @@ Rule fired twice for quickSettingsPanel.js (lines 100 and 909). Previous run sho
 **F-028: Baseline suppression for known warnings**
 No mechanism to mark warnings as acknowledged. Every run produces the same 7-9 known WARNs, drowning new findings. **Deferred**: Existing inline `// ego-lint-ignore` suppression is sufficient. The known WARNs are correct warnings that flag real patterns reviewers will notice — suppressing them could mask regressions. Baseline feature would require changes to ego-lint.sh's output pipeline, JSON file management, and new CLI flags (medium effort, P2).
 
+**F-029: disclosure/private-api regex too strict**
+`check-disclosures.py` private-api detection uses strict patterns like `r'quickSettings\._\w+'`, which require the literal text `quickSettings._something`. The actual code in hara-hachi-bu uses a variable `quickSettingsMenu._indicators`, which this pattern misses. Meanwhile, `check-quality.py` uses the broader `r'quickSettings[^;]*\._\w+'` (with `[^;]*` bridging), which correctly matches. Result: `disclosure/private-api` reports PASS ("No private-api usage detected") while `quality/private-api` reports WARN with 11 locations — an internal inconsistency. The disclosure check should use the same broader patterns as the quality check. **Fix**: Align `check-disclosures.py` private-api patterns with `check-quality.py` patterns (use `[^;]*` bridge instead of strict adjacency).
+
 ### EGO Reviewer Feedback
 
 *No entries yet. This section will be populated when hara-hachi-bu completes EGO review.*
@@ -219,6 +223,7 @@ No mechanism to mark warnings as acknowledged. Every run produces the same 7-9 k
 | 2026-03-02 | 206 | 0 | 7 | 23 | 1 | Full ego-submit pipeline (3-agent parallel). ESLint WARN resolved. +5 PASS. ego-submit: READY TO SUBMIT |
 | 2026-03-03 | 205 | 0 | 9 | 23 | — | Full ego-submit (3-agent parallel, fresh session). +2 WARNs (R-VER48-04b dedup regression). Pipeline efficiency review → F-022 through F-028 |
 | 2026-03-03 (post-fix) | 205 | 0 | 8 | 23 | — | F-022/F-023/F-025/F-026/F-027 fixed, F-024 closed, F-028 deferred. R-VER48-04b deduplicated (9→8 WARNs). 2-phase parallel protocol |
+| 2026-03-03 (verify) | 205 | 0 | 8 | 23 | — | Verification run (2-phase parallel). F-022–F-027 all confirmed working. 241s wall / 264K tokens / 115 tool uses (vs 381s / 327K / 146 pre-fix). New finding F-029 (disclosure/private-api regex). ego-submit: READY TO SUBMIT |
 
 ---
 

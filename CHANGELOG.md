@@ -1,6 +1,15 @@
 # Changelog
 
-## Unreleased
+## v0.1.0 — 2026-03-03
+
+### Features
+
+- **ego-simulate**: Added ESLint errors as rejection reason #23 (weight 5) to the taxonomy — crash-at-runtime bugs from undefined references now score appropriately (#2, PR #5)
+- **ego-simulate**: ego-lint FAIL results now integrate into taxonomy scoring — each unmapped FAIL adds weight 5, WARNs route to Advisory Notes (#3, PR #6)
+
+### Bug Fixes
+
+- **ego-review**: Added "NOT a signal" exception to ai-slop checklist item #4 — `_destroyed` + `_initializing` (re-entrancy guard) is not the over-engineered state machine anti-pattern (#1, PR #4)
 
 ### Changed
 
@@ -14,17 +23,6 @@
 - Named hara-hachi-bu as regression baseline in README
 - Strengthened community ownership messaging in README
 - Updated stale assertion/fixture counts in docs
-
-### Bug Fixes
-
-- **ego-review**: Added "NOT a signal" exception to ai-slop checklist item #4 — `_destroyed` + `_initializing` (re-entrancy guard) is not the over-engineered state machine anti-pattern (#1, PR #4)
-
-### Features
-
-- **ego-simulate**: Added ESLint errors as rejection reason #23 (weight 5) to the taxonomy — crash-at-runtime bugs from undefined references now score appropriately (#2, PR #5)
-- **ego-simulate**: ego-lint FAIL results now integrate into taxonomy scoring — each unmapped FAIL adds weight 5, WARNs route to Advisory Notes (#3, PR #6)
-
-## v0.1.0
 
 ### What's Included
 

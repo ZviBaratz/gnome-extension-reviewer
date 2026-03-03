@@ -138,6 +138,16 @@ test(ego-lint): add fixture for deprecated ByteArray usage
 - **Obfuscation regex pitfalls**: `[a-z]\d+` catches unicode escapes (`\u2013`); `re.IGNORECASE` on guard patterns catches `console.debug` when matching `DEBUG`
 - **Git history rewritten 2026-02-27**: `git filter-repo` removed internal files. All SHAs before that date are invalid
 
+## Releasing
+
+release-please automates versioning, CHANGELOG updates, git tags, and GitHub Releases:
+
+- Conventional commit messages on `main` drive version bumps (`feat:` = patch pre-1.0, `feat!:` = minor pre-1.0)
+- PR titles are validated in CI — must follow conventional commit format (e.g., `feat(ego-lint): add check`)
+- To cut a release: merge the release-please PR that appears on GitHub after `feat:`/`fix:` commits land on `main`
+- `release-please-config.json` defines changelog sections and syncs version to `.claude-plugin/plugin.json`
+- `.release-please-manifest.json` tracks the current version
+
 ## Requirements
 
 - **Required**: bash, python3
