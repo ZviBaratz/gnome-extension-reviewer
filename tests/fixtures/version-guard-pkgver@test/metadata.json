@@ -1,0 +1,7 @@
+{
+    "uuid": "version-guard-pkgver@test",
+    "name": "PACKAGE_VERSION Guard Test",
+    "description": "Tests R-VER48-02 guard for PACKAGE_VERSION version-compat",
+    "shell-version": ["48"],
+    "url": "https://example.com"
+}

@@ -176,6 +176,46 @@ if (global.compositor) {
 - Only use when the default 1-line lookback is insufficient — most guards are on the same or previous line
 - Keep the window as small as practical to avoid false suppressions
 
+### Forward Guard Lookback (`guard-window-forward`)
+
+When the guard evidence appears _after_ the flagged pattern (e.g., in a multi-line constructor), use `guard-window-forward` to look ahead:
+
+```yaml
+- id: R-SLOP-24
+  pattern: "\\bnew\\s+Gio\\.Settings\\s*\\("
+  guard-pattern: "schema.*org\\.gnome\\.(?!shell\\.extensions\\.)|KEYBINDINGS_SCHEMA"
+  guard-window-forward: 2
+```
+
+This checks the next 2 lines after the matched line for the guard pattern. The typical case is a multi-line constructor:
+
+```js
+this._mutter = new Gio.Settings({           // ← pattern fires here
+    schema_id: 'org.gnome.mutter'            // ← guard matches here (forward +1)
+});
+```
+
+**Guidelines:**
+- Set `guard-window-forward` to the maximum expected distance between the flagged pattern and the guard evidence
+- Can be combined with `guard-window` for bidirectional lookback
+- Keep the window as small as practical to avoid false suppressions
+
+### Comment Skipping (`skip-comments`)
+
+When a rule should not match inside comments (e.g., deprecated API names mentioned in code comments), use `skip-comments: true`:
+
+```yaml
+- id: R-DEPR-06
+  pattern: "\\bTweener\\b"
+  skip-comments: true
+```
+
+This skips matches inside `//` single-line comments and `/* */` block comments (including multi-line). Code on the same line as a comment is still checked — only the portion after `//` or between `/* */` is skipped.
+
+**Use cases:**
+- Deprecated API names mentioned in migration comments
+- Commented-out legacy code that hasn't been removed
+
 ### Fix Version Gating (`fix-min-version`)
 
 When a deprecation rule suggests a fix that only works on newer GNOME versions, use `fix-min-version` to suppress the fix text for extensions whose minimum shell-version is below the threshold. The warning still fires (developers should know about deprecations), but the fix suggestion is omitted when applying it would break backward compatibility.

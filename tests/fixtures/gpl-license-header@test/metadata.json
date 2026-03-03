@@ -1,0 +1,7 @@
+{
+    "uuid": "gpl-license-header@test",
+    "name": "GPL License Header Test",
+    "description": "Tests R-SEC-03 guard for GPL license boilerplate URLs",
+    "shell-version": ["48"],
+    "url": "https://example.com"
+}

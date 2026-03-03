@@ -147,6 +147,7 @@
   message: "ExtensionUtils removed in GNOME 45+; use Extension/ExtensionPreferences class methods"
   category: deprecated
   fix: "Use this.getSettings(), this.gettext(), this.path, etc. from the Extension base class"
+  skip-comments: true
 
 - id: R-DEPR-06
   pattern: "\\bTweener\\b"
@@ -155,6 +156,7 @@
   message: "Tweener is removed; use Clutter animation framework"
   category: deprecated
   fix: "Use actor.ease({property: value, duration: ms, mode: Clutter.AnimationMode.EASE_OUT_QUAD})."
+  skip-comments: true
 
 - id: R-DEPR-07
   pattern: "imports\\.misc\\.convenience"
@@ -233,6 +235,7 @@
   message: "Use HTTPS instead of HTTP for network requests"
   category: security
   fix: "Change http:// to https://."
+  guard-pattern: "gnu\\.org/licenses|General Public License"
 
 - id: R-SEC-04
   pattern: "\\bsudo\\b"
@@ -671,7 +674,8 @@
   message: "new Gio.Settings() is incorrect in GNOME 45+; use this.getSettings() from Extension base class"
   category: ai-slop
   fix: "Use this.getSettings() in Extension subclass or this.getSettings() in ExtensionPreferences"
-  guard-pattern: "schema.*org\\.gnome\\.(?!shell\\.extensions\\.)"
+  guard-pattern: "schema.*org\\.gnome\\.(?!shell\\.extensions\\.)|KEYBINDINGS_SCHEMA"
+  guard-window-forward: 2
   exclude-dirs: ["service"]
 
 - id: R-SLOP-25
@@ -917,7 +921,8 @@
   category: version-compat
   fix: "Access via global.compositor instead of Meta directly"
   min-version: 48
-  guard-pattern: "if\\s*\\(\\s*Meta\\.disable_unredirect"
+  guard-pattern: "if\\s*\\(\\s*Meta\\.disable_unredirect|PACKAGE_VERSION.*['\"]4[89]|PACKAGE_VERSION.*['\"][5-9]"
+  guard-window: 3
 
 - id: R-VER48-03
   pattern: "\\bCursorTracker\\.get_for_display\\b"

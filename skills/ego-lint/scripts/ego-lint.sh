@@ -76,6 +76,7 @@ FAIL_COUNT=0
 WARN_COUNT=0
 PASS_COUNT=0
 SKIP_COUNT=0
+DEFERRED_SLOP_JSDOC=()  # R-SLOP-01/02 WARNs deferred until provenance score is known
 
 # ---------------------------------------------------------------------------
 # Output helpers
@@ -153,7 +154,13 @@ run_pattern_rules() {
         check="${check%"${check##*[![:space:]]}"}"
         detail="${detail#"${detail%%[![:space:]]*}"}"
         detail="${detail%"${detail##*[![:space:]]}"}"
-        print_result "$status" "$check" "$detail"
+        # Defer R-SLOP-01/02 WARNs until provenance score is known
+        if [[ "$status" == "WARN" && "$check" =~ ^R-SLOP-0[12]$ ]]; then
+            DEFERRED_SLOP_JSDOC+=("${status}|${check}|${detail}")
+            WARN_COUNT=$((WARN_COUNT + 1))
+        else
+            print_result "$status" "$check" "$detail"
+        fi
     done <<< "$output"
 }
 
@@ -570,17 +577,24 @@ if provenance_line=$(grep 'quality/code-provenance' "$RESULTS_FILE" 2>/dev/null)
     fi
 fi
 
-if [[ "$provenance_score" -ge 4 ]]; then
-    slop_jsdoc_count=$(grep -cE '^WARN\|R-SLOP-0[12]\|' "$RESULTS_FILE" 2>/dev/null || echo 0)
-    if [[ "$slop_jsdoc_count" -gt 0 ]]; then
-        tmp_results="$(mktemp)"
-        grep -vE '^WARN\|R-SLOP-0[12]\|' "$RESULTS_FILE" > "$tmp_results"
-        mv "$tmp_results" "$RESULTS_FILE"
-        WARN_COUNT=$((WARN_COUNT - slop_jsdoc_count))
-        PASS_COUNT=$((PASS_COUNT + 1))
-        print_result "PASS" "provenance/jsdoc-suppressed" \
-            "Suppressed $slop_jsdoc_count JSDoc warnings (R-SLOP-01/02) — provenance score $provenance_score indicates hand-written code"
-    fi
+deferred_count=${#DEFERRED_SLOP_JSDOC[@]}
+if [[ "$provenance_score" -ge 4 && "$deferred_count" -gt 0 ]]; then
+    # Suppress deferred R-SLOP-01/02 WARNs (high provenance = intentional JSDoc)
+    WARN_COUNT=$((WARN_COUNT - deferred_count))
+    PASS_COUNT=$((PASS_COUNT + 1))
+    print_result "PASS" "provenance/jsdoc-suppressed" \
+        "Suppressed $deferred_count JSDoc warnings (R-SLOP-01/02) — provenance score $provenance_score indicates hand-written code"
+else
+    # Flush deferred entries (low provenance or no deferred entries)
+    for entry in "${DEFERRED_SLOP_JSDOC[@]}"; do
+        _df_status="${entry%%|*}"
+        _df_rest="${entry#*|}"
+        _df_check="${_df_rest%%|*}"
+        _df_detail="${_df_rest#*|}"
+        _df_display="${_df_detail%%|fix:*}"
+        printf "[%-4s] %-38s %s\n" "$_df_status" "$_df_check" "$_df_display"
+        echo "${entry}" >> "$RESULTS_FILE"
+    done
 fi
 
 # ---------------------------------------------------------------------------

@@ -1,0 +1,7 @@
+{
+    "uuid": "deprecated-in-comments@test",
+    "name": "Deprecated in Comments Test",
+    "description": "Tests skip-comments for R-DEPR-05/06",
+    "shell-version": ["48"],
+    "url": "https://example.com"
+}

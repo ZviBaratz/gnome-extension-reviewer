@@ -1,0 +1,7 @@
+{
+    "uuid": "system-gsettings-multiline@test",
+    "name": "System GSettings Multiline Test",
+    "description": "Tests R-SLOP-24 guard-window-forward for multiline system schema",
+    "shell-version": ["48"],
+    "url": "https://example.com"
+}

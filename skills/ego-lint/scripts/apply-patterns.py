@@ -295,6 +295,10 @@ def main():
             guard_window = max(1, int(rule.get('guard-window', '1')))
         except (ValueError, TypeError):
             guard_window = 1
+        try:
+            guard_window_fwd = max(0, int(rule.get('guard-window-forward', '0')))
+        except (ValueError, TypeError):
+            guard_window_fwd = 0
 
         for scope in scopes:
             # Expand glob relative to extension dir
@@ -327,22 +331,69 @@ def main():
                     if replacement and replacement in file_content:
                         continue
 
+                    skip_comments = rule.get('skip-comments', '') == 'true'
+                    in_block_comment = False
+                    lines = file_content.splitlines(True)
                     line_buffer = deque(maxlen=guard_window)
-                    for lineno, line in enumerate(file_content.splitlines(True), 1):
+                    for line_idx in range(len(lines)):
+                        line = lines[line_idx]
+                        lineno = line_idx + 1
+                        # Track block comment state for skip-comments
+                        if skip_comments:
+                            if in_block_comment:
+                                if '*/' in line:
+                                    in_block_comment = False
+                                    # Line may have code after */
+                                    after_close = line[line.index('*/') + 2:]
+                                    if '/*' in after_close:
+                                        in_block_comment = True
+                                line_buffer.append(line)
+                                continue
+                            if '/*' in line:
+                                # Check if block comment closes on same line
+                                bc_start = line.index('/*')
+                                rest = line[bc_start + 2:]
+                                if '*/' in rest:
+                                    # Single-line block comment — check if match is inside
+                                    bc_end = bc_start + 2 + rest.index('*/')
+                                    m = compiled.search(line)
+                                    if m and bc_start <= m.start() < bc_end:
+                                        line_buffer.append(line)
+                                        continue
+                                else:
+                                    # Multi-line block comment starts here
+                                    m = compiled.search(line)
+                                    if m and m.start() >= bc_start:
+                                        in_block_comment = True
+                                        line_buffer.append(line)
+                                        continue
+                                    in_block_comment = True
                         if compiled.search(line):
+                            # Skip matches inside single-line comments
+                            if skip_comments and '//' in line:
+                                comment_pos = line.index('//')
+                                m = compiled.search(line)
+                                if m and m.start() >= comment_pos:
+                                    line_buffer.append(line)
+                                    continue
                             # Check for inline suppression (prev_line = last item in buffer)
                             prev_line = line_buffer[-1] if line_buffer else ''
                             if _is_suppressed(line, prev_line, rid):
                                 line_buffer.append(line)
                                 continue
-                            # Check guard-pattern: if guard matches
-                            # current line or any line in the lookback
-                            # window, suppress (runtime feature detection)
+                            # Check guard-pattern: backward lookback window
                             if guard_re and (guard_re.search(line) or
                                              any(guard_re.search(bl)
                                                  for bl in line_buffer)):
                                 line_buffer.append(line)
                                 continue
+                            # Check guard-pattern: forward look window
+                            if guard_re and guard_window_fwd > 0:
+                                fwd_end = min(line_idx + guard_window_fwd + 1, len(lines))
+                                if any(guard_re.search(lines[j])
+                                       for j in range(line_idx + 1, fwd_end)):
+                                    line_buffer.append(line)
+                                    continue
                             rel = os.path.relpath(filepath, ext_dir)
                             if deduplicate:
                                 dedup_files.add(rel)
