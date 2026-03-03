@@ -44,7 +44,7 @@ bash skills/ego-lint/scripts/ego-lint.sh tests/fixtures/<fixture-name>
 `ego-lint.sh` is the main orchestrator. It uses a three-tier rule system (pattern → structural → semantic) and delegates to sub-scripts via `run_subscript`:
 
 - `rules/patterns.yaml` — Tier 1 pattern rules (124 regex-based, declarative rules). Note: at project root, not under `skills/ego-lint/`
-- `apply-patterns.py` — Tier 1 pattern engine (inline YAML parser, no PyYAML dependency). Supports `guard-pattern` + `guard-window` (sliding `deque` lookback), `replacement-pattern`, `exclude-dirs`, version-gating
+- `apply-patterns.py` — Tier 1 pattern engine (inline YAML parser, no PyYAML dependency). Supports `guard-pattern` + `guard-window` (sliding `deque` lookback), `replacement-pattern`, `exclude-dirs`, version-gating, `fix-min-version` (suppresses fix text when extension min shell-version is below threshold)
 - `check-quality.py` — Tier 2 heuristic AI slop detection (try-catch density, impossible states, pendulum patterns, empty catches, _destroyed density, mock detection, constructor resources, run_dispose comment, clipboard disclosure, network disclosure, excessive null checks, repeated getSettings, obfuscated names, mixed indentation, excessive logging, code provenance)
 - `check-metadata.py` — JSON validity, required fields, UUID format/match, shell-version (with VALID_GNOME_VERSIONS allowlist), session-modes, settings-schema, version-name, donations, gettext-domain consistency
 - `check-init.py` — Init-time Shell modification, GObject constructor detection (extension.js only; all GI namespaces, GObject.registerClass exempt, GLib value types exempt), Gio._promisify placement

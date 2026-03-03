@@ -1811,10 +1811,10 @@ Rules for APIs removed or changed in specific GNOME Shell versions. These rules 
 
 ### R-VER48-04: St.Widget.vertical deprecated
 - **Severity**: advisory
-- **Checked by**: apply-patterns.py (min-version: 48)
+- **Checked by**: apply-patterns.py (min-version: 48, fix-min-version: 47)
 - **Rule**: The `.vertical` property on St widgets is deprecated in GNOME 48.
-- **Rationale**: Will be removed around GNOME 50. Use the orientation property instead.
-- **Fix**: Use `{orientation: Clutter.Orientation.VERTICAL}` instead of `{vertical: true}`.
+- **Rationale**: Will be removed around GNOME 50. The `orientation` property replacement is available since GNOME 47. For multi-version extensions targeting GNOME <=46, the fix cannot be applied unconditionally.
+- **Fix**: Use `{orientation: Clutter.Orientation.VERTICAL}` instead of `{vertical: true}`. Fix text is suppressed when the extension's minimum shell-version is below 47.
 
 ### R-VER48-05: Shell.SnippetHook removed
 - **Severity**: blocking
@@ -2460,10 +2460,10 @@ Rules for APIs removed or changed in specific GNOME Shell versions. These rules 
 
 ### R-VER48-04b: vertical property in constructor config
 - **Severity**: advisory
-- **Checked by**: apply-patterns.py (min-version: 48)
-- **Rule**: `vertical: true/false` in constructor configuration objects was removed in GNOME 48.
-- **Rationale**: GNOME 48 removed the `vertical` shorthand property from St.BoxLayout and other container constructors. Extensions targeting GNOME 48+ must use the `orientation` property with `Clutter.Orientation.VERTICAL` or `Clutter.Orientation.HORIZONTAL`.
-- **Fix**: Replace `{vertical: true}` with `{orientation: Clutter.Orientation.VERTICAL}`.
+- **Checked by**: apply-patterns.py (min-version: 48, fix-min-version: 47)
+- **Rule**: `vertical: true/false` in constructor configuration objects is deprecated in GNOME 48.
+- **Rationale**: GNOME 48 deprecated the `vertical` shorthand property from St.BoxLayout and other container constructors. The `orientation` property replacement is available since GNOME 47. For multi-version extensions targeting GNOME <=46, the fix cannot be applied unconditionally.
+- **Fix**: Replace `{vertical: true}` with `{orientation: Clutter.Orientation.VERTICAL}`. Fix text is suppressed when the extension's minimum shell-version is below 47.
 
 ---
 

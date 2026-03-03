@@ -1,0 +1,7 @@
+{
+    "uuid": "multiversion-vertical@test",
+    "name": "Multiversion Vertical Test",
+    "description": "Tests fix-min-version gating for R-VER48-04/04b",
+    "shell-version": ["46", "47", "48"],
+    "url": "https://example.com"
+}

@@ -176,6 +176,28 @@ if (global.compositor) {
 - Only use when the default 1-line lookback is insufficient — most guards are on the same or previous line
 - Keep the window as small as practical to avoid false suppressions
 
+### Fix Version Gating (`fix-min-version`)
+
+When a deprecation rule suggests a fix that only works on newer GNOME versions, use `fix-min-version` to suppress the fix text for extensions whose minimum shell-version is below the threshold. The warning still fires (developers should know about deprecations), but the fix suggestion is omitted when applying it would break backward compatibility.
+
+```yaml
+- id: R-VER48-04
+  pattern: "\\.vertical\\s*="
+  scope: ["*.js"]
+  severity: advisory
+  message: "St.Widget.vertical deprecated in GNOME 48; use orientation (available since GNOME 47; keep vertical for GNOME <=46 compat)"
+  fix: "Use {orientation: Clutter.Orientation.VERTICAL} instead of {vertical: true}"
+  min-version: 48
+  fix-min-version: 47
+```
+
+For an extension with `shell-version: ["46", "47", "48"]` (min_shell=46), the fix text is suppressed because 46 < 47. For an extension targeting only `["48"]` (min_shell=48), the fix text is shown because 48 >= 47.
+
+**Guidelines:**
+- Set `fix-min-version` to the GNOME version where the replacement API was introduced
+- Only use when the fix would break older versions in the extension's declared range
+- The warning message should include the compat note inline (e.g., "keep vertical for GNOME <=46 compat")
+
 ## Inline Suppression
 
 Add `ego-lint-ignore` comments to suppress specific findings on a per-line basis.
