@@ -35,6 +35,15 @@ bash skills/ego-lint/scripts/ego-lint.sh tests/fixtures/<fixture-name>
 - `skills/` — Five skills, each with a `SKILL.md` (skill definition + instructions for Claude) and supporting files. Auto-discovered by Claude Code.
 - `docs/ci-integration.md` — GitHub Actions and GitLab CI examples
 
+### Key reference files
+
+- `skills/ego-simulate/references/reviewer-persona.md` — Reviewer persona for simulation
+- `skills/ego-simulate/references/rejection-taxonomy.md` — 23-reason rejection taxonomy (weight-based)
+- `skills/ego-lint/references/rules-reference.md` — Canonical rule docs (R-XXXX-NN format)
+- `docs/research/` — Requirements reference, gap analysis, approved patterns, real review findings
+- `docs/internal/` — Field test reports, false-positive analysis, pipeline reviews
+- `tests/fixtures/regressions/` — Regression test fixtures
+
 ### Skill hierarchy
 
 `ego-submit` is the top-level orchestrator: it invokes `ego-lint` (automated checks) then `ego-review` (manual code review) then validates packaging. `ego-simulate` is an optional pre-flight that simulates the reviewer's triage process using a 23-reason rejection taxonomy with weight-based scoring; it integrates ego-lint FAIL results into its verdict. `ego-scaffold` is independent (creates new extensions).
@@ -119,6 +128,15 @@ feat(ego-lint): add check for unscoped CSS classes
 fix(ego-scaffold): correct schema path in template
 test(ego-lint): add fixture for deprecated ByteArray usage
 ```
+
+### Known gotchas
+
+- **Guard pattern comment gotcha**: Comments mentioning deprecated API (e.g., `// use Clutter.Color`) trigger the pattern but NOT the guard — use `skip-comments: true` for rules where comment FPs are common
+- **Import graph BFS direction**: `check-imports.sh` uses BFS from extension.js/prefs.js (not glob) to find runtime-reachable files. Helper functions must be defined before both BFS blocks
+- **`src/` layout fallback**: check-css.py, check-prefs.py, ego-lint.sh all check `src/` as fallback for extension.js, stylesheet.css, prefs.js
+- **Schema trademark case-insensitive**: check-schema.sh lowercases schema ID before stripping `org.gnome.shell.extensions.` prefix
+- **Obfuscation regex pitfalls**: `[a-z]\d+` catches unicode escapes (`\u2013`); `re.IGNORECASE` on guard patterns catches `console.debug` when matching `DEBUG`
+- **Git history rewritten 2026-02-27**: `git filter-repo` removed internal files. All SHAs before that date are invalid
 
 ## Requirements
 
