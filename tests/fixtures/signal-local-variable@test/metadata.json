@@ -1,0 +1,7 @@
+{
+    "uuid": "signal-local-variable@test",
+    "name": "Local Variable Signal Test",
+    "description": "Tests that signals on local/ephemeral variables are not counted in signal balance",
+    "shell-version": ["48"],
+    "url": "https://github.com/test/signal-local-variable"
+}
