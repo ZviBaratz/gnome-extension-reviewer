@@ -21,6 +21,8 @@
         {"type": "refactor", "section": "Refactoring"},
         {"type": "perf", "section": "Performance"},
         {"type": "ci", "section": "CI", "hidden": true},
+        {"type": "build", "section": "Build System", "hidden": true},
+        {"type": "style", "section": "Style", "hidden": true},
         {"type": "chore", "section": "Miscellaneous", "hidden": true}
       ]
     }
