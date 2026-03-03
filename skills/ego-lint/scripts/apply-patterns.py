@@ -225,6 +225,15 @@ def validate_rules(rules_file):
                 print(f"ERROR: {rid}: guard-window must be an integer, got '{gw}'")
                 errors += 1
 
+        # Check fix-min-version validity
+        fix_min = rule.get('fix-min-version')
+        if fix_min is not None:
+            try:
+                int(fix_min)
+            except (ValueError, TypeError):
+                print(f"ERROR: {rid}: fix-min-version must be an integer, got '{fix_min}'")
+                errors += 1
+
     if errors:
         print(f"\n{errors} error(s) found in {len(rules)} rules")
         return 1
@@ -251,6 +260,7 @@ def main():
 
     rules = parse_rules(rules_file)
     shell_versions = _get_shell_versions(ext_dir)
+    min_shell = min(shell_versions) if shell_versions else None
 
     for rule in rules:
         rid = rule.get('id', '?')
@@ -339,6 +349,13 @@ def main():
                                 found = True
                             else:
                                 fix = rule.get('fix', '')
+                                fix_min_ver = rule.get('fix-min-version')
+                                if fix and fix_min_ver is not None and min_shell is not None:
+                                    try:
+                                        if min_shell < int(fix_min_ver):
+                                            fix = ''
+                                    except (ValueError, TypeError):
+                                        pass
                                 if fix:
                                     print(f"{status}|{rid}|{rel}:{lineno}: {message}|fix: {fix}")
                                 else:
@@ -351,6 +368,13 @@ def main():
         if deduplicate and dedup_files:
             files_list = ', '.join(sorted(dedup_files))
             fix = rule.get('fix', '')
+            fix_min_ver = rule.get('fix-min-version')
+            if fix and fix_min_ver is not None and min_shell is not None:
+                try:
+                    if min_shell < int(fix_min_ver):
+                        fix = ''
+                except (ValueError, TypeError):
+                    pass
             summary = f"{message} in {len(dedup_files)} file(s): {files_list}"
             if fix:
                 print(f"{status}|{rid}|{summary}|fix: {fix}")
