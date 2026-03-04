@@ -191,6 +191,12 @@ assert_exit_code "exits with 1 (has failures)" 1
 assert_output_contains "fails on minified JS" "\[FAIL\].*minified-js"
 echo ""
 
+# --- minified-boundary (2 long lines — below threshold) ---
+echo "=== minified-boundary ==="
+run_lint "minified-boundary@test"
+assert_output_not_contains "no minified-js with only 2 long lines" "\[FAIL\].*minified-js"
+echo ""
+
 # --- lifecycle-imbalance ---
 echo "=== lifecycle-imbalance ==="
 run_lint "lifecycle-imbalance@test"

@@ -424,7 +424,7 @@ for f in "$EXT_DIR"/*.js; do
     # Check for lines > 500 chars — need 3+ such lines to flag as minified.
     # A single long line (e.g., keyboard constant chain) in an otherwise
     # readable file is not minification.
-    long_line_count=$(awk 'length > 500 { n++ } END { print n+0 }' "$f" 2>/dev/null)
+    long_line_count=$(awk 'length > 500 { n++ } END { print n+0 }' "$f" 2>/dev/null || true)
     if [[ "$long_line_count" -ge 3 ]]; then
         minified_files+="  $rel_path ($long_line_count lines > 500 chars)"$'\n'
     fi
@@ -436,7 +436,7 @@ if [[ -d "$EXT_DIR/lib" ]]; then
             minified_files+="  $rel_path (webpack bundle)"$'\n'
             continue
         fi
-        long_line_count=$(awk 'length > 500 { n++ } END { print n+0 }' "$f" 2>/dev/null)
+        long_line_count=$(awk 'length > 500 { n++ } END { print n+0 }' "$f" 2>/dev/null || true)
         if [[ "$long_line_count" -ge 3 ]]; then
             minified_files+="  $rel_path ($long_line_count lines > 500 chars)"$'\n'
         fi
