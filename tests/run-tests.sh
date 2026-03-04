@@ -45,6 +45,19 @@ assert_exit_code() {
     fi
 }
 
+assert_output_count() {
+    local label="$1" pattern="$2" expected="$3"
+    local actual
+    actual=$(echo "$output" | grep -cE "$pattern" || true)
+    if [[ "$actual" -eq "$expected" ]]; then
+        echo -e "  ${GREEN}✓${NC} $label (count: $actual)"
+        PASS_COUNT=$((PASS_COUNT + 1))
+    else
+        echo -e "  ${RED}✗${NC} $label (expected $expected matches, got $actual)"
+        FAIL_COUNT=$((FAIL_COUNT + 1))
+    fi
+}
+
 run_lint() {
     local fixture="$1"
     output=""
@@ -603,6 +616,22 @@ echo "=== license-rst ==="
 run_lint "license-rst@test"
 assert_exit_code "exits with 0 (LICENSE.rst recognized)" 0
 assert_output_contains "LICENSE.rst detected" "\[PASS\].*license"
+echo ""
+
+# --- src-metadata (metadata.json in src/ only) ---
+echo "=== src-metadata ==="
+run_lint "src-metadata@test"
+assert_exit_code "exits with 0 (no blocking issues)" 0
+assert_output_contains "metadata.json found in src/" "\[PASS\].*file-structure/metadata.json.*in src/"
+assert_output_not_contains "no metadata/exists FAIL" "\[FAIL\].*metadata/exists"
+echo ""
+
+# --- on-destroy-cleanup (onDestroy recognized as cleanup) ---
+echo "=== on-destroy-cleanup ==="
+run_lint "on-destroy-cleanup@test"
+assert_exit_code "exits with 0 (no blocking issues)" 0
+assert_output_not_contains "no no-destroy-method for widget with onDestroy" "\[WARN\].*resource-tracking/no-destroy-method.*widget"
+assert_output_contains "resource tracking ran" "(PASS|WARN|FAIL).*resource-tracking"
 echo ""
 
 # Extended assertion files (auto-sourced from assertions/ directory)

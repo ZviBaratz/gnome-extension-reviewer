@@ -329,6 +329,10 @@ def scan_file(file_path, ext_dir):
     has_private_destroy = bool(re.search(
         r'(?:^|\s)_destroy\w*\s*\([^)]*\)\s*\{', content, re.MULTILINE
     ))
+    # Detect onDestroy() — common pattern via this.connect("destroy", this.onDestroy.bind(this))
+    has_on_destroy = bool(re.search(
+        r'(?:^|\s)onDestroy\s*\([^)]*\)\s*\{', content, re.MULTILINE
+    ))
 
     return {
         'rel': rel,
@@ -339,6 +343,7 @@ def scan_file(file_path, ext_dir):
         'has_destroy': has_destroy,
         'has_disable': has_disable,
         'has_private_destroy': has_private_destroy,
+        'has_on_destroy': has_on_destroy,
         'child_refs': child_refs,
         'content': content,
     }
@@ -436,9 +441,9 @@ def detect_orphans(file_scans, ownership):
     """Detect orphaned resources in files that are owned by other files.
 
     An orphan is a resource created in a child module where:
-    1. No matching cleanup exists in that module's destroy() method, OR
-    2. The module has no destroy() method but creates resources, OR
-    3. The module's destroy() is never called by its parent.
+    1. The module has no cleanup method (destroy/disable/onDestroy) but creates resources, OR
+    2. The module has a cleanup method but its parent never calls it, OR
+    3. The cleanup method exists and is called, but specific resources aren't cleaned up.
 
     Only flags resources in files that ARE owned by another file.
     """
@@ -463,7 +468,8 @@ def detect_orphans(file_scans, ownership):
         has_destroy = scan['has_destroy']
         has_disable = scan['has_disable']
         has_private_destroy = scan['has_private_destroy']
-        has_cleanup_method = has_destroy or has_disable or has_private_destroy
+        has_on_destroy = scan['has_on_destroy']
+        has_cleanup_method = has_destroy or has_disable or has_private_destroy or has_on_destroy
 
         if not creates:
             continue
@@ -486,7 +492,7 @@ def detect_orphans(file_scans, ownership):
                         parent_calls_destroy = True
                         break
 
-        # Case 1: Module creates resources but has no destroy/disable method
+        # Case 1: Module creates resources but has no cleanup method
         if not has_cleanup_method:
             for c in creates:
                 orphans.append({
@@ -494,11 +500,11 @@ def detect_orphans(file_scans, ownership):
                     'line': c['line'],
                     'type': c['type'],
                     'pattern': c['pattern'],
-                    'reason': f"no destroy()/disable() method in {rel}",
+                    'reason': f"no cleanup method (destroy/disable/onDestroy) in {rel}",
                 })
             continue
 
-        # Case 2: Module has destroy() but parent never calls it
+        # Case 2: Module has cleanup method but parent never calls it
         if not parent_calls_destroy:
             for c in creates:
                 orphans.append({
@@ -506,7 +512,7 @@ def detect_orphans(file_scans, ownership):
                     'line': c['line'],
                     'type': c['type'],
                     'pattern': c['pattern'],
-                    'reason': f"parent does not call destroy() on {rel}",
+                    'reason': f"parent does not call cleanup method on {rel}",
                 })
             continue
 
@@ -517,7 +523,7 @@ def detect_orphans(file_scans, ownership):
         # releasing references even when the resource auto-cleans itself
         nulled_refs = set()
         content = scan['content']
-        for method_name in ('destroy', 'disable', '_destroy'):
+        for method_name in ('destroy', 'disable', '_destroy', 'onDestroy'):
             mb = find_method_body(content, method_name)
             if mb:
                 _, _, body = mb

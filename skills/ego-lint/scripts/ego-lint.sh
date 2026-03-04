@@ -189,6 +189,8 @@ fi
 
 if [[ -f "$EXT_DIR/metadata.json" ]]; then
     print_result "PASS" "file-structure/metadata.json" "metadata.json exists"
+elif [[ -f "$EXT_DIR/src/metadata.json" ]]; then
+    print_result "PASS" "file-structure/metadata.json" "metadata.json exists (in src/)"
 else
     print_result "FAIL" "file-structure/metadata.json" "metadata.json is missing"
 fi
@@ -204,6 +206,17 @@ for candidate in LICENSE COPYING LICENSE.rst LICENSE.md LICENSE.txt COPYING.rst 
         break
     fi
 done
+
+# src/ layout fallback: check parent directory for license
+if [[ -z "$license_file" && "$(basename "$EXT_DIR")" == "src" ]]; then
+    parent_dir="$(dirname "$EXT_DIR")"
+    for candidate in LICENSE COPYING LICENSE.rst LICENSE.md LICENSE.txt COPYING.rst COPYING.md COPYING.txt; do
+        if [[ -f "$parent_dir/$candidate" ]]; then
+            license_file="$parent_dir/$candidate"
+            break
+        fi
+    done
+fi
 
 if [[ -n "$license_file" ]]; then
     head_content=$(head -5 "$license_file" 2>/dev/null || true)
@@ -570,8 +583,10 @@ run_subscript "$SCRIPT_DIR/check-package.sh"
 # ---------------------------------------------------------------------------
 # Provenance-gated WARN suppression
 # ---------------------------------------------------------------------------
-# When code provenance is high (score >= 4), JSDoc annotations (R-SLOP-01/02)
-# are intentional documentation, not AI slop signals. Suppress them post-hoc.
+# When code provenance is moderate-to-high (score >= 3), JSDoc annotations
+# (R-SLOP-01/02) are intentional documentation, not AI slop signals. Score 3
+# means strong hand-written indicators (domain vocabulary, nontrivial algorithms).
+# AI-generated code typically scores 1-2. Suppress JSDoc warnings post-hoc.
 # Future: move provenance awareness into apply-patterns.py for inline gating.
 
 provenance_score=0
@@ -582,8 +597,8 @@ if provenance_line=$(grep 'quality/code-provenance' "$RESULTS_FILE" 2>/dev/null)
 fi
 
 deferred_count=${#DEFERRED_SLOP_JSDOC[@]}
-if [[ "$provenance_score" -ge 4 && "$deferred_count" -gt 0 ]]; then
-    # Suppress deferred R-SLOP-01/02 WARNs (high provenance = intentional JSDoc)
+if [[ "$provenance_score" -ge 3 && "$deferred_count" -gt 0 ]]; then
+    # Suppress deferred R-SLOP-01/02 WARNs (moderate-to-high provenance = intentional JSDoc)
     WARN_COUNT=$((WARN_COUNT - deferred_count))
     PASS_COUNT=$((PASS_COUNT + 1))
     print_result "PASS" "provenance/jsdoc-suppressed" \

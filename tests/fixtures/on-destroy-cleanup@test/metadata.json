@@ -1,0 +1,7 @@
+{
+    "uuid": "on-destroy-cleanup@test",
+    "name": "Test onDestroy Cleanup",
+    "description": "Test onDestroy() recognized as cleanup method",
+    "shell-version": ["48"],
+    "url": "https://example.com"
+}

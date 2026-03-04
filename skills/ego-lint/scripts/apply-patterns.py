@@ -91,6 +91,11 @@ def _unescape_yaml_double(s):
 def _get_shell_versions(ext_dir):
     """Read shell-version from metadata.json and return as list of ints."""
     metadata_path = os.path.join(ext_dir, 'metadata.json')
+    # src/ layout fallback
+    if not os.path.isfile(metadata_path):
+        src_path = os.path.join(ext_dir, 'src', 'metadata.json')
+        if os.path.isfile(src_path):
+            metadata_path = src_path
     if not os.path.isfile(metadata_path):
         return []
     try:

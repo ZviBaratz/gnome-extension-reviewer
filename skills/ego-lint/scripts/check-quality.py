@@ -5,7 +5,7 @@ Usage: check-quality.py EXTENSION_DIR
 
 Performs structural analysis that goes beyond simple pattern matching:
   - Excessive try-catch density
-  - Impossible state checks (isLocked without lock session-mode)
+  - Impossible state checks (currentMode unlock-dialog without lock session-mode)
   - Over-engineered async coordination (_pendingDestroy + _initializing)
   - Module-level mutable state
   - Empty catch blocks
@@ -53,6 +53,10 @@ def find_js_files(ext_dir):
 def get_session_modes(ext_dir):
     """Read session-modes from metadata.json."""
     meta_path = os.path.join(ext_dir, 'metadata.json')
+    if not os.path.isfile(meta_path):
+        src_path = os.path.join(ext_dir, 'src', 'metadata.json')
+        if os.path.isfile(src_path):
+            meta_path = src_path
     if not os.path.isfile(meta_path):
         return None
     try:
@@ -114,7 +118,7 @@ def check_try_catch_density(ext_dir, js_files):
 
 
 def check_impossible_state(ext_dir, js_files):
-    """R-QUAL-02: Flag isLocked/unlock-dialog checks without matching session-modes."""
+    """R-QUAL-02: Flag currentMode unlock-dialog checks without matching session-modes."""
     session_modes = get_session_modes(ext_dir)
     # If session-modes absent or ["user"], extension doesn't run on lock screen
     has_lock = (isinstance(session_modes, list) and
@@ -130,12 +134,10 @@ def check_impossible_state(ext_dir, js_files):
         rel = os.path.relpath(filepath, ext_dir)
         with open(filepath, encoding='utf-8', errors='replace') as f:
             for lineno, line in enumerate(f, 1):
-                if re.search(r'sessionMode\.isLocked', line):
-                    result("WARN", "quality/impossible-state",
-                           f"{rel}:{lineno}: checks isLocked but extension "
-                           f"does not run in lock screen")
-                    found = True
-                elif re.search(r"currentMode\s*===?\s*['\"]unlock-dialog['\"]", line):
+                # sessionMode.isLocked is always a guard (reading lock state
+                # to decide behavior) — not evidence of lock screen mode usage.
+                # Only flag currentMode === 'unlock-dialog' checks.
+                if re.search(r"currentMode\s*[!=]==?\s*['\"]unlock-dialog['\"]", line):
                     result("WARN", "quality/impossible-state",
                            f"{rel}:{lineno}: checks for unlock-dialog but "
                            f"extension does not declare this session-mode")
@@ -699,7 +701,7 @@ def check_comment_density(ext_dir, js_files):
                 code_lines += 1
 
         total = comment_lines + code_lines
-        if total > 0 and comment_lines / total > 0.4:
+        if total > 0 and comment_lines / total > 0.5:
             result("WARN", "quality/comment-density",
                    f"{rel}: {comment_lines}/{total} lines are comments "
                    f"({comment_lines * 100 // total}%) — may indicate AI-generated verbose comments")

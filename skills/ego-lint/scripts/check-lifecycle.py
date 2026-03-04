@@ -374,15 +374,23 @@ def check_injection_manager(ext_dir):
 
     # WS1-D: Detect direct prototype overrides
     prototype_overrides = []
+    seen_overrides = set()
     for filepath in js_files:
         content = strip_comments(read_file(filepath))
         rel = os.path.relpath(filepath, ext_dir)
         # SomeClass.prototype.methodName = ...
         for m in re.finditer(r'(\w+\.prototype\.\w+)\s*=', content):
-            prototype_overrides.append((rel, m.group(1)))
+            key = (rel, m.group(1))
+            if key not in seen_overrides:
+                seen_overrides.add(key)
+                prototype_overrides.append(key)
         # Object.assign(SomeClass.prototype, ...)
         for m in re.finditer(r'Object\.assign\s*\(\s*(\w+\.prototype)', content):
-            prototype_overrides.append((rel, f"Object.assign({m.group(1)}, ...)"))
+            label = f"Object.assign({m.group(1)}, ...)"
+            key = (rel, label)
+            if key not in seen_overrides:
+                seen_overrides.add(key)
+                prototype_overrides.append(key)
 
     if prototype_overrides:
         # Check if disable() restores prototypes
@@ -465,6 +473,10 @@ def check_unlock_dialog_comment(ext_dir):
     """R-LIFE-14: unlock-dialog session mode should have explanatory comment in disable()."""
     metadata_path = os.path.join(ext_dir, 'metadata.json')
     if not os.path.isfile(metadata_path):
+        src_path = os.path.join(ext_dir, 'src', 'metadata.json')
+        if os.path.isfile(src_path):
+            metadata_path = src_path
+    if not os.path.isfile(metadata_path):
         return
 
     try:
@@ -541,6 +553,10 @@ def check_clipboard_keybinding(ext_dir):
 def check_lockscreen_signals(ext_dir):
     """R-LIFE-11: Lock screen signal safety — keyboard signals with unlock-dialog mode."""
     metadata_path = os.path.join(ext_dir, 'metadata.json')
+    if not os.path.isfile(metadata_path):
+        src_path = os.path.join(ext_dir, 'src', 'metadata.json')
+        if os.path.isfile(src_path):
+            metadata_path = src_path
     if not os.path.isfile(metadata_path):
         return
 

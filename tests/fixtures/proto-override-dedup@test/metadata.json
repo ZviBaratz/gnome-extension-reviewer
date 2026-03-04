@@ -1,0 +1,7 @@
+{
+    "uuid": "proto-override-dedup@test",
+    "name": "Test Proto Override Dedup",
+    "description": "Tests that prototype override warnings are deduplicated",
+    "shell-version": ["48"],
+    "url": "https://example.com"
+}

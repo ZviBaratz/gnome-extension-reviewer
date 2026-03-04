@@ -140,6 +140,11 @@ def main():
 
     ext_dir = os.path.realpath(sys.argv[1])
     metadata_path = os.path.join(ext_dir, "metadata.json")
+    # src/ layout fallback (build-system extensions keep metadata.json in src/)
+    if not os.path.isfile(metadata_path):
+        src_path = os.path.join(ext_dir, "src", "metadata.json")
+        if os.path.isfile(src_path):
+            metadata_path = src_path
     dir_name = os.path.basename(ext_dir)
 
     # --- Existence and valid JSON ---
@@ -173,8 +178,11 @@ def main():
             result("FAIL", "metadata/uuid-format", f"UUID contains invalid characters: {uuid}")
 
         # UUID matches directory name (advisory — cloned repos often differ)
+        # Skip for src/ layout — dirname is "src", not the UUID
         if uuid == dir_name:
             result("PASS", "metadata/uuid-matches-dir", f"UUID matches directory name")
+        elif dir_name == "src":
+            result("PASS", "metadata/uuid-matches-dir", f"UUID check skipped for src/ layout")
         else:
             result("WARN", "metadata/uuid-matches-dir", f"UUID '{uuid}' does not match directory '{dir_name}' — must match when installed")
 
@@ -354,7 +362,9 @@ def check_session_modes_consistency(meta, ext_dir):
                "session-modes includes 'unlock-dialog'")
         return
 
-    session_mode_re = re.compile(r"sessionMode\.(currentMode|isLocked)")
+    # Only flag currentMode checks — isLocked is always a guard pattern
+    # (reading lock state to decide behavior, not evidence of lock screen usage)
+    session_mode_re = re.compile(r"sessionMode\.currentMode")
     found = []
     for root, _dirs, files in os.walk(ext_dir):
         for fname in files:

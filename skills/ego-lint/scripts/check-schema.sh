@@ -9,6 +9,8 @@ set -euo pipefail
 
 EXT_DIR="$(cd "${1:-.}" && pwd)"
 METADATA="$EXT_DIR/metadata.json"
+# src/ layout fallback
+[[ ! -f "$METADATA" && -f "$EXT_DIR/src/metadata.json" ]] && METADATA="$EXT_DIR/src/metadata.json"
 
 # Check if metadata.json has settings-schema
 has_settings_schema=false
