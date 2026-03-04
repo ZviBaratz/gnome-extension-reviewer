@@ -1058,7 +1058,7 @@
   fix: "Call window.set_maximize_flags(flags) then window.maximize()"
   min-version: 49
   guard-pattern: "get_maximized\\s*\\?"
-  guard-window: 0
+  guard-window: 1
 
 - id: R-VER49-09
   pattern: "\\bAppMenuButton\\b"
@@ -1087,7 +1087,7 @@
   min-version: 49
   fix: "Call unmaximize() without the MaximizeFlags parameter"
   guard-pattern: "get_maximized\\s*\\?"
-  guard-window: 0
+  guard-window: 1
 
 # --- GNOME 50 migration (version-gated) ---
 # GNOME 50 removed X11 support and associated APIs.
