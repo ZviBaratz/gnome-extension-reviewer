@@ -1,0 +1,98 @@
+# Classified findings for AppIndicator/KStatusNotifierItem Support
+# Source: docs/internal/field-test-appindicator.md
+findings:
+  # FAILs — True Positives
+  - id: "R-DEPR-04::legacy imports.gi syntax"
+    classification: tp
+    notes: "3 instances in indicatorStatusIcon.js, interfaces.js, appIndicator.js — GNOME 45+ should use ESM"
+  - id: "R-VER44-01::Meta.later_add dead code"
+    classification: tp
+    notes: "promiseUtils.js — API removed in GNOME 44, extension targets 45+"
+  - id: "R-VER44-02::Meta.later_remove dead code"
+    classification: tp
+    notes: "promiseUtils.js — same dead code issue"
+  - id: "metadata/future-shell-version::GNOME 50"
+    classification: tp
+    notes: "shell-version includes 50 which is newer than current stable"
+  - id: "no-deprecated-modules::imports.byteArray"
+    classification: tp
+    notes: "interfaces.js uses deprecated imports.byteArray"
+  - id: "non-gjs-scripts::ksni.py"
+    classification: borderline
+    notes: "indicator-test-tool/ksni.py is a developer test tool, not part of extension proper"
+  - id: "metadata/shell-version-range::6 versions"
+    classification: tp
+    notes: "45-50 exceeds max 4 allowed"
+  # FAILs — False Positives
+  - id: "R-SLOP-16::GLib.file_get_contents"
+    classification: fp
+    notes: "Rule claims API doesn't exist in GJS, but it does — valid GI binding for g_file_get_contents()"
+  - id: "R-VER46-01::add_actor runtime-guarded"
+    classification: fp
+    notes: "Code has if (obj.add_actor) guard — runtime feature detection. Fixed: guard-pattern."
+  - id: "R-VER46-02::remove_actor runtime-guarded"
+    classification: fp
+    notes: "Same runtime guard pattern as add_actor. Fixed: guard-pattern."
+  - id: "init/shell-modification::non-Extension constructors"
+    classification: fp
+    notes: "3 FPs — GLib.Error, Gio.Cancellable in constructors of runtime-only classes. Fixed: scoped to extension.js."
+  # WARNs — True Positives
+  - id: "R-SEC-06::run_dispose"
+    classification: tp
+    notes: "statusNotifierWatcher.js — needs justification"
+  - id: "R-LOG-03::print/printerr in dev tool"
+    classification: tp
+    notes: "11 instances in indicator-test-tool/"
+  - id: "R-QUAL-26::custom Logger class"
+    classification: tp
+    notes: "Logger wraps GLib.log_structured; console.debug preferred"
+  - id: "R-QUAL-33::Gio._promisify module-scope"
+    classification: tp
+    notes: "4 files — correct advisory"
+  - id: "quality/module-state::mutable module-level let"
+    classification: tp
+    notes: "settingsManager.js — intentional singleton but valid concern"
+  - id: "quality/mock-in-production::test files"
+    classification: tp
+    notes: "indicator-test-tool/testTool.js shouldn't ship"
+  - id: "gobject/missing-gtypename::collision risk"
+    classification: tp
+    notes: "5 instances"
+  - id: "async/missing-cancellable::async without cancellable"
+    classification: tp
+    notes: "dbusMenu.js, appIndicator.js"
+  - id: "disclosure/private-api::undisclosed"
+    classification: tp
+    notes: "Main.layoutManager access not disclosed"
+  - id: "disclosure/file-io::undisclosed"
+    classification: tp
+    notes: "File I/O not disclosed in metadata"
+  # WARNs — False Positives
+  - id: "R-SLOP-13::this instanceof in factory"
+    classification: fp
+    notes: "3 FPs — methods in MenuItemFactory bound to different shellItem types via connectSmart. Fixed: guard-pattern."
+  - id: "R-SLOP-35::Object.freeze enum"
+    classification: fp
+    notes: "3 FPs — standard JS enum pattern (SNICategory, SNIStatus, SNIconType). Fixed: guard-pattern."
+  - id: "R-SLOP-38::domain-specific identifiers"
+    classification: fp
+    notes: "4 FPs — brightnessContrastEffect and similar are standard Clutter API names. Fixed: threshold raised."
+  - id: "R-QUAL-31::_onDestroy signal handler"
+    classification: fp
+    notes: "7 FPs — _onDestroy is PanelMenu.Button signal handler convention. Fixed: guard-pattern."
+  - id: "lifecycle/connectObject-migration::connectSmart equivalent"
+    classification: fp
+    notes: "6 FPs — connectSmart provides equivalent auto-cleanup. Fixed: recognized in check-lifecycle.py."
+  - id: "lifecycle/signal-balance::connectSmart not counted"
+    classification: fp
+    notes: "66 connects vs 18 disconnects — doesn't account for connectSmart auto-disconnect. Fixed."
+  # WARNs — Mixed
+  - id: "quality/constructor-resources::runtime-only constructors"
+    classification: borderline
+    notes: "8 hits — extension.js:36 is TP (Extension ctor), others are FP (runtime-only, cleaned via destroy/connectSmart)"
+  - id: "lifecycle/untracked-timeout::GSource-based promise"
+    classification: borderline
+    notes: "promiseUtils.js is FP (GSource-based promise with _cleanup); indicator-test-tool entries are TP but irrelevant"
+  - id: "quality/redundant-cleanup::verbose destroy guards"
+    classification: borderline
+    notes: "4 instances — if (x) x.destroy() vs x?.destroy() is style preference"

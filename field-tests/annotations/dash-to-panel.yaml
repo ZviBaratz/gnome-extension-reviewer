@@ -1,0 +1,98 @@
+# Classified findings for Dash to Panel
+# Source: docs/internal/field-test-dash-to-panel.md
+findings:
+  # FAILs — True Positives
+  - id: "css/shell-class-override::.popup-menu"
+    classification: tp
+    notes: "Overrides Shell theme class"
+  - id: "R-DEPR-05::ExtensionUtils deprecated"
+    classification: tp
+    notes: "desktopIconsIntegration.js uses deprecated import path — 2 instances"
+  - id: "R-DEPR-08::GLib.spawn_command_line_sync"
+    classification: tp
+    notes: "prefs.js — dconf dump via deprecated spawn API"
+  - id: "R-SEC-22::dconf subprocess spawning"
+    classification: tp
+    notes: "prefs.js — dconf dump and dconf load. 2 instances."
+  - id: "R-VER46-05::ExtensionState.ENABLED renamed"
+    classification: tp
+    notes: "desktopIconsIntegration.js — renamed to ACTIVE in GNOME 46"
+  - id: "init/shell-modification::module scope SearchController"
+    classification: tp
+    notes: "taskbar.js:46 — const SearchController = Main.overview.searchController at module scope"
+  - id: "init/shell-modification::Extension constructor"
+    classification: tp
+    notes: "extension.js:55 — Main.sessionMode.hasOverview in Extension constructor"
+  # FAILs — False Positives
+  - id: "R-DEPR-06::Tweener in comments"
+    classification: fp
+    notes: "utils.js — pattern matches Tweener in comments about migration from Tweener to Clutter. 2 instances."
+  - id: "R-DEPR-05::commented-out code"
+    classification: fp
+    notes: "prefs.js:151 — commented-out line of old ExtensionUtils code"
+  - id: "R-VER48-02::PACKAGE_VERSION guard not recognized"
+    classification: fp
+    notes: "utils.js — Config.PACKAGE_VERSION >= '48' ternary guard not recognized as version-compat. 2 instances."
+  - id: "init/shell-modification::constructor in enable() chain"
+    classification: fp
+    notes: "4 FPs — taskbar.js signal handlers and desktopIconsIntegration.js constructor, all called from enable()"
+  # WARNs — True Positives
+  - id: "lifecycle/prototype-override::extensive prototype patching"
+    classification: tp
+    notes: "14 instances in panelManager.js — LookingGlass, AppIcon, Workspace overrides"
+  - id: "R-SLOP-11::GLib.source_remove"
+    classification: tp
+    notes: "6 instances — should use GLib.Source.remove()"
+  - id: "lifecycle/destroy-no-null::missing null assignment"
+    classification: tp
+    notes: "5 instances"
+  - id: "gobject/missing-gtypename::registerClass without GTypeName"
+    classification: tp
+    notes: "5 instances — collision risk"
+  - id: "R-QUAL-27::PACKAGE_VERSION string compare"
+    classification: tp
+    notes: "4 instances — string comparison on version is unreliable"
+  - id: "R-SEC-09::extension system interference"
+    classification: tp
+    notes: "2 instances — extensionManager access"
+  - id: "R-PREFS-04b::GTK widgets with Adw equivalents"
+    classification: tp
+    notes: "Correct advisory"
+  - id: "R-QUAL-31::_onDestroy naming"
+    classification: tp
+    notes: "2 instances"
+  - id: "lifecycle/timeout-return-value::missing SOURCE_REMOVE"
+    classification: tp
+    notes: "2 instances"
+  - id: "accessibility/widget-role::missing accessible_role"
+    classification: tp
+    notes: "6 custom St.Widget subclasses without accessible_role"
+  - id: "disclosure/private-api::undisclosed"
+    classification: tp
+    notes: "Private API usage not disclosed"
+  - id: "disclosure/file-io::undisclosed"
+    classification: tp
+    notes: "File I/O not disclosed"
+  # WARNs — False Positives
+  - id: "R-SEC-03::HTTP URLs in GPL headers"
+    classification: fp
+    notes: "18 hits — all in GPL license headers (http://www.gnu.org/licenses/). Pure noise."
+  - id: "R-SLOP-24::new Gio.Settings for system schemas"
+    classification: fp
+    notes: "5 hits — desktop.interface, desktop.notifications, shell.app-switcher, KEYBINDINGS_SCHEMA. Correct API for system schemas."
+  - id: "R-SLOP-01::JSDoc despite provenance score 4"
+    classification: fp
+    notes: "5 hits — provenance post-filter reports suppression but WARNs still appear (bug)"
+  - id: "R-SLOP-38::descriptive identifiers"
+    classification: fp
+    notes: "2 hits — sortWindowsCompareFunction, taskbarBoxAllocationChangedId are descriptive"
+  - id: "R-SLOP-35::Object.freeze shared state"
+    classification: fp
+    notes: "Object.freeze(monitorInfos) prevents accidental mutation — not AI pattern"
+  # WARNs — Debatable
+  - id: "lifecycle/untracked-timeout::one-shot GLib.idle_add"
+    classification: borderline
+    notes: "2 instances — both are GLib.idle_add one-shots inside signal handlers"
+  - id: "R-SLOP-29b::empty destroy placeholder"
+    classification: borderline
+    notes: "ProximityRectWatch destroy() {} is a class hierarchy placeholder"

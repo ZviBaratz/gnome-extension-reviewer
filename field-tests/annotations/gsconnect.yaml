@@ -1,0 +1,67 @@
+# Classified findings for GSConnect
+# Source: docs/internal/field-test-gsconnect.md
+findings:
+  # FAILs — True Positives
+  - id: "license::No LICENSE file found"
+    classification: tp
+    notes: "No LICENSE/COPYING file in release zip"
+  - id: "non-gjs-scripts::nautilus-gsconnect.py"
+    classification: tp
+    notes: "Python Nautilus integration plugin"
+  - id: "R-DEPR-06::Tweener usage"
+    classification: tp
+    notes: "imports.tweener.tweener in messaging.js, pulseaudio.js — 6 instances"
+  - id: "R-DEPR-10::imports.format.format"
+    classification: tp
+    notes: "setup.js uses deprecated format import"
+  - id: "init/shell-modification::module scope"
+    classification: tp
+    notes: "Main.panel.statusArea.quickSettings at module scope in extension.js"
+  # FAILs — Borderline (daemon context)
+  - id: "init/shell-modification::daemon Gio.SubprocessLauncher"
+    classification: borderline
+    notes: "wl_clipboard.js — helper daemon module, not extension init path"
+  - id: "init/shell-modification::daemon Gio.Settings"
+    classification: borderline
+    notes: "service/init.js and service/plugins/findmyphone.js — runs in separate process, not in shell. 2 instances."
+  # FAILs — Fixed False Positives
+  - id: "R-WEB-03::.fetch() method call"
+    classification: fp
+    notes: "Pattern matches .fetch() method calls and async fetch() definitions. Fixed: guard-pattern."
+  - id: "schema/gnome-trademark::case-sensitive prefix"
+    classification: fp
+    notes: "org.gnome.Shell.Extensions. mixed case not stripped. Fixed: case-insensitive prefix stripping."
+  - id: "R-VER46-04::GioUnix compat fallback"
+    classification: fp
+    notes: "Gio.UnixInputStream in catch fallback after import('gi://GioUnix'). Fixed: guard-pattern. 2 instances."
+  - id: "init/shell-modification::GLib.Bytes data container"
+    classification: fp
+    notes: "new GLib.Bytes(...) is a data container, not a system resource. Fixed: VALUE_TYPES exemption."
+  # Key WARNs
+  - id: "R-SLOP-01::JSDoc @param"
+    classification: fp
+    notes: "170 hits — GSConnect uses extensive typed JSDoc, legitimate for mature hand-written project"
+  - id: "R-SLOP-02::JSDoc @returns"
+    classification: fp
+    notes: "52 hits — same as above"
+  - id: "R-SLOP-24::new Gio.Settings in service/"
+    classification: borderline
+    notes: "20 hits — many in service/ daemon where Extension class is unavailable"
+  - id: "quality/constructor-resources::service/ui widgets"
+    classification: borderline
+    notes: "28 hits — many in service/ui/ (daemon GTK widgets, not extension lifecycle)"
+  - id: "R-SLOP-40::new Promise wrapper"
+    classification: tp
+    notes: "22 instances — GSConnect wraps many GIO async operations"
+  - id: "resource-tracking/destroy-not-called::missing destroy calls"
+    classification: tp
+    notes: "14 instances"
+  - id: "lifecycle/prototype-override::Shell integration patches"
+    classification: tp
+    notes: "10 instances"
+  - id: "R-SEC-06::run_dispose usage"
+    classification: tp
+    notes: "6 instances — needs justification comments"
+  - id: "R-QUAL-32::unnecessary version specifier"
+    classification: borderline
+    notes: "7 hits — version specifiers correct for standalone daemon scripts"

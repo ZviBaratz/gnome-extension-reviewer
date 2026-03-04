@@ -154,6 +154,41 @@ test(ego-lint): add fixture for deprecated ByteArray usage
 - **PR closes issue**: Include `Closes #N` in the PR description to auto-close the issue on merge
 - **Tests before PR**: Run `bash tests/run-tests.sh` and verify all assertions pass before pushing
 
+## Field Testing
+
+Batch ego-lint runner for regression testing across 10 real-world GNOME extensions.
+
+### Running field tests
+
+```bash
+bash scripts/field-test-runner.sh                    # lint all extensions
+bash scripts/field-test-runner.sh --extension NAME   # lint single extension
+bash scripts/field-test-runner.sh --update-baselines # save current as golden
+bash scripts/field-test-runner.sh --no-fetch         # skip git clones, use cache
+```
+
+### Pipeline structure
+
+- `field-tests/manifest.yaml` — Extension source manifest (local paths, GitHub repos)
+- `field-tests/baselines/` — Golden JSON snapshots (committed)
+- `field-tests/annotations/` — Per-extension finding classifications: tp, fp, borderline, expected (committed)
+- `field-tests/history.jsonl` — Append-only trend data (committed)
+- `field-tests/cache/` — Downloaded extensions (gitignored)
+- `field-tests/results/` — Timestamped run output (gitignored)
+- `scripts/field-test-runner.sh` — Bash orchestrator
+- `scripts/parse-manifest.py` — Manifest YAML → JSON (inline parser, no PyYAML)
+- `scripts/parse-lint-results.py` — ego-lint stdout → structured JSON
+- `scripts/diff-baselines.py` — Baseline comparison + annotation-aware filtering
+- `skills/ego-field-test/SKILL.md` — Claude Code skill for full pipeline (classification, synthesis, issue creation)
+
+### Calibration cycle
+
+1. Make a code change (guard pattern, threshold tweak, new rule)
+2. Run `bash scripts/field-test-runner.sh --no-fetch` — see impact across all extensions
+3. Classify new unannotated findings in `field-tests/annotations/`
+4. If FPs found, create issues and fix
+5. Run with `--update-baselines` to snapshot improved state
+
 ## Releasing
 
 release-please automates versioning, CHANGELOG updates, git tags, and GitHub Releases:

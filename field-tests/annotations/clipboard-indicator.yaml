@@ -1,0 +1,85 @@
+# Classified findings for Clipboard Indicator
+# Source: docs/internal/field-test-clipboard-indicator.md
+findings:
+  # FAILs — Fixed False Positives
+  - id: "R-WEB-01::setTimeout"
+    classification: fp
+    notes: "GJS added native setTimeout in GNOME 45. Rule was unconditionally blocking. Fixed: max-version 44."
+  - id: "R-WEB-02::setInterval"
+    classification: fp
+    notes: "Same as R-WEB-01. Fixed: max-version 44."
+  - id: "R-WEB-10::clearTimeout"
+    classification: fp
+    notes: "Same as R-WEB-01. Fixed: max-version 44."
+  - id: "R-WEB-11::clearInterval"
+    classification: fp
+    notes: "Same as R-WEB-01. Fixed: max-version 44."
+  - id: "license::LICENSE.rst not recognized"
+    classification: fp
+    notes: "License check only recognized LICENSE/COPYING, not .rst/.md/.txt variants. Fixed."
+  - id: "metadata/uuid-matches-dir::cloned repo"
+    classification: fp
+    notes: "FAIL for cloned repos where directory != UUID. Fixed: downgraded to WARN."
+  # FAILs — True Positives
+  - id: "css/shell-class-override::.popup-menu-item"
+    classification: tp
+    notes: "Overrides Shell theme class without scoping — genuine issue"
+  - id: "R-DEPR-11::Shell.KeyBindingMode"
+    classification: tp
+    notes: "Dead code, removed before GNOME 40"
+  # WARNs — True Positives
+  - id: "css/important::!important usage"
+    classification: tp
+    notes: "Correct advisory"
+  - id: "R-DEPR-09::var declarations"
+    classification: tp
+    notes: "3 instances — should be const/let"
+  - id: "R-SEC-06::run_dispose"
+    classification: tp
+    notes: "run_dispose() on virtual keyboard device"
+  - id: "R-PREFS-04c::GTK layout widget"
+    classification: tp
+    notes: "Correct advisory"
+  - id: "R-VER48-04b::vertical property deprecated"
+    classification: tp
+    notes: "3 instances — correct advisory"
+  - id: "quality/module-state::module-level let"
+    classification: tp
+    notes: "5 module-level let variables — real enable/disable lifecycle concern"
+  - id: "quality/constructor-resources::connect in prefs"
+    classification: tp
+    notes: "2 instances — .connect() in prefs constructor"
+  - id: "quality/private-api::Main.panel"
+    classification: tp
+    notes: "Private API access — correct advisory"
+  - id: "lifecycle/signal-balance::17 vs 6"
+    classification: tp
+    notes: "Genuine signal balance concern"
+  - id: "lifecycle/async-destroyed-guard::no _destroyed guard"
+    classification: tp
+    notes: "No destroyed guard on async code"
+  - id: "lifecycle/clipboard-keybinding::security pattern"
+    classification: tp
+    notes: "Clipboard + keybinding pattern detected"
+  - id: "gobject/missing-gtypename::ConfirmDialog"
+    classification: tp
+    notes: "Missing GTypeName — collision risk"
+  - id: "async/no-cancellable::Gio async without cancellable"
+    classification: tp
+    notes: "Correct finding"
+  - id: "async/missing-cancellable::_async without cancellable"
+    classification: tp
+    notes: "Correct finding"
+  - id: "resource-tracking/no-destroy-method::registry.js"
+    classification: tp
+    notes: "Registry has no destroy() method"
+  - id: "resource-tracking/ownership::orphan detected"
+    classification: tp
+    notes: "1 orphan detected — correct"
+  # ego-review blocking issues
+  - id: "lifecycle::_historyLabel on global.stage never removed"
+    classification: tp
+    notes: "B1: Actor leak on every enable/disable cycle — ego-review finding"
+  - id: "lifecycle::_notifSource never destroyed in disable()"
+    classification: tp
+    notes: "B2: Notification source persists — ego-review finding"

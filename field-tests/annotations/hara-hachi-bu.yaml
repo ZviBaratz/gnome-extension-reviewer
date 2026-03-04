@@ -1,0 +1,57 @@
+# Classified findings for hara-hachi-bu
+# Source: docs/internal/field-test-hara-hachi-bu.md
+# Note: This is a living calibration baseline, not a one-shot field test.
+# All findings below were false positives that were subsequently fixed.
+findings:
+  - id: "R-SEC-07::St.Clipboard match"
+    classification: fp
+    notes: "F-001: R-SEC-07 fired even when disclosure was present; quality/clipboard-disclosure is a strict superset. Rule removed."
+  - id: "quality/gettext-pattern::use this.gettext()"
+    classification: fp
+    notes: "F-003: Fix message inaccurate — this.gettext() can't be used at module scope. Updated message text."
+  - id: "R-SEC-20::pkexec per-file"
+    classification: fp
+    notes: "F-004: Matched pkexec in all JS/shell files including string literals and comments. Only 1 of 5 files actually invoked pkexec."
+  - id: "quality/private-api::WARN count inflation"
+    classification: fp
+    notes: "F-005: Each location emitted a separate WARN line (up to 6 for one check). Consolidated to single WARN."
+  - id: "quality/module-state::only recognizes null reset"
+    classification: fp
+    notes: "F-006: Variables reset to 0, false, Promise.resolve() were not recognized as cleanup."
+  - id: "R-PREFS-04b::widgets with no Adwaita equivalent"
+    classification: fp
+    notes: "F-007: Gtk.ListBox with boxed-list CSS, Gtk.ScrolledWindow for constrained height have no Adw replacement."
+  - id: "quality/gettext-pattern::lib modules"
+    classification: fp
+    notes: "F-008: GLib.dgettext() is correct for library modules that can't access Extension base class."
+  - id: "quality/logging-volume::fixed threshold"
+    classification: fp
+    notes: "F-009: Fixed count threshold didn't scale with code size. ~1 log per 84 lines is reasonable density."
+  - id: "async/missing-cancellable::callback cancellation"
+    classification: fp
+    notes: "F-010: Check didn't recognize functions with isCancelled callback parameters providing equivalent cancellation."
+  # Current remaining WARNs (all correct/expected)
+  - id: "polkit-files::2 polkit files present"
+    classification: tp
+    notes: "Informational — expected for extension with pkexec"
+  - id: "R-SEC-20::pkexec scrutiny advisory"
+    classification: tp
+    notes: "Correct advisory, disclosed in metadata"
+  - id: "R-PREFS-04c::GTK layout widget advisory"
+    classification: tp
+    notes: "ListBox, SpinButton in prefs — correct advisory"
+  - id: "R-SLOP-40::Promise wrapper advisory"
+    classification: tp
+    notes: "D-Bus proxy constructor — correct advisory"
+  - id: "R-QUAL-33::Gio._promisify() module-scope"
+    classification: tp
+    notes: "Standard GJS pattern — correct advisory"
+  - id: "R-VER48-04b::vertical property deprecated"
+    classification: tp
+    notes: "Correct advisory, deduplicated to 1 per file"
+  - id: "metadata/shell-version-current::GNOME 49 not in shell-version"
+    classification: expected
+    notes: "Intentional — GNOME 49 not yet tested"
+  - id: "quality/private-api::private API with justification"
+    classification: tp
+    notes: "Disclosed in metadata — correct advisory"

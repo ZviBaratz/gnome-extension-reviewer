@@ -1,0 +1,65 @@
+# Classified findings for Tiling Shell
+# Source: docs/internal/field-test-tiling-shell.md
+findings:
+  # FAILs — True Positives
+  - id: "license::No LICENSE file found"
+    classification: tp
+    notes: "No LICENSE/COPYING in release zip"
+  - id: "no-console-log::logger wrapper pattern"
+    classification: borderline
+    notes: "console.log('[tilingshell]', ...) used as logger wrapper"
+  - id: "R-SEC-22::dconf CLI spawn settingsExport.js"
+    classification: tp
+    notes: "Gio.Subprocess.new(['dconf', 'load', ...]) — 2 instances"
+  # FAILs — False Positives (fixed)
+  - id: "minified-js::single long line"
+    classification: fp
+    notes: "1 line at 762 chars (keyboard constant chain) in 1404-line readable file. Fixed: require 3+ lines > 500 chars."
+  - id: "R-VER49-08::ternary version-compat guard"
+    classification: fp
+    notes: "get_maximized ? .maximize(MaximizeFlags) : .maximize() — ternary guard not recognized. Fixed: added guard-pattern."
+  - id: "R-VER49-11::ternary version-compat guard"
+    classification: fp
+    notes: "get_maximized ? .unmaximize(MaximizeFlags) : .unmaximize() — same fix as R-VER49-08."
+  - id: "init/shell-modification::constructor signal callback"
+    classification: fp
+    notes: "globalState.js — inside constructor signal callback, not module scope. 2 instances."
+  - id: "init/shell-modification::module-scope arrow fn definition"
+    classification: fp
+    notes: "ui.js — const fn = () => Main.layoutManager.monitors is lazy, not executed at load time. Fixed: arrow fn skip."
+  - id: "init/shell-modification::non-extension.js constructor"
+    classification: fp
+    notes: "13 FPs across defaultMenu.js, indicator.js, tilingManager.js, layoutEditor.js, editorDialog.js — constructors called from enable(). Fixed: only check extension.js constructors."
+  # WARNs — True Positives
+  - id: "resource-tracking/no-destroy-method::compiled TS classes"
+    classification: tp
+    notes: "64 hits — compiled TS creates many small classes without explicit destroy()"
+  - id: "R-DEPR-09::var usage"
+    classification: tp
+    notes: "18 hits — esbuild __defProp/__publicField helpers use var"
+  - id: "lifecycle/prototype-override::alt-tab and window menu"
+    classification: tp
+    notes: "4 instances — correct detection"
+  - id: "lifecycle/destroy-no-null::missing null assignment"
+    classification: tp
+    notes: "5 instances — .destroy() without null assignment"
+  - id: "gobject/cairo-dispose::drawing callback"
+    classification: tp
+    notes: "Cairo context leak in drawing callback"
+  - id: "async/missing-cancellable::async without cancellable"
+    classification: tp
+    notes: "Async operation without cancellable"
+  # WARNs — False Positives
+  - id: "R-SLOP-38::verbose param names"
+    classification: fp
+    notes: "TS compiled names like tilePreviewAnimationTime are domain-specific, not AI verbosity"
+  - id: "R-SLOP-08::non-existent API"
+    classification: fp
+    notes: "MaximizeFlags.BOTH flagged but it exists; compiled code patterns"
+  - id: "R-SLOP-24::new Gio.Settings"
+    classification: fp
+    notes: "Settings helper class, not direct construction"
+  # WARNs — Mixed
+  - id: "quality/constructor-resources::signal connects in ctors"
+    classification: borderline
+    notes: "10 hits — some are real (signal connects in ctors), some are esbuild patterns"

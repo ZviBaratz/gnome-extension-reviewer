@@ -6,3 +6,5 @@ node_modules/
 .claude/
 tests/fixtures/*/node_modules/
 tests/assertions/local-regression.sh
+field-tests/cache/
+field-tests/results/
