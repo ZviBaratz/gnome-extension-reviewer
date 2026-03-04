@@ -52,13 +52,13 @@ def classify_orphan(orphan):
     file_path = orphan.get('file', '')
     line = orphan.get('line', '?')
 
-    # Case 1: No destroy/disable method at all
-    if 'no destroy()/disable() method' in reason:
+    # Case 1: No cleanup method at all (destroy/disable/onDestroy)
+    if 'no cleanup method' in reason:
         detail = f"{file_path}:{line} — {reason}"
         return 'resource-tracking/no-destroy-method', detail
 
-    # Case 2: Parent doesn't call destroy
-    if 'parent does not call destroy()' in reason:
+    # Case 2: Parent doesn't call cleanup method
+    if 'parent does not call cleanup method' in reason:
         detail = f"{file_path}:{line} — {reason}"
         return 'resource-tracking/destroy-not-called', detail
 
