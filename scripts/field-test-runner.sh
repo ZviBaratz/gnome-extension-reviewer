@@ -267,15 +267,34 @@ for idx in $(seq 0 $((EXT_COUNT - 1))); do
     echo ""
 done
 
-# Print summary
-echo "================================================================"
-echo "  Summary: $PROCESSED processed, $SKIPPED skipped, $CHANGED changed"
-echo "  Totals: P:$TOTAL_PASS F:$TOTAL_FAIL W:$TOTAL_WARN S:$TOTAL_SKIP"
-echo "================================================================"
+# Build summary JSON (used for both file output and --json flag)
+ENTRIES_JSON="$(python3 -c "
+import json, sys
+entries = []
+for line in sys.stdin:
+    line = line.strip()
+    if not line:
+        continue
+    parts = line.split('|')
+    entries.append({
+        'name': parts[0],
+        'counts': {
+            'pass': int(parts[1]),
+            'fail': int(parts[2]),
+            'warn': int(parts[3]),
+            'skip': int(parts[4]),
+        },
+        'changed': parts[5] == 'true',
+        'new': int(parts[6]),
+        'resolved': int(parts[7]),
+        'unannotated': int(parts[8]),
+    })
+print(json.dumps(entries))
+" <<< "$(printf '%s\n' "${SUMMARY_ENTRIES[@]}")")"
 
-# Save summary JSON
-python3 -c "
-import json
+SUMMARY_JSON="$(python3 -c "
+import json, sys
+extensions = json.loads(sys.argv[1])
 summary = {
     'timestamp': '$TIMESTAMP',
     'ego_lint_version': '$EGO_LINT_VERSION',
@@ -288,14 +307,26 @@ summary = {
         'warn': $TOTAL_WARN,
         'skip': $TOTAL_SKIP,
     },
+    'extensions': extensions,
     'results_dir': '$RESULTS_DIR',
 }
 print(json.dumps(summary, indent=2))
-" > "$RESULTS_DIR/summary.json"
+" "$ENTRIES_JSON")"
 
-echo ""
-echo "Results saved to: $RESULTS_DIR/"
+echo "$SUMMARY_JSON" > "$RESULTS_DIR/summary.json"
 
-if [[ "$OPT_UPDATE_BASELINES" == true ]]; then
-    echo "Baselines updated in: $BASELINES_DIR/"
+if [[ "$OPT_JSON" == true ]]; then
+    echo "$SUMMARY_JSON"
+else
+    # Print human-readable summary
+    echo "================================================================"
+    echo "  Summary: $PROCESSED processed, $SKIPPED skipped, $CHANGED changed"
+    echo "  Totals: P:$TOTAL_PASS F:$TOTAL_FAIL W:$TOTAL_WARN S:$TOTAL_SKIP"
+    echo "================================================================"
+    echo ""
+    echo "Results saved to: $RESULTS_DIR/"
+
+    if [[ "$OPT_UPDATE_BASELINES" == true ]]; then
+        echo "Baselines updated in: $BASELINES_DIR/"
+    fi
 fi
