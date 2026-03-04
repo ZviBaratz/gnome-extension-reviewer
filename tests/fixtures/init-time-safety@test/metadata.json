@@ -1,0 +1,7 @@
+{
+    "uuid": "init-time-safety@test",
+    "name": "Init Time Safety Test",
+    "description": "Tests init-time Shell modification detection",
+    "shell-version": ["48"],
+    "url": "https://example.com"
+}

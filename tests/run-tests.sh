@@ -191,6 +191,15 @@ assert_exit_code "exits with 1 (has failures)" 1
 assert_output_contains "fails on minified JS" "\[FAIL\].*minified-js"
 echo ""
 
+# --- init-time-safety ---
+echo "=== init-time-safety ==="
+run_lint "init-time-safety@test"
+assert_exit_code "exits with 1 (has module-scope violation)" 1
+assert_output_contains "fails on module-scope Main access" "\[FAIL\].*init/shell-modification"
+assert_output_not_contains "no FP on arrow function definition" "init/shell-modification.*helper.js"
+assert_output_not_contains "no FP on helper constructor" "init/shell-modification.*getMonitors"
+echo ""
+
 # --- lifecycle-imbalance ---
 echo "=== lifecycle-imbalance ==="
 run_lint "lifecycle-imbalance@test"

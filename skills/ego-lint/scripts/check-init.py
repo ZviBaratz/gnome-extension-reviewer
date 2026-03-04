@@ -61,6 +61,15 @@ def is_skip_line(line):
     return False
 
 
+# Arrow function definitions: the body after => is lazy (not executed at
+# module scope).  Detect `const fn = (...) => expr` patterns.
+ARROW_FN_DEF = re.compile(
+    r'(?:const|let|var)\s+\w+\s*='   # variable assignment
+    r'(?:\([^)]*\)|\w+)'                 # parameter list or single param
+    r'\s*=>'                              # arrow
+)
+
+
 # Shell globals that should only be accessed inside enable()/disable()
 SHELL_GLOBALS = re.compile(
     r'\bMain\.(panel|overview|layoutManager|sessionMode|messageTray|wm|'
@@ -183,6 +192,10 @@ def check_init_modifications(ext_dir):
             if is_skip_line(line):
                 continue
             if SHELL_GLOBALS.search(line):
+                # Arrow function definitions are lazy — the body after =>
+                # is not executed at module scope
+                if ARROW_FN_DEF.search(line):
+                    continue
                 violations.append(f"{rel}:{lineno}")
             elif GOBJECT_CONSTRUCTORS.search(line):
                 # GObject.registerClass() returns a class, not an instance
@@ -191,17 +204,18 @@ def check_init_modifications(ext_dir):
                     violations.append(f"{rel}:{lineno}")
 
         # Check constructor() lines
-        # GObject constructors in helper file constructors are runtime-only
-        # (only run when instantiated from enable()), so only flag in extension.js
+        # Helper file constructors are runtime-only (only run when
+        # instantiated from enable()), so only flag in extension.js
         is_extension_js = os.path.basename(filepath) == 'extension.js'
-        ctor_lines = extract_constructor_lines(lines)
-        for lineno, line in ctor_lines:
-            if is_skip_line(line):
-                continue
-            if SHELL_GLOBALS.search(line):
-                violations.append(f"{rel}:{lineno}")
-            elif is_extension_js and GOBJECT_CONSTRUCTORS.search(line):
-                violations.append(f"{rel}:{lineno}")
+        if is_extension_js:
+            ctor_lines = extract_constructor_lines(lines)
+            for lineno, line in ctor_lines:
+                if is_skip_line(line):
+                    continue
+                if SHELL_GLOBALS.search(line):
+                    violations.append(f"{rel}:{lineno}")
+                elif GOBJECT_CONSTRUCTORS.search(line):
+                    violations.append(f"{rel}:{lineno}")
 
     if violations:
         for loc in violations:
