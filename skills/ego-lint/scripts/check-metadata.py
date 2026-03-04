@@ -140,6 +140,11 @@ def main():
 
     ext_dir = os.path.realpath(sys.argv[1])
     metadata_path = os.path.join(ext_dir, "metadata.json")
+    # src/ layout fallback (build-system extensions keep metadata.json in src/)
+    if not os.path.isfile(metadata_path):
+        src_path = os.path.join(ext_dir, "src", "metadata.json")
+        if os.path.isfile(src_path):
+            metadata_path = src_path
     dir_name = os.path.basename(ext_dir)
 
     # --- Existence and valid JSON ---

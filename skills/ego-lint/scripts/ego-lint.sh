@@ -189,6 +189,8 @@ fi
 
 if [[ -f "$EXT_DIR/metadata.json" ]]; then
     print_result "PASS" "file-structure/metadata.json" "metadata.json exists"
+elif [[ -f "$EXT_DIR/src/metadata.json" ]]; then
+    print_result "PASS" "file-structure/metadata.json" "metadata.json exists (in src/)"
 else
     print_result "FAIL" "file-structure/metadata.json" "metadata.json is missing"
 fi

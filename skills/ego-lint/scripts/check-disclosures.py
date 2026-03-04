@@ -152,6 +152,11 @@ def main():
 
     # Read metadata description once
     meta_path = os.path.join(ext_dir, 'metadata.json')
+    # src/ layout fallback
+    if not os.path.isfile(meta_path):
+        src_path = os.path.join(ext_dir, 'src', 'metadata.json')
+        if os.path.isfile(src_path):
+            meta_path = src_path
     description = ''
     if os.path.isfile(meta_path):
         try:
