@@ -921,9 +921,9 @@ Heuristic rules that detect code patterns commonly seen in AI-generated or over-
 ### R-QUAL-02: Impossible state checks
 - **Severity**: advisory
 - **Checked by**: check-quality.py
-- **Rule**: Extension code should not check for states that are impossible given its configuration. For example, checking `Main.sessionMode.isLocked` without declaring `unlock-dialog` in `session-modes`.
-- **Rationale**: If the extension does not declare `unlock-dialog` in `session-modes`, it is never active on the lock screen, so checking lock state is dead code. This pattern is common in AI-generated extensions that copy-paste lock-screen handling without understanding when it applies.
-- **Fix**: Either add `"unlock-dialog"` to `session-modes` in `metadata.json` (if lock-screen support is intended) or remove the lock-state checking code.
+- **Rule**: Extension code should not check for states that are impossible given its configuration. For example, comparing `Main.sessionMode.currentMode` with `'unlock-dialog'` without declaring `unlock-dialog` in `session-modes`. Note: `sessionMode.isLocked` is exempt — reading lock state is always a defensive guard pattern, not evidence of lock screen functionality.
+- **Rationale**: If the extension does not declare `unlock-dialog` in `session-modes`, it is never active on the lock screen, so checking `currentMode` against lock-screen values is dead code. This pattern is common in AI-generated extensions that copy-paste lock-screen handling without understanding when it applies.
+- **Fix**: Either add `"unlock-dialog"` to `session-modes` in `metadata.json` (if lock-screen support is intended) or remove the `currentMode` comparison code.
 
 ### R-QUAL-03: Over-engineered async coordination
 - **Severity**: advisory
@@ -1561,7 +1561,7 @@ destroy() {
 ### R-QUAL-11: Comment Density
 - **Severity**: advisory
 - **Checked by**: check-quality.py
-- **Rule**: Flags files where >40% of lines (after first 10) are comments.
+- **Rule**: Flags files where >50% of lines (after first 10) are comments.
 - **Rationale**: Excessive comments explaining obvious code is a strong AI slop signal.
 - **Fix**: Remove redundant comments. Only keep comments that explain non-obvious logic or API quirks.
 - **Tested by**: `tests/fixtures/quality-signals@test/`
@@ -1952,7 +1952,7 @@ Rules for APIs removed or changed in specific GNOME Shell versions. These rules 
 ### metadata/session-modes-consistency: SessionMode usage without declaration
 - **Severity**: advisory
 - **Checked by**: check-metadata.py
-- **Rule**: Warns if the extension code references `Main.sessionMode.currentMode` or `sessionMode.isLocked` but `metadata.json` does not declare `session-modes` with `unlock-dialog`.
+- **Rule**: Warns if the extension code references `Main.sessionMode.currentMode` but `metadata.json` does not declare `session-modes` with `unlock-dialog`. Note: `sessionMode.isLocked` is exempt — reading lock state is a defensive guard, not evidence of lock screen usage.
 - **Rationale**: Code that checks session mode without the proper declaration is either dead code (the extension won't run in lock screen mode) or a misunderstanding of the lifecycle.
 - **Fix**: Either add `"session-modes": ["user", "unlock-dialog"]` to metadata.json, or remove the session mode checks from the code.
 

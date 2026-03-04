@@ -207,6 +207,17 @@ for candidate in LICENSE COPYING LICENSE.rst LICENSE.md LICENSE.txt COPYING.rst 
     fi
 done
 
+# src/ layout fallback: check parent directory for license
+if [[ -z "$license_file" && "$(basename "$EXT_DIR")" == "src" ]]; then
+    parent_dir="$(dirname "$EXT_DIR")"
+    for candidate in LICENSE COPYING LICENSE.rst LICENSE.md LICENSE.txt COPYING.rst COPYING.md COPYING.txt; do
+        if [[ -f "$parent_dir/$candidate" ]]; then
+            license_file="$parent_dir/$candidate"
+            break
+        fi
+    done
+fi
+
 if [[ -n "$license_file" ]]; then
     head_content=$(head -5 "$license_file" 2>/dev/null || true)
     if echo "$head_content" | grep -qiE '(GPL|LGPL|MIT|BSD|Apache|MPL|ISC|Artistic)'; then

@@ -45,6 +45,19 @@ assert_exit_code() {
     fi
 }
 
+assert_output_count() {
+    local label="$1" pattern="$2" expected="$3"
+    local actual
+    actual=$(echo "$output" | grep -cE "$pattern" || true)
+    if [[ "$actual" -eq "$expected" ]]; then
+        echo -e "  ${GREEN}✓${NC} $label (count: $actual)"
+        PASS_COUNT=$((PASS_COUNT + 1))
+    else
+        echo -e "  ${RED}✗${NC} $label (expected $expected matches, got $actual)"
+        FAIL_COUNT=$((FAIL_COUNT + 1))
+    fi
+}
+
 run_lint() {
     local fixture="$1"
     output=""
