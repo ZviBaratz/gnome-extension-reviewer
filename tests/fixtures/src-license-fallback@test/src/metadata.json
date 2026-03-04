@@ -1,0 +1,7 @@
+{
+    "uuid": "src-license-fallback@test",
+    "name": "Test Src License Fallback",
+    "description": "Tests license check parent-dir fallback for src/ layout",
+    "shell-version": ["48"],
+    "url": "https://example.com"
+}
