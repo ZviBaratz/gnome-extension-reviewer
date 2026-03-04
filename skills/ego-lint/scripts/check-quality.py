@@ -130,12 +130,10 @@ def check_impossible_state(ext_dir, js_files):
         rel = os.path.relpath(filepath, ext_dir)
         with open(filepath, encoding='utf-8', errors='replace') as f:
             for lineno, line in enumerate(f, 1):
-                if re.search(r'sessionMode\.isLocked', line):
-                    result("WARN", "quality/impossible-state",
-                           f"{rel}:{lineno}: checks isLocked but extension "
-                           f"does not run in lock screen")
-                    found = True
-                elif re.search(r"currentMode\s*===?\s*['\"]unlock-dialog['\"]", line):
+                # sessionMode.isLocked is always a guard (reading lock state
+                # to decide behavior) — not evidence of lock screen mode usage.
+                # Only flag currentMode === 'unlock-dialog' checks.
+                if re.search(r"currentMode\s*[!=]==?\s*['\"]unlock-dialog['\"]", line):
                     result("WARN", "quality/impossible-state",
                            f"{rel}:{lineno}: checks for unlock-dialog but "
                            f"extension does not declare this session-mode")
@@ -699,7 +697,7 @@ def check_comment_density(ext_dir, js_files):
                 code_lines += 1
 
         total = comment_lines + code_lines
-        if total > 0 and comment_lines / total > 0.4:
+        if total > 0 and comment_lines / total > 0.5:
             result("WARN", "quality/comment-density",
                    f"{rel}: {comment_lines}/{total} lines are comments "
                    f"({comment_lines * 100 // total}%) — may indicate AI-generated verbose comments")

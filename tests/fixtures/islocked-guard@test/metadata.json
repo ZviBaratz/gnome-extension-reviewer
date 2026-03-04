@@ -1,0 +1,7 @@
+{
+    "uuid": "islocked-guard@test",
+    "name": "Test isLocked Guard",
+    "description": "Tests that sessionMode.isLocked guard is not flagged",
+    "shell-version": ["48"],
+    "url": "https://example.com"
+}
