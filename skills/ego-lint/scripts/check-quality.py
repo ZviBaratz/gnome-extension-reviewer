@@ -5,7 +5,7 @@ Usage: check-quality.py EXTENSION_DIR
 
 Performs structural analysis that goes beyond simple pattern matching:
   - Excessive try-catch density
-  - Impossible state checks (isLocked without lock session-mode)
+  - Impossible state checks (currentMode unlock-dialog without lock session-mode)
   - Over-engineered async coordination (_pendingDestroy + _initializing)
   - Module-level mutable state
   - Empty catch blocks
@@ -114,7 +114,7 @@ def check_try_catch_density(ext_dir, js_files):
 
 
 def check_impossible_state(ext_dir, js_files):
-    """R-QUAL-02: Flag isLocked/unlock-dialog checks without matching session-modes."""
+    """R-QUAL-02: Flag currentMode unlock-dialog checks without matching session-modes."""
     session_modes = get_session_modes(ext_dir)
     # If session-modes absent or ["user"], extension doesn't run on lock screen
     has_lock = (isinstance(session_modes, list) and
