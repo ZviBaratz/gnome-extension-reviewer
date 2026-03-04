@@ -626,6 +626,14 @@ assert_output_contains "metadata.json found in src/" "\[PASS\].*file-structure/m
 assert_output_not_contains "no metadata/exists FAIL" "\[FAIL\].*metadata/exists"
 echo ""
 
+# --- on-destroy-cleanup (onDestroy recognized as cleanup) ---
+echo "=== on-destroy-cleanup ==="
+run_lint "on-destroy-cleanup@test"
+assert_exit_code "exits with 0 (no blocking issues)" 0
+assert_output_not_contains "no no-destroy-method for widget with onDestroy" "\[WARN\].*resource-tracking/no-destroy-method.*widget"
+assert_output_contains "resource tracking ran" "(PASS|WARN|FAIL).*resource-tracking"
+echo ""
+
 # Extended assertion files (auto-sourced from assertions/ directory)
 ASSERTIONS_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/assertions"
 for assertion_file in "$ASSERTIONS_DIR"/*.sh; do
