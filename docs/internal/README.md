@@ -14,7 +14,11 @@ Run the full ego-submit pipeline against real extensions to surface false positi
 | [Blur my Shell](field-test-blur-my-shell.md) | 2026-03-01 | 49 | 7,743 | 21→7 | 7 | 14 | GObject.registerClass, src/ layout |
 | [GSConnect](field-test-gsconnect.md) | 2026-03-02 | 65 | 24,680 | 19→13 | 10 | 6 | Service daemon context, JSDoc noise |
 | [V-Shell](field-test-v-shell.md) | 2026-03-02 | 28 | 19,201 | 23→3 | 3 | 0 | Multi-version compat guards; all initial FPs resolved |
-| [Dash to Panel](field-test-dash-to-panel.md) | 2026-03-03 | 17 | 16,583 | 19→16 | 10 | 9 | Comment FPs, version-compat guards |
+| [Dash to Panel](field-test-dash-to-panel.md) | 2026-03-03 | 17 | 16,583 | 19→16† | 10 | 9 | Comment FPs, version-compat guards |
+| [Tiling Shell](field-test-tiling-shell.md) | 2026-03-03 | 64 | 11,371 | 21→4 | 4 | 0 | Compiled TS, keybindings, constructors-from-enable |
+| [Media Controls](field-test-media-controls.md) | 2026-03-04 | 17 | ~5,000 | 246W/3F→31W/6F | 6 | 0 | MPRIS D-Bus, onDestroy, src/ layout, provenance |
+
+† Tiling Shell session #29 fixes (constructor-only-in-extension.js) resolve 4 of Dash to Panel's init/shell-modification FP FAILs; re-run pending.
 
 ### Cumulative Calibration Lessons
 
@@ -43,7 +47,15 @@ Patterns discovered across field tests — encode here so future rules avoid rep
 *WARN noise:*
 
 12. **License header URLs are the largest single source of false R-SEC-03 WARNs**: GPL boilerplate with `gnu.org/licenses` URLs triggered the external-URL rule. Now suppressed by guard pattern.
-13. **JSDoc documentation creates massive R-SLOP-01/02 WARN noise on mature projects**: GSConnect (222 WARNs) and Dash to Panel both showed that real JSDoc on mature code triggers AI slop heuristics. Provenance scoring (`quality/code-provenance >= 4`) now gates R-SLOP-01/02 post-filter.
+13. **JSDoc documentation creates massive R-SLOP-01/02 WARN noise on mature projects**: GSConnect (222 WARNs) and Dash to Panel both showed that real JSDoc on mature code triggers AI slop heuristics. Provenance scoring (`quality/code-provenance >= 3`) now gates R-SLOP-01/02 post-filter.
+
+*Compiled TypeScript patterns:*
+
+14. **Helper file constructors called from enable() are not init-time violations**: Tiling Shell had 13 FP FAILs from Shell globals in class constructors that are only ever instantiated from `enable()`. Constructor checks are now restricted to `extension.js` only — matching the existing `GOBJECT_CONSTRUCTORS` guard.
+15. **Arrow function definitions at module scope are lazy**: `const fn = () => Main.layoutManager.monitors` doesn't execute at module load time. The function body is deferred until the first call.
+16. **Same-line ternary guards need `guard-window: 1`**: Version compat patterns like `api.exists ? old(args) : new()` have the guard and deprecated API on the same line. `guard-window: 1` (minimum valid value; the current line is always included in the lookback window) handles this.
+17. **Single long lines ≠ minification**: Compiled TypeScript may have one or two very long lines (keyboard constant chains, export lists) in otherwise readable files. The minified-js check now requires 3+ lines > 500 chars.
+18. **Compiled TypeScript (esbuild) generates systematic WARN noise**: `var` declarations from `__defProp`/`__publicField` helpers (R-DEPR-09), verbose parameter names (R-SLOP-38), and many small classes without `destroy()` methods (resource-tracking/no-destroy-method). These are build artifacts, not author issues.
 
 ## Other Artifacts
 

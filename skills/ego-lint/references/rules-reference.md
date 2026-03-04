@@ -2230,7 +2230,8 @@ Rules for APIs removed or changed in specific GNOME Shell versions. These rules 
 - **Rule**: `maximize()` lost the `MaximizeFlags` parameter in GNOME 49.
 - **Rationale**: Passing `MaximizeFlags` to `maximize()` will throw in GNOME 49.
 - **Fix**: Call `window.set_maximize_flags(flags)` first, then `window.maximize()`.
-- **Tested by**: `tests/fixtures/gnome49-maximize@test/`
+- **Guard**: Suppressed when `get_maximized ?` appears on the same line (ternary version-compat pattern).
+- **Tested by**: `tests/fixtures/gnome49-compat@test/`
 
 ### R-VER49-09: AppMenuButton removal
 - **Severity**: blocking
@@ -2556,6 +2557,7 @@ Rules for APIs removed or changed in specific GNOME Shell versions. These rules 
 - **Rule**: `MaximizeFlags` parameter was removed from `unmaximize()` in GNOME 49.
 - **Rationale**: The `unmaximize()` method no longer accepts a flags parameter.
 - **Fix**: Call `unmaximize()` without the `MaximizeFlags` parameter.
+- **Guard**: Suppressed when `get_maximized ?` appears on the same line (ternary version-compat pattern).
 
 ---
 
