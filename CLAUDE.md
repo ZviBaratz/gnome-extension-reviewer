@@ -138,6 +138,22 @@ test(ego-lint): add fixture for deprecated ByteArray usage
 - **Obfuscation regex pitfalls**: `[a-z]\d+` catches unicode escapes (`\u2013`); `re.IGNORECASE` on guard patterns catches `console.debug` when matching `DEBUG`
 - **Git history rewritten 2026-02-27**: `git filter-repo` removed internal files. All SHAs before that date are invalid
 
+## Repository Workflow
+
+- **Squash merge only** — merge commits and rebase merges are disabled. Every PR becomes a single commit on main with the PR title (conventional commit) and PR body as the commit message
+- **Required status check**: `test` must pass before merging (enforced by `main-protection` ruleset). Admin can bypass for hotfixes
+- **Auto-merge**: Enabled — can be activated per-PR to merge automatically when CI passes
+- **Branch protection**: `main` is protected against deletion and force push via repository ruleset (not classic branch protection)
+- **Labels**: `false-positive`, `new-rule`, `severity-change`, `ego-lint`, `ego-review` (plus GitHub defaults)
+
+## Development Workflow
+
+- **Issue first**: Create a GitHub issue describing the problem or improvement before starting work. Label with `false-positive`, `new-rule`, or `severity-change` as appropriate
+- **Branch per issue**: Create a branch from `main` named `fix/<short-description>`, `feat/<short-description>`, or `docs/<short-description>`
+- **One concern per PR**: Each PR should address a single logical concern (one fix, one feature, one doc update). Split multi-concern work into separate PRs
+- **PR closes issue**: Include `Closes #N` in the PR description to auto-close the issue on merge
+- **Tests before PR**: Run `bash tests/run-tests.sh` and verify all assertions pass before pushing
+
 ## Releasing
 
 release-please automates versioning, CHANGELOG updates, git tags, and GitHub Releases:
