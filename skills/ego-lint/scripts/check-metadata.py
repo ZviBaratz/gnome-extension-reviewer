@@ -173,8 +173,11 @@ def main():
             result("FAIL", "metadata/uuid-format", f"UUID contains invalid characters: {uuid}")
 
         # UUID matches directory name (advisory — cloned repos often differ)
+        # Skip for src/ layout — dirname is "src", not the UUID
         if uuid == dir_name:
             result("PASS", "metadata/uuid-matches-dir", f"UUID matches directory name")
+        elif dir_name == "src":
+            result("PASS", "metadata/uuid-matches-dir", f"UUID check skipped for src/ layout")
         else:
             result("WARN", "metadata/uuid-matches-dir", f"UUID '{uuid}' does not match directory '{dir_name}' — must match when installed")
 
