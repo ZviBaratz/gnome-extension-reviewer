@@ -1,0 +1,7 @@
+{
+    "uuid": "signal-non-gobject@test",
+    "name": "Non-GObject Connect Test",
+    "description": "Tests that non-signal .connect() methods are not counted",
+    "shell-version": ["48"],
+    "url": "https://github.com/test/signal-non-gobject"
+}

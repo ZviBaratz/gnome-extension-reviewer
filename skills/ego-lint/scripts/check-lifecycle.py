@@ -123,8 +123,13 @@ def check_signal_balance(ext_dir):
                 connect_objects += 1
             elif re.search(r'\.connectSmart\s*\(', line):
                 smart_connects += 1
-            elif re.search(r'\.connect\s*\(', line) and not re.search(r'\.disconnect', line):
-                pure_connects += 1
+            elif re.search(r"\.connect\s*\(\s*['\"]", line) and not re.search(r'\.disconnect', line):
+                if re.search(r"\.connect\s*\(\s*['\"]destroy['\"]", line):
+                    pass  # 'destroy' signal — inherently self-cleaning
+                elif not re.search(r'this[._]', line):
+                    pass  # local variable signal — inherently scoped
+                else:
+                    pure_connects += 1
             if re.search(r'\.disconnectObject\s*\(', line):
                 pass  # auto-cleanup
             elif re.search(r'\.disconnectSmart\s*\(', line):

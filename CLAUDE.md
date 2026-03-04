@@ -56,7 +56,7 @@ bash skills/ego-lint/scripts/ego-lint.sh tests/fixtures/<fixture-name>
 - `apply-patterns.py` — Tier 1 pattern engine (inline YAML parser, no PyYAML dependency). Supports `guard-pattern` + `guard-window` (sliding `deque` lookback) + `guard-window-forward` (forward peeking), `replacement-pattern`, `exclude-dirs`, version-gating, `fix-min-version` (suppresses fix text when extension min shell-version is below threshold), `skip-comments` (skips matches inside `//` and `/* */` comments)
 - `check-quality.py` — Tier 2 heuristic AI slop detection (try-catch density, impossible states, pendulum patterns, empty catches, _destroyed density, mock detection, constructor resources, run_dispose comment, clipboard disclosure, network disclosure, excessive null checks, repeated getSettings, obfuscated names, mixed indentation, excessive logging, code provenance)
 - `check-metadata.py` — JSON validity, required fields, UUID format/match, shell-version (with VALID_GNOME_VERSIONS allowlist), session-modes, settings-schema, version-name, donations, gettext-domain consistency
-- `check-init.py` — Init-time Shell modification, GObject constructor detection (extension.js only; all GI namespaces, GObject.registerClass exempt, GLib value types exempt), Gio._promisify placement
+- `check-init.py` — Init-time Shell modification (module-scope + extension.js constructors only; arrow function definitions exempt), GObject constructor detection (extension.js only; all GI namespaces, GObject.registerClass exempt, GLib value types exempt), Gio._promisify placement
 - `check-lifecycle.py` — enable/disable symmetry, signal cleanup (connectSmart/SignalTracker-aware), timeout removal verification, InjectionManager, lock screen signals, selective disable detection, unlock-dialog comment, clipboard+keybinding cross-ref, prototype override detection, pkexec target validation, Soup.Session abort, D-Bus export/unexport, bus name own/unown lifecycle, timeout reassignment, subprocess cancellation, clipboard+network cross-ref, widget lifecycle, settings cleanup
 - `check-prefs.py` — Preferences file validation (ExtensionPreferences base class, GTK4/Adwaita patterns, memory leak detection, supports `src/` layout)
 - `check-gobject.py` — GObject.registerClass patterns and GTypeName validation
@@ -137,6 +137,22 @@ test(ego-lint): add fixture for deprecated ByteArray usage
 - **Schema trademark case-insensitive**: check-schema.sh lowercases schema ID before stripping `org.gnome.shell.extensions.` prefix
 - **Obfuscation regex pitfalls**: `[a-z]\d+` catches unicode escapes (`\u2013`); `re.IGNORECASE` on guard patterns catches `console.debug` when matching `DEBUG`
 - **Git history rewritten 2026-02-27**: `git filter-repo` removed internal files. All SHAs before that date are invalid
+
+## Repository Workflow
+
+- **Squash merge only** — merge commits and rebase merges are disabled. Every PR becomes a single commit on main with the PR title (conventional commit) and PR body as the commit message
+- **Required status check**: `test` must pass before merging (enforced by `main-protection` ruleset). Admin can bypass for hotfixes
+- **Auto-merge**: Enabled — can be activated per-PR to merge automatically when CI passes
+- **Branch protection**: `main` is protected against deletion and force push via repository ruleset (not classic branch protection)
+- **Labels**: `false-positive`, `new-rule`, `severity-change`, `ego-lint`, `ego-review` (plus GitHub defaults)
+
+## Development Workflow
+
+- **Issue first**: Create a GitHub issue describing the problem or improvement before starting work. Label with `false-positive`, `new-rule`, or `severity-change` as appropriate
+- **Branch per issue**: Create a branch from `main` named `fix/<short-description>`, `feat/<short-description>`, or `docs/<short-description>`
+- **One concern per PR**: Each PR should address a single logical concern (one fix, one feature, one doc update). Split multi-concern work into separate PRs
+- **PR closes issue**: Include `Closes #N` in the PR description to auto-close the issue on merge
+- **Tests before PR**: Run `bash tests/run-tests.sh` and verify all assertions pass before pushing
 
 ## Releasing
 
