@@ -9,6 +9,15 @@ export default class Gnome49Test extends Extension {
         this._tap = new Clutter.TapAction();
     }
 
+    // Ternary version-compat guard: should NOT trigger R-VER49-08/11
+    _maximizeCompat(window) {
+        window.get_maximized ? window.maximize(Meta.MaximizeFlags.BOTH) : window.maximize();
+    }
+
+    _unmaximizeCompat(window) {
+        window.get_maximized ? window.unmaximize(Meta.MaximizeFlags.BOTH) : window.unmaximize();
+    }
+
     disable() {
         this._click = null;
         this._tap = null;
