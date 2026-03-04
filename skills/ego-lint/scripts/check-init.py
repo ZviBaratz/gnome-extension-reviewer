@@ -64,7 +64,7 @@ def is_skip_line(line):
 # Arrow function definitions: the body after => is lazy (not executed at
 # module scope).  Detect `const fn = (...) => expr` patterns.
 ARROW_FN_DEF = re.compile(
-    r'(?:const|let|var)\s+\w+\s*='   # variable assignment
+    r'(?:const|let|var)\s+\w+\s*=\s*'   # variable assignment
     r'(?:\([^)]*\)|\w+)'                 # parameter list or single param
     r'\s*=>'                              # arrow
 )
