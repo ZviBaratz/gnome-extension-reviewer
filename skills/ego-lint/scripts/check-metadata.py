@@ -357,7 +357,9 @@ def check_session_modes_consistency(meta, ext_dir):
                "session-modes includes 'unlock-dialog'")
         return
 
-    session_mode_re = re.compile(r"sessionMode\.(currentMode|isLocked)")
+    # Only flag currentMode checks — isLocked is always a guard pattern
+    # (reading lock state to decide behavior, not evidence of lock screen usage)
+    session_mode_re = re.compile(r"sessionMode\.currentMode")
     found = []
     for root, _dirs, files in os.walk(ext_dir):
         for fname in files:
