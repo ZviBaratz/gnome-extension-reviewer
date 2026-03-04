@@ -191,6 +191,12 @@ assert_exit_code "exits with 1 (has failures)" 1
 assert_output_contains "fails on minified JS" "\[FAIL\].*minified-js"
 echo ""
 
+# --- minified-boundary (2 long lines — below threshold) ---
+echo "=== minified-boundary ==="
+run_lint "minified-boundary@test"
+assert_output_not_contains "no minified-js with only 2 long lines" "\[FAIL\].*minified-js"
+echo ""
+
 # --- init-time-safety ---
 echo "=== init-time-safety ==="
 run_lint "init-time-safety@test"
@@ -428,6 +434,8 @@ assert_exit_code "exits with 1 (has failures)" 1
 assert_output_contains "fails on Meta.Rectangle" "\[FAIL\].*R-VER49-01"
 assert_output_contains "fails on Clutter.ClickAction" "\[FAIL\].*R-VER49-02"
 assert_output_contains "fails on Clutter.TapAction" "\[FAIL\].*R-VER49-03"
+assert_output_not_contains "no R-VER49-08 with ternary guard" "\[FAIL\].*R-VER49-08"
+assert_output_not_contains "no R-VER49-11 with ternary guard" "\[FAIL\].*R-VER49-11"
 echo ""
 
 # --- gnome46-extras ---
