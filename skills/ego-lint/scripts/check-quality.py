@@ -54,6 +54,10 @@ def get_session_modes(ext_dir):
     """Read session-modes from metadata.json."""
     meta_path = os.path.join(ext_dir, 'metadata.json')
     if not os.path.isfile(meta_path):
+        src_path = os.path.join(ext_dir, 'src', 'metadata.json')
+        if os.path.isfile(src_path):
+            meta_path = src_path
+    if not os.path.isfile(meta_path):
         return None
     try:
         with open(meta_path) as f:

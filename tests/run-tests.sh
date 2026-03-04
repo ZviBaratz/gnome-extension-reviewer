@@ -588,6 +588,14 @@ assert_exit_code "exits with 0 (LICENSE.rst recognized)" 0
 assert_output_contains "LICENSE.rst detected" "\[PASS\].*license"
 echo ""
 
+# --- src-metadata (metadata.json in src/ only) ---
+echo "=== src-metadata ==="
+run_lint "src-metadata@test"
+assert_exit_code "exits with 0 (no blocking issues)" 0
+assert_output_contains "metadata.json found in src/" "\[PASS\].*file-structure/metadata.json.*in src/"
+assert_output_not_contains "no metadata/exists FAIL" "\[FAIL\].*metadata/exists"
+echo ""
+
 # Extended assertion files (auto-sourced from assertions/ directory)
 ASSERTIONS_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/assertions"
 for assertion_file in "$ASSERTIONS_DIR"/*.sh; do

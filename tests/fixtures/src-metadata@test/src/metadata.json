@@ -1,0 +1,7 @@
+{
+    "uuid": "src-metadata@test",
+    "name": "Test Src Metadata",
+    "description": "Test src/ layout with metadata.json in src/",
+    "shell-version": ["48"],
+    "url": "https://example.com"
+}

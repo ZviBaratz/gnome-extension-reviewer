@@ -460,6 +460,10 @@ def check_unlock_dialog_comment(ext_dir):
     """R-LIFE-14: unlock-dialog session mode should have explanatory comment in disable()."""
     metadata_path = os.path.join(ext_dir, 'metadata.json')
     if not os.path.isfile(metadata_path):
+        src_path = os.path.join(ext_dir, 'src', 'metadata.json')
+        if os.path.isfile(src_path):
+            metadata_path = src_path
+    if not os.path.isfile(metadata_path):
         return
 
     try:
@@ -536,6 +540,10 @@ def check_clipboard_keybinding(ext_dir):
 def check_lockscreen_signals(ext_dir):
     """R-LIFE-11: Lock screen signal safety — keyboard signals with unlock-dialog mode."""
     metadata_path = os.path.join(ext_dir, 'metadata.json')
+    if not os.path.isfile(metadata_path):
+        src_path = os.path.join(ext_dir, 'src', 'metadata.json')
+        if os.path.isfile(src_path):
+            metadata_path = src_path
     if not os.path.isfile(metadata_path):
         return
 
