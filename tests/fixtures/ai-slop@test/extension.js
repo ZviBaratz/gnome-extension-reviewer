@@ -15,7 +15,7 @@ export default class AiSlopExtension extends Extension {
         this._pendingDestroy = false;
         this._indicator = null;
 
-        if (!Main.sessionMode.isLocked && this._indicator === null)
+        if (Main.sessionMode.currentMode !== 'unlock-dialog' && this._indicator === null)
             this._initAsync();
     }
 
