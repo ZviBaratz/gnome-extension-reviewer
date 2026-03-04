@@ -1,0 +1,720 @@
+{
+  "name": "v-shell",
+  "uuid": "vertical-workspaces@G-dH.github.com",
+  "timestamp": "2026-03-04T22:16:41.186185+00:00",
+  "ego_lint_version": "0dbe7e8",
+  "ego_approved": true,
+  "exit_code": 0,
+  "counts": {
+    "pass": 185,
+    "fail": 0,
+    "warn": 91,
+    "skip": 17,
+    "total": 293
+  },
+  "metrics": {
+    "js_files": 28,
+    "total_lines": 19201,
+    "largest_file": "prefs.js (2507)",
+    "css_lines": 396,
+    "schema_keys": 152
+  },
+  "provenance_score": null,
+  "findings": [
+    {
+      "id": "polkit/action-id-match::No polkit files found",
+      "status": "SKIP",
+      "check": "polkit/action-id-match",
+      "detail": "No polkit files found"
+    },
+    {
+      "id": "polkit/action-id-prefix::No polkit files found",
+      "status": "SKIP",
+      "check": "polkit/action-id-prefix",
+      "detail": "No polkit files found"
+    },
+    {
+      "id": "polkit/helper-exists::No polkit files found",
+      "status": "SKIP",
+      "check": "polkit/helper-exists",
+      "detail": "No polkit files found"
+    },
+    {
+      "id": "accessibility/accessible-name::3 icon-only St.Button(s) without accessible_name: lib/windowPreview.js, lib/appDisplay.js, lib/appDisplay.js",
+      "status": "WARN",
+      "check": "accessibility/accessible-name",
+      "detail": "3 icon-only St.Button(s) without accessible_name: lib/windowPreview.js:307, lib/appDisplay.js:1494, lib/appDisplay.js:1550"
+    },
+    {
+      "id": "accessibility/widget-role::1 custom St.Widget subclass(es) without accessible_role: lib/workspace.js (WorkspaceWindowContainer)",
+      "status": "WARN",
+      "check": "accessibility/widget-role",
+      "detail": "1 custom St.Widget subclass(es) without accessible_role: lib/workspace.js:714 (WorkspaceWindowContainer)"
+    },
+    {
+      "id": "R-WEB-01::Not applicable for declared shell-version(s)",
+      "status": "SKIP",
+      "check": "R-WEB-01",
+      "detail": "Not applicable for declared shell-version(s)"
+    },
+    {
+      "id": "R-WEB-02::Not applicable for declared shell-version(s)",
+      "status": "SKIP",
+      "check": "R-WEB-02",
+      "detail": "Not applicable for declared shell-version(s)"
+    },
+    {
+      "id": "R-WEB-10::Not applicable for declared shell-version(s)",
+      "status": "SKIP",
+      "check": "R-WEB-10",
+      "detail": "Not applicable for declared shell-version(s)"
+    },
+    {
+      "id": "R-WEB-11::Not applicable for declared shell-version(s)",
+      "status": "SKIP",
+      "check": "R-WEB-11",
+      "detail": "Not applicable for declared shell-version(s)"
+    },
+    {
+      "id": "R-DEPR-04-legacy::Not applicable for declared shell-version(s)",
+      "status": "SKIP",
+      "check": "R-DEPR-04-legacy",
+      "detail": "Not applicable for declared shell-version(s)"
+    },
+    {
+      "id": "R-SEC-09::Extension system interference is discouraged; modifying other extensions requires justification",
+      "status": "WARN",
+      "check": "R-SEC-09",
+      "detail": "extension.js:107: Extension system interference is discouraged; modifying other extensions requires justification",
+      "fix": "Avoid interacting with other extensions unless absolutely necessary. Document the justification."
+    },
+    {
+      "id": "R-SEC-09::Extension system interference is discouraged; modifying other extensions requires justification",
+      "status": "WARN",
+      "check": "R-SEC-09",
+      "detail": "extension.js:342: Extension system interference is discouraged; modifying other extensions requires justification",
+      "fix": "Avoid interacting with other extensions unless absolutely necessary. Document the justification."
+    },
+    {
+      "id": "R-SEC-09::Extension system interference is discouraged; modifying other extensions requires justification",
+      "status": "WARN",
+      "check": "R-SEC-09",
+      "detail": "extension.js:419: Extension system interference is discouraged; modifying other extensions requires justification",
+      "fix": "Avoid interacting with other extensions unless absolutely necessary. Document the justification."
+    },
+    {
+      "id": "R-SEC-09::Extension system interference is discouraged; modifying other extensions requires justification",
+      "status": "WARN",
+      "check": "R-SEC-09",
+      "detail": "lib/util.js:165: Extension system interference is discouraged; modifying other extensions requires justification",
+      "fix": "Avoid interacting with other extensions unless absolutely necessary. Document the justification."
+    },
+    {
+      "id": "R-SEC-09::Extension system interference is discouraged; modifying other extensions requires justification",
+      "status": "WARN",
+      "check": "R-SEC-09",
+      "detail": "lib/util.js:653: Extension system interference is discouraged; modifying other extensions requires justification",
+      "fix": "Avoid interacting with other extensions unless absolutely necessary. Document the justification."
+    },
+    {
+      "id": "R-SEC-09::Extension system interference is discouraged; modifying other extensions requires justification",
+      "status": "WARN",
+      "check": "R-SEC-09",
+      "detail": "lib/util.js:656: Extension system interference is discouraged; modifying other extensions requires justification",
+      "fix": "Avoid interacting with other extensions unless absolutely necessary. Document the justification."
+    },
+    {
+      "id": "R-LOG-02::Legacy log() function; use console.debug() instead",
+      "status": "WARN",
+      "check": "R-LOG-02",
+      "detail": "lib/appDisplay.js:140: Legacy log() function; use console.debug() instead",
+      "fix": "Replace log(...) with console.debug(...)."
+    },
+    {
+      "id": "R-SLOP-03::version field is deprecated; EGO manages versions for GNOME 45+",
+      "status": "WARN",
+      "check": "R-SLOP-03",
+      "detail": "metadata.json:23: version field is deprecated; EGO manages versions for GNOME 45+",
+      "fix": "Remove the version field from metadata.json; EGO manages versions automatically."
+    },
+    {
+      "id": "R-SLOP-13::this instanceof check inside a class method is always true",
+      "status": "WARN",
+      "check": "R-SLOP-13",
+      "detail": "lib/appDisplay.js:736: this instanceof check inside a class method is always true",
+      "fix": "Remove the redundant instanceof check."
+    },
+    {
+      "id": "R-SLOP-13::this instanceof check inside a class method is always true",
+      "status": "WARN",
+      "check": "R-SLOP-13",
+      "detail": "lib/appDisplay.js:928: this instanceof check inside a class method is always true",
+      "fix": "Remove the redundant instanceof check."
+    },
+    {
+      "id": "R-SLOP-38::Over-long identifier (>25 chars) is an AI verbosity indicator",
+      "status": "WARN",
+      "check": "R-SLOP-38",
+      "detail": "prefs.js:280: Over-long identifier (>25 chars) is an AI verbosity indicator",
+      "fix": "Shorten parameter names to be concise but clear (e.g., currentBatteryThresholdValue \u2192 threshold)"
+    },
+    {
+      "id": "R-SLOP-38::Over-long identifier (>25 chars) is an AI verbosity indicator",
+      "status": "WARN",
+      "check": "R-SLOP-38",
+      "detail": "prefs.js:298: Over-long identifier (>25 chars) is an AI verbosity indicator",
+      "fix": "Shorten parameter names to be concise but clear (e.g., currentBatteryThresholdValue \u2192 threshold)"
+    },
+    {
+      "id": "R-SLOP-38::Over-long identifier (>25 chars) is an AI verbosity indicator",
+      "status": "WARN",
+      "check": "R-SLOP-38",
+      "detail": "prefs.js:587: Over-long identifier (>25 chars) is an AI verbosity indicator",
+      "fix": "Shorten parameter names to be concise but clear (e.g., currentBatteryThresholdValue \u2192 threshold)"
+    },
+    {
+      "id": "R-SLOP-38::Over-long identifier (>25 chars) is an AI verbosity indicator",
+      "status": "WARN",
+      "check": "R-SLOP-38",
+      "detail": "prefs.js:1006: Over-long identifier (>25 chars) is an AI verbosity indicator",
+      "fix": "Shorten parameter names to be concise but clear (e.g., currentBatteryThresholdValue \u2192 threshold)"
+    },
+    {
+      "id": "R-SLOP-38::Over-long identifier (>25 chars) is an AI verbosity indicator",
+      "status": "WARN",
+      "check": "R-SLOP-38",
+      "detail": "prefs.js:1025: Over-long identifier (>25 chars) is an AI verbosity indicator",
+      "fix": "Shorten parameter names to be concise but clear (e.g., currentBatteryThresholdValue \u2192 threshold)"
+    },
+    {
+      "id": "R-SLOP-38::Over-long identifier (>25 chars) is an AI verbosity indicator",
+      "status": "WARN",
+      "check": "R-SLOP-38",
+      "detail": "prefs.js:1987: Over-long identifier (>25 chars) is an AI verbosity indicator",
+      "fix": "Shorten parameter names to be concise but clear (e.g., currentBatteryThresholdValue \u2192 threshold)"
+    },
+    {
+      "id": "R-SLOP-38::Over-long identifier (>25 chars) is an AI verbosity indicator",
+      "status": "WARN",
+      "check": "R-SLOP-38",
+      "detail": "lib/workspacesView.js:225: Over-long identifier (>25 chars) is an AI verbosity indicator",
+      "fix": "Shorten parameter names to be concise but clear (e.g., currentBatteryThresholdValue \u2192 threshold)"
+    },
+    {
+      "id": "R-SLOP-38::Over-long identifier (>25 chars) is an AI verbosity indicator",
+      "status": "WARN",
+      "check": "R-SLOP-38",
+      "detail": "lib/dash.js:875: Over-long identifier (>25 chars) is an AI verbosity indicator",
+      "fix": "Shorten parameter names to be concise but clear (e.g., currentBatteryThresholdValue \u2192 threshold)"
+    },
+    {
+      "id": "R-SLOP-11::Non-existent GLib method \u2014 use GLib.timeout_add_seconds() and GLib.Source.remove()",
+      "status": "WARN",
+      "check": "R-SLOP-11",
+      "detail": "extension.js:285: Non-existent GLib method \u2014 use GLib.timeout_add_seconds() and GLib.Source.remove()",
+      "fix": "GLib.timeout_add_seconds_full \u2192 GLib.timeout_add_seconds. GLib.source_remove \u2192 GLib.Source.remove."
+    },
+    {
+      "id": "R-SLOP-11::Non-existent GLib method \u2014 use GLib.timeout_add_seconds() and GLib.Source.remove()",
+      "status": "WARN",
+      "check": "R-SLOP-11",
+      "detail": "extension.js:491: Non-existent GLib method \u2014 use GLib.timeout_add_seconds() and GLib.Source.remove()",
+      "fix": "GLib.timeout_add_seconds_full \u2192 GLib.timeout_add_seconds. GLib.source_remove \u2192 GLib.Source.remove."
+    },
+    {
+      "id": "R-SLOP-11::Non-existent GLib method \u2014 use GLib.timeout_add_seconds() and GLib.Source.remove()",
+      "status": "WARN",
+      "check": "R-SLOP-11",
+      "detail": "extension.js:545: Non-existent GLib method \u2014 use GLib.timeout_add_seconds() and GLib.Source.remove()",
+      "fix": "GLib.timeout_add_seconds_full \u2192 GLib.timeout_add_seconds. GLib.source_remove \u2192 GLib.Source.remove."
+    },
+    {
+      "id": "R-SLOP-11::Non-existent GLib method \u2014 use GLib.timeout_add_seconds() and GLib.Source.remove()",
+      "status": "WARN",
+      "check": "R-SLOP-11",
+      "detail": "lib/workspaceThumbnail.js:229: Non-existent GLib method \u2014 use GLib.timeout_add_seconds() and GLib.Source.remove()",
+      "fix": "GLib.timeout_add_seconds_full \u2192 GLib.timeout_add_seconds. GLib.source_remove \u2192 GLib.Source.remove."
+    },
+    {
+      "id": "R-SLOP-11::Non-existent GLib method \u2014 use GLib.timeout_add_seconds() and GLib.Source.remove()",
+      "status": "WARN",
+      "check": "R-SLOP-11",
+      "detail": "lib/workspaceThumbnail.js:299: Non-existent GLib method \u2014 use GLib.timeout_add_seconds() and GLib.Source.remove()",
+      "fix": "GLib.timeout_add_seconds_full \u2192 GLib.timeout_add_seconds. GLib.source_remove \u2192 GLib.Source.remove."
+    },
+    {
+      "id": "R-SLOP-11::Non-existent GLib method \u2014 use GLib.timeout_add_seconds() and GLib.Source.remove()",
+      "status": "WARN",
+      "check": "R-SLOP-11",
+      "detail": "lib/util.js:272: Non-existent GLib method \u2014 use GLib.timeout_add_seconds() and GLib.Source.remove()",
+      "fix": "GLib.timeout_add_seconds_full \u2192 GLib.timeout_add_seconds. GLib.source_remove \u2192 GLib.Source.remove."
+    },
+    {
+      "id": "R-SLOP-11::Non-existent GLib method \u2014 use GLib.timeout_add_seconds() and GLib.Source.remove()",
+      "status": "WARN",
+      "check": "R-SLOP-11",
+      "detail": "lib/util.js:278: Non-existent GLib method \u2014 use GLib.timeout_add_seconds() and GLib.Source.remove()",
+      "fix": "GLib.timeout_add_seconds_full \u2192 GLib.timeout_add_seconds. GLib.source_remove \u2192 GLib.Source.remove."
+    },
+    {
+      "id": "R-SLOP-11::Non-existent GLib method \u2014 use GLib.timeout_add_seconds() and GLib.Source.remove()",
+      "status": "WARN",
+      "check": "R-SLOP-11",
+      "detail": "lib/util.js:487: Non-existent GLib method \u2014 use GLib.timeout_add_seconds() and GLib.Source.remove()",
+      "fix": "GLib.timeout_add_seconds_full \u2192 GLib.timeout_add_seconds. GLib.source_remove \u2192 GLib.Source.remove."
+    },
+    {
+      "id": "R-SLOP-11::Non-existent GLib method \u2014 use GLib.timeout_add_seconds() and GLib.Source.remove()",
+      "status": "WARN",
+      "check": "R-SLOP-11",
+      "detail": "lib/util.js:839: Non-existent GLib method \u2014 use GLib.timeout_add_seconds() and GLib.Source.remove()",
+      "fix": "GLib.timeout_add_seconds_full \u2192 GLib.timeout_add_seconds. GLib.source_remove \u2192 GLib.Source.remove."
+    },
+    {
+      "id": "R-SLOP-11::Non-existent GLib method \u2014 use GLib.timeout_add_seconds() and GLib.Source.remove()",
+      "status": "WARN",
+      "check": "R-SLOP-11",
+      "detail": "lib/layout.js:120: Non-existent GLib method \u2014 use GLib.timeout_add_seconds() and GLib.Source.remove()",
+      "fix": "GLib.timeout_add_seconds_full \u2192 GLib.timeout_add_seconds. GLib.source_remove \u2192 GLib.Source.remove."
+    },
+    {
+      "id": "R-SLOP-11::Non-existent GLib method \u2014 use GLib.timeout_add_seconds() and GLib.Source.remove()",
+      "status": "WARN",
+      "check": "R-SLOP-11",
+      "detail": "lib/search.js:97: Non-existent GLib method \u2014 use GLib.timeout_add_seconds() and GLib.Source.remove()",
+      "fix": "GLib.timeout_add_seconds_full \u2192 GLib.timeout_add_seconds. GLib.source_remove \u2192 GLib.Source.remove."
+    },
+    {
+      "id": "R-SLOP-11::Non-existent GLib method \u2014 use GLib.timeout_add_seconds() and GLib.Source.remove()",
+      "status": "WARN",
+      "check": "R-SLOP-11",
+      "detail": "lib/windowPreview.js:876: Non-existent GLib method \u2014 use GLib.timeout_add_seconds() and GLib.Source.remove()",
+      "fix": "GLib.timeout_add_seconds_full \u2192 GLib.timeout_add_seconds. GLib.source_remove \u2192 GLib.Source.remove."
+    },
+    {
+      "id": "R-SLOP-11::Non-existent GLib method \u2014 use GLib.timeout_add_seconds() and GLib.Source.remove()",
+      "status": "WARN",
+      "check": "R-SLOP-11",
+      "detail": "lib/windowPreview.js:899: Non-existent GLib method \u2014 use GLib.timeout_add_seconds() and GLib.Source.remove()",
+      "fix": "GLib.timeout_add_seconds_full \u2192 GLib.timeout_add_seconds. GLib.source_remove \u2192 GLib.Source.remove."
+    },
+    {
+      "id": "R-SLOP-11::Non-existent GLib method \u2014 use GLib.timeout_add_seconds() and GLib.Source.remove()",
+      "status": "WARN",
+      "check": "R-SLOP-11",
+      "detail": "lib/workspaceSwitcherPopup.js:202: Non-existent GLib method \u2014 use GLib.timeout_add_seconds() and GLib.Source.remove()",
+      "fix": "GLib.timeout_add_seconds_full \u2192 GLib.timeout_add_seconds. GLib.source_remove \u2192 GLib.Source.remove."
+    },
+    {
+      "id": "R-SLOP-11::Non-existent GLib method \u2014 use GLib.timeout_add_seconds() and GLib.Source.remove()",
+      "status": "WARN",
+      "check": "R-SLOP-11",
+      "detail": "lib/workspaceSwitcherPopup.js:221: Non-existent GLib method \u2014 use GLib.timeout_add_seconds() and GLib.Source.remove()",
+      "fix": "GLib.timeout_add_seconds_full \u2192 GLib.timeout_add_seconds. GLib.source_remove \u2192 GLib.Source.remove."
+    },
+    {
+      "id": "R-SLOP-11::Non-existent GLib method \u2014 use GLib.timeout_add_seconds() and GLib.Source.remove()",
+      "status": "WARN",
+      "check": "R-SLOP-11",
+      "detail": "lib/workspaceSwitcherPopup.js:234: Non-existent GLib method \u2014 use GLib.timeout_add_seconds() and GLib.Source.remove()",
+      "fix": "GLib.timeout_add_seconds_full \u2192 GLib.timeout_add_seconds. GLib.source_remove \u2192 GLib.Source.remove."
+    },
+    {
+      "id": "R-SLOP-11::Non-existent GLib method \u2014 use GLib.timeout_add_seconds() and GLib.Source.remove()",
+      "status": "WARN",
+      "check": "R-SLOP-11",
+      "detail": "lib/dash.js:222: Non-existent GLib method \u2014 use GLib.timeout_add_seconds() and GLib.Source.remove()",
+      "fix": "GLib.timeout_add_seconds_full \u2192 GLib.timeout_add_seconds. GLib.source_remove \u2192 GLib.Source.remove."
+    },
+    {
+      "id": "R-SLOP-11::Non-existent GLib method \u2014 use GLib.timeout_add_seconds() and GLib.Source.remove()",
+      "status": "WARN",
+      "check": "R-SLOP-11",
+      "detail": "lib/dash.js:1258: Non-existent GLib method \u2014 use GLib.timeout_add_seconds() and GLib.Source.remove()",
+      "fix": "GLib.timeout_add_seconds_full \u2192 GLib.timeout_add_seconds. GLib.source_remove \u2192 GLib.Source.remove."
+    },
+    {
+      "id": "R-SLOP-11::Non-existent GLib method \u2014 use GLib.timeout_add_seconds() and GLib.Source.remove()",
+      "status": "WARN",
+      "check": "R-SLOP-11",
+      "detail": "lib/settings.js:215: Non-existent GLib method \u2014 use GLib.timeout_add_seconds() and GLib.Source.remove()",
+      "fix": "GLib.timeout_add_seconds_full \u2192 GLib.timeout_add_seconds. GLib.source_remove \u2192 GLib.Source.remove."
+    },
+    {
+      "id": "R-SLOP-11::Non-existent GLib method \u2014 use GLib.timeout_add_seconds() and GLib.Source.remove()",
+      "status": "WARN",
+      "check": "R-SLOP-11",
+      "detail": "lib/overviewControls.js:128: Non-existent GLib method \u2014 use GLib.timeout_add_seconds() and GLib.Source.remove()",
+      "fix": "GLib.timeout_add_seconds_full \u2192 GLib.timeout_add_seconds. GLib.source_remove \u2192 GLib.Source.remove."
+    },
+    {
+      "id": "R-SLOP-11::Non-existent GLib method \u2014 use GLib.timeout_add_seconds() and GLib.Source.remove()",
+      "status": "WARN",
+      "check": "R-SLOP-11",
+      "detail": "lib/overviewControls.js:170: Non-existent GLib method \u2014 use GLib.timeout_add_seconds() and GLib.Source.remove()",
+      "fix": "GLib.timeout_add_seconds_full \u2192 GLib.timeout_add_seconds. GLib.source_remove \u2192 GLib.Source.remove."
+    },
+    {
+      "id": "R-SLOP-11::Non-existent GLib method \u2014 use GLib.timeout_add_seconds() and GLib.Source.remove()",
+      "status": "WARN",
+      "check": "R-SLOP-11",
+      "detail": "lib/appDisplay.js:151: Non-existent GLib method \u2014 use GLib.timeout_add_seconds() and GLib.Source.remove()",
+      "fix": "GLib.timeout_add_seconds_full \u2192 GLib.timeout_add_seconds. GLib.source_remove \u2192 GLib.Source.remove."
+    },
+    {
+      "id": "R-SLOP-11::Non-existent GLib method \u2014 use GLib.timeout_add_seconds() and GLib.Source.remove()",
+      "status": "WARN",
+      "check": "R-SLOP-11",
+      "detail": "lib/appDisplay.js:1636: Non-existent GLib method \u2014 use GLib.timeout_add_seconds() and GLib.Source.remove()",
+      "fix": "GLib.timeout_add_seconds_full \u2192 GLib.timeout_add_seconds. GLib.source_remove \u2192 GLib.Source.remove."
+    },
+    {
+      "id": "R-QUAL-31::_onDestroy() should be renamed to destroy() with super.destroy() at the end",
+      "status": "WARN",
+      "check": "R-QUAL-31",
+      "detail": "lib/windowPreview.js:742: _onDestroy() should be renamed to destroy() with super.destroy() at the end",
+      "fix": "Rename to destroy() { /* cleanup */; super.destroy(); }"
+    },
+    {
+      "id": "R-QUAL-31::_onDestroy() should be renamed to destroy() with super.destroy() at the end",
+      "status": "WARN",
+      "check": "R-QUAL-31",
+      "detail": "lib/windowPreview.js:881: _onDestroy() should be renamed to destroy() with super.destroy() at the end",
+      "fix": "Rename to destroy() { /* cleanup */; super.destroy(); }"
+    },
+    {
+      "id": "R-QUAL-31::_onDestroy() should be renamed to destroy() with super.destroy() at the end",
+      "status": "WARN",
+      "check": "R-QUAL-31",
+      "detail": "lib/workspaceSwitcherPopup.js:232: _onDestroy() should be renamed to destroy() with super.destroy() at the end",
+      "fix": "Rename to destroy() { /* cleanup */; super.destroy(); }"
+    },
+    {
+      "id": "R-QUAL-31::_onDestroy() should be renamed to destroy() with super.destroy() at the end",
+      "status": "WARN",
+      "check": "R-QUAL-31",
+      "detail": "lib/appDisplay.js:1619: _onDestroy() should be renamed to destroy() with super.destroy() at the end",
+      "fix": "Rename to destroy() { /* cleanup */; super.destroy(); }"
+    },
+    {
+      "id": "R-QUAL-31::_onDestroy() should be renamed to destroy() with super.destroy() at the end",
+      "status": "WARN",
+      "check": "R-QUAL-31",
+      "detail": "lib/appDisplay.js:2068: _onDestroy() should be renamed to destroy() with super.destroy() at the end",
+      "fix": "Rename to destroy() { /* cleanup */; super.destroy(); }"
+    },
+    {
+      "id": "R-QUAL-34::enumerate_children() is synchronous \u2014 use enumerate_children_async() to avoid blocking the Shell main loop",
+      "status": "WARN",
+      "check": "R-QUAL-34",
+      "detail": "lib/util.js:679: enumerate_children() is synchronous \u2014 use enumerate_children_async() to avoid blocking the Shell main loop",
+      "fix": "Use file.enumerate_children_async(attributes, flags, priority, cancellable, callback)"
+    },
+    {
+      "id": "R-VER48-04::St.Widget.vertical property deprecated in GNOME 48; use orientation: Clutter.Orientation.VERTICAL (available since GNOME 47; keep vertical for GNOME <=46 compat)",
+      "status": "WARN",
+      "check": "R-VER48-04",
+      "detail": "lib/workspaceSwitcherPopup.js:104: St.Widget.vertical property deprecated in GNOME 48; use orientation: Clutter.Orientation.VERTICAL (available since GNOME 47; keep vertical for GNOME <=46 compat)"
+    },
+    {
+      "id": "R-VER48-04::St.Widget.vertical property deprecated in GNOME 48; use orientation: Clutter.Orientation.VERTICAL (available since GNOME 47; keep vertical for GNOME <=46 compat)",
+      "status": "WARN",
+      "check": "R-VER48-04",
+      "detail": "lib/appDisplay.js:645: St.Widget.vertical property deprecated in GNOME 48; use orientation: Clutter.Orientation.VERTICAL (available since GNOME 47; keep vertical for GNOME <=46 compat)"
+    },
+    {
+      "id": "R-VER48-04::St.Widget.vertical property deprecated in GNOME 48; use orientation: Clutter.Orientation.VERTICAL (available since GNOME 47; keep vertical for GNOME <=46 compat)",
+      "status": "WARN",
+      "check": "R-VER48-04",
+      "detail": "lib/appDisplay.js:646: St.Widget.vertical property deprecated in GNOME 48; use orientation: Clutter.Orientation.VERTICAL (available since GNOME 47; keep vertical for GNOME <=46 compat)"
+    },
+    {
+      "id": "R-VER50-01::Not applicable for declared shell-version(s)",
+      "status": "SKIP",
+      "check": "R-VER50-01",
+      "detail": "Not applicable for declared shell-version(s)"
+    },
+    {
+      "id": "R-VER50-02::Not applicable for declared shell-version(s)",
+      "status": "SKIP",
+      "check": "R-VER50-02",
+      "detail": "Not applicable for declared shell-version(s)"
+    },
+    {
+      "id": "R-VER50-03::Not applicable for declared shell-version(s)",
+      "status": "SKIP",
+      "check": "R-VER50-03",
+      "detail": "Not applicable for declared shell-version(s)"
+    },
+    {
+      "id": "R-VER50-04::Not applicable for declared shell-version(s)",
+      "status": "SKIP",
+      "check": "R-VER50-04",
+      "detail": "Not applicable for declared shell-version(s)"
+    },
+    {
+      "id": "R-VER50-05::Not applicable for declared shell-version(s)",
+      "status": "SKIP",
+      "check": "R-VER50-05",
+      "detail": "Not applicable for declared shell-version(s)"
+    },
+    {
+      "id": "eslint::No eslint.config.mjs or node_modules/.bin/eslint found",
+      "status": "SKIP",
+      "check": "eslint",
+      "detail": "No eslint.config.mjs or node_modules/.bin/eslint found"
+    },
+    {
+      "id": "metadata/non-standard-field::'_generated' is not a standard metadata field",
+      "status": "WARN",
+      "check": "metadata/non-standard-field",
+      "detail": "'_generated' is not a standard metadata field"
+    },
+    {
+      "id": "metadata/deprecated-version::version field is ignored by EGO for GNOME 45+; consider removing",
+      "status": "WARN",
+      "check": "metadata/deprecated-version",
+      "detail": "version field is ignored by EGO for GNOME 45+; consider removing"
+    },
+    {
+      "id": "schema-usage/unused-key::Dynamic key access detected \u2014 cannot verify statically",
+      "status": "SKIP",
+      "check": "schema-usage/unused-key",
+      "detail": "Dynamic key access detected \u2014 cannot verify statically"
+    },
+    {
+      "id": "schema-usage/undefined-key::Dynamic key access detected \u2014 cannot verify statically",
+      "status": "SKIP",
+      "check": "schema-usage/undefined-key",
+      "detail": "Dynamic key access detected \u2014 cannot verify statically"
+    },
+    {
+      "id": "quality/module-state::Module-level mutable state at lib/optionsFactory.js, lib/optionsFactory.js, lib/workspace.js \u2014 ensure reset in both enable() and disable()",
+      "status": "WARN",
+      "check": "quality/module-state",
+      "detail": "Module-level mutable state at lib/optionsFactory.js:17, lib/optionsFactory.js:20, lib/workspace.js:27 \u2014 ensure reset in both enable() and disable()"
+    },
+    {
+      "id": "quality/constructor-resources::.connect() in constructor \u2014 move to enable()",
+      "status": "WARN",
+      "check": "quality/constructor-resources",
+      "detail": "lib/util.js:819: .connect() in constructor \u2014 move to enable()"
+    },
+    {
+      "id": "quality/constructor-resources::.connect() in constructor \u2014 move to enable()",
+      "status": "WARN",
+      "check": "quality/constructor-resources",
+      "detail": "lib/workspaceAnimation.js:228: .connect() in constructor \u2014 move to enable()"
+    },
+    {
+      "id": "quality/constructor-resources::.connect() in constructor \u2014 move to enable()",
+      "status": "WARN",
+      "check": "quality/constructor-resources",
+      "detail": "lib/workspaceAnimation.js:288: .connect() in constructor \u2014 move to enable()"
+    },
+    {
+      "id": "quality/code-volume::16293 non-blank JS lines \u2014 large codebase; ensure all code is necessary and manually reviewed",
+      "status": "WARN",
+      "check": "quality/code-volume",
+      "detail": "16293 non-blank JS lines \u2014 large codebase; ensure all code is necessary and manually reviewed"
+    },
+    {
+      "id": "quality/file-complexity::2233 non-blank lines \u2014 consider splitting into modules",
+      "status": "WARN",
+      "check": "quality/file-complexity",
+      "detail": "prefs.js: 2233 non-blank lines \u2014 consider splitting into modules"
+    },
+    {
+      "id": "quality/debug-volume::68 console.debug() calls \u2014 excessive for production; remove or reduce debug logging before submission",
+      "status": "WARN",
+      "check": "quality/debug-volume",
+      "detail": "68 console.debug() calls \u2014 excessive for production; remove or reduce debug logging before submission"
+    },
+    {
+      "id": "quality/private-api::extension.js, extension.js, extension.js, extension.js, extension.js (+175 more): Main.layoutManager private API access \u2014 requires reviewer justification and version pinning",
+      "status": "WARN",
+      "check": "quality/private-api",
+      "detail": "extension.js:102, extension.js:110, extension.js:124, extension.js:193, extension.js:249 (+175 more): Main.layoutManager private API access \u2014 requires reviewer justification and version pinning"
+    },
+    {
+      "id": "quality/redundant-cleanup::8 verbose destroy guards vs 3 idiomatic '?.destroy()' \u2014 prefer optional chaining for cleanup",
+      "status": "WARN",
+      "check": "quality/redundant-cleanup",
+      "detail": "8 verbose destroy guards vs 3 idiomatic '?.destroy()' \u2014 prefer optional chaining for cleanup"
+    },
+    {
+      "id": "quality/repeated-settings::5 getSettings()/Gio.Settings instances across extension files (extension.js, extension.js, lib/workspaceThumbnail.js, lib/layout.js, lib/appDisplay.js) \u2014 store a single instance and pass via dependency injection",
+      "status": "WARN",
+      "check": "quality/repeated-settings",
+      "detail": "5 getSettings()/Gio.Settings instances across extension files (extension.js:67, extension.js:613, lib/workspaceThumbnail.js:307, lib/layout.js:77, lib/appDisplay.js:1542) \u2014 store a single instance and pass via dependency injection"
+    },
+    {
+      "id": "lifecycle/signal-balance::56 manual .connect() calls but only 43 .disconnect() calls \u2014 verify all signals are disconnected in disable()",
+      "status": "WARN",
+      "check": "lifecycle/signal-balance",
+      "detail": "56 manual .connect() calls but only 43 .disconnect() calls \u2014 verify all signals are disconnected in disable()"
+    },
+    {
+      "id": "lifecycle/untracked-timeout::timer/idle return value not stored \u2014 cannot be removed in disable()",
+      "status": "WARN",
+      "check": "lifecycle/untracked-timeout",
+      "detail": "extension.js:297: timer/idle return value not stored \u2014 cannot be removed in disable()"
+    },
+    {
+      "id": "lifecycle/untracked-timeout::timer/idle return value not stored \u2014 cannot be removed in disable()",
+      "status": "WARN",
+      "check": "lifecycle/untracked-timeout",
+      "detail": "extension.js:386: timer/idle return value not stored \u2014 cannot be removed in disable()"
+    },
+    {
+      "id": "lifecycle/untracked-timeout::timer/idle return value not stored \u2014 cannot be removed in disable()",
+      "status": "WARN",
+      "check": "lifecycle/untracked-timeout",
+      "detail": "lib/util.js:163: timer/idle return value not stored \u2014 cannot be removed in disable()"
+    },
+    {
+      "id": "lifecycle/untracked-timeout::timer/idle return value not stored \u2014 cannot be removed in disable()",
+      "status": "WARN",
+      "check": "lifecycle/untracked-timeout",
+      "detail": "lib/util.js:255: timer/idle return value not stored \u2014 cannot be removed in disable()"
+    },
+    {
+      "id": "lifecycle/untracked-timeout::timer/idle return value not stored \u2014 cannot be removed in disable()",
+      "status": "WARN",
+      "check": "lifecycle/untracked-timeout",
+      "detail": "lib/util.js:463: timer/idle return value not stored \u2014 cannot be removed in disable()"
+    },
+    {
+      "id": "lifecycle/untracked-timeout::timer/idle return value not stored \u2014 cannot be removed in disable()",
+      "status": "WARN",
+      "check": "lifecycle/untracked-timeout",
+      "detail": "lib/util.js:473: timer/idle return value not stored \u2014 cannot be removed in disable()"
+    },
+    {
+      "id": "lifecycle/untracked-timeout::timer/idle return value not stored \u2014 cannot be removed in disable()",
+      "status": "WARN",
+      "check": "lifecycle/untracked-timeout",
+      "detail": "lib/util.js:475: timer/idle return value not stored \u2014 cannot be removed in disable()"
+    },
+    {
+      "id": "lifecycle/untracked-timeout::timer/idle return value not stored \u2014 cannot be removed in disable()",
+      "status": "WARN",
+      "check": "lifecycle/untracked-timeout",
+      "detail": "lib/overviewBackground.js:264: timer/idle return value not stored \u2014 cannot be removed in disable()"
+    },
+    {
+      "id": "lifecycle/untracked-timeout::timer/idle return value not stored \u2014 cannot be removed in disable()",
+      "status": "WARN",
+      "check": "lifecycle/untracked-timeout",
+      "detail": "lib/search.js:352: timer/idle return value not stored \u2014 cannot be removed in disable()"
+    },
+    {
+      "id": "lifecycle/untracked-timeout::timer/idle return value not stored \u2014 cannot be removed in disable()",
+      "status": "WARN",
+      "check": "lifecycle/untracked-timeout",
+      "detail": "lib/dash.js:897: timer/idle return value not stored \u2014 cannot be removed in disable()"
+    },
+    {
+      "id": "lifecycle/untracked-timeout::timer/idle return value not stored \u2014 cannot be removed in disable()",
+      "status": "WARN",
+      "check": "lifecycle/untracked-timeout",
+      "detail": "lib/dash.js:910: timer/idle return value not stored \u2014 cannot be removed in disable()"
+    },
+    {
+      "id": "lifecycle/untracked-timeout::timer/idle return value not stored \u2014 cannot be removed in disable()",
+      "status": "WARN",
+      "check": "lifecycle/untracked-timeout",
+      "detail": "lib/overviewControls.js:1051: timer/idle return value not stored \u2014 cannot be removed in disable()"
+    },
+    {
+      "id": "lifecycle/untracked-timeout::timer/idle return value not stored \u2014 cannot be removed in disable()",
+      "status": "WARN",
+      "check": "lifecycle/untracked-timeout",
+      "detail": "lib/appDisplay.js:1185: timer/idle return value not stored \u2014 cannot be removed in disable()"
+    },
+    {
+      "id": "lifecycle/untracked-timeout::timer/idle return value not stored \u2014 cannot be removed in disable()",
+      "status": "WARN",
+      "check": "lifecycle/untracked-timeout",
+      "detail": "lib/appDisplay.js:1622: timer/idle return value not stored \u2014 cannot be removed in disable()"
+    },
+    {
+      "id": "lifecycle/untracked-timeout::timer/idle return value not stored \u2014 cannot be removed in disable()",
+      "status": "WARN",
+      "check": "lifecycle/untracked-timeout",
+      "detail": "lib/iconGrid.js:163: timer/idle return value not stored \u2014 cannot be removed in disable()"
+    },
+    {
+      "id": "lifecycle/timeout-return-value::extension.js, lib/util.js, lib/util.js",
+      "status": "WARN",
+      "check": "lifecycle/timeout-return-value",
+      "detail": "timeout_add/idle_add callback missing SOURCE_REMOVE/SOURCE_CONTINUE: extension.js:297, lib/util.js:163, lib/util.js:463"
+    },
+    {
+      "id": "lifecycle/prototype-override::Workspace.prototype.get_neighbor \u2014 direct prototype modification should be restored in disable()",
+      "status": "WARN",
+      "check": "lifecycle/prototype-override",
+      "detail": "extension.js: Workspace.prototype.get_neighbor \u2014 direct prototype modification should be restored in disable()"
+    },
+    {
+      "id": "lifecycle/unlock-dialog-comment::extension declares 'unlock-dialog' session mode but disable() has no comment explaining lock screen behavior \u2014 add a comment documenting which resources need special handling on the lock screen",
+      "status": "WARN",
+      "check": "lifecycle/unlock-dialog-comment",
+      "detail": "extension declares 'unlock-dialog' session mode but disable() has no comment explaining lock screen behavior \u2014 add a comment documenting which resources need special handling on the lock screen"
+    },
+    {
+      "id": "lifecycle/destroy-no-null::.destroy() without null assignment \u2014 set reference to null after destroy to prevent stale access",
+      "status": "WARN",
+      "check": "lifecycle/destroy-no-null",
+      "detail": "lib/workspaceThumbnail.js:227: .destroy() without null assignment \u2014 set reference to null after destroy to prevent stale access"
+    },
+    {
+      "id": "lifecycle/destroy-no-null::.destroy() without null assignment \u2014 set reference to null after destroy to prevent stale access",
+      "status": "WARN",
+      "check": "lifecycle/destroy-no-null",
+      "detail": "lib/workspacesView.js:547: .destroy() without null assignment \u2014 set reference to null after destroy to prevent stale access"
+    },
+    {
+      "id": "lifecycle/destroy-no-null::.destroy() without null assignment \u2014 set reference to null after destroy to prevent stale access",
+      "status": "WARN",
+      "check": "lifecycle/destroy-no-null",
+      "detail": "lib/workspacesView.js:739: .destroy() without null assignment \u2014 set reference to null after destroy to prevent stale access"
+    },
+    {
+      "id": "lifecycle/destroy-no-null::.destroy() without null assignment \u2014 set reference to null after destroy to prevent stale access",
+      "status": "WARN",
+      "check": "lifecycle/destroy-no-null",
+      "detail": "lib/overviewBackground.js:147: .destroy() without null assignment \u2014 set reference to null after destroy to prevent stale access"
+    },
+    {
+      "id": "lifecycle/destroy-no-null::.destroy() without null assignment \u2014 set reference to null after destroy to prevent stale access",
+      "status": "WARN",
+      "check": "lifecycle/destroy-no-null",
+      "detail": "lib/dash.js:807: .destroy() without null assignment \u2014 set reference to null after destroy to prevent stale access"
+    },
+    {
+      "id": "disclosure/clipboard::clipboard capability detected in code but metadata description does not disclose it \u2014 reviewers expect disclosure",
+      "status": "WARN",
+      "check": "disclosure/clipboard",
+      "detail": "clipboard capability detected in code but metadata description does not disclose it \u2014 reviewers expect disclosure"
+    },
+    {
+      "id": "disclosure/private-api::private-api capability detected in code but metadata description does not disclose it \u2014 reviewers expect disclosure",
+      "status": "WARN",
+      "check": "disclosure/private-api",
+      "detail": "private-api capability detected in code but metadata description does not disclose it \u2014 reviewers expect disclosure"
+    },
+    {
+      "id": "disclosure/file-io::file-io capability detected in code but metadata description does not disclose it \u2014 reviewers expect disclosure",
+      "status": "WARN",
+      "check": "disclosure/file-io",
+      "detail": "file-io capability detected in code but metadata description does not disclose it \u2014 reviewers expect disclosure"
+    },
+    {
+      "id": "package/exists::No zip package found in extension directory",
+      "status": "SKIP",
+      "check": "package/exists",
+      "detail": "No zip package found in extension directory"
+    }
+  ]
+}

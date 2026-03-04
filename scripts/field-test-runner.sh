@@ -66,6 +66,11 @@ mkdir -p "$RESULTS_DIR"
 MANIFEST_JSON="$(python3 "$PARSE_MANIFEST" "$MANIFEST")"
 EXT_COUNT="$(echo "$MANIFEST_JSON" | python3 -c "import json,sys; print(len(json.load(sys.stdin)))")"
 
+# When --json, redirect progress output to stderr so stdout is clean JSON
+if [[ "$OPT_JSON" == true ]]; then
+    exec 3>&1 1>&2
+fi
+
 echo "================================================================"
 echo "  Field Test Runner — $EXT_COUNT extensions"
 echo "  ego-lint version: $EGO_LINT_VERSION"
@@ -316,7 +321,7 @@ print(json.dumps(summary, indent=2))
 echo "$SUMMARY_JSON" > "$RESULTS_DIR/summary.json"
 
 if [[ "$OPT_JSON" == true ]]; then
-    echo "$SUMMARY_JSON"
+    echo "$SUMMARY_JSON" >&3
 else
     # Print human-readable summary
     echo "================================================================"

@@ -1,0 +1,221 @@
+{
+  "name": "hara-hachi-bu",
+  "uuid": "hara-hachi-bu@ZviBaratz",
+  "timestamp": "2026-03-04T22:16:02.522858+00:00",
+  "ego_lint_version": "0dbe7e8",
+  "ego_approved": false,
+  "exit_code": 0,
+  "counts": {
+    "pass": 204,
+    "fail": 0,
+    "warn": 9,
+    "skip": 23,
+    "total": 236
+  },
+  "metrics": {
+    "js_files": 18,
+    "total_lines": 8898,
+    "largest_file": "prefs.js (1973)",
+    "css_lines": 126,
+    "schema_keys": 26
+  },
+  "provenance_score": null,
+  "findings": [
+    {
+      "id": "polkit-files::Found 2 polkit policy/rules file(s) \u2014 requires security review",
+      "status": "WARN",
+      "check": "polkit-files",
+      "detail": "Found 2 polkit policy/rules file(s) \u2014 requires security review"
+    },
+    {
+      "id": "R-WEB-01::Not applicable for declared shell-version(s)",
+      "status": "SKIP",
+      "check": "R-WEB-01",
+      "detail": "Not applicable for declared shell-version(s)"
+    },
+    {
+      "id": "R-WEB-02::Not applicable for declared shell-version(s)",
+      "status": "SKIP",
+      "check": "R-WEB-02",
+      "detail": "Not applicable for declared shell-version(s)"
+    },
+    {
+      "id": "R-WEB-10::Not applicable for declared shell-version(s)",
+      "status": "SKIP",
+      "check": "R-WEB-10",
+      "detail": "Not applicable for declared shell-version(s)"
+    },
+    {
+      "id": "R-WEB-11::Not applicable for declared shell-version(s)",
+      "status": "SKIP",
+      "check": "R-WEB-11",
+      "detail": "Not applicable for declared shell-version(s)"
+    },
+    {
+      "id": "R-DEPR-04-legacy::Not applicable for declared shell-version(s)",
+      "status": "SKIP",
+      "check": "R-DEPR-04-legacy",
+      "detail": "Not applicable for declared shell-version(s)"
+    },
+    {
+      "id": "R-SEC-20::pkexec usage will receive extra reviewer scrutiny; ensure a valid polkit policy is included",
+      "status": "WARN",
+      "check": "R-SEC-20",
+      "detail": "pkexec usage will receive extra reviewer scrutiny; ensure a valid polkit policy is included in 3 file(s): lib/helper.js, lib/quickSettingsPanel.js, prefs.js",
+      "fix": "Verify the polkit .policy file is present and the action ID matches. Consider udev rules for hardware access."
+    },
+    {
+      "id": "R-PREFS-04c::GTK layout widget in prefs.js \u2014 verify no Adw equivalent for this specific use case",
+      "status": "WARN",
+      "check": "R-PREFS-04c",
+      "detail": "GTK layout widget in prefs.js \u2014 verify no Adw equivalent for this specific use case in 1 file(s): prefs.js",
+      "fix": "Gtk.ListBox with boxed-list CSS is valid for dynamic lists. Gtk.ScrolledWindow is valid for constrained-height content. Gtk.Grid/Stack may have Adw equivalents depending on usage."
+    },
+    {
+      "id": "R-SLOP-40::new Promise(resolve, reject) wrapper \u2014 consider Gio._promisify() for GIO async methods",
+      "status": "WARN",
+      "check": "R-SLOP-40",
+      "detail": "lib/powerProfileController.js:76: new Promise(resolve, reject) wrapper \u2014 consider Gio._promisify() for GIO async methods",
+      "fix": "Use Gio._promisify() to promisify GIO async methods instead of manual Promise wrapping"
+    },
+    {
+      "id": "R-QUAL-33::Gio._promisify() permanently mutates shared GJS prototypes \u2014 document module-scope placement",
+      "status": "WARN",
+      "check": "R-QUAL-33",
+      "detail": "Gio._promisify() permanently mutates shared GJS prototypes \u2014 document module-scope placement in 2 file(s): lib/helper.js, lib/stateManager.js",
+      "fix": "Gio._promisify() is fine but cannot be undone on disable(); add a comment explaining the module-scope placement"
+    },
+    {
+      "id": "R-VER48-04b::vertical property in constructor config deprecated in GNOME 48; use orientation: Clutter.Orientation.VERTICAL (available since GNOME 47; keep vertical for GNOME <=46 compat)",
+      "status": "WARN",
+      "check": "R-VER48-04b",
+      "detail": "vertical property in constructor config deprecated in GNOME 48; use orientation: Clutter.Orientation.VERTICAL (available since GNOME 47; keep vertical for GNOME <=46 compat) in 1 file(s): lib/quickSettingsPanel.js"
+    },
+    {
+      "id": "R-VER49-01::Not applicable for declared shell-version(s)",
+      "status": "SKIP",
+      "check": "R-VER49-01",
+      "detail": "Not applicable for declared shell-version(s)"
+    },
+    {
+      "id": "R-VER49-02::Not applicable for declared shell-version(s)",
+      "status": "SKIP",
+      "check": "R-VER49-02",
+      "detail": "Not applicable for declared shell-version(s)"
+    },
+    {
+      "id": "R-VER49-03::Not applicable for declared shell-version(s)",
+      "status": "SKIP",
+      "check": "R-VER49-03",
+      "detail": "Not applicable for declared shell-version(s)"
+    },
+    {
+      "id": "R-VER49-04::Not applicable for declared shell-version(s)",
+      "status": "SKIP",
+      "check": "R-VER49-04",
+      "detail": "Not applicable for declared shell-version(s)"
+    },
+    {
+      "id": "R-VER49-05::Not applicable for declared shell-version(s)",
+      "status": "SKIP",
+      "check": "R-VER49-05",
+      "detail": "Not applicable for declared shell-version(s)"
+    },
+    {
+      "id": "R-VER49-06::Not applicable for declared shell-version(s)",
+      "status": "SKIP",
+      "check": "R-VER49-06",
+      "detail": "Not applicable for declared shell-version(s)"
+    },
+    {
+      "id": "R-VER49-07::Not applicable for declared shell-version(s)",
+      "status": "SKIP",
+      "check": "R-VER49-07",
+      "detail": "Not applicable for declared shell-version(s)"
+    },
+    {
+      "id": "R-VER49-08::Not applicable for declared shell-version(s)",
+      "status": "SKIP",
+      "check": "R-VER49-08",
+      "detail": "Not applicable for declared shell-version(s)"
+    },
+    {
+      "id": "R-VER49-09::Not applicable for declared shell-version(s)",
+      "status": "SKIP",
+      "check": "R-VER49-09",
+      "detail": "Not applicable for declared shell-version(s)"
+    },
+    {
+      "id": "R-VER49-10::Not applicable for declared shell-version(s)",
+      "status": "SKIP",
+      "check": "R-VER49-10",
+      "detail": "Not applicable for declared shell-version(s)"
+    },
+    {
+      "id": "R-VER49-11::Not applicable for declared shell-version(s)",
+      "status": "SKIP",
+      "check": "R-VER49-11",
+      "detail": "Not applicable for declared shell-version(s)"
+    },
+    {
+      "id": "R-VER50-01::Not applicable for declared shell-version(s)",
+      "status": "SKIP",
+      "check": "R-VER50-01",
+      "detail": "Not applicable for declared shell-version(s)"
+    },
+    {
+      "id": "R-VER50-02::Not applicable for declared shell-version(s)",
+      "status": "SKIP",
+      "check": "R-VER50-02",
+      "detail": "Not applicable for declared shell-version(s)"
+    },
+    {
+      "id": "R-VER50-03::Not applicable for declared shell-version(s)",
+      "status": "SKIP",
+      "check": "R-VER50-03",
+      "detail": "Not applicable for declared shell-version(s)"
+    },
+    {
+      "id": "R-VER50-04::Not applicable for declared shell-version(s)",
+      "status": "SKIP",
+      "check": "R-VER50-04",
+      "detail": "Not applicable for declared shell-version(s)"
+    },
+    {
+      "id": "R-VER50-05::Not applicable for declared shell-version(s)",
+      "status": "SKIP",
+      "check": "R-VER50-05",
+      "detail": "Not applicable for declared shell-version(s)"
+    },
+    {
+      "id": "eslint::ESLint configuration error (exit code 2)",
+      "status": "WARN",
+      "check": "eslint",
+      "detail": "ESLint configuration error (exit code 2)"
+    },
+    {
+      "id": "metadata/shell-version-current::shell-version does not include GNOME 49",
+      "status": "WARN",
+      "check": "metadata/shell-version-current",
+      "detail": "shell-version does not include GNOME 49"
+    },
+    {
+      "id": "schema-usage/unused-key::Dynamic key access detected \u2014 cannot verify statically",
+      "status": "SKIP",
+      "check": "schema-usage/unused-key",
+      "detail": "Dynamic key access detected \u2014 cannot verify statically"
+    },
+    {
+      "id": "schema-usage/undefined-key::Dynamic key access detected \u2014 cannot verify statically",
+      "status": "SKIP",
+      "check": "schema-usage/undefined-key",
+      "detail": "Dynamic key access detected \u2014 cannot verify statically"
+    },
+    {
+      "id": "quality/private-api::lib/quickSettingsPanel.js, lib/quickSettingsPanel.js, lib/quickSettingsPanel.js, lib/quickSettingsPanel.js, lib/quickSettingsPanel.js (+6 more): quickSettings private API access \u2014 requires reviewer justification and version pinning",
+      "status": "WARN",
+      "check": "quality/private-api",
+      "detail": "lib/quickSettingsPanel.js:1379, lib/quickSettingsPanel.js:1388, lib/quickSettingsPanel.js:1390, lib/quickSettingsPanel.js:1391, lib/quickSettingsPanel.js:1457 (+6 more): quickSettings private API access \u2014 requires reviewer justification and version pinning"
+    }
+  ]
+}

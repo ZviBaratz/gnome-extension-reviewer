@@ -1,0 +1,381 @@
+{
+  "name": "tiling-shell",
+  "uuid": "tilingshell@ferrarodomenico.com",
+  "timestamp": "2026-03-04T22:16:37.148356+00:00",
+  "ego_lint_version": "0dbe7e8",
+  "ego_approved": true,
+  "exit_code": 1,
+  "counts": {
+    "pass": 135,
+    "fail": 4,
+    "warn": 4,
+    "skip": 51,
+    "total": 194
+  },
+  "metrics": {
+    "js_files": 1,
+    "total_lines": 14,
+    "largest_file": "monitorDescription.js (14)",
+    "css_lines": 0,
+    "schema_keys": 61
+  },
+  "provenance_score": null,
+  "findings": [
+    {
+      "id": "file-structure/extension.js::extension.js is missing",
+      "status": "FAIL",
+      "check": "file-structure/extension.js",
+      "detail": "extension.js is missing"
+    },
+    {
+      "id": "file-structure/metadata.json::metadata.json is missing",
+      "status": "FAIL",
+      "check": "file-structure/metadata.json",
+      "detail": "metadata.json is missing"
+    },
+    {
+      "id": "non-gjs-scripts::Found 1 non-GJS script(s) \u2014 scripts MUST be written in GJS; no pkexec/privileged helper justification found",
+      "status": "FAIL",
+      "check": "non-gjs-scripts",
+      "detail": "Found 1 non-GJS script(s) \u2014 scripts MUST be written in GJS; no pkexec/privileged helper justification found"
+    },
+    {
+      "id": "script-permissions::Found 1 shell script(s) without execute permission \u2014 packaging tools may strip permissions",
+      "status": "WARN",
+      "check": "script-permissions",
+      "detail": "Found 1 shell script(s) without execute permission \u2014 packaging tools may strip permissions"
+    },
+    {
+      "id": "polkit/action-id-match::No polkit files found",
+      "status": "SKIP",
+      "check": "polkit/action-id-match",
+      "detail": "No polkit files found"
+    },
+    {
+      "id": "polkit/action-id-prefix::No polkit files found",
+      "status": "SKIP",
+      "check": "polkit/action-id-prefix",
+      "detail": "No polkit files found"
+    },
+    {
+      "id": "polkit/helper-exists::No polkit files found",
+      "status": "SKIP",
+      "check": "polkit/helper-exists",
+      "detail": "No polkit files found"
+    },
+    {
+      "id": "css/scoping::No stylesheet.css found",
+      "status": "SKIP",
+      "check": "css/scoping",
+      "detail": "No stylesheet.css found"
+    },
+    {
+      "id": "css/shell-class-override::No stylesheet.css found",
+      "status": "SKIP",
+      "check": "css/shell-class-override",
+      "detail": "No stylesheet.css found"
+    },
+    {
+      "id": "accessibility/accessible-name::No UI-related imports found",
+      "status": "SKIP",
+      "check": "accessibility/accessible-name",
+      "detail": "No UI-related imports found"
+    },
+    {
+      "id": "accessibility/widget-role::No UI-related imports found",
+      "status": "SKIP",
+      "check": "accessibility/widget-role",
+      "detail": "No UI-related imports found"
+    },
+    {
+      "id": "R-WEB-01::Not applicable for declared shell-version(s)",
+      "status": "SKIP",
+      "check": "R-WEB-01",
+      "detail": "Not applicable for declared shell-version(s)"
+    },
+    {
+      "id": "R-WEB-02::Not applicable for declared shell-version(s)",
+      "status": "SKIP",
+      "check": "R-WEB-02",
+      "detail": "Not applicable for declared shell-version(s)"
+    },
+    {
+      "id": "R-WEB-10::Not applicable for declared shell-version(s)",
+      "status": "SKIP",
+      "check": "R-WEB-10",
+      "detail": "Not applicable for declared shell-version(s)"
+    },
+    {
+      "id": "R-WEB-11::Not applicable for declared shell-version(s)",
+      "status": "SKIP",
+      "check": "R-WEB-11",
+      "detail": "Not applicable for declared shell-version(s)"
+    },
+    {
+      "id": "R-DEPR-04::Not applicable for declared shell-version(s)",
+      "status": "SKIP",
+      "check": "R-DEPR-04",
+      "detail": "Not applicable for declared shell-version(s)"
+    },
+    {
+      "id": "R-DEPR-04-legacy::Not applicable for declared shell-version(s)",
+      "status": "SKIP",
+      "check": "R-DEPR-04-legacy",
+      "detail": "Not applicable for declared shell-version(s)"
+    },
+    {
+      "id": "R-LOG-03::print()/printerr() should not be used in production; use console.debug()",
+      "status": "WARN",
+      "check": "R-LOG-03",
+      "detail": "resources/monitorDescription.js:14: print()/printerr() should not be used in production; use console.debug()",
+      "fix": "Replace print()/printerr() with console.debug() or console.error()."
+    },
+    {
+      "id": "R-SLOP-03::version field is deprecated; EGO manages versions for GNOME 45+",
+      "status": "WARN",
+      "check": "R-SLOP-03",
+      "detail": "resources/metadata.json:15: version field is deprecated; EGO manages versions for GNOME 45+",
+      "fix": "Remove the version field from metadata.json; EGO manages versions automatically."
+    },
+    {
+      "id": "R-VER44-01::Not applicable for declared shell-version(s)",
+      "status": "SKIP",
+      "check": "R-VER44-01",
+      "detail": "Not applicable for declared shell-version(s)"
+    },
+    {
+      "id": "R-VER44-02::Not applicable for declared shell-version(s)",
+      "status": "SKIP",
+      "check": "R-VER44-02",
+      "detail": "Not applicable for declared shell-version(s)"
+    },
+    {
+      "id": "R-VER46-01::Not applicable for declared shell-version(s)",
+      "status": "SKIP",
+      "check": "R-VER46-01",
+      "detail": "Not applicable for declared shell-version(s)"
+    },
+    {
+      "id": "R-VER46-02::Not applicable for declared shell-version(s)",
+      "status": "SKIP",
+      "check": "R-VER46-02",
+      "detail": "Not applicable for declared shell-version(s)"
+    },
+    {
+      "id": "R-VER46-03::Not applicable for declared shell-version(s)",
+      "status": "SKIP",
+      "check": "R-VER46-03",
+      "detail": "Not applicable for declared shell-version(s)"
+    },
+    {
+      "id": "R-VER46-04::Not applicable for declared shell-version(s)",
+      "status": "SKIP",
+      "check": "R-VER46-04",
+      "detail": "Not applicable for declared shell-version(s)"
+    },
+    {
+      "id": "R-VER46-05::Not applicable for declared shell-version(s)",
+      "status": "SKIP",
+      "check": "R-VER46-05",
+      "detail": "Not applicable for declared shell-version(s)"
+    },
+    {
+      "id": "R-VER46-06::Not applicable for declared shell-version(s)",
+      "status": "SKIP",
+      "check": "R-VER46-06",
+      "detail": "Not applicable for declared shell-version(s)"
+    },
+    {
+      "id": "R-VER46-07::Not applicable for declared shell-version(s)",
+      "status": "SKIP",
+      "check": "R-VER46-07",
+      "detail": "Not applicable for declared shell-version(s)"
+    },
+    {
+      "id": "R-VER47-01::Not applicable for declared shell-version(s)",
+      "status": "SKIP",
+      "check": "R-VER47-01",
+      "detail": "Not applicable for declared shell-version(s)"
+    },
+    {
+      "id": "R-VER48-01::Not applicable for declared shell-version(s)",
+      "status": "SKIP",
+      "check": "R-VER48-01",
+      "detail": "Not applicable for declared shell-version(s)"
+    },
+    {
+      "id": "R-VER48-02::Not applicable for declared shell-version(s)",
+      "status": "SKIP",
+      "check": "R-VER48-02",
+      "detail": "Not applicable for declared shell-version(s)"
+    },
+    {
+      "id": "R-VER48-03::Not applicable for declared shell-version(s)",
+      "status": "SKIP",
+      "check": "R-VER48-03",
+      "detail": "Not applicable for declared shell-version(s)"
+    },
+    {
+      "id": "R-VER48-04::Not applicable for declared shell-version(s)",
+      "status": "SKIP",
+      "check": "R-VER48-04",
+      "detail": "Not applicable for declared shell-version(s)"
+    },
+    {
+      "id": "R-VER48-04b::Not applicable for declared shell-version(s)",
+      "status": "SKIP",
+      "check": "R-VER48-04b",
+      "detail": "Not applicable for declared shell-version(s)"
+    },
+    {
+      "id": "R-VER48-05::Not applicable for declared shell-version(s)",
+      "status": "SKIP",
+      "check": "R-VER48-05",
+      "detail": "Not applicable for declared shell-version(s)"
+    },
+    {
+      "id": "R-VER48-06::Not applicable for declared shell-version(s)",
+      "status": "SKIP",
+      "check": "R-VER48-06",
+      "detail": "Not applicable for declared shell-version(s)"
+    },
+    {
+      "id": "R-VER48-07::Not applicable for declared shell-version(s)",
+      "status": "SKIP",
+      "check": "R-VER48-07",
+      "detail": "Not applicable for declared shell-version(s)"
+    },
+    {
+      "id": "R-VER49-01::Not applicable for declared shell-version(s)",
+      "status": "SKIP",
+      "check": "R-VER49-01",
+      "detail": "Not applicable for declared shell-version(s)"
+    },
+    {
+      "id": "R-VER49-02::Not applicable for declared shell-version(s)",
+      "status": "SKIP",
+      "check": "R-VER49-02",
+      "detail": "Not applicable for declared shell-version(s)"
+    },
+    {
+      "id": "R-VER49-03::Not applicable for declared shell-version(s)",
+      "status": "SKIP",
+      "check": "R-VER49-03",
+      "detail": "Not applicable for declared shell-version(s)"
+    },
+    {
+      "id": "R-VER49-04::Not applicable for declared shell-version(s)",
+      "status": "SKIP",
+      "check": "R-VER49-04",
+      "detail": "Not applicable for declared shell-version(s)"
+    },
+    {
+      "id": "R-VER49-05::Not applicable for declared shell-version(s)",
+      "status": "SKIP",
+      "check": "R-VER49-05",
+      "detail": "Not applicable for declared shell-version(s)"
+    },
+    {
+      "id": "R-VER49-06::Not applicable for declared shell-version(s)",
+      "status": "SKIP",
+      "check": "R-VER49-06",
+      "detail": "Not applicable for declared shell-version(s)"
+    },
+    {
+      "id": "R-VER49-07::Not applicable for declared shell-version(s)",
+      "status": "SKIP",
+      "check": "R-VER49-07",
+      "detail": "Not applicable for declared shell-version(s)"
+    },
+    {
+      "id": "R-VER49-08::Not applicable for declared shell-version(s)",
+      "status": "SKIP",
+      "check": "R-VER49-08",
+      "detail": "Not applicable for declared shell-version(s)"
+    },
+    {
+      "id": "R-VER49-09::Not applicable for declared shell-version(s)",
+      "status": "SKIP",
+      "check": "R-VER49-09",
+      "detail": "Not applicable for declared shell-version(s)"
+    },
+    {
+      "id": "R-VER49-10::Not applicable for declared shell-version(s)",
+      "status": "SKIP",
+      "check": "R-VER49-10",
+      "detail": "Not applicable for declared shell-version(s)"
+    },
+    {
+      "id": "R-VER49-11::Not applicable for declared shell-version(s)",
+      "status": "SKIP",
+      "check": "R-VER49-11",
+      "detail": "Not applicable for declared shell-version(s)"
+    },
+    {
+      "id": "R-VER50-01::Not applicable for declared shell-version(s)",
+      "status": "SKIP",
+      "check": "R-VER50-01",
+      "detail": "Not applicable for declared shell-version(s)"
+    },
+    {
+      "id": "R-VER50-02::Not applicable for declared shell-version(s)",
+      "status": "SKIP",
+      "check": "R-VER50-02",
+      "detail": "Not applicable for declared shell-version(s)"
+    },
+    {
+      "id": "R-VER50-03::Not applicable for declared shell-version(s)",
+      "status": "SKIP",
+      "check": "R-VER50-03",
+      "detail": "Not applicable for declared shell-version(s)"
+    },
+    {
+      "id": "R-VER50-04::Not applicable for declared shell-version(s)",
+      "status": "SKIP",
+      "check": "R-VER50-04",
+      "detail": "Not applicable for declared shell-version(s)"
+    },
+    {
+      "id": "R-VER50-05::Not applicable for declared shell-version(s)",
+      "status": "SKIP",
+      "check": "R-VER50-05",
+      "detail": "Not applicable for declared shell-version(s)"
+    },
+    {
+      "id": "eslint::No eslint.config.mjs or node_modules/.bin/eslint found",
+      "status": "SKIP",
+      "check": "eslint",
+      "detail": "No eslint.config.mjs or node_modules/.bin/eslint found"
+    },
+    {
+      "id": "metadata/exists::metadata.json not found",
+      "status": "FAIL",
+      "check": "metadata/exists",
+      "detail": "metadata.json not found"
+    },
+    {
+      "id": "schema/exists::No schemas defined (not all extensions use schemas)",
+      "status": "SKIP",
+      "check": "schema/exists",
+      "detail": "No schemas defined (not all extensions use schemas)"
+    },
+    {
+      "id": "schema-usage/unused-key::61 schema key(s) defined but not referenced in code: active-screen-edges, cycle-layouts, cycle-layouts-backward, edge-tiling-mode, edge-tiling-offset, enable-autotiling, enable-blur-selected-tilepreview, enable-blur-snap-assistant, enable-directional-focus-tiled-only, enable-move-keybindings, enable-screen-edges-windows-suggestions, enable-smart-window-border-radius, enable-snap-assist, enable-snap-assistant-windows-suggestions, enable-span-multiple-tiles, enable-tiling-system, enable-tiling-system-windows-suggestions, enable-window-border, enable-wraparound-focus, focus-window-down, focus-window-left, focus-window-next, focus-window-prev, focus-window-right, focus-window-up, highlight-current-window, inner-gaps, last-version-name-installed, layouts-json, move-window-center, move-window-down, move-window-left, move-window-right, move-window-up, outer-gaps, overridden-settings, override-alt-tab, override-window-menu, quarter-tiling-threshold, raise-together, resize-complementing-windows, restore-window-original-size, selected-layouts, show-indicator, snap-assist-sync-layout, snap-assistant-animation-time, snap-assistant-threshold, span-multiple-tiles-activation-key, span-window-all-tiles, span-window-down, span-window-left, span-window-right, span-window-up, tile-preview-animation-time, tiling-system-activation-key, tiling-system-deactivation-key, top-edge-maximize, untile-window, window-border-color, window-border-width, window-use-custom-border-color",
+      "status": "WARN",
+      "check": "schema-usage/unused-key",
+      "detail": "61 schema key(s) defined but not referenced in code: active-screen-edges, cycle-layouts, cycle-layouts-backward, edge-tiling-mode, edge-tiling-offset, enable-autotiling, enable-blur-selected-tilepreview, enable-blur-snap-assistant, enable-directional-focus-tiled-only, enable-move-keybindings, enable-screen-edges-windows-suggestions, enable-smart-window-border-radius, enable-snap-assist, enable-snap-assistant-windows-suggestions, enable-span-multiple-tiles, enable-tiling-system, enable-tiling-system-windows-suggestions, enable-window-border, enable-wraparound-focus, focus-window-down, focus-window-left, focus-window-next, focus-window-prev, focus-window-right, focus-window-up, highlight-current-window, inner-gaps, last-version-name-installed, layouts-json, move-window-center, move-window-down, move-window-left, move-window-right, move-window-up, outer-gaps, overridden-settings, override-alt-tab, override-window-menu, quarter-tiling-threshold, raise-together, resize-complementing-windows, restore-window-original-size, selected-layouts, show-indicator, snap-assist-sync-layout, snap-assistant-animation-time, snap-assistant-threshold, span-multiple-tiles-activation-key, span-window-all-tiles, span-window-down, span-window-left, span-window-right, span-window-up, tile-preview-animation-time, tiling-system-activation-key, tiling-system-deactivation-key, top-edge-maximize, untile-window, window-border-color, window-border-width, window-use-custom-border-color"
+    },
+    {
+      "id": "prefs/exists::No prefs.js found",
+      "status": "SKIP",
+      "check": "prefs/exists",
+      "detail": "No prefs.js found"
+    },
+    {
+      "id": "package/exists::No zip package found in extension directory",
+      "status": "SKIP",
+      "check": "package/exists",
+      "detail": "No zip package found in extension directory"
+    }
+  ]
+}

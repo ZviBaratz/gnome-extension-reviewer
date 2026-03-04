@@ -1,0 +1,1151 @@
+{
+  "name": "gsconnect",
+  "uuid": "gsconnect@andyholmes.github.io",
+  "timestamp": "2026-03-04T22:16:45.507644+00:00",
+  "ego_lint_version": "0dbe7e8",
+  "ego_approved": true,
+  "exit_code": 1,
+  "counts": {
+    "pass": 167,
+    "fail": 12,
+    "warn": 144,
+    "skip": 17,
+    "total": 340
+  },
+  "metrics": {
+    "js_files": 65,
+    "total_lines": 24680,
+    "largest_file": "messaging.js (1325)",
+    "css_lines": 127,
+    "schema_keys": 48
+  },
+  "provenance_score": null,
+  "findings": [
+    {
+      "id": "license::No LICENSE or COPYING file \u2014 MUST use GPL-compatible license",
+      "status": "FAIL",
+      "check": "license",
+      "detail": "No LICENSE or COPYING file \u2014 MUST use GPL-compatible license"
+    },
+    {
+      "id": "non-gjs-scripts::Found 1 non-GJS script(s) \u2014 scripts MUST be written in GJS; no pkexec/privileged helper justification found",
+      "status": "FAIL",
+      "check": "non-gjs-scripts",
+      "detail": "Found 1 non-GJS script(s) \u2014 scripts MUST be written in GJS; no pkexec/privileged helper justification found"
+    },
+    {
+      "id": "polkit/action-id-match::No polkit files found",
+      "status": "SKIP",
+      "check": "polkit/action-id-match",
+      "detail": "No polkit files found"
+    },
+    {
+      "id": "polkit/action-id-prefix::No polkit files found",
+      "status": "SKIP",
+      "check": "polkit/action-id-prefix",
+      "detail": "No polkit files found"
+    },
+    {
+      "id": "polkit/helper-exists::No polkit files found",
+      "status": "SKIP",
+      "check": "polkit/helper-exists",
+      "detail": "No polkit files found"
+    },
+    {
+      "id": "R-WEB-01::Not applicable for declared shell-version(s)",
+      "status": "SKIP",
+      "check": "R-WEB-01",
+      "detail": "Not applicable for declared shell-version(s)"
+    },
+    {
+      "id": "R-WEB-02::Not applicable for declared shell-version(s)",
+      "status": "SKIP",
+      "check": "R-WEB-02",
+      "detail": "Not applicable for declared shell-version(s)"
+    },
+    {
+      "id": "R-WEB-10::Not applicable for declared shell-version(s)",
+      "status": "SKIP",
+      "check": "R-WEB-10",
+      "detail": "Not applicable for declared shell-version(s)"
+    },
+    {
+      "id": "R-WEB-11::Not applicable for declared shell-version(s)",
+      "status": "SKIP",
+      "check": "R-WEB-11",
+      "detail": "Not applicable for declared shell-version(s)"
+    },
+    {
+      "id": "R-DEPR-04-legacy::Not applicable for declared shell-version(s)",
+      "status": "SKIP",
+      "check": "R-DEPR-04-legacy",
+      "detail": "Not applicable for declared shell-version(s)"
+    },
+    {
+      "id": "R-DEPR-06::Tweener is removed; use Clutter animation framework",
+      "status": "FAIL",
+      "check": "R-DEPR-06",
+      "detail": "service/ui/messaging.js:18: Tweener is removed; use Clutter animation framework",
+      "fix": "Use actor.ease({property: value, duration: ms, mode: Clutter.AnimationMode.EASE_OUT_QUAD})."
+    },
+    {
+      "id": "R-DEPR-06::Tweener is removed; use Clutter animation framework",
+      "status": "FAIL",
+      "check": "R-DEPR-06",
+      "detail": "service/ui/messaging.js:643: Tweener is removed; use Clutter animation framework",
+      "fix": "Use actor.ease({property: value, duration: ms, mode: Clutter.AnimationMode.EASE_OUT_QUAD})."
+    },
+    {
+      "id": "R-DEPR-06::Tweener is removed; use Clutter animation framework",
+      "status": "FAIL",
+      "check": "R-DEPR-06",
+      "detail": "service/components/pulseaudio.js:11: Tweener is removed; use Clutter animation framework",
+      "fix": "Use actor.ease({property: value, duration: ms, mode: Clutter.AnimationMode.EASE_OUT_QUAD})."
+    },
+    {
+      "id": "R-DEPR-06::Tweener is removed; use Clutter animation framework",
+      "status": "FAIL",
+      "check": "R-DEPR-06",
+      "detail": "service/components/pulseaudio.js:89: Tweener is removed; use Clutter animation framework",
+      "fix": "Use actor.ease({property: value, duration: ms, mode: Clutter.AnimationMode.EASE_OUT_QUAD})."
+    },
+    {
+      "id": "R-DEPR-06::Tweener is removed; use Clutter animation framework",
+      "status": "FAIL",
+      "check": "R-DEPR-06",
+      "detail": "service/components/pulseaudio.js:94: Tweener is removed; use Clutter animation framework",
+      "fix": "Use actor.ease({property: value, duration: ms, mode: Clutter.AnimationMode.EASE_OUT_QUAD})."
+    },
+    {
+      "id": "R-DEPR-06::Tweener is removed; use Clutter animation framework",
+      "status": "FAIL",
+      "check": "R-DEPR-06",
+      "detail": "service/components/pulseaudio.js:105: Tweener is removed; use Clutter animation framework",
+      "fix": "Use actor.ease({property: value, duration: ms, mode: Clutter.AnimationMode.EASE_OUT_QUAD})."
+    },
+    {
+      "id": "R-DEPR-10::imports.format is deprecated; use ES6 template literals",
+      "status": "FAIL",
+      "check": "R-DEPR-10",
+      "detail": "utils/setup.js:18: imports.format is deprecated; use ES6 template literals",
+      "fix": "Replace format() calls with template literals: `my ${variable} string`."
+    },
+    {
+      "id": "R-SEC-03::Use HTTPS instead of HTTP for network requests",
+      "status": "WARN",
+      "check": "R-SEC-03",
+      "detail": "service/utils/uri.js:11: Use HTTPS instead of HTTP for network requests",
+      "fix": "Change http:// to https://."
+    },
+    {
+      "id": "R-SEC-03::Use HTTPS instead of HTTP for network requests",
+      "status": "WARN",
+      "check": "R-SEC-03",
+      "detail": "service/utils/uri.js:92: Use HTTPS instead of HTTP for network requests",
+      "fix": "Change http:// to https://."
+    },
+    {
+      "id": "R-SEC-03::Use HTTPS instead of HTTP for network requests",
+      "status": "WARN",
+      "check": "R-SEC-03",
+      "detail": "service/ui/contacts.js:135: Use HTTPS instead of HTTP for network requests",
+      "fix": "Change http:// to https://."
+    },
+    {
+      "id": "R-SEC-03::Use HTTPS instead of HTTP for network requests",
+      "status": "WARN",
+      "check": "R-SEC-03",
+      "detail": "service/plugins/contacts.js:234: Use HTTPS instead of HTTP for network requests",
+      "fix": "Change http:// to https://."
+    },
+    {
+      "id": "R-SEC-06::GObject.run_dispose() should not be used unless absolutely necessary",
+      "status": "WARN",
+      "check": "R-SEC-06",
+      "detail": "extension.js:317: GObject.run_dispose() should not be used unless absolutely necessary",
+      "fix": "Remove run_dispose() call. If genuinely needed, add a comment explaining why."
+    },
+    {
+      "id": "R-SEC-06::GObject.run_dispose() should not be used unless absolutely necessary",
+      "status": "WARN",
+      "check": "R-SEC-06",
+      "detail": "service/daemon.js:389: GObject.run_dispose() should not be used unless absolutely necessary",
+      "fix": "Remove run_dispose() call. If genuinely needed, add a comment explaining why."
+    },
+    {
+      "id": "R-SEC-06::GObject.run_dispose() should not be used unless absolutely necessary",
+      "status": "WARN",
+      "check": "R-SEC-06",
+      "detail": "service/device.js:1137: GObject.run_dispose() should not be used unless absolutely necessary",
+      "fix": "Remove run_dispose() call. If genuinely needed, add a comment explaining why."
+    },
+    {
+      "id": "R-SEC-06::GObject.run_dispose() should not be used unless absolutely necessary",
+      "status": "WARN",
+      "check": "R-SEC-06",
+      "detail": "service/components/notification.js:392: GObject.run_dispose() should not be used unless absolutely necessary",
+      "fix": "Remove run_dispose() call. If genuinely needed, add a comment explaining why."
+    },
+    {
+      "id": "R-SEC-06::GObject.run_dispose() should not be used unless absolutely necessary",
+      "status": "WARN",
+      "check": "R-SEC-06",
+      "detail": "preferences/device.js:414: GObject.run_dispose() should not be used unless absolutely necessary",
+      "fix": "Remove run_dispose() call. If genuinely needed, add a comment explaining why."
+    },
+    {
+      "id": "R-SEC-06::GObject.run_dispose() should not be used unless absolutely necessary",
+      "status": "WARN",
+      "check": "R-SEC-06",
+      "detail": "preferences/device.js:419: GObject.run_dispose() should not be used unless absolutely necessary",
+      "fix": "Remove run_dispose() call. If genuinely needed, add a comment explaining why."
+    },
+    {
+      "id": "R-SEC-15::GLib.spawn_command_line_async provides no error handling; prefer Gio.Subprocess",
+      "status": "WARN",
+      "check": "R-SEC-15",
+      "detail": "service/daemon.js:82: GLib.spawn_command_line_async provides no error handling; prefer Gio.Subprocess",
+      "fix": "Use 'new Gio.Subprocess({argv: [...]})' for proper lifecycle control and error handling."
+    },
+    {
+      "id": "R-SEC-15::GLib.spawn_command_line_async provides no error handling; prefer Gio.Subprocess",
+      "status": "WARN",
+      "check": "R-SEC-15",
+      "detail": "service/manager.js:442: GLib.spawn_command_line_async provides no error handling; prefer Gio.Subprocess",
+      "fix": "Use 'new Gio.Subprocess({argv: [...]})' for proper lifecycle control and error handling."
+    },
+    {
+      "id": "R-I18N-02::String concatenation inside gettext _() breaks xgettext extraction",
+      "status": "WARN",
+      "check": "R-I18N-02",
+      "detail": "preferences/service.js:445: String concatenation inside gettext _() breaks xgettext extraction",
+      "fix": "Use _('Hello %s').format(name) instead of _('Hello ' + name)"
+    },
+    {
+      "id": "R-LOG-02::Legacy log() function; use console.debug() instead",
+      "status": "WARN",
+      "check": "R-LOG-02",
+      "detail": "service/components/atspi.js:232: Legacy log() function; use console.debug() instead",
+      "fix": "Replace log(...) with console.debug(...)."
+    },
+    {
+      "id": "R-LOG-03::print()/printerr() should not be used in production; use console.debug()",
+      "status": "WARN",
+      "check": "R-LOG-03",
+      "detail": "service/daemon.js:631: print()/printerr() should not be used in production; use console.debug()",
+      "fix": "Replace print()/printerr() with console.debug() or console.error()."
+    },
+    {
+      "id": "R-LOG-03::print()/printerr() should not be used in production; use console.debug()",
+      "status": "WARN",
+      "check": "R-LOG-03",
+      "detail": "service/daemon.js:633: print()/printerr() should not be used in production; use console.debug()",
+      "fix": "Replace print()/printerr() with console.debug() or console.error()."
+    },
+    {
+      "id": "R-LOG-03::print()/printerr() should not be used in production; use console.debug()",
+      "status": "WARN",
+      "check": "R-LOG-03",
+      "detail": "service/daemon.js:716: print()/printerr() should not be used in production; use console.debug()",
+      "fix": "Replace print()/printerr() with console.debug() or console.error()."
+    },
+    {
+      "id": "R-SLOP-03::version field is deprecated; EGO manages versions for GNOME 45+",
+      "status": "WARN",
+      "check": "R-SLOP-03",
+      "detail": "metadata.json:5: version field is deprecated; EGO manages versions for GNOME 45+",
+      "fix": "Remove the version field from metadata.json; EGO manages versions automatically."
+    },
+    {
+      "id": "R-SLOP-40::new Promise(resolve, reject) wrapper \u2014 consider Gio._promisify() for GIO async methods",
+      "status": "WARN",
+      "check": "R-SLOP-40",
+      "detail": "wl_clipboard.js:158: new Promise(resolve, reject) wrapper \u2014 consider Gio._promisify() for GIO async methods",
+      "fix": "Use Gio._promisify() to promisify GIO async methods instead of manual Promise wrapping"
+    },
+    {
+      "id": "R-SLOP-40::new Promise(resolve, reject) wrapper \u2014 consider Gio._promisify() for GIO async methods",
+      "status": "WARN",
+      "check": "R-SLOP-40",
+      "detail": "wl_clipboard.js:186: new Promise(resolve, reject) wrapper \u2014 consider Gio._promisify() for GIO async methods",
+      "fix": "Use Gio._promisify() to promisify GIO async methods instead of manual Promise wrapping"
+    },
+    {
+      "id": "R-SLOP-40::new Promise(resolve, reject) wrapper \u2014 consider Gio._promisify() for GIO async methods",
+      "status": "WARN",
+      "check": "R-SLOP-40",
+      "detail": "wl_clipboard.js:221: new Promise(resolve, reject) wrapper \u2014 consider Gio._promisify() for GIO async methods",
+      "fix": "Use Gio._promisify() to promisify GIO async methods instead of manual Promise wrapping"
+    },
+    {
+      "id": "R-SLOP-40::new Promise(resolve, reject) wrapper \u2014 consider Gio._promisify() for GIO async methods",
+      "status": "WARN",
+      "check": "R-SLOP-40",
+      "detail": "shell/clipboard.js:189: new Promise(resolve, reject) wrapper \u2014 consider Gio._promisify() for GIO async methods",
+      "fix": "Use Gio._promisify() to promisify GIO async methods instead of manual Promise wrapping"
+    },
+    {
+      "id": "R-SLOP-40::new Promise(resolve, reject) wrapper \u2014 consider Gio._promisify() for GIO async methods",
+      "status": "WARN",
+      "check": "R-SLOP-40",
+      "detail": "shell/clipboard.js:208: new Promise(resolve, reject) wrapper \u2014 consider Gio._promisify() for GIO async methods",
+      "fix": "Use Gio._promisify() to promisify GIO async methods instead of manual Promise wrapping"
+    },
+    {
+      "id": "R-SLOP-40::new Promise(resolve, reject) wrapper \u2014 consider Gio._promisify() for GIO async methods",
+      "status": "WARN",
+      "check": "R-SLOP-40",
+      "detail": "shell/clipboard.js:247: new Promise(resolve, reject) wrapper \u2014 consider Gio._promisify() for GIO async methods",
+      "fix": "Use Gio._promisify() to promisify GIO async methods instead of manual Promise wrapping"
+    },
+    {
+      "id": "R-SLOP-40::new Promise(resolve, reject) wrapper \u2014 consider Gio._promisify() for GIO async methods",
+      "status": "WARN",
+      "check": "R-SLOP-40",
+      "detail": "shell/clipboard.js:276: new Promise(resolve, reject) wrapper \u2014 consider Gio._promisify() for GIO async methods",
+      "fix": "Use Gio._promisify() to promisify GIO async methods instead of manual Promise wrapping"
+    },
+    {
+      "id": "R-SLOP-40::new Promise(resolve, reject) wrapper \u2014 consider Gio._promisify() for GIO async methods",
+      "status": "WARN",
+      "check": "R-SLOP-40",
+      "detail": "shell/clipboard.js:306: new Promise(resolve, reject) wrapper \u2014 consider Gio._promisify() for GIO async methods",
+      "fix": "Use Gio._promisify() to promisify GIO async methods instead of manual Promise wrapping"
+    },
+    {
+      "id": "R-SLOP-40::new Promise(resolve, reject) wrapper \u2014 consider Gio._promisify() for GIO async methods",
+      "status": "WARN",
+      "check": "R-SLOP-40",
+      "detail": "utils/remote.js:36: new Promise(resolve, reject) wrapper \u2014 consider Gio._promisify() for GIO async methods",
+      "fix": "Use Gio._promisify() to promisify GIO async methods instead of manual Promise wrapping"
+    },
+    {
+      "id": "R-SLOP-40::new Promise(resolve, reject) wrapper \u2014 consider Gio._promisify() for GIO async methods",
+      "status": "WARN",
+      "check": "R-SLOP-40",
+      "detail": "utils/remote.js:193: new Promise(resolve, reject) wrapper \u2014 consider Gio._promisify() for GIO async methods",
+      "fix": "Use Gio._promisify() to promisify GIO async methods instead of manual Promise wrapping"
+    },
+    {
+      "id": "R-SLOP-40::new Promise(resolve, reject) wrapper \u2014 consider Gio._promisify() for GIO async methods",
+      "status": "WARN",
+      "check": "R-SLOP-40",
+      "detail": "utils/remote.js:361: new Promise(resolve, reject) wrapper \u2014 consider Gio._promisify() for GIO async methods",
+      "fix": "Use Gio._promisify() to promisify GIO async methods instead of manual Promise wrapping"
+    },
+    {
+      "id": "R-SLOP-40::new Promise(resolve, reject) wrapper \u2014 consider Gio._promisify() for GIO async methods",
+      "status": "WARN",
+      "check": "R-SLOP-40",
+      "detail": "utils/remote.js:447: new Promise(resolve, reject) wrapper \u2014 consider Gio._promisify() for GIO async methods",
+      "fix": "Use Gio._promisify() to promisify GIO async methods instead of manual Promise wrapping"
+    },
+    {
+      "id": "R-SLOP-40::new Promise(resolve, reject) wrapper \u2014 consider Gio._promisify() for GIO async methods",
+      "status": "WARN",
+      "check": "R-SLOP-40",
+      "detail": "service/utils/dbus.js:251: new Promise(resolve, reject) wrapper \u2014 consider Gio._promisify() for GIO async methods",
+      "fix": "Use Gio._promisify() to promisify GIO async methods instead of manual Promise wrapping"
+    },
+    {
+      "id": "R-SLOP-40::new Promise(resolve, reject) wrapper \u2014 consider Gio._promisify() for GIO async methods",
+      "status": "WARN",
+      "check": "R-SLOP-40",
+      "detail": "service/components/sound.js:55: new Promise(resolve, reject) wrapper \u2014 consider Gio._promisify() for GIO async methods",
+      "fix": "Use Gio._promisify() to promisify GIO async methods instead of manual Promise wrapping"
+    },
+    {
+      "id": "R-SLOP-40::new Promise(resolve, reject) wrapper \u2014 consider Gio._promisify() for GIO async methods",
+      "status": "WARN",
+      "check": "R-SLOP-40",
+      "detail": "service/components/clipboard.js:183: new Promise(resolve, reject) wrapper \u2014 consider Gio._promisify() for GIO async methods",
+      "fix": "Use Gio._promisify() to promisify GIO async methods instead of manual Promise wrapping"
+    },
+    {
+      "id": "R-SLOP-40::new Promise(resolve, reject) wrapper \u2014 consider Gio._promisify() for GIO async methods",
+      "status": "WARN",
+      "check": "R-SLOP-40",
+      "detail": "service/components/clipboard.js:195: new Promise(resolve, reject) wrapper \u2014 consider Gio._promisify() for GIO async methods",
+      "fix": "Use Gio._promisify() to promisify GIO async methods instead of manual Promise wrapping"
+    },
+    {
+      "id": "R-SLOP-40::new Promise(resolve, reject) wrapper \u2014 consider Gio._promisify() for GIO async methods",
+      "status": "WARN",
+      "check": "R-SLOP-40",
+      "detail": "preferences/keybindings.js:215: new Promise(resolve, reject) wrapper \u2014 consider Gio._promisify() for GIO async methods",
+      "fix": "Use Gio._promisify() to promisify GIO async methods instead of manual Promise wrapping"
+    },
+    {
+      "id": "R-SLOP-40::new Promise(resolve, reject) wrapper \u2014 consider Gio._promisify() for GIO async methods",
+      "status": "WARN",
+      "check": "R-SLOP-40",
+      "detail": "preferences/keybindings.js:239: new Promise(resolve, reject) wrapper \u2014 consider Gio._promisify() for GIO async methods",
+      "fix": "Use Gio._promisify() to promisify GIO async methods instead of manual Promise wrapping"
+    },
+    {
+      "id": "R-SLOP-40::new Promise(resolve, reject) wrapper \u2014 consider Gio._promisify() for GIO async methods",
+      "status": "WARN",
+      "check": "R-SLOP-40",
+      "detail": "preferences/keybindings.js:284: new Promise(resolve, reject) wrapper \u2014 consider Gio._promisify() for GIO async methods",
+      "fix": "Use Gio._promisify() to promisify GIO async methods instead of manual Promise wrapping"
+    },
+    {
+      "id": "R-SLOP-40::new Promise(resolve, reject) wrapper \u2014 consider Gio._promisify() for GIO async methods",
+      "status": "WARN",
+      "check": "R-SLOP-40",
+      "detail": "preferences/device.js:589: new Promise(resolve, reject) wrapper \u2014 consider Gio._promisify() for GIO async methods",
+      "fix": "Use Gio._promisify() to promisify GIO async methods instead of manual Promise wrapping"
+    },
+    {
+      "id": "R-SLOP-40::new Promise(resolve, reject) wrapper \u2014 consider Gio._promisify() for GIO async methods",
+      "status": "WARN",
+      "check": "R-SLOP-40",
+      "detail": "preferences/service.js:41: new Promise(resolve, reject) wrapper \u2014 consider Gio._promisify() for GIO async methods",
+      "fix": "Use Gio._promisify() to promisify GIO async methods instead of manual Promise wrapping"
+    },
+    {
+      "id": "R-SLOP-40::new Promise(resolve, reject) wrapper \u2014 consider Gio._promisify() for GIO async methods",
+      "status": "WARN",
+      "check": "R-SLOP-40",
+      "detail": "preferences/service.js:73: new Promise(resolve, reject) wrapper \u2014 consider Gio._promisify() for GIO async methods",
+      "fix": "Use Gio._promisify() to promisify GIO async methods instead of manual Promise wrapping"
+    },
+    {
+      "id": "R-SLOP-43::Underscore-prefixed export \u2014 private convention conflicts with public export",
+      "status": "WARN",
+      "check": "R-SLOP-43",
+      "detail": "service/core.js:18: Underscore-prefixed export \u2014 private convention conflicts with public export",
+      "fix": "Either remove the underscore (it's exported, so it's public) or don't export it"
+    },
+    {
+      "id": "R-SLOP-43::Underscore-prefixed export \u2014 private convention conflicts with public export",
+      "status": "WARN",
+      "check": "R-SLOP-43",
+      "detail": "service/backends/lan.js:56: Underscore-prefixed export \u2014 private convention conflicts with public export",
+      "fix": "Either remove the underscore (it's exported, so it's public) or don't export it"
+    },
+    {
+      "id": "R-SLOP-08::Likely hallucinated API \u2014 Meta.Screen, Meta.Cursor, Shell.ActionMode.ALL do not exist",
+      "status": "WARN",
+      "check": "R-SLOP-08",
+      "detail": "shell/keybindings.js:62: Likely hallucinated API \u2014 Meta.Screen, Meta.Cursor, Shell.ActionMode.ALL do not exist",
+      "fix": "Check the GJS API docs: https://gjs-docs.gnome.org. Use Meta.Display, global.display, etc."
+    },
+    {
+      "id": "R-SLOP-11::Non-existent GLib method \u2014 use GLib.timeout_add_seconds() and GLib.Source.remove()",
+      "status": "WARN",
+      "check": "R-SLOP-11",
+      "detail": "shell/tooltip.js:228: Non-existent GLib method \u2014 use GLib.timeout_add_seconds() and GLib.Source.remove()",
+      "fix": "GLib.timeout_add_seconds_full \u2192 GLib.timeout_add_seconds. GLib.source_remove \u2192 GLib.Source.remove."
+    },
+    {
+      "id": "R-SLOP-11::Non-existent GLib method \u2014 use GLib.timeout_add_seconds() and GLib.Source.remove()",
+      "status": "WARN",
+      "check": "R-SLOP-11",
+      "detail": "shell/tooltip.js:233: Non-existent GLib method \u2014 use GLib.timeout_add_seconds() and GLib.Source.remove()",
+      "fix": "GLib.timeout_add_seconds_full \u2192 GLib.timeout_add_seconds. GLib.source_remove \u2192 GLib.Source.remove."
+    },
+    {
+      "id": "R-SLOP-11::Non-existent GLib method \u2014 use GLib.timeout_add_seconds() and GLib.Source.remove()",
+      "status": "WARN",
+      "check": "R-SLOP-11",
+      "detail": "shell/tooltip.js:263: Non-existent GLib method \u2014 use GLib.timeout_add_seconds() and GLib.Source.remove()",
+      "fix": "GLib.timeout_add_seconds_full \u2192 GLib.timeout_add_seconds. GLib.source_remove \u2192 GLib.Source.remove."
+    },
+    {
+      "id": "R-SLOP-11::Non-existent GLib method \u2014 use GLib.timeout_add_seconds() and GLib.Source.remove()",
+      "status": "WARN",
+      "check": "R-SLOP-11",
+      "detail": "shell/tooltip.js:307: Non-existent GLib method \u2014 use GLib.timeout_add_seconds() and GLib.Source.remove()",
+      "fix": "GLib.timeout_add_seconds_full \u2192 GLib.timeout_add_seconds. GLib.source_remove \u2192 GLib.Source.remove."
+    },
+    {
+      "id": "R-SLOP-11::Non-existent GLib method \u2014 use GLib.timeout_add_seconds() and GLib.Source.remove()",
+      "status": "WARN",
+      "check": "R-SLOP-11",
+      "detail": "shell/tooltip.js:312: Non-existent GLib method \u2014 use GLib.timeout_add_seconds() and GLib.Source.remove()",
+      "fix": "GLib.timeout_add_seconds_full \u2192 GLib.timeout_add_seconds. GLib.source_remove \u2192 GLib.Source.remove."
+    },
+    {
+      "id": "R-SLOP-11::Non-existent GLib method \u2014 use GLib.timeout_add_seconds() and GLib.Source.remove()",
+      "status": "WARN",
+      "check": "R-SLOP-11",
+      "detail": "service/device.js:895: Non-existent GLib method \u2014 use GLib.timeout_add_seconds() and GLib.Source.remove()",
+      "fix": "GLib.timeout_add_seconds_full \u2192 GLib.timeout_add_seconds. GLib.source_remove \u2192 GLib.Source.remove."
+    },
+    {
+      "id": "R-SLOP-11::Non-existent GLib method \u2014 use GLib.timeout_add_seconds() and GLib.Source.remove()",
+      "status": "WARN",
+      "check": "R-SLOP-11",
+      "detail": "service/device.js:900: Non-existent GLib method \u2014 use GLib.timeout_add_seconds() and GLib.Source.remove()",
+      "fix": "GLib.timeout_add_seconds_full \u2192 GLib.timeout_add_seconds. GLib.source_remove \u2192 GLib.Source.remove."
+    },
+    {
+      "id": "R-SLOP-11::Non-existent GLib method \u2014 use GLib.timeout_add_seconds() and GLib.Source.remove()",
+      "status": "WARN",
+      "check": "R-SLOP-11",
+      "detail": "service/ui/messaging.js:888: Non-existent GLib method \u2014 use GLib.timeout_add_seconds() and GLib.Source.remove()",
+      "fix": "GLib.timeout_add_seconds_full \u2192 GLib.timeout_add_seconds. GLib.source_remove \u2192 GLib.Source.remove."
+    },
+    {
+      "id": "R-SLOP-11::Non-existent GLib method \u2014 use GLib.timeout_add_seconds() and GLib.Source.remove()",
+      "status": "WARN",
+      "check": "R-SLOP-11",
+      "detail": "preferences/service.js:263: Non-existent GLib method \u2014 use GLib.timeout_add_seconds() and GLib.Source.remove()",
+      "fix": "GLib.timeout_add_seconds_full \u2192 GLib.timeout_add_seconds. GLib.source_remove \u2192 GLib.Source.remove."
+    },
+    {
+      "id": "R-SLOP-16::GLib.file_get_contents() is synchronous and blocks the main loop; prefer Gio.File.load_contents() or load_contents_async()",
+      "status": "WARN",
+      "check": "R-SLOP-16",
+      "detail": "service/core.js:20: GLib.file_get_contents() is synchronous and blocks the main loop; prefer Gio.File.load_contents() or load_contents_async()",
+      "fix": "Use: const file = Gio.File.new_for_path(path); const [ok, contents] = file.load_contents(null); then new TextDecoder().decode(contents)."
+    },
+    {
+      "id": "R-SLOP-16::GLib.file_get_contents() is synchronous and blocks the main loop; prefer Gio.File.load_contents() or load_contents_async()",
+      "status": "WARN",
+      "check": "R-SLOP-16",
+      "detail": "service/ui/contacts.js:88: GLib.file_get_contents() is synchronous and blocks the main loop; prefer Gio.File.load_contents() or load_contents_async()",
+      "fix": "Use: const file = Gio.File.new_for_path(path); const [ok, contents] = file.load_contents(null); then new TextDecoder().decode(contents)."
+    },
+    {
+      "id": "R-SLOP-24::new Gio.Settings() is incorrect in GNOME 45+; use this.getSettings() from Extension base class",
+      "status": "WARN",
+      "check": "R-SLOP-24",
+      "detail": "extension.js:56: new Gio.Settings() is incorrect in GNOME 45+; use this.getSettings() from Extension base class",
+      "fix": "Use this.getSettings() in Extension subclass or this.getSettings() in ExtensionPreferences"
+    },
+    {
+      "id": "R-SLOP-24::new Gio.Settings() is incorrect in GNOME 45+; use this.getSettings() from Extension base class",
+      "status": "WARN",
+      "check": "R-SLOP-24",
+      "detail": "extension.js:194: new Gio.Settings() is incorrect in GNOME 45+; use this.getSettings() from Extension base class",
+      "fix": "Use this.getSettings() in Extension subclass or this.getSettings() in ExtensionPreferences"
+    },
+    {
+      "id": "R-SLOP-24::new Gio.Settings() is incorrect in GNOME 45+; use this.getSettings() from Extension base class",
+      "status": "WARN",
+      "check": "R-SLOP-24",
+      "detail": "shell/input.js:13: new Gio.Settings() is incorrect in GNOME 45+; use this.getSettings() from Extension base class",
+      "fix": "Use this.getSettings() in Extension subclass or this.getSettings() in ExtensionPreferences"
+    },
+    {
+      "id": "R-SLOP-24::new Gio.Settings() is incorrect in GNOME 45+; use this.getSettings() from Extension base class",
+      "status": "WARN",
+      "check": "R-SLOP-24",
+      "detail": "utils/setup.js:141: new Gio.Settings() is incorrect in GNOME 45+; use this.getSettings() from Extension base class",
+      "fix": "Use this.getSettings() in Extension subclass or this.getSettings() in ExtensionPreferences"
+    },
+    {
+      "id": "R-SLOP-24::new Gio.Settings() is incorrect in GNOME 45+; use this.getSettings() from Extension base class",
+      "status": "WARN",
+      "check": "R-SLOP-24",
+      "detail": "preferences/device.js:308: new Gio.Settings() is incorrect in GNOME 45+; use this.getSettings() from Extension base class",
+      "fix": "Use this.getSettings() in Extension subclass or this.getSettings() in ExtensionPreferences"
+    },
+    {
+      "id": "R-SLOP-24::new Gio.Settings() is incorrect in GNOME 45+; use this.getSettings() from Extension base class",
+      "status": "WARN",
+      "check": "R-SLOP-24",
+      "detail": "preferences/device.js:429: new Gio.Settings() is incorrect in GNOME 45+; use this.getSettings() from Extension base class",
+      "fix": "Use this.getSettings() in Extension subclass or this.getSettings() in ExtensionPreferences"
+    },
+    {
+      "id": "R-SLOP-24::new Gio.Settings() is incorrect in GNOME 45+; use this.getSettings() from Extension base class",
+      "status": "WARN",
+      "check": "R-SLOP-24",
+      "detail": "preferences/service.js:169: new Gio.Settings() is incorrect in GNOME 45+; use this.getSettings() from Extension base class",
+      "fix": "Use this.getSettings() in Extension subclass or this.getSettings() in ExtensionPreferences"
+    },
+    {
+      "id": "R-SLOP-24::new Gio.Settings() is incorrect in GNOME 45+; use this.getSettings() from Extension base class",
+      "status": "WARN",
+      "check": "R-SLOP-24",
+      "detail": "preferences/service.js:326: new Gio.Settings() is incorrect in GNOME 45+; use this.getSettings() from Extension base class",
+      "fix": "Use this.getSettings() in Extension subclass or this.getSettings() in ExtensionPreferences"
+    },
+    {
+      "id": "R-SLOP-26::Shell.ActionMode.ALL does not exist; use Shell.ActionMode.NORMAL or combine specific modes",
+      "status": "WARN",
+      "check": "R-SLOP-26",
+      "detail": "shell/keybindings.js:62: Shell.ActionMode.ALL does not exist; use Shell.ActionMode.NORMAL or combine specific modes",
+      "fix": "Use Shell.ActionMode.NORMAL for most keybindings, or Shell.ActionMode.OVERVIEW | Shell.ActionMode.NORMAL for multi-mode"
+    },
+    {
+      "id": "R-QUAL-31::_onDestroy() should be renamed to destroy() with super.destroy() at the end",
+      "status": "WARN",
+      "check": "R-QUAL-31",
+      "detail": "shell/device.js:149: _onDestroy() should be renamed to destroy() with super.destroy() at the end",
+      "fix": "Rename to destroy() { /* cleanup */; super.destroy(); }"
+    },
+    {
+      "id": "R-QUAL-31::_onDestroy() should be renamed to destroy() with super.destroy() at the end",
+      "status": "WARN",
+      "check": "R-QUAL-31",
+      "detail": "shell/device.js:278: _onDestroy() should be renamed to destroy() with super.destroy() at the end",
+      "fix": "Rename to destroy() { /* cleanup */; super.destroy(); }"
+    },
+    {
+      "id": "R-QUAL-31::_onDestroy() should be renamed to destroy() with super.destroy() at the end",
+      "status": "WARN",
+      "check": "R-QUAL-31",
+      "detail": "service/ui/messaging.js:462: _onDestroy() should be renamed to destroy() with super.destroy() at the end",
+      "fix": "Rename to destroy() { /* cleanup */; super.destroy(); }"
+    },
+    {
+      "id": "R-QUAL-31::_onDestroy() should be renamed to destroy() with super.destroy() at the end",
+      "status": "WARN",
+      "check": "R-QUAL-31",
+      "detail": "service/ui/notification.js:95: _onDestroy() should be renamed to destroy() with super.destroy() at the end",
+      "fix": "Rename to destroy() { /* cleanup */; super.destroy(); }"
+    },
+    {
+      "id": "R-QUAL-31::_onDestroy() should be renamed to destroy() with super.destroy() at the end",
+      "status": "WARN",
+      "check": "R-QUAL-31",
+      "detail": "service/ui/contacts.js:504: _onDestroy() should be renamed to destroy() with super.destroy() at the end",
+      "fix": "Rename to destroy() { /* cleanup */; super.destroy(); }"
+    },
+    {
+      "id": "R-QUAL-31::_onDestroy() should be renamed to destroy() with super.destroy() at the end",
+      "status": "WARN",
+      "check": "R-QUAL-31",
+      "detail": "service/ui/legacyMessaging.js:117: _onDestroy() should be renamed to destroy() with super.destroy() at the end",
+      "fix": "Rename to destroy() { /* cleanup */; super.destroy(); }"
+    },
+    {
+      "id": "R-QUAL-32::Unnecessary ?version= in gi:// import \u2014 this library does not require a version specifier",
+      "status": "WARN",
+      "check": "R-QUAL-32",
+      "detail": "service/daemon.js:9: Unnecessary ?version= in gi:// import \u2014 this library does not require a version specifier",
+      "fix": "Remove ?version= from the import; only Soup, Gtk, Gdk, and Adw require version specifiers"
+    },
+    {
+      "id": "R-QUAL-32::Unnecessary ?version= in gi:// import \u2014 this library does not require a version specifier",
+      "status": "WARN",
+      "check": "R-QUAL-32",
+      "detail": "service/daemon.js:10: Unnecessary ?version= in gi:// import \u2014 this library does not require a version specifier",
+      "fix": "Remove ?version= from the import; only Soup, Gtk, Gdk, and Adw require version specifiers"
+    },
+    {
+      "id": "R-QUAL-32::Unnecessary ?version= in gi:// import \u2014 this library does not require a version specifier",
+      "status": "WARN",
+      "check": "R-QUAL-32",
+      "detail": "service/daemon.js:11: Unnecessary ?version= in gi:// import \u2014 this library does not require a version specifier",
+      "fix": "Remove ?version= from the import; only Soup, Gtk, Gdk, and Adw require version specifiers"
+    },
+    {
+      "id": "R-QUAL-32::Unnecessary ?version= in gi:// import \u2014 this library does not require a version specifier",
+      "status": "WARN",
+      "check": "R-QUAL-32",
+      "detail": "service/daemon.js:13: Unnecessary ?version= in gi:// import \u2014 this library does not require a version specifier",
+      "fix": "Remove ?version= from the import; only Soup, Gtk, Gdk, and Adw require version specifiers"
+    },
+    {
+      "id": "R-QUAL-32::Unnecessary ?version= in gi:// import \u2014 this library does not require a version specifier",
+      "status": "WARN",
+      "check": "R-QUAL-32",
+      "detail": "service/nativeMessagingHost.js:7: Unnecessary ?version= in gi:// import \u2014 this library does not require a version specifier",
+      "fix": "Remove ?version= from the import; only Soup, Gtk, Gdk, and Adw require version specifiers"
+    },
+    {
+      "id": "R-QUAL-32::Unnecessary ?version= in gi:// import \u2014 this library does not require a version specifier",
+      "status": "WARN",
+      "check": "R-QUAL-32",
+      "detail": "service/nativeMessagingHost.js:8: Unnecessary ?version= in gi:// import \u2014 this library does not require a version specifier",
+      "fix": "Remove ?version= from the import; only Soup, Gtk, Gdk, and Adw require version specifiers"
+    },
+    {
+      "id": "R-QUAL-32::Unnecessary ?version= in gi:// import \u2014 this library does not require a version specifier",
+      "status": "WARN",
+      "check": "R-QUAL-32",
+      "detail": "service/nativeMessagingHost.js:9: Unnecessary ?version= in gi:// import \u2014 this library does not require a version specifier",
+      "fix": "Remove ?version= from the import; only Soup, Gtk, Gdk, and Adw require version specifiers"
+    },
+    {
+      "id": "R-QUAL-33::Gio._promisify() permanently mutates shared GJS prototypes \u2014 document module-scope placement",
+      "status": "WARN",
+      "check": "R-QUAL-33",
+      "detail": "Gio._promisify() permanently mutates shared GJS prototypes \u2014 document module-scope placement in 1 file(s): service/init.js",
+      "fix": "Gio._promisify() is fine but cannot be undone on disable(); add a comment explaining the module-scope placement"
+    },
+    {
+      "id": "R-QUAL-34::enumerate_children() is synchronous \u2014 use enumerate_children_async() to avoid blocking the Shell main loop",
+      "status": "WARN",
+      "check": "R-QUAL-34",
+      "detail": "service/init.js:218: enumerate_children() is synchronous \u2014 use enumerate_children_async() to avoid blocking the Shell main loop",
+      "fix": "Use file.enumerate_children_async(attributes, flags, priority, cancellable, callback)"
+    },
+    {
+      "id": "R-QUAL-35::Synchronous D-Bus call blocks the compositor main loop \u2014 use async variant",
+      "status": "WARN",
+      "check": "R-QUAL-35",
+      "detail": "service/daemon.js:597: Synchronous D-Bus call blocks the compositor main loop \u2014 use async variant",
+      "fix": "Use .call() / .get() / .set() with async callback or Gio._promisify() instead of _sync()"
+    },
+    {
+      "id": "R-QUAL-35::Synchronous D-Bus call blocks the compositor main loop \u2014 use async variant",
+      "status": "WARN",
+      "check": "R-QUAL-35",
+      "detail": "service/daemon.js:611: Synchronous D-Bus call blocks the compositor main loop \u2014 use async variant",
+      "fix": "Use .call() / .get() / .set() with async callback or Gio._promisify() instead of _sync()"
+    },
+    {
+      "id": "R-QUAL-35::Synchronous D-Bus call blocks the compositor main loop \u2014 use async variant",
+      "status": "WARN",
+      "check": "R-QUAL-35",
+      "detail": "service/components/mpris.js:702: Synchronous D-Bus call blocks the compositor main loop \u2014 use async variant",
+      "fix": "Use .call() / .get() / .set() with async callback or Gio._promisify() instead of _sync()"
+    },
+    {
+      "id": "R-VER48-04::St.Widget.vertical property deprecated in GNOME 48; use orientation: Clutter.Orientation.VERTICAL (available since GNOME 47; keep vertical for GNOME <=46 compat)",
+      "status": "WARN",
+      "check": "R-VER48-04",
+      "detail": "shell/gmenu.js:491: St.Widget.vertical property deprecated in GNOME 48; use orientation: Clutter.Orientation.VERTICAL (available since GNOME 47; keep vertical for GNOME <=46 compat)"
+    },
+    {
+      "id": "R-VER48-04b::vertical property in constructor config deprecated in GNOME 48; use orientation: Clutter.Orientation.VERTICAL (available since GNOME 47; keep vertical for GNOME <=46 compat)",
+      "status": "WARN",
+      "check": "R-VER48-04b",
+      "detail": "vertical property in constructor config deprecated in GNOME 48; use orientation: Clutter.Orientation.VERTICAL (available since GNOME 47; keep vertical for GNOME <=46 compat) in 2 file(s): shell/gmenu.js, shell/tooltip.js"
+    },
+    {
+      "id": "R-VER50-01::Not applicable for declared shell-version(s)",
+      "status": "SKIP",
+      "check": "R-VER50-01",
+      "detail": "Not applicable for declared shell-version(s)"
+    },
+    {
+      "id": "R-VER50-02::Not applicable for declared shell-version(s)",
+      "status": "SKIP",
+      "check": "R-VER50-02",
+      "detail": "Not applicable for declared shell-version(s)"
+    },
+    {
+      "id": "R-VER50-03::Not applicable for declared shell-version(s)",
+      "status": "SKIP",
+      "check": "R-VER50-03",
+      "detail": "Not applicable for declared shell-version(s)"
+    },
+    {
+      "id": "R-VER50-04::Not applicable for declared shell-version(s)",
+      "status": "SKIP",
+      "check": "R-VER50-04",
+      "detail": "Not applicable for declared shell-version(s)"
+    },
+    {
+      "id": "R-VER50-05::Not applicable for declared shell-version(s)",
+      "status": "SKIP",
+      "check": "R-VER50-05",
+      "detail": "Not applicable for declared shell-version(s)"
+    },
+    {
+      "id": "eslint::No eslint.config.mjs or node_modules/.bin/eslint found",
+      "status": "SKIP",
+      "check": "eslint",
+      "detail": "No eslint.config.mjs or node_modules/.bin/eslint found"
+    },
+    {
+      "id": "metadata/uuid-matches-dir::UUID 'gsconnect@andyholmes.github.io' does not match directory 'gsconnect' \u2014 must match when installed",
+      "status": "WARN",
+      "check": "metadata/uuid-matches-dir",
+      "detail": "UUID 'gsconnect@andyholmes.github.io' does not match directory 'gsconnect' \u2014 must match when installed"
+    },
+    {
+      "id": "metadata/deprecated-version::version field is ignored by EGO for GNOME 45+; consider removing",
+      "status": "WARN",
+      "check": "metadata/deprecated-version",
+      "detail": "version field is ignored by EGO for GNOME 45+; consider removing"
+    },
+    {
+      "id": "metadata/missing-gettext-domain::locale/ directory exists but gettext-domain not set in metadata.json",
+      "status": "WARN",
+      "check": "metadata/missing-gettext-domain",
+      "detail": "locale/ directory exists but gettext-domain not set in metadata.json"
+    },
+    {
+      "id": "schema-usage/unused-key::Dynamic key access detected \u2014 cannot verify statically",
+      "status": "SKIP",
+      "check": "schema-usage/unused-key",
+      "detail": "Dynamic key access detected \u2014 cannot verify statically"
+    },
+    {
+      "id": "schema-usage/undefined-key::Dynamic key access detected \u2014 cannot verify statically",
+      "status": "SKIP",
+      "check": "schema-usage/undefined-key",
+      "detail": "Dynamic key access detected \u2014 cannot verify statically"
+    },
+    {
+      "id": "imports/no-gtk-in-extension::6:import Gtk from 'gi://Gtk';",
+      "status": "FAIL",
+      "check": "imports/no-gtk-in-extension",
+      "detail": "shell/utils.js: 6:import Gtk from 'gi://Gtk';"
+    },
+    {
+      "id": "quality/module-state::Module-level mutable state at service/nativeMessagingHost.js, service/backends/lan.js \u2014 ensure reset in both enable() and disable()",
+      "status": "WARN",
+      "check": "quality/module-state",
+      "detail": "Module-level mutable state at service/nativeMessagingHost.js:14, service/backends/lan.js:14 \u2014 ensure reset in both enable() and disable()"
+    },
+    {
+      "id": "quality/code-volume::20475 non-blank JS lines \u2014 large codebase; ensure all code is necessary and manually reviewed",
+      "status": "WARN",
+      "check": "quality/code-volume",
+      "detail": "20475 non-blank JS lines \u2014 large codebase; ensure all code is necessary and manually reviewed"
+    },
+    {
+      "id": "quality/private-api::Main.layoutManager private API access \u2014 requires reviewer justification and version pinning",
+      "status": "WARN",
+      "check": "quality/private-api",
+      "detail": "shell/tooltip.js:182, shell/tooltip.js:245, shell/tooltip.js:302: Main.layoutManager private API access \u2014 requires reviewer justification and version pinning"
+    },
+    {
+      "id": "quality/redundant-cleanup::5 verbose destroy guards vs 0 idiomatic '?.destroy()' \u2014 prefer optional chaining for cleanup",
+      "status": "WARN",
+      "check": "quality/redundant-cleanup",
+      "detail": "5 verbose destroy guards vs 0 idiomatic '?.destroy()' \u2014 prefer optional chaining for cleanup"
+    },
+    {
+      "id": "quality/run-dispose-no-comment::run_dispose() without explanatory comment \u2014 reviewers require justification",
+      "status": "WARN",
+      "check": "quality/run-dispose-no-comment",
+      "detail": "extension.js:317: run_dispose() without explanatory comment \u2014 reviewers require justification"
+    },
+    {
+      "id": "quality/run-dispose-no-comment::run_dispose() without explanatory comment \u2014 reviewers require justification",
+      "status": "WARN",
+      "check": "quality/run-dispose-no-comment",
+      "detail": "service/daemon.js:389: run_dispose() without explanatory comment \u2014 reviewers require justification"
+    },
+    {
+      "id": "quality/run-dispose-no-comment::run_dispose() without explanatory comment \u2014 reviewers require justification",
+      "status": "WARN",
+      "check": "quality/run-dispose-no-comment",
+      "detail": "service/device.js:1137: run_dispose() without explanatory comment \u2014 reviewers require justification"
+    },
+    {
+      "id": "quality/run-dispose-no-comment::run_dispose() without explanatory comment \u2014 reviewers require justification",
+      "status": "WARN",
+      "check": "quality/run-dispose-no-comment",
+      "detail": "service/components/notification.js:392: run_dispose() without explanatory comment \u2014 reviewers require justification"
+    },
+    {
+      "id": "quality/run-dispose-no-comment::run_dispose() without explanatory comment \u2014 reviewers require justification",
+      "status": "WARN",
+      "check": "quality/run-dispose-no-comment",
+      "detail": "preferences/device.js:414: run_dispose() without explanatory comment \u2014 reviewers require justification"
+    },
+    {
+      "id": "quality/run-dispose-no-comment::run_dispose() without explanatory comment \u2014 reviewers require justification",
+      "status": "WARN",
+      "check": "quality/run-dispose-no-comment",
+      "detail": "preferences/device.js:419: run_dispose() without explanatory comment \u2014 reviewers require justification"
+    },
+    {
+      "id": "quality/repeated-settings::20 getSettings()/Gio.Settings instances across extension files (extension.js, extension.js, shell/input.js, utils/setup.js, service/daemon.js) \u2014 store a single instance and pass via dependency injection",
+      "status": "WARN",
+      "check": "quality/repeated-settings",
+      "detail": "20 getSettings()/Gio.Settings instances across extension files (extension.js:56, extension.js:194, shell/input.js:13, utils/setup.js:141, service/daemon.js:88) \u2014 store a single instance and pass via dependency injection"
+    },
+    {
+      "id": "lifecycle/untracked-timeout::timer/idle return value not stored \u2014 cannot be removed in disable()",
+      "status": "WARN",
+      "check": "lifecycle/untracked-timeout",
+      "detail": "shell/clipboard.js:116: timer/idle return value not stored \u2014 cannot be removed in disable()"
+    },
+    {
+      "id": "lifecycle/untracked-timeout::timer/idle return value not stored \u2014 cannot be removed in disable()",
+      "status": "WARN",
+      "check": "lifecycle/untracked-timeout",
+      "detail": "service/ui/messaging.js:650: timer/idle return value not stored \u2014 cannot be removed in disable()"
+    },
+    {
+      "id": "lifecycle/untracked-timeout::timer/idle return value not stored \u2014 cannot be removed in disable()",
+      "status": "WARN",
+      "check": "lifecycle/untracked-timeout",
+      "detail": "service/ui/mousepad.js:366: timer/idle return value not stored \u2014 cannot be removed in disable()"
+    },
+    {
+      "id": "lifecycle/untracked-timeout::timer/idle return value not stored \u2014 cannot be removed in disable()",
+      "status": "WARN",
+      "check": "lifecycle/untracked-timeout",
+      "detail": "service/components/sound.js:81: timer/idle return value not stored \u2014 cannot be removed in disable()"
+    },
+    {
+      "id": "lifecycle/untracked-timeout::timer/idle return value not stored \u2014 cannot be removed in disable()",
+      "status": "WARN",
+      "check": "lifecycle/untracked-timeout",
+      "detail": "service/components/sound.js:100: timer/idle return value not stored \u2014 cannot be removed in disable()"
+    },
+    {
+      "id": "lifecycle/untracked-timeout::timer/idle return value not stored \u2014 cannot be removed in disable()",
+      "status": "WARN",
+      "check": "lifecycle/untracked-timeout",
+      "detail": "preferences/keybindings.js:194: timer/idle return value not stored \u2014 cannot be removed in disable()"
+    },
+    {
+      "id": "lifecycle/async-destroyed-guard::async/await used without _destroyed or _isDestroyed guard \u2014 extension may act on stale state after disable()",
+      "status": "WARN",
+      "check": "lifecycle/async-destroyed-guard",
+      "detail": "async/await used without _destroyed or _isDestroyed guard \u2014 extension may act on stale state after disable()"
+    },
+    {
+      "id": "lifecycle/timeout-return-value::shell/tooltip.js, shell/tooltip.js, service/ui/messaging.js",
+      "status": "WARN",
+      "check": "lifecycle/timeout-return-value",
+      "detail": "timeout_add/idle_add callback missing SOURCE_REMOVE/SOURCE_CONTINUE: shell/tooltip.js:256, shell/tooltip.js:277, service/ui/messaging.js:650"
+    },
+    {
+      "id": "lifecycle/prototype-override::GtkNotificationDaemon.prototype._ensureAppSource \u2014 direct prototype modification should be restored in disable()",
+      "status": "WARN",
+      "check": "lifecycle/prototype-override",
+      "detail": "shell/notification.js: GtkNotificationDaemon.prototype._ensureAppSource \u2014 direct prototype modification should be restored in disable()"
+    },
+    {
+      "id": "lifecycle/prototype-override::GtkNotificationDaemonAppSource.prototype._withdrawGSConnectNotification \u2014 direct prototype modification should be restored in disable()",
+      "status": "WARN",
+      "check": "lifecycle/prototype-override",
+      "detail": "shell/notification.js: GtkNotificationDaemonAppSource.prototype._withdrawGSConnectNotification \u2014 direct prototype modification should be restored in disable()"
+    },
+    {
+      "id": "lifecycle/prototype-override::GtkNotificationDaemonAppSource.prototype.addNotification \u2014 direct prototype modification should be restored in disable()",
+      "status": "WARN",
+      "check": "lifecycle/prototype-override",
+      "detail": "shell/notification.js: GtkNotificationDaemonAppSource.prototype.addNotification \u2014 direct prototype modification should be restored in disable()"
+    },
+    {
+      "id": "lifecycle/prototype-override::String.prototype.format \u2014 direct prototype modification should be restored in disable()",
+      "status": "WARN",
+      "check": "lifecycle/prototype-override",
+      "detail": "utils/setup.js: String.prototype.format \u2014 direct prototype modification should be restored in disable()"
+    },
+    {
+      "id": "lifecycle/prototype-override::String.prototype.toPhoneNumber \u2014 direct prototype modification should be restored in disable()",
+      "status": "WARN",
+      "check": "lifecycle/prototype-override",
+      "detail": "service/init.js: String.prototype.toPhoneNumber \u2014 direct prototype modification should be restored in disable()"
+    },
+    {
+      "id": "lifecycle/prototype-override::String.prototype.equalsPhoneNumber \u2014 direct prototype modification should be restored in disable()",
+      "status": "WARN",
+      "check": "lifecycle/prototype-override",
+      "detail": "service/init.js: String.prototype.equalsPhoneNumber \u2014 direct prototype modification should be restored in disable()"
+    },
+    {
+      "id": "lifecycle/prototype-override::Variant.prototype.full_unpack \u2014 direct prototype modification should be restored in disable()",
+      "status": "WARN",
+      "check": "lifecycle/prototype-override",
+      "detail": "service/init.js: Variant.prototype.full_unpack \u2014 direct prototype modification should be restored in disable()"
+    },
+    {
+      "id": "lifecycle/prototype-override::Window.prototype.restoreGeometry \u2014 direct prototype modification should be restored in disable()",
+      "status": "WARN",
+      "check": "lifecycle/prototype-override",
+      "detail": "service/utils/ui.js: Window.prototype.restoreGeometry \u2014 direct prototype modification should be restored in disable()"
+    },
+    {
+      "id": "lifecycle/prototype-override::Window.prototype.saveGeometry \u2014 direct prototype modification should be restored in disable()",
+      "status": "WARN",
+      "check": "lifecycle/prototype-override",
+      "detail": "service/utils/ui.js: Window.prototype.saveGeometry \u2014 direct prototype modification should be restored in disable()"
+    },
+    {
+      "id": "lifecycle/destroy-no-null::.destroy() without null assignment \u2014 set reference to null after destroy to prevent stale access",
+      "status": "WARN",
+      "check": "lifecycle/destroy-no-null",
+      "detail": "extension.js:312: .destroy() without null assignment \u2014 set reference to null after destroy to prevent stale access"
+    },
+    {
+      "id": "lifecycle/destroy-no-null::.destroy() without null assignment \u2014 set reference to null after destroy to prevent stale access",
+      "status": "WARN",
+      "check": "lifecycle/destroy-no-null",
+      "detail": "extension.js:348: .destroy() without null assignment \u2014 set reference to null after destroy to prevent stale access"
+    },
+    {
+      "id": "lifecycle/destroy-no-null::.destroy() without null assignment \u2014 set reference to null after destroy to prevent stale access",
+      "status": "WARN",
+      "check": "lifecycle/destroy-no-null",
+      "detail": "shell/tooltip.js:303: .destroy() without null assignment \u2014 set reference to null after destroy to prevent stale access"
+    },
+    {
+      "id": "lifecycle/destroy-no-null::.destroy() without null assignment \u2014 set reference to null after destroy to prevent stale access",
+      "status": "WARN",
+      "check": "lifecycle/destroy-no-null",
+      "detail": "service/plugins/sms.js:530: .destroy() without null assignment \u2014 set reference to null after destroy to prevent stale access"
+    },
+    {
+      "id": "lifecycle/destroy-no-null::.destroy() without null assignment \u2014 set reference to null after destroy to prevent stale access",
+      "status": "WARN",
+      "check": "lifecycle/destroy-no-null",
+      "detail": "service/plugins/mousepad.js:371: .destroy() without null assignment \u2014 set reference to null after destroy to prevent stale access"
+    },
+    {
+      "id": "gobject/missing-gtypename::GObject.registerClass without GTypeName \u2014 add GTypeName to avoid conflicts between extensions",
+      "status": "WARN",
+      "check": "gobject/missing-gtypename",
+      "detail": "extension.js:326: GObject.registerClass without GTypeName \u2014 add GTypeName to avoid conflicts between extensions"
+    },
+    {
+      "id": "async/missing-cancellable::_async() calls without Gio.Cancellable at wl_clipboard.js, wl_clipboard.js, shell/clipboard.js (+47 more) \u2014 async operations may run after disable()",
+      "status": "WARN",
+      "check": "async/missing-cancellable",
+      "detail": "_async() calls without Gio.Cancellable at wl_clipboard.js:164, wl_clipboard.js:194, shell/clipboard.js:217 (+47 more) \u2014 async operations may run after disable()"
+    },
+    {
+      "id": "async/disable-no-cancel::Extension uses async but disable() has no .cancel(), .abort(), or _destroyed flag \u2014 async operations may outlive disable()",
+      "status": "WARN",
+      "check": "async/disable-no-cancel",
+      "detail": "Extension uses async but disable() has no .cancel(), .abort(), or _destroyed flag \u2014 async operations may outlive disable()"
+    },
+    {
+      "id": "async/catch-on-sync::.catch() on non-async GetMimetypes() \u2014 verify method returns a Promise",
+      "status": "WARN",
+      "check": "async/catch-on-sync",
+      "detail": "wl_clipboard.js:171: .catch() on non-async GetMimetypes() \u2014 verify method returns a Promise"
+    },
+    {
+      "id": "init/shell-modification::Shell modification outside enable()",
+      "status": "FAIL",
+      "check": "init/shell-modification",
+      "detail": "wl_clipboard.js:11: Shell modification outside enable()"
+    },
+    {
+      "id": "init/shell-modification::Shell modification outside enable()",
+      "status": "FAIL",
+      "check": "init/shell-modification",
+      "detail": "extension.js:28: Shell modification outside enable()"
+    },
+    {
+      "id": "resource-tracking/destroy-not-called::shell/tooltip.js \u2014 parent does not call cleanup method on shell/tooltip.js",
+      "status": "WARN",
+      "check": "resource-tracking/destroy-not-called",
+      "detail": "shell/tooltip.js:28 \u2014 parent does not call cleanup method on shell/tooltip.js"
+    },
+    {
+      "id": "resource-tracking/destroy-not-called::shell/tooltip.js \u2014 parent does not call cleanup method on shell/tooltip.js",
+      "status": "WARN",
+      "check": "resource-tracking/destroy-not-called",
+      "detail": "shell/tooltip.js:33 \u2014 parent does not call cleanup method on shell/tooltip.js"
+    },
+    {
+      "id": "resource-tracking/destroy-not-called::shell/tooltip.js \u2014 parent does not call cleanup method on shell/tooltip.js",
+      "status": "WARN",
+      "check": "resource-tracking/destroy-not-called",
+      "detail": "shell/tooltip.js:38 \u2014 parent does not call cleanup method on shell/tooltip.js"
+    },
+    {
+      "id": "resource-tracking/destroy-not-called::shell/tooltip.js \u2014 parent does not call cleanup method on shell/tooltip.js",
+      "status": "WARN",
+      "check": "resource-tracking/destroy-not-called",
+      "detail": "shell/tooltip.js:142 \u2014 parent does not call cleanup method on shell/tooltip.js"
+    },
+    {
+      "id": "resource-tracking/destroy-not-called::shell/tooltip.js \u2014 parent does not call cleanup method on shell/tooltip.js",
+      "status": "WARN",
+      "check": "resource-tracking/destroy-not-called",
+      "detail": "shell/tooltip.js:152 \u2014 parent does not call cleanup method on shell/tooltip.js"
+    },
+    {
+      "id": "resource-tracking/destroy-not-called::shell/tooltip.js \u2014 parent does not call cleanup method on shell/tooltip.js",
+      "status": "WARN",
+      "check": "resource-tracking/destroy-not-called",
+      "detail": "shell/tooltip.js:157 \u2014 parent does not call cleanup method on shell/tooltip.js"
+    },
+    {
+      "id": "resource-tracking/destroy-not-called::shell/tooltip.js \u2014 parent does not call cleanup method on shell/tooltip.js",
+      "status": "WARN",
+      "check": "resource-tracking/destroy-not-called",
+      "detail": "shell/tooltip.js:161 \u2014 parent does not call cleanup method on shell/tooltip.js"
+    },
+    {
+      "id": "resource-tracking/destroy-not-called::shell/tooltip.js \u2014 parent does not call cleanup method on shell/tooltip.js",
+      "status": "WARN",
+      "check": "resource-tracking/destroy-not-called",
+      "detail": "shell/tooltip.js:169 \u2014 parent does not call cleanup method on shell/tooltip.js"
+    },
+    {
+      "id": "resource-tracking/destroy-not-called::shell/tooltip.js \u2014 parent does not call cleanup method on shell/tooltip.js",
+      "status": "WARN",
+      "check": "resource-tracking/destroy-not-called",
+      "detail": "shell/tooltip.js:185 \u2014 parent does not call cleanup method on shell/tooltip.js"
+    },
+    {
+      "id": "resource-tracking/destroy-not-called::shell/tooltip.js \u2014 parent does not call cleanup method on shell/tooltip.js",
+      "status": "WARN",
+      "check": "resource-tracking/destroy-not-called",
+      "detail": "shell/tooltip.js:251 \u2014 parent does not call cleanup method on shell/tooltip.js"
+    },
+    {
+      "id": "resource-tracking/destroy-not-called::shell/tooltip.js \u2014 parent does not call cleanup method on shell/tooltip.js",
+      "status": "WARN",
+      "check": "resource-tracking/destroy-not-called",
+      "detail": "shell/tooltip.js:272 \u2014 parent does not call cleanup method on shell/tooltip.js"
+    },
+    {
+      "id": "resource-tracking/orphan-gsettings::service/manager.js \u2014 this._settings created but not cleaned up in destroy()",
+      "status": "WARN",
+      "check": "resource-tracking/orphan-gsettings",
+      "detail": "service/manager.js:83 \u2014 this._settings created but not cleaned up in destroy()"
+    },
+    {
+      "id": "resource-tracking/orphan-gsettings::service/manager.js \u2014 this._settings created but not cleaned up in destroy()",
+      "status": "WARN",
+      "check": "resource-tracking/orphan-gsettings",
+      "detail": "service/manager.js:217 \u2014 this._settings created but not cleaned up in destroy()"
+    },
+    {
+      "id": "resource-tracking/no-destroy-method::service/ui/mousepad.js \u2014 no cleanup method (destroy/disable/onDestroy) in service/ui/mousepad.js",
+      "status": "WARN",
+      "check": "resource-tracking/no-destroy-method",
+      "detail": "service/ui/mousepad.js:112 \u2014 no cleanup method (destroy/disable/onDestroy) in service/ui/mousepad.js"
+    },
+    {
+      "id": "resource-tracking/no-destroy-method::service/ui/mousepad.js \u2014 no cleanup method (destroy/disable/onDestroy) in service/ui/mousepad.js",
+      "status": "WARN",
+      "check": "resource-tracking/no-destroy-method",
+      "detail": "service/ui/mousepad.js:117 \u2014 no cleanup method (destroy/disable/onDestroy) in service/ui/mousepad.js"
+    },
+    {
+      "id": "resource-tracking/no-destroy-method::service/ui/mousepad.js \u2014 no cleanup method (destroy/disable/onDestroy) in service/ui/mousepad.js",
+      "status": "WARN",
+      "check": "resource-tracking/no-destroy-method",
+      "detail": "service/ui/mousepad.js:360 \u2014 no cleanup method (destroy/disable/onDestroy) in service/ui/mousepad.js"
+    },
+    {
+      "id": "resource-tracking/destroy-not-called::service/components/contacts.js \u2014 parent does not call cleanup method on service/components/contacts.js",
+      "status": "WARN",
+      "check": "resource-tracking/destroy-not-called",
+      "detail": "service/components/contacts.js:176 \u2014 parent does not call cleanup method on service/components/contacts.js"
+    },
+    {
+      "id": "resource-tracking/destroy-not-called::service/components/contacts.js \u2014 parent does not call cleanup method on service/components/contacts.js",
+      "status": "WARN",
+      "check": "resource-tracking/destroy-not-called",
+      "detail": "service/components/contacts.js:270 \u2014 parent does not call cleanup method on service/components/contacts.js"
+    },
+    {
+      "id": "resource-tracking/destroy-not-called::service/components/contacts.js \u2014 parent does not call cleanup method on service/components/contacts.js",
+      "status": "WARN",
+      "check": "resource-tracking/destroy-not-called",
+      "detail": "service/components/contacts.js:274 \u2014 parent does not call cleanup method on service/components/contacts.js"
+    },
+    {
+      "id": "resource-tracking/ownership::64 files scanned, depth 2, 19 orphans detected",
+      "status": "WARN",
+      "check": "resource-tracking/ownership",
+      "detail": "64 files scanned, depth 2, 19 orphans detected"
+    },
+    {
+      "id": "disclosure/private-api::private-api capability detected in code but metadata description does not disclose it \u2014 reviewers expect disclosure",
+      "status": "WARN",
+      "check": "disclosure/private-api",
+      "detail": "private-api capability detected in code but metadata description does not disclose it \u2014 reviewers expect disclosure"
+    },
+    {
+      "id": "package/exists::No zip package found in extension directory",
+      "status": "SKIP",
+      "check": "package/exists",
+      "detail": "No zip package found in extension directory"
+    }
+  ]
+}
