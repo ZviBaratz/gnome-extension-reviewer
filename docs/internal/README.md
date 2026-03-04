@@ -53,7 +53,7 @@ Patterns discovered across field tests — encode here so future rules avoid rep
 
 14. **Helper file constructors called from enable() are not init-time violations**: Tiling Shell had 13 FP FAILs from Shell globals in class constructors that are only ever instantiated from `enable()`. Constructor checks are now restricted to `extension.js` only — matching the existing `GOBJECT_CONSTRUCTORS` guard.
 15. **Arrow function definitions at module scope are lazy**: `const fn = () => Main.layoutManager.monitors` doesn't execute at module load time. The function body is deferred until the first call.
-16. **Same-line ternary guards need `guard-window: 0`**: Version compat patterns like `api.exists ? old(args) : new()` have the guard and deprecated API on the same line. `guard-window: 0` (match on current line only) handles this.
+16. **Same-line ternary guards need `guard-window: 1`**: Version compat patterns like `api.exists ? old(args) : new()` have the guard and deprecated API on the same line. `guard-window: 1` (minimum valid value; the current line is always included in the lookback window) handles this.
 17. **Single long lines ≠ minification**: Compiled TypeScript may have one or two very long lines (keyboard constant chains, export lists) in otherwise readable files. The minified-js check now requires 3+ lines > 500 chars.
 18. **Compiled TypeScript (esbuild) generates systematic WARN noise**: `var` declarations from `__defProp`/`__publicField` helpers (R-DEPR-09), verbose parameter names (R-SLOP-38), and many small classes without `destroy()` methods (resource-tracking/no-destroy-method). These are build artifacts, not author issues.
 

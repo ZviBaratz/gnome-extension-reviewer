@@ -94,7 +94,7 @@ _Not run — field test focused on ego-lint FP reduction._
 |------------|-----------|-----|----------------|
 | init/shell-modification (constructors) | Shell globals in non-extension.js constructors always flagged | Only check constructors in extension.js (same as GOBJECT_CONSTRUCTORS) | 13 |
 | init/shell-modification (arrow fn) | `const fn = () => Main.x` treated as module-scope access | Detect arrow function definitions and skip | 1 |
-| R-VER49-08 | Same-line ternary `get_maximized ?` not recognized as guard | Added `guard-pattern: "get_maximized\\s*\\?"` with `guard-window: 0` | 1 |
+| R-VER49-08 | Same-line ternary `get_maximized ?` not recognized as guard | Added `guard-pattern: "get_maximized\\s*\\?"` with `guard-window: 1` | 1 |
 | R-VER49-11 | Same as R-VER49-08 | Same guard-pattern | 1 |
 | minified-js | Single line > 500 chars triggers FAIL | Require 3+ lines > 500 chars (1 long line in readable file is not minification) | 1 |
 
@@ -136,7 +136,7 @@ bash tests/run-tests.sh                    # 525 passed, 0 failed
 
 3. **Arrow function definitions at module scope are lazy**: `const fn = () => Main.x` doesn't execute at module scope. This pattern is common in utility modules.
 
-4. **Same-line ternary guards need `guard-window: 0`**: Version compat patterns like `api.exists ? old(args) : new()` have the guard and the deprecated API on the same line. `guard-window: 0` handles this.
+4. **Same-line ternary guards need `guard-window: 1`**: Version compat patterns like `api.exists ? old(args) : new()` have the guard and the deprecated API on the same line. `guard-window: 1` (minimum valid value; 0 is rejected by `--validate`) handles this.
 
 5. **Single long line ≠ minification**: Compiled TS may have one or two very long lines (keyboard constant chains, export lists) in otherwise readable files. Requiring 3+ long lines eliminates these FPs while still catching truly minified bundles.
 
