@@ -1130,10 +1130,10 @@ Rules for extension lifecycle management: enable/disable hooks, signal cleanup, 
 ### R-LIFE-01: Signal Balance
 - **Severity**: advisory
 - **Checked by**: check-lifecycle.py
-- **Rule**: Detects imbalance between manual `.connect()` and `.disconnect()` calls (threshold: >2 imbalance). Recognizes `connectObject()`, `connectSmart()`, and `SignalTracker`/`SignalManager` as auto-cleanup patterns.
+- **Rule**: Detects imbalance between manual `.connect()` and `.disconnect()` calls (threshold: >2 imbalance). Recognizes `connectObject()`, `connectSmart()`, and `SignalTracker`/`SignalManager` as auto-cleanup patterns. Excludes: non-signal `.connect()` calls (no string-literal first argument), `'destroy'` signal connections (inherently self-cleaning), and signals on local/ephemeral variables (no `this` reference — garbage collected with scope).
 - **Rationale**: Unmatched signal connections are the #1 cause of extension rejections. Leaked signals cause memory leaks and crash loops.
 - **Fix**: For each `.connect()` call, ensure a matching `.disconnect()` in disable/destroy. Consider using `connectObject()` or a custom signal tracker for automatic cleanup.
-- **Tested by**: `tests/fixtures/lifecycle-basic@test/`, `tests/fixtures/signal-smart-connect@test/`
+- **Tested by**: `tests/fixtures/lifecycle-basic@test/`, `tests/fixtures/signal-smart-connect@test/`, `tests/fixtures/signal-non-gobject@test/`, `tests/fixtures/signal-destroy-connect@test/`, `tests/fixtures/signal-local-variable@test/`
 
 #### Example
 

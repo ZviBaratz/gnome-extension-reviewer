@@ -1,0 +1,7 @@
+{
+    "uuid": "signal-destroy-connect@test",
+    "name": "Destroy Signal Connect Test",
+    "description": "Tests that destroy signal connections are not counted in signal balance",
+    "shell-version": ["48"],
+    "url": "https://github.com/test/signal-destroy-connect"
+}
