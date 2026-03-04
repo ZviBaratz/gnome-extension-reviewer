@@ -419,6 +419,8 @@ assert_exit_code "exits with 1 (has failures)" 1
 assert_output_contains "fails on Meta.Rectangle" "\[FAIL\].*R-VER49-01"
 assert_output_contains "fails on Clutter.ClickAction" "\[FAIL\].*R-VER49-02"
 assert_output_contains "fails on Clutter.TapAction" "\[FAIL\].*R-VER49-03"
+assert_output_not_contains "no R-VER49-08 with ternary guard" "\[FAIL\].*R-VER49-08"
+assert_output_not_contains "no R-VER49-11 with ternary guard" "\[FAIL\].*R-VER49-11"
 echo ""
 
 # --- gnome46-extras ---
