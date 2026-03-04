@@ -1,0 +1,7 @@
+{
+    "uuid": "minified-boundary@test",
+    "name": "Minified Boundary Test",
+    "description": "Tests that 2 long lines do not trigger minified-js detection",
+    "shell-version": ["48"],
+    "url": "https://example.com"
+}
