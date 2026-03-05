@@ -376,7 +376,7 @@ if [[ "$OPT_REVIEW" == true || "$OPT_REVIEW_CHANGED" == true ]]; then
         changed="${EXT_CHANGED[$name]}"
 
         # Filter: --review-exclude skips specific extensions from review
-        local review_excluded=false
+        review_excluded=false
         for excl in "${OPT_REVIEW_EXCLUDE_EXTS[@]+"${OPT_REVIEW_EXCLUDE_EXTS[@]}"}"; do
             if [[ "$name" == "$excl" ]]; then
                 review_excluded=true
@@ -464,7 +464,7 @@ if [[ "$OPT_REVIEW" == true || "$OPT_REVIEW_CHANGED" == true ]]; then
                         echo "  ✗ Review error (exit $rc): $rname"
                     fi
                     # Validate report file exists and is non-empty
-                    local rfile="$RESULTS_DIR/$rname.review.md"
+                    rfile="$RESULTS_DIR/$rname.review.md"
                     if [[ ! -s "$rfile" ]]; then
                         REVIEW_STATUS["$rname"]="no-report"
                         echo "  ⚠ No report written: $rname"
@@ -492,7 +492,7 @@ if [[ "$OPT_REVIEW" == true || "$OPT_REVIEW_CHANGED" == true ]]; then
             echo "  ✗ Review error (exit $rc): $rname"
         fi
         # Validate report file exists and is non-empty
-        local rfile="$RESULTS_DIR/$rname.review.md"
+        rfile="$RESULTS_DIR/$rname.review.md"
         if [[ ! -s "$rfile" ]]; then
             REVIEW_STATUS["$rname"]="no-report"
             echo "  ⚠ No report written: $rname"
