@@ -373,6 +373,29 @@ if [[ "$OPT_REVIEW" == true || "$OPT_REVIEW_CHANGED" == true ]]; then
     echo "================================================================"
     echo ""
 
+    # Collect a finished review process and update its status
+    collect_review_result() {
+        local pid="$1" rname="$2"
+        wait "$pid" 2>/dev/null
+        rc=$?
+        if [[ $rc -eq 0 ]]; then
+            REVIEW_STATUS["$rname"]="ok"
+            echo "  ✓ Review complete: $rname"
+        elif [[ $rc -eq 124 ]]; then
+            REVIEW_STATUS["$rname"]="timeout"
+            echo "  ✗ Review timeout: $rname"
+        else
+            REVIEW_STATUS["$rname"]="error"
+            echo "  ✗ Review error (exit $rc): $rname"
+        fi
+        # Validate report file exists and is non-empty
+        rfile="$RESULTS_DIR/$rname.review.md"
+        if [[ ! -s "$rfile" ]]; then
+            REVIEW_STATUS["$rname"]="no-report"
+            echo "  ⚠ No report written: $rname"
+        fi
+    }
+
     REVIEW_PIDS=()
     REVIEW_NAMES=()
 
@@ -464,25 +487,7 @@ if [[ "$OPT_REVIEW" == true || "$OPT_REVIEW_CHANGED" == true ]]; then
                     new_pids+=("${REVIEW_PIDS[$i]}")
                     new_names+=("${REVIEW_NAMES[$i]}")
                 else
-                    wait "${REVIEW_PIDS[$i]}" 2>/dev/null
-                    rc=$?
-                    rname="${REVIEW_NAMES[$i]}"
-                    if [[ $rc -eq 0 ]]; then
-                        REVIEW_STATUS["$rname"]="ok"
-                        echo "  ✓ Review complete: $rname"
-                    elif [[ $rc -eq 124 ]]; then
-                        REVIEW_STATUS["$rname"]="timeout"
-                        echo "  ✗ Review timeout: $rname"
-                    else
-                        REVIEW_STATUS["$rname"]="error"
-                        echo "  ✗ Review error (exit $rc): $rname"
-                    fi
-                    # Validate report file exists and is non-empty
-                    rfile="$RESULTS_DIR/$rname.review.md"
-                    if [[ ! -s "$rfile" ]]; then
-                        REVIEW_STATUS["$rname"]="no-report"
-                        echo "  ⚠ No report written: $rname"
-                    fi
+                    collect_review_result "${REVIEW_PIDS[$i]}" "${REVIEW_NAMES[$i]}"
                 fi
             done
             REVIEW_PIDS=("${new_pids[@]}")
@@ -492,25 +497,7 @@ if [[ "$OPT_REVIEW" == true || "$OPT_REVIEW_CHANGED" == true ]]; then
 
     # Wait for remaining review processes
     for i in "${!REVIEW_PIDS[@]}"; do
-        wait "${REVIEW_PIDS[$i]}" 2>/dev/null
-        rc=$?
-        rname="${REVIEW_NAMES[$i]}"
-        if [[ $rc -eq 0 ]]; then
-            REVIEW_STATUS["$rname"]="ok"
-            echo "  ✓ Review complete: $rname"
-        elif [[ $rc -eq 124 ]]; then
-            REVIEW_STATUS["$rname"]="timeout"
-            echo "  ✗ Review timeout: $rname"
-        else
-            REVIEW_STATUS["$rname"]="error"
-            echo "  ✗ Review error (exit $rc): $rname"
-        fi
-        # Validate report file exists and is non-empty
-        rfile="$RESULTS_DIR/$rname.review.md"
-        if [[ ! -s "$rfile" ]]; then
-            REVIEW_STATUS["$rname"]="no-report"
-            echo "  ⚠ No report written: $rname"
-        fi
+        collect_review_result "${REVIEW_PIDS[$i]}" "${REVIEW_NAMES[$i]}"
     done
 
     echo ""
