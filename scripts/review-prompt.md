@@ -1,19 +1,10 @@
-# Field Test Review Prompt
+Run /ego-review on the extension at {{EXT_PATH}}.
 
-You are running an ego-review for the GNOME Shell extension **{{NAME}}**.
+IMPORTANT: You MUST read the extension source files and produce the FULL ego-review report with ALL six sections. Do NOT summarize. Do NOT skip phases. Output the complete report in markdown.
 
-## Instructions
+## Phase 0 Override
 
-Run the ego-review skill (phases 1 through 5a) on the extension at `{{EXT_PATH}}`.
-
-**Skip Phase 0** — ego-lint has already been run. Use the pre-computed lint results below as your automated baseline. Do NOT re-run ego-lint.
-
-For Phase 2, run the resource graph builder:
-```bash
-python3 {{PLUGIN_DIR}}/skills/ego-lint/scripts/build-resource-graph.py {{EXT_PATH}}
-```
-
-## Pre-computed Lint Results (JSON)
+Skip Phase 0 (ego-lint). It has already been run. Use these pre-computed results as your automated baseline — do NOT re-run ego-lint:
 
 ```json
 {{LINT_JSON}}
@@ -23,14 +14,26 @@ python3 {{PLUGIN_DIR}}/skills/ego-lint/scripts/build-resource-graph.py {{EXT_PAT
 
 {{ANNOTATIONS_SECTION}}
 
-## Output
+## Required Output Format
 
-Produce the standard ego-review report format (Sections 1-6) as defined in the ego-review skill. Include:
-- Section 1: Blocking Issues (Must Fix)
-- Section 2: Justification Required
-- Section 3: Advisory Issues
-- Section 4: Automated Check Summary (from the lint JSON above)
-- Section 5: AI Pattern Analysis
-- Section 6: Submission Readiness
+You MUST output ALL of these sections with full detail:
 
-Focus on issues that ego-lint **cannot** detect: semantic correctness, cross-file design problems, async safety nuances, and contextual judgment calls. Do not duplicate findings already present in the lint results.
+### Section 1: Blocking Issues (Must Fix)
+List each blocking issue with file:line, description, why reviewers reject it, and fix code.
+
+### Section 2: Justification Required
+Items acceptable IF properly documented.
+
+### Section 3: Advisory Issues (May Cause Questions)
+Each with file:line, description, reviewer perspective, suggestion.
+
+### Section 4: Automated Check Summary
+Build from the lint JSON above. Table with Category × Pass/Fail/Warn.
+
+### Section 5: AI Pattern Analysis
+Score, triggered items with file:line, assessment.
+
+### Section 6: Submission Readiness
+Verdict (LIKELY APPROVED / NEEDS REVISION / LIKELY REJECTED), action items checklist.
+
+Focus on issues ego-lint CANNOT detect: semantic correctness, cross-file design, async safety, contextual judgment. Do not duplicate lint findings.
