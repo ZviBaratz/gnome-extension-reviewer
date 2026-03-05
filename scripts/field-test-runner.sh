@@ -259,16 +259,22 @@ print(s.get('type',''), s.get('path',''), s.get('repo',''), s.get('ref', s.get('
 process_extension() {
     local idx="$1"
     local ext_json
-    ext_json="$(echo "$MANIFEST_JSON" | json_extract "manifest[$idx]" "
+    if ! ext_json="$(echo "$MANIFEST_JSON" | json_extract "manifest[$idx]" "
 exts = json.load(sys.stdin)
 print(json.dumps(exts[$idx]))
-")"
+")"; then
+        echo "  ERROR: failed to extract manifest entry $idx" >&2
+        return 1
+    fi
 
     local name uuid ego_approved _ext_line
-    _ext_line="$(echo "$ext_json" | json_extract "extension[$idx] metadata" "
+    if ! _ext_line="$(echo "$ext_json" | json_extract "extension[$idx] metadata" "
 d = json.load(sys.stdin)
 print(d['name'], d['uuid'], 'true' if d.get('ego_approved', False) else 'false', sep='\t')
-")"
+")"; then
+        echo "  ERROR: failed to extract extension metadata for entry $idx" >&2
+        return 1
+    fi
     IFS=$'\t' read -r name uuid ego_approved <<< "$_ext_line"
 
     # Filter by --extension / --exclude if specified
