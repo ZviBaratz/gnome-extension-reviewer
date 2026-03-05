@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 """Tests for field test pipeline helper functions.
 
-Covers make_finding_id (parse-lint-results.py) and
-parse_annotations (diff-baselines.py) — the two most fragile
-hand-rolled functions in the pipeline.
+Covers make_finding_id, parse_lint_output (parse-lint-results.py),
+parse_manifest (parse-manifest.py), parse_annotations, diff_results
+(diff-baselines.py), and read_file (hydrate-review-prompt.py).
 """
 
 import os
@@ -19,11 +19,16 @@ from importlib import import_module
 # Import modules with hyphens in names
 parse_lint = import_module('parse-lint-results')
 diff_baselines = import_module('diff-baselines')
+parse_manifest_mod = import_module('parse-manifest')
+hydrate_mod = import_module('hydrate-review-prompt')
 
 make_finding_id = parse_lint.make_finding_id
 parse_lint_output = parse_lint.parse_lint_output
 parse_annotations = diff_baselines.parse_annotations
 diff_results = diff_baselines.diff_results
+parse_manifest = parse_manifest_mod.parse_manifest
+_parse_value = parse_manifest_mod._parse_value
+read_file = hydrate_mod.read_file
 
 
 class TestMakeFindingId(unittest.TestCase):
@@ -291,6 +296,254 @@ findings:
 """)
         result = parse_annotations(path)
         self.assertEqual(result, {'check::detail': 'tp'})
+
+    def test_classification_before_id_warns(self):
+        path = self._write_temp("""\
+findings:
+    classification: fp
+  - id: "check::detail"
+    classification: tp
+""")
+        import io
+        from contextlib import redirect_stderr
+        stderr = io.StringIO()
+        with redirect_stderr(stderr):
+            result = parse_annotations(path)
+        self.assertIn('no preceding id', stderr.getvalue())
+        self.assertEqual(result, {'check::detail': 'tp'})
+
+
+class TestParseManifest(unittest.TestCase):
+    """Test hand-rolled YAML manifest parser."""
+
+    def _write_temp(self, content):
+        f = tempfile.NamedTemporaryFile(mode='w', suffix='.yaml', delete=False)
+        f.write(content)
+        f.close()
+        self.addCleanup(os.unlink, f.name)
+        return f.name
+
+    def test_basic_github_entry(self):
+        path = self._write_temp("""\
+extensions:
+  - name: test-ext
+    uuid: test-ext@user
+    source:
+      type: github
+      repo: user/test-ext
+      ref: main
+""")
+        result = parse_manifest(path)
+        self.assertEqual(len(result), 1)
+        self.assertEqual(result[0]['name'], 'test-ext')
+        self.assertEqual(result[0]['uuid'], 'test-ext@user')
+        self.assertEqual(result[0]['source']['type'], 'github')
+        self.assertEqual(result[0]['source']['repo'], 'user/test-ext')
+
+    def test_local_entry(self):
+        path = self._write_temp("""\
+extensions:
+  - name: local-ext
+    uuid: local@user
+    source:
+      type: local
+      path: ~/extensions/local
+""")
+        result = parse_manifest(path)
+        self.assertEqual(result[0]['source']['type'], 'local')
+        self.assertEqual(result[0]['source']['path'], '~/extensions/local')
+
+    def test_multiple_entries(self):
+        path = self._write_temp("""\
+extensions:
+  - name: first
+    uuid: first@user
+    source:
+      type: github
+      repo: user/first
+      ref: main
+  - name: second
+    uuid: second@user
+    source:
+      type: github
+      repo: user/second
+      ref: v1.0
+""")
+        result = parse_manifest(path)
+        self.assertEqual(len(result), 2)
+        self.assertEqual(result[0]['name'], 'first')
+        self.assertEqual(result[1]['name'], 'second')
+
+    def test_ego_approved_boolean(self):
+        path = self._write_temp("""\
+extensions:
+  - name: approved
+    uuid: approved@user
+    ego_approved: true
+    source:
+      type: github
+      repo: user/approved
+      ref: main
+""")
+        result = parse_manifest(path)
+        self.assertIs(result[0]['ego_approved'], True)
+
+    def test_comments_and_blanks_ignored(self):
+        path = self._write_temp("""\
+# Top comment
+extensions:
+
+  # Extension comment
+  - name: ext
+    uuid: ext@user
+    source:
+      type: github
+      repo: user/ext
+      ref: main
+""")
+        result = parse_manifest(path)
+        self.assertEqual(len(result), 1)
+
+    def test_entry_without_source(self):
+        path = self._write_temp("""\
+extensions:
+  - name: no-source
+    uuid: no-source@user
+""")
+        result = parse_manifest(path)
+        self.assertEqual(len(result), 1)
+        self.assertNotIn('source', result[0])
+
+    def test_value_with_colon(self):
+        """Values with colons should split on first colon only."""
+        path = self._write_temp("""\
+extensions:
+  - name: ext
+    uuid: ext@user
+    source:
+      type: github-release
+      repo: user/ext
+      tag: v1.0:beta
+""")
+        result = parse_manifest(path)
+        self.assertEqual(result[0]['source']['tag'], 'v1.0:beta')
+
+    def test_quoted_string_values(self):
+        path = self._write_temp("""\
+extensions:
+  - name: "quoted-name"
+    uuid: 'quoted@user'
+    source:
+      type: github
+      repo: user/ext
+      ref: main
+""")
+        result = parse_manifest(path)
+        self.assertEqual(result[0]['name'], 'quoted-name')
+        self.assertEqual(result[0]['uuid'], 'quoted@user')
+
+
+class TestParseValue(unittest.TestCase):
+    """Test YAML scalar value parsing."""
+
+    def test_boolean_true(self):
+        self.assertIs(_parse_value('true'), True)
+
+    def test_boolean_false(self):
+        self.assertIs(_parse_value('false'), False)
+
+    def test_integer(self):
+        self.assertEqual(_parse_value('42'), 42)
+
+    def test_zero(self):
+        self.assertEqual(_parse_value('0'), 0)
+
+    def test_plain_string(self):
+        self.assertEqual(_parse_value('hello'), 'hello')
+
+    def test_double_quoted(self):
+        self.assertEqual(_parse_value('"hello world"'), 'hello world')
+
+    def test_single_quoted(self):
+        self.assertEqual(_parse_value("'hello'"), 'hello')
+
+
+class TestReadFile(unittest.TestCase):
+    """Test hydrate-review-prompt read_file function."""
+
+    def _write_temp(self, content):
+        f = tempfile.NamedTemporaryFile(mode='w', suffix='.txt', delete=False)
+        f.write(content)
+        f.close()
+        self.addCleanup(os.unlink, f.name)
+        return f.name
+
+    def test_reads_existing_file(self):
+        path = self._write_temp("hello world")
+        self.assertEqual(read_file(path), "hello world")
+
+    def test_missing_file_returns_empty(self):
+        self.assertEqual(read_file('/nonexistent/path.txt'), "")
+
+    def test_missing_file_warns_when_requested(self):
+        import io
+        from contextlib import redirect_stderr
+        stderr = io.StringIO()
+        with redirect_stderr(stderr):
+            result = read_file('/nonexistent/path.txt', warn_missing=True)
+        self.assertEqual(result, "")
+        self.assertIn('not found', stderr.getvalue())
+
+    def test_missing_file_exits_when_required(self):
+        with self.assertRaises(SystemExit) as ctx:
+            read_file('/nonexistent/path.txt', required=True)
+        self.assertEqual(ctx.exception.code, 1)
+
+    def test_permission_error_exits_when_required(self):
+        path = self._write_temp("content")
+        os.chmod(path, 0o000)
+        self.addCleanup(os.chmod, path, 0o644)
+        with self.assertRaises(SystemExit) as ctx:
+            read_file(path, required=True)
+        self.assertEqual(ctx.exception.code, 1)
+
+
+class TestDiffResultsEdgeCases(unittest.TestCase):
+    """Additional edge case tests for diff_results."""
+
+    def _make_result(self, findings, counts=None):
+        if counts is None:
+            counts = {'pass': 0, 'fail': len(findings), 'warn': 0, 'skip': 0,
+                      'total': len(findings)}
+        return {'name': 'test', 'findings': findings, 'counts': counts,
+                'ego_lint_version': 'abc', 'timestamp': '2026-01-01'}
+
+    def test_status_change_not_counted_as_new(self):
+        """A finding that changes status (WARN->FAIL) keeps the same ID."""
+        old = [{'id': 'a::1', 'status': 'WARN', 'check': 'a', 'detail': '1'}]
+        new = [{'id': 'a::1', 'status': 'FAIL', 'check': 'a', 'detail': '1'}]
+        result = diff_results(self._make_result(new), self._make_result(old), {})
+        self.assertFalse(result['changed'])
+        self.assertEqual(result['new_findings'], [])
+        self.assertEqual(result['resolved_findings'], [])
+
+
+class TestFixMapDedup(unittest.TestCase):
+    """Test fix suggestion deduplication behavior."""
+
+    def test_duplicate_check_keeps_last_fix(self):
+        """When two findings share a check name, the last fix wins."""
+        lines = [
+            "[FAIL] R-WEB-01  setTimeout in file a.js\n",
+            "[FAIL] R-WEB-01  setTimeout in file b.js\n",
+            "--- FIX SUGGESTIONS ---\n",
+            "  R-WEB-01: Use GLib.timeout_add() instead\n",
+            "------\n",
+        ]
+        findings, metrics, counts, prov = parse_lint_output(lines)
+        # Both findings get the same fix (keyed by check name)
+        for f in findings:
+            self.assertEqual(f['fix'], 'Use GLib.timeout_add() instead')
 
 
 if __name__ == '__main__':
