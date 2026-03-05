@@ -145,6 +145,9 @@ def main():
     try:
         with open(baseline_path) as f:
             baseline = json.load(f)
+    except FileNotFoundError:
+        print(f"Error: baseline file disappeared: {baseline_path}", file=sys.stderr)
+        sys.exit(1)
     except json.JSONDecodeError as e:
         print(f"Error: malformed JSON in {baseline_path}: {e}", file=sys.stderr)
         sys.exit(1)

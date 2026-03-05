@@ -133,9 +133,14 @@ class TestParseLintOutput(unittest.TestCase):
         self.assertIsNone(prov)
 
     def test_metric_non_integer_fallback(self):
+        import io
+        from contextlib import redirect_stderr
+        stderr = io.StringIO()
         lines = ["[METRIC] js-files: unknown\n"]
-        findings, metrics, counts, prov = parse_lint_output(lines)
+        with redirect_stderr(stderr):
+            findings, metrics, counts, prov = parse_lint_output(lines)
         self.assertEqual(metrics['js_files'], 'unknown')
+        self.assertIn("non-integer value for metric 'js-files'", stderr.getvalue())
 
 
 class TestDiffResults(unittest.TestCase):

@@ -95,6 +95,8 @@ def parse_lint_output(lines):
                 try:
                     metrics[key.replace('-', '_')] = int(value)
                 except ValueError:
+                    print(f"Warning: non-integer value for metric '{key}': {value}",
+                          file=sys.stderr)
                     metrics[key.replace('-', '_')] = value
             elif key == 'largest-file':
                 metrics['largest_file'] = value
