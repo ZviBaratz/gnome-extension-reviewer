@@ -349,13 +349,17 @@ print(c['pass'], c['fail'], c['warn'], c['skip'], sep='\t')
         [[ -f "$annotation_file" ]] && diff_args+=("$annotation_file")
         if ! python3 "$DIFF_BASELINES" "${diff_args[@]}" > "$diff_file"; then
             echo "  WARNING: baseline diff failed for $name" >&2
-        fi
-        local _diff_line
-        _diff_line="$(json_extract "$name diff" "
+        elif [[ -s "$diff_file" ]]; then
+            local _diff_line
+            if _diff_line="$(json_extract "$name diff" "
 d = json.load(sys.stdin)
 print(str(d['changed']).lower(), len(d['new_findings']), len(d['resolved_findings']), len(d['unannotated_findings']), sep='\t')
-" < "$diff_file")"
-        IFS=$'\t' read -r changed new_count resolved_count unannotated_count <<< "$_diff_line"
+" < "$diff_file")"; then
+                IFS=$'\t' read -r changed new_count resolved_count unannotated_count <<< "$_diff_line"
+            else
+                echo "  WARNING: failed to parse diff results for $name" >&2
+            fi
+        fi
     fi
 
     if [[ "$changed" == "true" ]]; then
