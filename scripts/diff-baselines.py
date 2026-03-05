@@ -101,8 +101,12 @@ def main():
     baseline_path = sys.argv[2]
     annotation_path = sys.argv[3] if len(sys.argv) > 3 else None
 
-    with open(current_path) as f:
-        current = json.load(f)
+    try:
+        with open(current_path) as f:
+            current = json.load(f)
+    except json.JSONDecodeError as e:
+        print(f"Error: malformed JSON in {current_path}: {e}", file=sys.stderr)
+        sys.exit(1)
 
     if not os.path.isfile(baseline_path):
         # No baseline — everything is new
@@ -123,8 +127,12 @@ def main():
         print()
         return
 
-    with open(baseline_path) as f:
-        baseline = json.load(f)
+    try:
+        with open(baseline_path) as f:
+            baseline = json.load(f)
+    except json.JSONDecodeError as e:
+        print(f"Error: malformed JSON in {baseline_path}: {e}", file=sys.stderr)
+        sys.exit(1)
 
     annotations = parse_annotations(annotation_path)
     result = diff_results(current, baseline, annotations)
