@@ -382,8 +382,8 @@ if [[ "$OPT_REVIEW" == true || "$OPT_REVIEW_CHANGED" == true ]]; then
     # Collect a finished review process and update its status
     collect_review_result() {
         local pid="$1" rname="$2"
-        wait "$pid" 2>/dev/null
-        rc=$?
+        local rc=0 rfile
+        wait "$pid" 2>/dev/null || rc=$?
         if [[ $rc -eq 0 ]]; then
             REVIEW_STATUS["$rname"]="ok"
             echo "  ✓ Review complete: $rname"
