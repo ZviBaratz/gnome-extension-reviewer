@@ -76,10 +76,10 @@ Classification guide:
 The runner handles this automatically when `--review` or `--review-changed` is passed:
 
 1. For each extension (all or changed-only), hydrates `scripts/review-prompt.md` with lint JSON, diff, and annotations
-2. Launches `claude -p` with the hydrated prompt, `--plugin-dir`, `--add-dir`, 10-minute timeout, $2 budget cap
+2. Launches `claude -p` with the hydrated prompt, `--plugin-dir`, `--add-dir`, 10-minute timeout, $4 budget cap
 3. Throttles concurrency to `--parallel N` (default 3) using background subshells + `wait -n`
 4. Saves output to `field-tests/results/<timestamp>/<name>.review.md`
-5. Tracks review status per extension: `ok`, `timeout`, `error`, `skipped`, `dry-run`, `none`
+5. Tracks review status per extension: `ok`, `timeout`, `error`, `skipped`, `excluded`, `dry-run`, `no-report`, `none`
 
 Use `--review-dry-run` to test prompt hydration without invoking Claude. Hydrated prompts are saved to `<name>.review-prompt.md`.
 
