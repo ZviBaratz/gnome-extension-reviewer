@@ -9,6 +9,10 @@
 #     --fetch-only        Only fetch/update extension sources
 #     --no-fetch          Skip fetching, use existing cache/paths
 #     --json              Output summary as JSON instead of table
+#     --review            Run ego-review on all extensions after lint
+#     --review-changed    Run ego-review only on extensions with changed lint results
+#     --parallel N        Max concurrent claude -p sessions (default: 3)
+#     --review-dry-run    Print hydrated prompts without invoking claude -p
 
 set -euo pipefail
 
@@ -24,6 +28,9 @@ EGO_LINT="$ROOT_DIR/ego-lint"
 PARSE_MANIFEST="$SCRIPT_DIR/parse-manifest.py"
 PARSE_RESULTS="$SCRIPT_DIR/parse-lint-results.py"
 DIFF_BASELINES="$SCRIPT_DIR/diff-baselines.py"
+HYDRATE_PROMPT="$SCRIPT_DIR/hydrate-review-prompt.py"
+REVIEW_TEMPLATE="$SCRIPT_DIR/review-prompt.md"
+PLUGIN_DIR="$ROOT_DIR"
 
 # Options
 OPT_UPDATE_BASELINES=false
@@ -31,6 +38,10 @@ OPT_SINGLE_EXT=""
 OPT_FETCH_ONLY=false
 OPT_NO_FETCH=false
 OPT_JSON=false
+OPT_REVIEW=false
+OPT_REVIEW_CHANGED=false
+OPT_PARALLEL=3
+OPT_REVIEW_DRY_RUN=false
 
 while [[ $# -gt 0 ]]; do
     case "$1" in
@@ -40,6 +51,10 @@ while [[ $# -gt 0 ]]; do
         --no-fetch)         OPT_NO_FETCH=true; shift ;;
         --json)             OPT_JSON=true; shift ;;
         --lint-only)        shift ;;  # default behavior
+        --review)           OPT_REVIEW=true; shift ;;
+        --review-changed)   OPT_REVIEW_CHANGED=true; shift ;;
+        --parallel)         OPT_PARALLEL="$2"; shift 2 ;;
+        --review-dry-run)   OPT_REVIEW_DRY_RUN=true; shift ;;
         -h|--help)
             echo "Usage: field-test-runner.sh [OPTIONS]"
             echo "  --lint-only         Only run ego-lint (default)"
@@ -48,11 +63,28 @@ while [[ $# -gt 0 ]]; do
             echo "  --fetch-only        Only fetch/update extension sources"
             echo "  --no-fetch          Skip fetching, use existing cache/paths"
             echo "  --json              Output summary as JSON instead of table"
+            echo "  --review            Run ego-review on all extensions after lint"
+            echo "  --review-changed    Run ego-review only on changed extensions"
+            echo "  --parallel N        Max concurrent claude -p sessions (default: 3)"
+            echo "  --review-dry-run    Print hydrated prompts without invoking claude"
             exit 0
             ;;
         *) echo "Unknown option: $1" >&2; exit 1 ;;
     esac
 done
+
+# --review-dry-run implies --review if neither --review nor --review-changed is set
+if [[ "$OPT_REVIEW_DRY_RUN" == true && "$OPT_REVIEW" != true && "$OPT_REVIEW_CHANGED" != true ]]; then
+    OPT_REVIEW=true
+fi
+
+# Validate review flags
+if [[ "$OPT_REVIEW" == true || "$OPT_REVIEW_CHANGED" == true ]] && [[ "$OPT_REVIEW_DRY_RUN" != true ]]; then
+    if ! command -v claude &>/dev/null; then
+        echo "Error: 'claude' CLI not found. Required for --review/--review-changed." >&2
+        exit 1
+    fi
+fi
 
 # Get ego-lint version
 EGO_LINT_VERSION="$(git -C "$ROOT_DIR" rev-parse --short HEAD 2>/dev/null || echo "unknown")"
@@ -88,6 +120,76 @@ PROCESSED=0
 SKIPPED=0
 CHANGED=0
 
+# Associative arrays for review phase (name → path, name → changed, name → review status)
+declare -A EXT_PATHS
+declare -A EXT_CHANGED
+declare -A REVIEW_STATUS
+
+# Resolve extension path from manifest entry JSON.
+# Sets RESOLVED_PATH on success, returns 1 on failure.
+resolve_ext_path() {
+    local ext_json="$1"
+    local name="$2"
+    local source_type
+    source_type="$(echo "$ext_json" | python3 -c "import json,sys; print(json.load(sys.stdin)['source']['type'])")"
+
+    RESOLVED_PATH=""
+    case "$source_type" in
+        local)
+            RESOLVED_PATH="$(echo "$ext_json" | python3 -c "import json,sys; print(json.load(sys.stdin)['source']['path'])")"
+            if [[ ! -d "$RESOLVED_PATH" ]]; then
+                echo "  SKIP: local path not found: $RESOLVED_PATH"
+                return 1
+            fi
+            ;;
+        github)
+            local repo ref
+            repo="$(echo "$ext_json" | python3 -c "import json,sys; print(json.load(sys.stdin)['source']['repo'])")"
+            ref="$(echo "$ext_json" | python3 -c "import json,sys; s=json.load(sys.stdin)['source']; print(s.get('ref', ''))")"
+            RESOLVED_PATH="$CACHE_DIR/$name"
+
+            if [[ "$OPT_NO_FETCH" != true ]] && [[ ! -d "$RESOLVED_PATH" ]]; then
+                echo "  Fetching from github: $repo..."
+                if ! git clone --depth 1 "https://github.com/$repo.git" "$RESOLVED_PATH" 2>/dev/null; then
+                    echo "  SKIP: failed to clone $repo"
+                    return 1
+                fi
+                if [[ -n "$ref" ]]; then
+                    git -C "$RESOLVED_PATH" fetch --depth 1 origin "$ref" 2>/dev/null
+                    git -C "$RESOLVED_PATH" checkout "$ref" 2>/dev/null || true
+                fi
+            fi
+            if [[ ! -d "$RESOLVED_PATH" ]]; then
+                echo "  SKIP: cache not found (run without --no-fetch)"
+                return 1
+            fi
+            ;;
+        github-release)
+            local repo tag
+            repo="$(echo "$ext_json" | python3 -c "import json,sys; print(json.load(sys.stdin)['source']['repo'])")"
+            tag="$(echo "$ext_json" | python3 -c "import json,sys; print(json.load(sys.stdin)['source']['tag'])")"
+            RESOLVED_PATH="$CACHE_DIR/$name"
+
+            if [[ "$OPT_NO_FETCH" != true ]] && [[ ! -d "$RESOLVED_PATH" ]]; then
+                echo "  Fetching from github release: $repo@$tag..."
+                if ! git clone --depth 1 --branch "$tag" "https://github.com/$repo.git" "$RESOLVED_PATH" 2>/dev/null; then
+                    echo "  SKIP: failed to clone $repo@$tag"
+                    return 1
+                fi
+            fi
+            if [[ ! -d "$RESOLVED_PATH" ]]; then
+                echo "  SKIP: cache not found (run without --no-fetch)"
+                return 1
+            fi
+            ;;
+        *)
+            echo "  SKIP: unknown source type: $source_type"
+            return 1
+            ;;
+    esac
+    return 0
+}
+
 process_extension() {
     local idx="$1"
     local ext_json
@@ -97,10 +199,9 @@ exts = json.load(sys.stdin)
 print(json.dumps(exts[$idx]))
 ")"
 
-    local name uuid source_type ego_approved
+    local name uuid ego_approved
     name="$(echo "$ext_json" | python3 -c "import json,sys; print(json.load(sys.stdin)['name'])")"
     uuid="$(echo "$ext_json" | python3 -c "import json,sys; print(json.load(sys.stdin)['uuid'])")"
-    source_type="$(echo "$ext_json" | python3 -c "import json,sys; print(json.load(sys.stdin)['source']['type'])")"
     ego_approved="$(echo "$ext_json" | python3 -c "import json,sys; print('true' if json.load(sys.stdin).get('ego_approved', False) else 'false')")"
 
     # Filter by --extension if specified
@@ -111,60 +212,10 @@ print(json.dumps(exts[$idx]))
     echo "--- $name ($uuid) ---"
 
     # Resolve extension path
-    local ext_path=""
-    case "$source_type" in
-        local)
-            ext_path="$(echo "$ext_json" | python3 -c "import json,sys; print(json.load(sys.stdin)['source']['path'])")"
-            if [[ ! -d "$ext_path" ]]; then
-                echo "  SKIP: local path not found: $ext_path"
-                return 1
-            fi
-            ;;
-        github)
-            local repo ref
-            repo="$(echo "$ext_json" | python3 -c "import json,sys; print(json.load(sys.stdin)['source']['repo'])")"
-            ref="$(echo "$ext_json" | python3 -c "import json,sys; s=json.load(sys.stdin)['source']; print(s.get('ref', ''))")"
-            ext_path="$CACHE_DIR/$name"
-
-            if [[ "$OPT_NO_FETCH" != true ]] && [[ ! -d "$ext_path" ]]; then
-                echo "  Fetching from github: $repo..."
-                if ! git clone --depth 1 "https://github.com/$repo.git" "$ext_path" 2>/dev/null; then
-                    echo "  SKIP: failed to clone $repo"
-                    return 1
-                fi
-                if [[ -n "$ref" ]]; then
-                    git -C "$ext_path" fetch --depth 1 origin "$ref" 2>/dev/null
-                    git -C "$ext_path" checkout "$ref" 2>/dev/null || true
-                fi
-            fi
-            if [[ ! -d "$ext_path" ]]; then
-                echo "  SKIP: cache not found (run without --no-fetch)"
-                return 1
-            fi
-            ;;
-        github-release)
-            local repo tag
-            repo="$(echo "$ext_json" | python3 -c "import json,sys; print(json.load(sys.stdin)['source']['repo'])")"
-            tag="$(echo "$ext_json" | python3 -c "import json,sys; print(json.load(sys.stdin)['source']['tag'])")"
-            ext_path="$CACHE_DIR/$name"
-
-            if [[ "$OPT_NO_FETCH" != true ]] && [[ ! -d "$ext_path" ]]; then
-                echo "  Fetching from github release: $repo@$tag..."
-                if ! git clone --depth 1 --branch "$tag" "https://github.com/$repo.git" "$ext_path" 2>/dev/null; then
-                    echo "  SKIP: failed to clone $repo@$tag"
-                    return 1
-                fi
-            fi
-            if [[ ! -d "$ext_path" ]]; then
-                echo "  SKIP: cache not found (run without --no-fetch)"
-                return 1
-            fi
-            ;;
-        *)
-            echo "  SKIP: unknown source type: $source_type"
-            return 1
-            ;;
-    esac
+    if ! resolve_ext_path "$ext_json" "$name"; then
+        return 1
+    fi
+    local ext_path="$RESOLVED_PATH"
 
     if [[ "$OPT_FETCH_ONLY" == true ]]; then
         echo "  OK: source available at $ext_path"
@@ -261,6 +312,10 @@ print(json.dumps(entry))
     # Store summary entry
     SUMMARY_ENTRIES+=("$name|$pass|$fail|$warn|$skip|$changed|$new_count|$resolved_count|$unannotated_count")
 
+    # Track for review phase
+    EXT_PATHS["$name"]="$ext_path"
+    EXT_CHANGED["$name"]="$changed"
+
     return 0
 }
 
@@ -272,17 +327,155 @@ for idx in $(seq 0 $((EXT_COUNT - 1))); do
     echo ""
 done
 
+# ── Review Phase ──────────────────────────────────────────────────────
+
+if [[ "$OPT_REVIEW" == true || "$OPT_REVIEW_CHANGED" == true ]]; then
+    echo "================================================================"
+    echo "  Review Phase"
+    echo "  Mode: $( [[ "$OPT_REVIEW" == true ]] && echo "all" || echo "changed-only" )"
+    echo "  Parallel: $OPT_PARALLEL"
+    [[ "$OPT_REVIEW_DRY_RUN" == true ]] && echo "  *** DRY RUN — no claude invocations ***"
+    echo "================================================================"
+    echo ""
+
+    REVIEW_PIDS=()
+    REVIEW_NAMES=()
+
+    for name in "${!EXT_PATHS[@]}"; do
+        ext_path="${EXT_PATHS[$name]}"
+        changed="${EXT_CHANGED[$name]}"
+
+        # Filter: --review-changed skips unchanged extensions
+        if [[ "$OPT_REVIEW_CHANGED" == true && "$changed" != "true" ]]; then
+            REVIEW_STATUS["$name"]="skipped"
+            echo "  SKIP (unchanged): $name"
+            continue
+        fi
+
+        local_lint="$RESULTS_DIR/$name.lint.json"
+        local_diff="$RESULTS_DIR/$name.diff.json"
+        local_ann="$ANNOTATIONS_DIR/$name.yaml"
+        review_file="$RESULTS_DIR/$name.review.md"
+        err_file="$RESULTS_DIR/$name.review.err"
+
+        # Build hydration args
+        hydrate_args=(
+            --name "$name"
+            --ext-path "$ext_path"
+            --lint-json "$local_lint"
+            --plugin-dir "$PLUGIN_DIR"
+            --template "$REVIEW_TEMPLATE"
+        )
+        [[ -f "$local_diff" ]] && hydrate_args+=(--diff-json "$local_diff")
+        [[ -f "$local_ann" ]] && hydrate_args+=(--annotations "$local_ann")
+
+        prompt="$(python3 "$HYDRATE_PROMPT" "${hydrate_args[@]}")"
+
+        if [[ "$OPT_REVIEW_DRY_RUN" == true ]]; then
+            echo "  DRY RUN: $name"
+            echo "$prompt" > "$RESULTS_DIR/$name.review-prompt.md"
+            REVIEW_STATUS["$name"]="dry-run"
+            continue
+        fi
+
+        echo "  Launching review: $name"
+
+        # Launch claude -p in background subshell
+        (
+            timeout 600 claude -p \
+                --plugin-dir "$PLUGIN_DIR" \
+                --add-dir "$ext_path" \
+                --dangerously-skip-permissions \
+                --max-budget-usd 2.00 \
+                "$prompt" > "$review_file" 2>"$err_file"
+        ) &
+        REVIEW_PIDS+=($!)
+        REVIEW_NAMES+=("$name")
+
+        # Throttle at concurrency cap
+        if [[ ${#REVIEW_PIDS[@]} -ge $OPT_PARALLEL ]]; then
+            wait -n 2>/dev/null || true
+            # Collect finished processes
+            local new_pids=() new_names=()
+            for i in "${!REVIEW_PIDS[@]}"; do
+                if kill -0 "${REVIEW_PIDS[$i]}" 2>/dev/null; then
+                    new_pids+=("${REVIEW_PIDS[$i]}")
+                    new_names+=("${REVIEW_NAMES[$i]}")
+                else
+                    wait "${REVIEW_PIDS[$i]}" 2>/dev/null
+                    rc=$?
+                    rname="${REVIEW_NAMES[$i]}"
+                    if [[ $rc -eq 0 ]]; then
+                        REVIEW_STATUS["$rname"]="ok"
+                        echo "  ✓ Review complete: $rname"
+                    elif [[ $rc -eq 124 ]]; then
+                        REVIEW_STATUS["$rname"]="timeout"
+                        echo "  ✗ Review timeout: $rname"
+                    else
+                        REVIEW_STATUS["$rname"]="error"
+                        echo "  ✗ Review error (exit $rc): $rname"
+                    fi
+                fi
+            done
+            REVIEW_PIDS=("${new_pids[@]}")
+            REVIEW_NAMES=("${new_names[@]}")
+        fi
+    done
+
+    # Wait for remaining review processes
+    for i in "${!REVIEW_PIDS[@]}"; do
+        wait "${REVIEW_PIDS[$i]}" 2>/dev/null
+        rc=$?
+        rname="${REVIEW_NAMES[$i]}"
+        if [[ $rc -eq 0 ]]; then
+            REVIEW_STATUS["$rname"]="ok"
+            echo "  ✓ Review complete: $rname"
+        elif [[ $rc -eq 124 ]]; then
+            REVIEW_STATUS["$rname"]="timeout"
+            echo "  ✗ Review timeout: $rname"
+        else
+            REVIEW_STATUS["$rname"]="error"
+            echo "  ✗ Review error (exit $rc): $rname"
+        fi
+    done
+
+    echo ""
+fi
+
 # Build summary JSON (used for both file output and --json flag)
+# Build review status JSON for merging into summary
+REVIEW_STATUS_LINES=""
+for k in "${!REVIEW_STATUS[@]}"; do
+    REVIEW_STATUS_LINES+="$k|${REVIEW_STATUS[$k]}"$'\n'
+done
+if [[ -n "$REVIEW_STATUS_LINES" ]]; then
+    REVIEW_STATUS_JSON="$(python3 -c "
+import json, sys
+status = {}
+for line in sys.stdin:
+    line = line.strip()
+    if not line:
+        continue
+    k, v = line.split('|', 1)
+    status[k] = v
+print(json.dumps(status))
+" <<< "$REVIEW_STATUS_LINES")"
+else
+    REVIEW_STATUS_JSON="{}"
+fi
+
 ENTRIES_JSON="$(python3 -c "
 import json, sys
+review_status = json.loads(sys.argv[1])
 entries = []
 for line in sys.stdin:
     line = line.strip()
     if not line:
         continue
     parts = line.split('|')
-    entries.append({
-        'name': parts[0],
+    name = parts[0]
+    entry = {
+        'name': name,
         'counts': {
             'pass': int(parts[1]),
             'fail': int(parts[2]),
@@ -293,9 +486,11 @@ for line in sys.stdin:
         'new': int(parts[6]),
         'resolved': int(parts[7]),
         'unannotated': int(parts[8]),
-    })
+        'review_status': review_status.get(name, 'none'),
+    }
+    entries.append(entry)
 print(json.dumps(entries))
-" <<< "$(printf '%s\n' "${SUMMARY_ENTRIES[@]}")")"
+" "$REVIEW_STATUS_JSON" <<< "$(printf '%s\n' "${SUMMARY_ENTRIES[@]}")")"
 
 SUMMARY_JSON="$(python3 -c "
 import json, sys
