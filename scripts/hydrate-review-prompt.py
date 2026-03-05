@@ -12,18 +12,27 @@ import json
 import sys
 
 
-def read_file(path, warn_missing=False):
-    """Read file contents, return empty string if missing."""
+def read_file(path, warn_missing=False, required=False):
+    """Read file contents, return empty string if missing.
+
+    If required=True, exit on any read error (for explicitly-provided paths).
+    """
     try:
         with open(path) as f:
             return f.read()
     except FileNotFoundError:
+        if required:
+            print(f"Error: file not found: {path}", file=sys.stderr)
+            sys.exit(1)
         if warn_missing:
             print(f"Warning: file not found: {path}", file=sys.stderr)
         return ""
     except (PermissionError, OSError) as e:
-        if warn_missing:
-            print(f"Warning: cannot read {path}: {e}", file=sys.stderr)
+        if required or warn_missing:
+            print(f"{'Error' if required else 'Warning'}: cannot read {path}: {e}",
+                  file=sys.stderr)
+        if required:
+            sys.exit(1)
         return ""
 
 
@@ -38,20 +47,13 @@ def main():
     parser.add_argument("--template", required=True, help="Path to prompt template")
     args = parser.parse_args()
 
-    template = read_file(args.template, warn_missing=True)
-    if not template:
-        print(f"Error: cannot read template: {args.template}", file=sys.stderr)
-        sys.exit(1)
-
-    lint_json = read_file(args.lint_json, warn_missing=True)
-    if not lint_json:
-        print(f"Error: cannot read lint JSON: {args.lint_json}", file=sys.stderr)
-        sys.exit(1)
+    template = read_file(args.template, required=True)
+    lint_json = read_file(args.lint_json, required=True)
 
     # Build diff section
     diff_section = ""
     if args.diff_json:
-        diff_content = read_file(args.diff_json, warn_missing=True)
+        diff_content = read_file(args.diff_json, required=True)
         if diff_content:
             diff_section = (
                 "## Baseline Comparison (Diff)\n\n"
@@ -65,7 +67,7 @@ def main():
     # Build annotations section
     ann_section = ""
     if args.annotations:
-        ann_content = read_file(args.annotations, warn_missing=True)
+        ann_content = read_file(args.annotations, required=True)
         if ann_content:
             ann_section = (
                 "## Known Finding Classifications\n\n"
