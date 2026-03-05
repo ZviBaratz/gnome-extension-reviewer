@@ -641,6 +641,18 @@ for assertion_file in "$ASSERTIONS_DIR"/*.sh; do
     source "$assertion_file"
 done
 
+# --- Python unit tests ---
+echo "=== Python unit tests ==="
+TESTS_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+if python3 -m unittest discover "$TESTS_DIR" -p 'test_*.py' 2>&1; then
+    echo -e "  ${GREEN}✓${NC} Python unit tests passed"
+    PASS_COUNT=$((PASS_COUNT + 1))
+else
+    echo -e "  ${RED}✗${NC} Python unit tests failed"
+    FAIL_COUNT=$((FAIL_COUNT + 1))
+fi
+echo ""
+
 # --- Summary ---
 echo "============================================"
 echo "  Results: $PASS_COUNT passed, $FAIL_COUNT failed"
