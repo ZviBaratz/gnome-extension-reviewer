@@ -31,6 +31,9 @@ def parse_annotations(path):
             if stripped.startswith('- '):
                 rest = stripped[2:].strip()
                 if rest.startswith('id:'):
+                    if current_id is not None and current_id not in annotations:
+                        print(f"Warning: annotation '{current_id}' has no classification",
+                              file=sys.stderr)
                     val = rest[3:].strip().strip('"').strip("'")
                     current_id = val
                 continue
