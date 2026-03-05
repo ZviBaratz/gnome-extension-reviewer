@@ -142,38 +142,39 @@ declare -A REVIEW_STATUS
 resolve_ext_path() {
     local ext_json="$1"
     local name="$2"
-    local source_type
-    source_type="$(echo "$ext_json" | python3 -c "import json,sys; print(json.load(sys.stdin)['source']['type'])")"
+    local source_type source_path source_repo source_ref
+    read -r source_type source_path source_repo source_ref < <(echo "$ext_json" | python3 -c "
+import json, sys
+s = json.load(sys.stdin).get('source', {})
+print(s.get('type',''), s.get('path',''), s.get('repo',''), s.get('ref', s.get('tag','')))
+")
 
     RESOLVED_PATH=""
     case "$source_type" in
         local)
-            RESOLVED_PATH="$(echo "$ext_json" | python3 -c "import json,sys; print(json.load(sys.stdin)['source']['path'])")"
+            RESOLVED_PATH="$source_path"
             if [[ ! -d "$RESOLVED_PATH" ]]; then
                 echo "  SKIP: local path not found: $RESOLVED_PATH"
                 return 1
             fi
             ;;
         github)
-            local repo ref
-            repo="$(echo "$ext_json" | python3 -c "import json,sys; print(json.load(sys.stdin)['source']['repo'])")"
-            ref="$(echo "$ext_json" | python3 -c "import json,sys; s=json.load(sys.stdin)['source']; print(s.get('ref', ''))")"
             RESOLVED_PATH="$CACHE_DIR/$name"
 
             if [[ "$OPT_NO_FETCH" != true ]] && [[ ! -d "$RESOLVED_PATH" ]]; then
-                echo "  Fetching from github: $repo..."
-                if ! git clone --depth 1 "https://github.com/$repo.git" "$RESOLVED_PATH" 2>/dev/null; then
-                    echo "  SKIP: failed to clone $repo"
+                echo "  Fetching from github: $source_repo..."
+                if ! git clone --depth 1 "https://github.com/$source_repo.git" "$RESOLVED_PATH" 2>/dev/null; then
+                    echo "  SKIP: failed to clone $source_repo"
                     return 1
                 fi
-                if [[ -n "$ref" ]]; then
-                    if ! git -C "$RESOLVED_PATH" fetch --depth 1 origin "$ref" 2>&1; then
-                        echo "  SKIP: failed to fetch ref $ref from $repo"
+                if [[ -n "$source_ref" ]]; then
+                    if ! git -C "$RESOLVED_PATH" fetch --depth 1 origin "$source_ref" 2>&1; then
+                        echo "  SKIP: failed to fetch ref $source_ref from $source_repo"
                         rm -rf "$RESOLVED_PATH"
                         return 1
                     fi
                     if ! git -C "$RESOLVED_PATH" checkout FETCH_HEAD 2>&1; then
-                        echo "  SKIP: failed to checkout ref $ref"
+                        echo "  SKIP: failed to checkout ref $source_ref"
                         rm -rf "$RESOLVED_PATH"
                         return 1
                     fi
@@ -185,15 +186,12 @@ resolve_ext_path() {
             fi
             ;;
         github-release)
-            local repo tag
-            repo="$(echo "$ext_json" | python3 -c "import json,sys; print(json.load(sys.stdin)['source']['repo'])")"
-            tag="$(echo "$ext_json" | python3 -c "import json,sys; print(json.load(sys.stdin)['source']['tag'])")"
             RESOLVED_PATH="$CACHE_DIR/$name"
 
             if [[ "$OPT_NO_FETCH" != true ]] && [[ ! -d "$RESOLVED_PATH" ]]; then
-                echo "  Fetching from github release: $repo@$tag..."
-                if ! git clone --depth 1 --branch "$tag" "https://github.com/$repo.git" "$RESOLVED_PATH" 2>/dev/null; then
-                    echo "  SKIP: failed to clone $repo@$tag"
+                echo "  Fetching from github release: $source_repo@$source_ref..."
+                if ! git clone --depth 1 --branch "$source_ref" "https://github.com/$source_repo.git" "$RESOLVED_PATH" 2>/dev/null; then
+                    echo "  SKIP: failed to clone $source_repo@$source_ref"
                     return 1
                 fi
             fi
@@ -220,9 +218,11 @@ print(json.dumps(exts[$idx]))
 ")"
 
     local name uuid ego_approved
-    name="$(echo "$ext_json" | python3 -c "import json,sys; print(json.load(sys.stdin)['name'])")"
-    uuid="$(echo "$ext_json" | python3 -c "import json,sys; print(json.load(sys.stdin)['uuid'])")"
-    ego_approved="$(echo "$ext_json" | python3 -c "import json,sys; print('true' if json.load(sys.stdin).get('ego_approved', False) else 'false')")"
+    read -r name uuid ego_approved < <(echo "$ext_json" | python3 -c "
+import json, sys
+d = json.load(sys.stdin)
+print(d['name'], d['uuid'], 'true' if d.get('ego_approved', False) else 'false')
+")
 
     # Filter by --extension / --exclude if specified
     if [[ -n "$OPT_SINGLE_EXT" && "$name" != "$OPT_SINGLE_EXT" ]]; then
@@ -269,10 +269,12 @@ print(json.dumps(exts[$idx]))
 
     # Extract counts
     local pass fail warn skip
-    pass="$(python3 -c "import json; d=json.load(open('$result_file')); print(d['counts']['pass'])")"
-    fail="$(python3 -c "import json; d=json.load(open('$result_file')); print(d['counts']['fail'])")"
-    warn="$(python3 -c "import json; d=json.load(open('$result_file')); print(d['counts']['warn'])")"
-    skip="$(python3 -c "import json; d=json.load(open('$result_file')); print(d['counts']['skip'])")"
+    read -r pass fail warn skip < <(python3 -c "
+import json, sys
+d = json.load(sys.stdin)
+c = d['counts']
+print(c['pass'], c['fail'], c['warn'], c['skip'])
+" < "$result_file")
 
     TOTAL_PASS=$((TOTAL_PASS + pass))
     TOTAL_FAIL=$((TOTAL_FAIL + fail))
@@ -291,10 +293,11 @@ print(json.dumps(exts[$idx]))
         local ann_arg=""
         [[ -f "$annotation_file" ]] && ann_arg="$annotation_file"
         python3 "$DIFF_BASELINES" "$result_file" "$baseline_file" $ann_arg > "$diff_file"
-        changed="$(python3 -c "import json; print(str(json.load(open('$diff_file'))['changed']).lower())")"
-        new_count="$(python3 -c "import json; print(len(json.load(open('$diff_file'))['new_findings']))")"
-        resolved_count="$(python3 -c "import json; print(len(json.load(open('$diff_file'))['resolved_findings']))")"
-        unannotated_count="$(python3 -c "import json; print(len(json.load(open('$diff_file'))['unannotated_findings']))")"
+        read -r changed new_count resolved_count unannotated_count < <(python3 -c "
+import json, sys
+d = json.load(sys.stdin)
+print(str(d['changed']).lower(), len(d['new_findings']), len(d['resolved_findings']), len(d['unannotated_findings']))
+" < "$diff_file")
     fi
 
     if [[ "$changed" == "true" ]]; then
@@ -322,17 +325,17 @@ print(json.dumps(exts[$idx]))
 
     # Append to history
     python3 -c "
-import json
+import json, sys
+date, name, version, exit_code, p, f, w, s, changed = sys.argv[1:]
 entry = {
-    'date': '$TIMESTAMP',
-    'name': '$name',
-    'ego_lint_version': '$EGO_LINT_VERSION',
-    'exit_code': $exit_code,
-    'counts': {'pass': $pass, 'fail': $fail, 'warn': $warn, 'skip': $skip},
-    'changed': $([[ "$changed" == "true" ]] && echo "True" || echo "False"),
+    'date': date, 'name': name, 'ego_lint_version': version,
+    'exit_code': int(exit_code),
+    'counts': {'pass': int(p), 'fail': int(f), 'warn': int(w), 'skip': int(s)},
+    'changed': changed == 'true',
 }
 print(json.dumps(entry))
-" >> "$HISTORY_FILE"
+" "$TIMESTAMP" "$name" "$EGO_LINT_VERSION" "$exit_code" \
+  "$pass" "$fail" "$warn" "$skip" "$changed" >> "$HISTORY_FILE"
 
     # Store summary entry
     SUMMARY_ENTRIES+=("$name|$pass|$fail|$warn|$skip|$changed|$new_count|$resolved_count|$unannotated_count")
@@ -564,23 +567,17 @@ print(json.dumps(entries))
 SUMMARY_JSON="$(python3 -c "
 import json, sys
 extensions = json.loads(sys.argv[1])
+ts, version, processed, skipped, changed = sys.argv[2:7]
+tp, tf, tw, tsk, results_dir = sys.argv[7:]
 summary = {
-    'timestamp': '$TIMESTAMP',
-    'ego_lint_version': '$EGO_LINT_VERSION',
-    'processed': $PROCESSED,
-    'skipped': $SKIPPED,
-    'changed': $CHANGED,
-    'totals': {
-        'pass': $TOTAL_PASS,
-        'fail': $TOTAL_FAIL,
-        'warn': $TOTAL_WARN,
-        'skip': $TOTAL_SKIP,
-    },
-    'extensions': extensions,
-    'results_dir': '$RESULTS_DIR',
+    'timestamp': ts, 'ego_lint_version': version,
+    'processed': int(processed), 'skipped': int(skipped), 'changed': int(changed),
+    'totals': {'pass': int(tp), 'fail': int(tf), 'warn': int(tw), 'skip': int(tsk)},
+    'extensions': extensions, 'results_dir': results_dir,
 }
 print(json.dumps(summary, indent=2))
-" "$ENTRIES_JSON")"
+" "$ENTRIES_JSON" "$TIMESTAMP" "$EGO_LINT_VERSION" "$PROCESSED" "$SKIPPED" "$CHANGED" \
+  "$TOTAL_PASS" "$TOTAL_FAIL" "$TOTAL_WARN" "$TOTAL_SKIP" "$RESULTS_DIR")"
 
 echo "$SUMMARY_JSON" > "$RESULTS_DIR/summary.json"
 
