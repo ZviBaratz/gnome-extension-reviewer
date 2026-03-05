@@ -482,23 +482,27 @@ if [[ "$OPT_REVIEW" == true || "$OPT_REVIEW_CHANGED" == true ]]; then
         REVIEW_PIDS+=($!)
         REVIEW_NAMES+=("$name")
 
-        # Throttle at concurrency cap
-        if [[ ${#REVIEW_PIDS[@]} -ge $OPT_PARALLEL ]]; then
-            wait -n 2>/dev/null || true
-            # Collect finished processes
+        # Throttle at concurrency cap — poll for completion instead of wait -n
+        # to avoid reaping PIDs before collect_review_result can read exit codes
+        while [[ ${#REVIEW_PIDS[@]} -ge $OPT_PARALLEL ]]; do
             new_pids=()
             new_names=()
+            collected=false
             for i in "${!REVIEW_PIDS[@]}"; do
                 if kill -0 "${REVIEW_PIDS[$i]}" 2>/dev/null; then
                     new_pids+=("${REVIEW_PIDS[$i]}")
                     new_names+=("${REVIEW_NAMES[$i]}")
                 else
                     collect_review_result "${REVIEW_PIDS[$i]}" "${REVIEW_NAMES[$i]}"
+                    collected=true
                 fi
             done
-            REVIEW_PIDS=("${new_pids[@]}")
-            REVIEW_NAMES=("${new_names[@]}")
-        fi
+            REVIEW_PIDS=("${new_pids[@]+"${new_pids[@]}"}")
+            REVIEW_NAMES=("${new_names[@]+"${new_names[@]}"}")
+            if [[ "$collected" != true ]]; then
+                sleep 1
+            fi
+        done
     done
 
     # Wait for remaining review processes
