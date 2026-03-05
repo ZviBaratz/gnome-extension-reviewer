@@ -113,6 +113,9 @@ def main():
     try:
         with open(current_path) as f:
             current = json.load(f)
+    except FileNotFoundError:
+        print(f"Error: file not found: {current_path}", file=sys.stderr)
+        sys.exit(1)
     except json.JSONDecodeError as e:
         print(f"Error: malformed JSON in {current_path}: {e}", file=sys.stderr)
         sys.exit(1)
