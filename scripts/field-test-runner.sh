@@ -559,7 +559,7 @@ for line in sys.stdin:
     }
     entries.append(entry)
 print(json.dumps(entries))
-" "$REVIEW_STATUS_JSON" <<< "$(printf '%s\n' "${SUMMARY_ENTRIES[@]}")")"
+" "$REVIEW_STATUS_JSON" <<< "$(printf '%s\n' "${SUMMARY_ENTRIES[@]+"${SUMMARY_ENTRIES[@]}"}")")"
 
 SUMMARY_JSON="$(python3 -c "
 import json, sys
