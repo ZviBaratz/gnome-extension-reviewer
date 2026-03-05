@@ -60,6 +60,11 @@ for _req_script in "$EGO_LINT" "$PARSE_MANIFEST" "$PARSE_RESULTS" "$DIFF_BASELIN
     fi
 done
 
+if [[ ! -f "$MANIFEST" ]]; then
+    echo "Error: manifest not found: $MANIFEST" >&2
+    exit 1
+fi
+
 # Options
 OPT_UPDATE_BASELINES=false
 OPT_SINGLE_EXT=""
