@@ -263,19 +263,13 @@ print(d['name'], d['uuid'], 'true' if d.get('ego_approved', False) else 'false',
     exit_code="${exit_code:-0}"
 
     # Parse results to JSON
-    local approved_flag=""
-    if [[ "$ego_approved" == "true" ]]; then
-        approved_flag="--ego-approved"
-    fi
+    local parse_args=(--name "$name" --uuid "$uuid")
+    [[ "$ego_approved" == "true" ]] && parse_args+=(--ego-approved)
+    parse_args+=(--exit-code "$exit_code" --version "$EGO_LINT_VERSION")
 
     local result_file="$RESULTS_DIR/$name.lint.json"
     echo "$lint_output" | python3 "$PARSE_RESULTS" \
-        --name "$name" \
-        --uuid "$uuid" \
-        $approved_flag \
-        --exit-code "$exit_code" \
-        --version "$EGO_LINT_VERSION" \
-        > "$result_file"
+        "${parse_args[@]}" > "$result_file"
 
     # Extract counts
     local pass fail warn skip _counts_line
@@ -301,9 +295,9 @@ print(c['pass'], c['fail'], c['warn'], c['skip'], sep='\t')
     local new_count=0 resolved_count=0 unannotated_count=0
 
     if [[ -f "$baseline_file" ]]; then
-        local ann_arg=""
-        [[ -f "$annotation_file" ]] && ann_arg="$annotation_file"
-        python3 "$DIFF_BASELINES" "$result_file" "$baseline_file" $ann_arg > "$diff_file"
+        local diff_args=("$result_file" "$baseline_file")
+        [[ -f "$annotation_file" ]] && diff_args+=("$annotation_file")
+        python3 "$DIFF_BASELINES" "${diff_args[@]}" > "$diff_file"
         local _diff_line
         _diff_line="$(python3 -c "
 import json, sys
