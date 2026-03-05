@@ -2065,6 +2065,15 @@ Rules for APIs removed or changed in specific GNOME Shell versions. These rules 
 - **Fix**: In `disable()`, call `Gio.bus_unown_name(this._ownerId)`.
 - **Tested by**: `tests/fixtures/bus-name-leak@test/`
 
+### R-LIFE-21: GSettings signal leak (bare connect without disconnect)
+- **Severity**: blocking
+- **Checked by**: check-lifecycle.py
+- **Rule**: `settings.connect('changed::...')` calls where the return value is not stored (no `=` before `.connect` on the line) and no auto-cleanup mechanism (`disconnectObject`, `connectObject`, `SignalTracker`, `connectSmart`) is present in the extension.
+- **Rationale**: Without a stored signal ID, there is no way to call `.disconnect(id)` later. These handlers accumulate across enable/disable cycles, causing duplicate callbacks, memory leaks, and potential crashes. This is the highest-impact gap found in field testing — 4 of 10 extensions had this issue.
+- **Fix**: Use `connectObject()` (recommended — auto-disconnects via `disconnectObject(this)` in disable) or store the return value and call `disconnect(id)` in `disable()`.
+- **Scope exclusions**: prefs.js (manages own lifecycle), `service/` directory (daemon lifecycle).
+- **Tested by**: `tests/fixtures/gsettings-bare-connect@test/`
+
 ---
 
 ## Security (R-SEC) — continued

@@ -8,3 +8,4 @@ assert_output_contains "widget not destroyed in disable()" "\[WARN\].*lifecycle/
 echo "=== settings-no-null ==="
 run_lint "settings-no-null@test"
 assert_output_contains "settings not nulled in disable()" "\[WARN\].*lifecycle/settings-cleanup"
+assert_output_not_contains "no gsettings-signal-leak FP (stored ID)" "\[FAIL\].*lifecycle/gsettings-signal-leak"

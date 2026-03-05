@@ -4,8 +4,11 @@ import {Extension} from 'resource:///org/gnome/shell/extensions/extension.js';
 export default class TimeoutReassignExtension extends Extension {
     enable() {
         this._settings = this.getSettings();
-        this._settings.connect('changed::interval', () => this._scheduleUpdate());
-        this._settings.connect('changed::mode', () => this._scheduleRefresh());
+        this._settings.connectObject(
+            'changed::interval', () => this._scheduleUpdate(),
+            'changed::mode', () => this._scheduleRefresh(),
+            this
+        );
     }
 
     _scheduleUpdate() {
@@ -28,6 +31,7 @@ export default class TimeoutReassignExtension extends Extension {
     _refreshUI() {}
 
     disable() {
+        this._settings.disconnectObject(this);
         if (this._timerId) {
             GLib.Source.remove(this._timerId);
             this._timerId = null;
