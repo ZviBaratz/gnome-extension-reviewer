@@ -371,6 +371,15 @@ if [[ "$OPT_REVIEW" == true || "$OPT_REVIEW_CHANGED" == true ]]; then
     REVIEW_PIDS=()
     REVIEW_NAMES=()
 
+    # Kill orphaned background claude sessions on interrupt/exit
+    cleanup_reviews() {
+        for pid in "${REVIEW_PIDS[@]+"${REVIEW_PIDS[@]}"}"; do
+            kill "$pid" 2>/dev/null || true
+        done
+        wait 2>/dev/null || true
+    }
+    trap cleanup_reviews EXIT INT TERM
+
     for name in "${!EXT_PATHS[@]}"; do
         ext_path="${EXT_PATHS[$name]}"
         changed="${EXT_CHANGED[$name]}"
