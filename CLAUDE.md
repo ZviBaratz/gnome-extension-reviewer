@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-Claude Code plugin for GNOME Shell extension EGO (extensions.gnome.org) review compliance. It provides five skills (`ego-lint`, `ego-review`, `ego-scaffold`, `ego-simulate`, `ego-submit`). This is **not** a GNOME extension itself — it's a set of tools that validate GNOME extensions against EGO submission requirements. Load it with `claude --plugin-dir <path-to-this-repo>`.
+Claude Code plugin for GNOME Shell extension EGO (extensions.gnome.org) review compliance. It provides six skills (`ego-lint`, `ego-review`, `ego-scaffold`, `ego-simulate`, `ego-submit`, `ego-field-test`). This is **not** a GNOME extension itself — it's a set of tools that validate GNOME extensions against EGO submission requirements. Load it with `claude --plugin-dir <path-to-this-repo>`.
 
 ## Running ego-lint
 
@@ -77,7 +77,7 @@ Additional tooling:
 ### Three-tier rule system
 
 - **Tier 1 (patterns.yaml)**: 124 regex rules in YAML, processed by `apply-patterns.py`. Covers web APIs, deprecated APIs, security (telemetry, curl/gsettings spawn, base64), logging, import segregation, AI slop signals, subprocess safety, i18n, GSettings bind flags, GNOME 44-50 migration, code quality advisories. Add new rules by editing `rules/patterns.yaml`. Advanced fields: `min-version`/`max-version` (version-gating), `guard-pattern` + `guard-window` (line-level suppression with configurable lookback) + `guard-window-forward` (forward peeking), `replacement-pattern` (file-level suppression), `exclude-dirs`, `skip-comments` (comment-aware matching).
-- **Tier 2 (scripts)**: 17 structural heuristic check scripts in Python/bash. `check-quality.py` (AI slop heuristics), `check-init.py` (init-time safety), `check-lifecycle.py` (enable/disable symmetry + timeout verification), `check-resources.py` + `build-resource-graph.py` (cross-file resource tracking), `check-disclosures.py` (clipboard/network disclosure), `check-polkit.py` (polkit policy validation), `check-schema-usage.py` (unused/undefined schema keys), `check-accessibility.py` (a11y checks), plus metadata, prefs, GObject, async, CSS, imports, schema, and package checks. `ego-lint.sh` also has an inline minified JS check, code metrics, and a provenance-gated post-filter that suppresses R-SLOP-01/02 JSDoc warnings when `quality/code-provenance` score >= 4.
+- **Tier 2 (scripts)**: 17 structural heuristic check scripts in Python/bash. `check-quality.py` (AI slop heuristics), `check-init.py` (init-time safety), `check-lifecycle.py` (enable/disable symmetry + timeout verification), `check-resources.py` + `build-resource-graph.py` (cross-file resource tracking), `check-disclosures.py` (clipboard/network disclosure), `check-polkit.py` (polkit policy validation), `check-schema-usage.py` (unused/undefined schema keys), `check-accessibility.py` (a11y checks), plus metadata, prefs, GObject, async, CSS, imports, schema, and package checks. `ego-lint.sh` also has an inline minified JS check, code metrics, and a provenance-gated post-filter that suppresses R-SLOP-01/02 JSDoc warnings when `quality/code-provenance` score >= 3.
 - **Tier 3 (checklists)**: 6 semantic review checklists in `skills/ego-review/references/`: lifecycle, security, code-quality (with 10 additional quality items), ai-slop (46-item scoring model), licensing, accessibility (7 items). Applied by Claude during `ego-review` phases.
 
 ### ego-review internals
@@ -165,6 +165,9 @@ bash scripts/field-test-runner.sh                    # lint all extensions
 bash scripts/field-test-runner.sh --extension NAME   # lint single extension
 bash scripts/field-test-runner.sh --update-baselines # save current as golden
 bash scripts/field-test-runner.sh --no-fetch         # skip git clones, use cache
+bash scripts/field-test-runner.sh --review --no-fetch          # lint + review all
+bash scripts/field-test-runner.sh --review --review-exclude X  # review all except X
+bash scripts/field-test-runner.sh --review-dry-run             # print prompts only
 ```
 
 ### Pipeline structure
@@ -174,11 +177,14 @@ bash scripts/field-test-runner.sh --no-fetch         # skip git clones, use cach
 - `field-tests/annotations/` — Per-extension finding classifications: tp, fp, borderline, expected (committed)
 - `field-tests/history.jsonl` — Append-only trend data (committed)
 - `field-tests/cache/` — Downloaded extensions (gitignored)
-- `field-tests/results/` — Timestamped run output (gitignored)
-- `scripts/field-test-runner.sh` — Bash orchestrator
+- `field-tests/results/` — Timestamped run output (gitignored), includes `.review.md` reports
+- `field-tests/reports/` — Regression/synthesis reports (committed)
+- `scripts/field-test-runner.sh` — Bash orchestrator (lint + optional review phase)
 - `scripts/parse-manifest.py` — Manifest YAML → JSON (inline parser, no PyYAML)
 - `scripts/parse-lint-results.py` — ego-lint stdout → structured JSON
 - `scripts/diff-baselines.py` — Baseline comparison + annotation-aware filtering
+- `scripts/review-prompt.md` — Review prompt template (incremental Write strategy)
+- `scripts/hydrate-review-prompt.py` — Template hydration with lint/diff/annotation data
 - `skills/ego-field-test/SKILL.md` — Claude Code skill for full pipeline (classification, synthesis, issue creation)
 
 ### Calibration cycle
@@ -188,6 +194,18 @@ bash scripts/field-test-runner.sh --no-fetch         # skip git clones, use cach
 3. Classify new unannotated findings in `field-tests/annotations/`
 4. If FPs found, create issues and fix
 5. Run with `--update-baselines` to snapshot improved state
+
+### Review phase
+
+The `--review` flag runs headless `claude -p` sessions after lint. Each session uses `scripts/review-prompt.md` (hydrated with lint results, diff, and annotations). Key flags:
+
+- `--review` — review all extensions; `--review-changed` — only changed ones
+- `--review-exclude NAME` — skip specific extensions from review (repeatable); `--exclude` skips from both lint and review
+- `--budget AMOUNT` — max USD per review session (default: 4.00)
+- `--parallel N` — max concurrent sessions (default: 3)
+- `--review-dry-run` — write hydrated prompts without invoking claude
+
+Reports are written incrementally (section-by-section) to survive budget exhaustion. Review findings use `review/` prefix in annotation files to distinguish from lint findings.
 
 ## Releasing
 
