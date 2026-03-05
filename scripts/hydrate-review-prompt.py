@@ -21,9 +21,9 @@ def read_file(path, warn_missing=False):
         if warn_missing:
             print(f"Warning: file not found: {path}", file=sys.stderr)
         return ""
-    except PermissionError:
+    except (PermissionError, OSError) as e:
         if warn_missing:
-            print(f"Warning: cannot read {path}: permission denied", file=sys.stderr)
+            print(f"Warning: cannot read {path}: {e}", file=sys.stderr)
         return ""
 
 
@@ -38,12 +38,12 @@ def main():
     parser.add_argument("--template", required=True, help="Path to prompt template")
     args = parser.parse_args()
 
-    template = read_file(args.template)
+    template = read_file(args.template, warn_missing=True)
     if not template:
         print(f"Error: cannot read template: {args.template}", file=sys.stderr)
         sys.exit(1)
 
-    lint_json = read_file(args.lint_json)
+    lint_json = read_file(args.lint_json, warn_missing=True)
     if not lint_json:
         print(f"Error: cannot read lint JSON: {args.lint_json}", file=sys.stderr)
         sys.exit(1)
