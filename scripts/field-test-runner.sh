@@ -330,7 +330,9 @@ print(str(d['changed']).lower(), len(d['new_findings']), len(d['resolved_finding
         echo "  → baseline updated"
     fi
 
-    # Append to history
+    # Append to history (write to temp file first for atomicity)
+    local history_tmp
+    history_tmp="$(mktemp)"
     python3 -c "
 import json, sys
 date, name, version, exit_code, p, f, w, s, changed = sys.argv[1:]
@@ -342,7 +344,9 @@ entry = {
 }
 print(json.dumps(entry))
 " "$TIMESTAMP" "$name" "$EGO_LINT_VERSION" "$exit_code" \
-  "$pass" "$fail" "$warn" "$skip" "$changed" >> "$HISTORY_FILE"
+  "$pass" "$fail" "$warn" "$skip" "$changed" > "$history_tmp"
+    cat "$history_tmp" >> "$HISTORY_FILE"
+    rm -f "$history_tmp"
 
     # Store summary entry
     SUMMARY_ENTRIES+=("$name|$pass|$fail|$warn|$skip|$changed|$new_count|$resolved_count|$unannotated_count")
