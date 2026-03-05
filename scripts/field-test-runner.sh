@@ -450,7 +450,6 @@ if [[ "$OPT_REVIEW" == true || "$OPT_REVIEW_CHANGED" == true ]]; then
             --name "$name"
             --ext-path "$ext_path"
             --lint-json "$local_lint"
-            --plugin-dir "$PLUGIN_DIR"
             --template "$REVIEW_TEMPLATE"
             --review-output "$review_file"
         )

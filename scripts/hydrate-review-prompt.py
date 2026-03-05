@@ -18,7 +18,10 @@ def read_file(path):
     try:
         with open(path) as f:
             return f.read()
-    except (FileNotFoundError, PermissionError):
+    except FileNotFoundError:
+        return ""
+    except PermissionError:
+        print(f"Warning: cannot read {path}: permission denied", file=sys.stderr)
         return ""
 
 
@@ -27,7 +30,6 @@ def main():
     parser.add_argument("--name", required=True, help="Extension name")
     parser.add_argument("--ext-path", required=True, help="Extension directory path")
     parser.add_argument("--lint-json", required=True, help="Path to lint results JSON")
-    parser.add_argument("--plugin-dir", required=True, help="Plugin directory path")
     parser.add_argument("--diff-json", default="", help="Path to diff results JSON")
     parser.add_argument("--annotations", default="", help="Path to annotations YAML")
     parser.add_argument("--review-output", default="", help="Path for review output file")
