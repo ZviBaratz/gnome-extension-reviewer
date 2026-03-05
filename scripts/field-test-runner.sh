@@ -515,7 +515,11 @@ if [[ "$OPT_REVIEW" == true || "$OPT_REVIEW_CHANGED" == true ]]; then
         [[ -f "$local_diff" ]] && hydrate_args+=(--diff-json "$local_diff")
         [[ -f "$local_ann" ]] && hydrate_args+=(--annotations "$local_ann")
 
-        prompt="$(python3 "$HYDRATE_PROMPT" "${hydrate_args[@]}")"
+        if ! prompt="$(python3 "$HYDRATE_PROMPT" "${hydrate_args[@]}")"; then
+            echo "  ERROR: prompt hydration failed for $name" >&2
+            REVIEW_STATUS["$name"]="hydration-error"
+            continue
+        fi
 
         if [[ "$OPT_REVIEW_DRY_RUN" == true ]]; then
             echo "  DRY RUN: $name"
