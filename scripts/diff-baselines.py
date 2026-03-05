@@ -40,10 +40,19 @@ def parse_annotations(path):
                 k = k.strip()
                 v = v.strip().strip('"').strip("'")
                 if k == 'id':
+                    # New id without classification for previous — warn
+                    if current_id not in annotations:
+                        print(f"Warning: annotation '{current_id}' has no classification",
+                              file=sys.stderr)
                     current_id = v
                 elif k == 'classification':
                     annotations[current_id] = v
                     current_id = None
+
+    # Check last entry
+    if current_id is not None and current_id not in annotations:
+        print(f"Warning: annotation '{current_id}' has no classification",
+              file=sys.stderr)
 
     return annotations
 
