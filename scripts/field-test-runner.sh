@@ -388,7 +388,7 @@ print(str(d['changed']).lower(), len(d['new_findings']), len(d['resolved_finding
     # lines if json_extract crashes mid-output)
     local history_tmp
     history_tmp="$(mktemp)"
-    json_extract "$name history" "
+    if ! json_extract "$name history" "
 date, name, version, exit_code, p, f, w, s, changed = sys.argv[1:]
 entry = {
     'date': date, 'name': name, 'ego_lint_version': version,
@@ -398,9 +398,15 @@ entry = {
 }
 print(json.dumps(entry))
 " "$TIMESTAMP" "$name" "$EGO_LINT_VERSION" "$exit_code" \
-  "$pass" "$fail" "$warn" "$skip" "$changed" > "$history_tmp"
-    cat "$history_tmp" >> "$HISTORY_FILE"
-    rm -f "$history_tmp"
+  "$pass" "$fail" "$warn" "$skip" "$changed" > "$history_tmp"; then
+        echo "  WARNING: failed to build history entry for $name" >&2
+        rm -f "$history_tmp"
+    elif ! cat "$history_tmp" >> "$HISTORY_FILE"; then
+        echo "  WARNING: failed to append history for $name" >&2
+        rm -f "$history_tmp"
+    else
+        rm -f "$history_tmp"
+    fi
 
     # Store summary entry
     SUMMARY_ENTRIES+=("$name|$pass|$fail|$warn|$skip|$changed|$new_count|$resolved_count|$unannotated_count")
