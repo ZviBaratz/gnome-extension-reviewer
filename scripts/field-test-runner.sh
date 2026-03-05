@@ -6,6 +6,7 @@
 #     --lint-only         Only run ego-lint (default)
 #     --update-baselines  Save current results as new baselines
 #     --extension NAME    Run for a single extension
+#     --exclude NAME      Exclude extension (repeatable)
 #     --fetch-only        Only fetch/update extension sources
 #     --no-fetch          Skip fetching, use existing cache/paths
 #     --json              Output summary as JSON instead of table
@@ -35,6 +36,7 @@ PLUGIN_DIR="$ROOT_DIR"
 # Options
 OPT_UPDATE_BASELINES=false
 OPT_SINGLE_EXT=""
+OPT_EXCLUDE_EXTS=()
 OPT_FETCH_ONLY=false
 OPT_NO_FETCH=false
 OPT_JSON=false
@@ -47,6 +49,7 @@ while [[ $# -gt 0 ]]; do
     case "$1" in
         --update-baselines) OPT_UPDATE_BASELINES=true; shift ;;
         --extension)        OPT_SINGLE_EXT="$2"; shift 2 ;;
+        --exclude)          OPT_EXCLUDE_EXTS+=("$2"); shift 2 ;;
         --fetch-only)       OPT_FETCH_ONLY=true; shift ;;
         --no-fetch)         OPT_NO_FETCH=true; shift ;;
         --json)             OPT_JSON=true; shift ;;
@@ -60,6 +63,7 @@ while [[ $# -gt 0 ]]; do
             echo "  --lint-only         Only run ego-lint (default)"
             echo "  --update-baselines  Save current results as new baselines"
             echo "  --extension NAME    Run for a single extension"
+            echo "  --exclude NAME      Exclude extension (repeatable)"
             echo "  --fetch-only        Only fetch/update extension sources"
             echo "  --no-fetch          Skip fetching, use existing cache/paths"
             echo "  --json              Output summary as JSON instead of table"
@@ -212,10 +216,15 @@ print(json.dumps(exts[$idx]))
     uuid="$(echo "$ext_json" | python3 -c "import json,sys; print(json.load(sys.stdin)['uuid'])")"
     ego_approved="$(echo "$ext_json" | python3 -c "import json,sys; print('true' if json.load(sys.stdin).get('ego_approved', False) else 'false')")"
 
-    # Filter by --extension if specified
+    # Filter by --extension / --exclude if specified
     if [[ -n "$OPT_SINGLE_EXT" && "$name" != "$OPT_SINGLE_EXT" ]]; then
         return 2  # signal: silently filtered out
     fi
+    for excl in "${OPT_EXCLUDE_EXTS[@]+"${OPT_EXCLUDE_EXTS[@]}"}"; do
+        if [[ "$name" == "$excl" ]]; then
+            return 2
+        fi
+    done
 
     echo "--- $name ($uuid) ---"
 
