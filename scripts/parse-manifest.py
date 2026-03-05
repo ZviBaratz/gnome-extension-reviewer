@@ -104,6 +104,17 @@ def main():
 
     extensions = parse_manifest(manifest_path)
 
+    # Validate required fields
+    for i, ext in enumerate(extensions):
+        missing = {'name', 'uuid', 'source'} - set(ext.keys())
+        if missing:
+            print(f"Error: extension #{i+1} missing fields: {missing}", file=sys.stderr)
+            sys.exit(1)
+        src = ext.get('source', {})
+        if 'type' not in src:
+            print(f"Error: extension '{ext.get('name', '?')}' source missing 'type'", file=sys.stderr)
+            sys.exit(1)
+
     # Resolve paths
     for ext in extensions:
         src = ext.get('source', {})
