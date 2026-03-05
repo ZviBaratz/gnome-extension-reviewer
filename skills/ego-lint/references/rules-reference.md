@@ -2049,13 +2049,22 @@ Rules for APIs removed or changed in specific GNOME Shell versions. These rules 
 - **Fix**: Add `this._session.abort()` before nullifying the session reference in `disable()`.
 - **Tested by**: `tests/fixtures/soup-session-no-abort@test/`
 
-### R-LIFE-19: global.stage.add_child() without matching remove_child()
+### R-LIFE-22: Stage/chrome actor leak (add without remove)
+- **Severity**: blocking
+- **Checked by**: check-lifecycle.py
+- **Rule**: `global.stage.add_child()`, `Main.layoutManager.addTopChrome()`, and `Main.layoutManager.addChrome()` must have a matching removal (`remove_child`/`removeTopChrome`/`removeChrome`) or `.destroy()` in `disable()`/`destroy()`. Only tracks `this._xxx` patterns.
+- **Rationale**: Actors added to `global.stage` or the layout manager chrome persist on the compositor stage across enable/disable cycles. Unlike container widgets that are destroyed with their parent, stage children must be explicitly removed or they leak — causing visible artifacts and memory growth. Nulling the reference (`this._actor = null`) does NOT remove the actor from the stage.
+- **Fix**: In `disable()`, call `global.stage.remove_child(this._actor); this._actor.destroy(); this._actor = null;` or just `this._actor.destroy()` (destroying a Clutter actor removes it from its parent).
+- **Tested by**: `tests/fixtures/stage-add-child@test/`, `tests/fixtures/stage-add-child-clean@test/` (negative)
+- **Supersedes**: R-LIFE-19 (advisory pattern rule)
+
+### R-LIFE-24: MessageTray source leak (add without destroy)
 - **Severity**: advisory
-- **Checked by**: apply-patterns.py
-- **Rule**: `global.stage.add_child()` must have a matching `remove_child()` in `disable()` or `destroy()`.
-- **Rationale**: Actors added to `global.stage` persist on the compositor stage across enable/disable cycles. Unlike container widgets that are destroyed with their parent, stage children must be explicitly removed or they leak — causing visual artifacts and memory growth.
-- **Fix**: In `disable()`, call `global.stage.remove_child(this._actor); this._actor = null;`.
-- **Tested by**: `tests/fixtures/stage-add-child@test/`
+- **Checked by**: check-lifecycle.py
+- **Rule**: `Main.messageTray.add(this._source)` must have a matching `this._source.destroy()` in `disable()`/`destroy()`. Only tracks `this._xxx` patterns.
+- **Rationale**: Notification sources added to the message tray persist if not explicitly destroyed. While lower impact than stage actor leaks (notifications expire and sources may be GC'd), they can accumulate across enable/disable cycles.
+- **Fix**: In `disable()`, call `this._source.destroy(); this._source = null;`.
+- **Tested by**: `tests/fixtures/messagetray-source-leak@test/`
 
 ### R-LIFE-20: Bus name ownership without release
 - **Severity**: advisory

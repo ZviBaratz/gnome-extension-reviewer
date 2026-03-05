@@ -24,6 +24,8 @@ Checks:
   - R-LIFE-18: Subprocess without cancellation in disable/destroy
   - R-LIFE-20: Bus name ownership without release
   - R-LIFE-21: GSettings signal leak (bare connect without disconnect)
+  - R-LIFE-22: Stage actor leak (add_child/addChrome without remove)
+  - R-LIFE-24: MessageTray source leak (add without destroy)
   - R-SEC-16: Clipboard + keybinding cross-reference
   - R-FILE-07: Missing export default class
 
@@ -1010,6 +1012,137 @@ def check_widget_lifecycle(ext_dir):
                f"All {len(created_widgets)} widget(s) properly cleaned up")
 
 
+def check_stage_actor_lifecycle(ext_dir):
+    """R-LIFE-22: Stage actor add without matching remove in disable()/destroy()."""
+    js_files = find_js_files(ext_dir, exclude_prefs=True)
+    if not js_files:
+        return
+
+    # Patterns that add actors to stage/chrome
+    add_patterns = [
+        (r'global\.stage\.add_child\s*\(\s*this\.(_\w+)', 'global.stage.remove_child'),
+        (r'Main\.layoutManager\.addTopChrome\s*\(\s*this\.(_\w+)', 'removeTopChrome'),
+        (r'Main\.layoutManager\.addChrome\s*\(\s*this\.(_\w+)', 'removeChrome'),
+    ]
+
+    added_actors = []  # (var_name, file_rel, lineno, remove_method)
+
+    for filepath in js_files:
+        content = strip_comments(read_file(filepath))
+        rel = os.path.relpath(filepath, ext_dir)
+        for lineno, line in enumerate(content.splitlines(), 1):
+            for add_re, remove_method in add_patterns:
+                m = re.search(add_re, line)
+                if m:
+                    added_actors.append((m.group(1), rel, lineno, remove_method))
+
+    if not added_actors:
+        return
+
+    # Extract cleanup method bodies across all files
+    cleanup_re = re.compile(
+        r'\b(?:disable|destroy|_destroy\w*|onDestroy)\s*\(')
+
+    cleanup_text = ''
+    for filepath in js_files:
+        content = strip_comments(read_file(filepath))
+        lines = content.splitlines()
+        i = 0
+        while i < len(lines):
+            if cleanup_re.search(lines[i]):
+                depth = 0
+                started = False
+                for j in range(i, len(lines)):
+                    depth += lines[j].count('{') - lines[j].count('}')
+                    if '{' in lines[j]:
+                        started = True
+                    cleanup_text += lines[j] + '\n'
+                    if started and depth <= 0:
+                        break
+                i = j + 1 if started else i + 1
+            else:
+                i += 1
+
+    leaked = []
+    for var_name, rel, lineno, remove_method in added_actors:
+        escaped = re.escape(var_name)
+        has_remove = bool(re.search(
+            rf'{re.escape(remove_method)}\s*\(\s*this\.{escaped}', cleanup_text))
+        has_destroy = bool(re.search(
+            rf'this\.{escaped}\.destroy\s*\(', cleanup_text))
+        if not has_remove and not has_destroy:
+            leaked.append(f"this.{var_name} ({rel}:{lineno})")
+
+    if leaked:
+        result("FAIL", "lifecycle/stage-actor-leak",
+               f"Actor(s) added to stage/chrome but not removed in "
+               f"disable()/destroy(): {', '.join(leaked[:5])}")
+    else:
+        result("PASS", "lifecycle/stage-actor-leak",
+               f"All {len(added_actors)} stage/chrome actor(s) properly cleaned up")
+
+
+def check_message_tray_lifecycle(ext_dir):
+    """R-LIFE-24: MessageTray source added without destroy in disable()/destroy()."""
+    js_files = find_js_files(ext_dir, exclude_prefs=True)
+    if not js_files:
+        return
+
+    add_re = re.compile(r'Main\.messageTray\.add\s*\(\s*this\.(_\w+)')
+    added_sources = []  # (var_name, file_rel, lineno)
+
+    for filepath in js_files:
+        content = strip_comments(read_file(filepath))
+        rel = os.path.relpath(filepath, ext_dir)
+        for lineno, line in enumerate(content.splitlines(), 1):
+            m = add_re.search(line)
+            if m:
+                added_sources.append((m.group(1), rel, lineno))
+
+    if not added_sources:
+        return
+
+    # Extract cleanup method bodies across all files
+    cleanup_re = re.compile(
+        r'\b(?:disable|destroy|_destroy\w*|onDestroy)\s*\(')
+
+    cleanup_text = ''
+    for filepath in js_files:
+        content = strip_comments(read_file(filepath))
+        lines = content.splitlines()
+        i = 0
+        while i < len(lines):
+            if cleanup_re.search(lines[i]):
+                depth = 0
+                started = False
+                for j in range(i, len(lines)):
+                    depth += lines[j].count('{') - lines[j].count('}')
+                    if '{' in lines[j]:
+                        started = True
+                    cleanup_text += lines[j] + '\n'
+                    if started and depth <= 0:
+                        break
+                i = j + 1 if started else i + 1
+            else:
+                i += 1
+
+    leaked = []
+    for var_name, rel, lineno in added_sources:
+        escaped = re.escape(var_name)
+        has_destroy = bool(re.search(
+            rf'this\.{escaped}\.destroy\s*\(', cleanup_text))
+        if not has_destroy:
+            leaked.append(f"this.{var_name} ({rel}:{lineno})")
+
+    if leaked:
+        result("WARN", "lifecycle/messagetray-source-leak",
+               f"MessageTray source(s) added but not destroyed in "
+               f"disable()/destroy(): {', '.join(leaked[:5])}")
+    else:
+        result("PASS", "lifecycle/messagetray-source-leak",
+               f"All {len(added_sources)} messageTray source(s) properly cleaned up")
+
+
 def check_gsettings_signal_leak(ext_dir):
     """R-LIFE-21: Bare settings.connect() without stored ID is a guaranteed leak."""
     js_files = find_js_files(ext_dir, exclude_prefs=True)
@@ -1123,6 +1256,8 @@ def main():
     check_soup_session_abort(ext_dir)
     check_destroy_then_null(ext_dir)
     check_widget_lifecycle(ext_dir)
+    check_stage_actor_lifecycle(ext_dir)
+    check_message_tray_lifecycle(ext_dir)
     check_gsettings_signal_leak(ext_dir)
     check_settings_cleanup(ext_dir)
 
