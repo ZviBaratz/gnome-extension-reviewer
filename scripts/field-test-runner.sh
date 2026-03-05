@@ -376,7 +376,8 @@ print(str(d['changed']).lower(), len(d['new_findings']), len(d['resolved_finding
         echo "  → baseline updated"
     fi
 
-    # Append to history (write to temp file first for atomicity)
+    # Append to history (write to temp file first to prevent partial JSON
+    # lines if json_extract crashes mid-output)
     local history_tmp
     history_tmp="$(mktemp)"
     json_extract "$name history" "
