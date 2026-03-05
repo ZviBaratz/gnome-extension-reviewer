@@ -141,7 +141,6 @@ findings:
   - id: "init/shell-modification::constructor"
     classification: fp
     notes: "Constructor called from enable(). Fixed in PR #21"
-    fixed_in: "#21"
 ```
 
 ## Iteration Cycle
