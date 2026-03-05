@@ -2,8 +2,7 @@
 """hydrate-review-prompt.py — Substitute placeholders in review prompt template.
 
 Usage: hydrate-review-prompt.py --name NAME --ext-path PATH --lint-json FILE
-           --plugin-dir DIR [--diff-json FILE] [--annotations FILE]
-           --template FILE
+           [--diff-json FILE] [--annotations FILE] --template FILE
 
 Reads the template and replaces {{PLACEHOLDER}} tokens. Outputs to stdout.
 """
