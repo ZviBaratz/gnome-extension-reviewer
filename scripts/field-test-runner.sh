@@ -461,6 +461,8 @@ if [[ "$OPT_REVIEW" == true || "$OPT_REVIEW_CHANGED" == true ]]; then
     collect_review_result() {
         local pid="$1" rname="$2"
         local rc=0 rfile
+        # 2>/dev/null: suppress "not a child" warnings when PID was already
+        # reaped between kill -0 check and wait (expected race condition)
         wait "$pid" 2>/dev/null || rc=$?
         if [[ $rc -eq 0 ]]; then
             REVIEW_STATUS["$rname"]="ok"
