@@ -152,9 +152,9 @@ resolve_ext_path() {
     _src_line="$(echo "$ext_json" | python3 -c "
 import json, sys
 s = json.load(sys.stdin).get('source', {})
-print(s.get('type',''), s.get('path',''), s.get('repo',''), s.get('ref', s.get('tag','')))
+print(s.get('type',''), s.get('path',''), s.get('repo',''), s.get('ref', s.get('tag','')), sep='\t')
 ")"
-    read -r source_type source_path source_repo source_ref <<< "$_src_line"
+    IFS=$'\t' read -r source_type source_path source_repo source_ref <<< "$_src_line"
 
     RESOLVED_PATH=""
     case "$source_type" in
@@ -230,9 +230,9 @@ print(json.dumps(exts[$idx]))
     _ext_line="$(echo "$ext_json" | python3 -c "
 import json, sys
 d = json.load(sys.stdin)
-print(d['name'], d['uuid'], 'true' if d.get('ego_approved', False) else 'false')
+print(d['name'], d['uuid'], 'true' if d.get('ego_approved', False) else 'false', sep='\t')
 ")"
-    read -r name uuid ego_approved <<< "$_ext_line"
+    IFS=$'\t' read -r name uuid ego_approved <<< "$_ext_line"
 
     # Filter by --extension / --exclude if specified
     if [[ -n "$OPT_SINGLE_EXT" && "$name" != "$OPT_SINGLE_EXT" ]]; then
@@ -283,9 +283,9 @@ print(d['name'], d['uuid'], 'true' if d.get('ego_approved', False) else 'false')
 import json, sys
 d = json.load(sys.stdin)
 c = d['counts']
-print(c['pass'], c['fail'], c['warn'], c['skip'])
+print(c['pass'], c['fail'], c['warn'], c['skip'], sep='\t')
 " < "$result_file")"
-    read -r pass fail warn skip <<< "$_counts_line"
+    IFS=$'\t' read -r pass fail warn skip <<< "$_counts_line"
 
     TOTAL_PASS=$((TOTAL_PASS + pass))
     TOTAL_FAIL=$((TOTAL_FAIL + fail))
@@ -308,9 +308,9 @@ print(c['pass'], c['fail'], c['warn'], c['skip'])
         _diff_line="$(python3 -c "
 import json, sys
 d = json.load(sys.stdin)
-print(str(d['changed']).lower(), len(d['new_findings']), len(d['resolved_findings']), len(d['unannotated_findings']))
+print(str(d['changed']).lower(), len(d['new_findings']), len(d['resolved_findings']), len(d['unannotated_findings']), sep='\t')
 " < "$diff_file")"
-        read -r changed new_count resolved_count unannotated_count <<< "$_diff_line"
+        IFS=$'\t' read -r changed new_count resolved_count unannotated_count <<< "$_diff_line"
     fi
 
     if [[ "$changed" == "true" ]]; then
