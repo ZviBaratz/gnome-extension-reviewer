@@ -28,6 +28,22 @@ BASELINES_DIR="$ROOT_DIR/field-tests/baselines"
 ANNOTATIONS_DIR="$ROOT_DIR/field-tests/annotations"
 HISTORY_FILE="$ROOT_DIR/field-tests/history.jsonl"
 
+# Helper: run python3 -c with JSON error handling.
+# Usage: json_extract "context label" 'python expression' [< input]
+# Wraps the expression in try/except for clear error messages.
+json_extract() {
+    local context="$1"; shift
+    local expr="$1"; shift
+    python3 -c "
+import json, sys
+try:
+    $expr
+except (json.JSONDecodeError, KeyError, IndexError, TypeError) as e:
+    print(f'Error ($context): {type(e).__name__}: {e}', file=sys.stderr)
+    sys.exit(1)
+" "$@"
+}
+
 EGO_LINT="$ROOT_DIR/ego-lint"
 PARSE_MANIFEST="$SCRIPT_DIR/parse-manifest.py"
 PARSE_RESULTS="$SCRIPT_DIR/parse-lint-results.py"
@@ -119,7 +135,7 @@ mkdir -p "$RESULTS_DIR"
 
 # Parse manifest
 MANIFEST_JSON="$(python3 "$PARSE_MANIFEST" "$MANIFEST")"
-EXT_COUNT="$(echo "$MANIFEST_JSON" | python3 -c "import json,sys; print(len(json.load(sys.stdin)))")"
+EXT_COUNT="$(echo "$MANIFEST_JSON" | json_extract "manifest count" "print(len(json.load(sys.stdin)))")"
 
 # When --json, redirect progress output to stderr so stdout is clean JSON
 if [[ "$OPT_JSON" == true ]]; then
@@ -154,8 +170,7 @@ resolve_ext_path() {
     local ext_json="$1"
     local name="$2"
     local source_type source_path source_repo source_ref _src_line
-    _src_line="$(echo "$ext_json" | python3 -c "
-import json, sys
+    _src_line="$(echo "$ext_json" | json_extract "$name source" "
 s = json.load(sys.stdin).get('source', {})
 print(s.get('type',''), s.get('path',''), s.get('repo',''), s.get('ref', s.get('tag','')), sep='\t')
 ")"
@@ -225,15 +240,13 @@ print(s.get('type',''), s.get('path',''), s.get('repo',''), s.get('ref', s.get('
 process_extension() {
     local idx="$1"
     local ext_json
-    ext_json="$(echo "$MANIFEST_JSON" | python3 -c "
-import json, sys
+    ext_json="$(echo "$MANIFEST_JSON" | json_extract "manifest[$idx]" "
 exts = json.load(sys.stdin)
 print(json.dumps(exts[$idx]))
 ")"
 
     local name uuid ego_approved _ext_line
-    _ext_line="$(echo "$ext_json" | python3 -c "
-import json, sys
+    _ext_line="$(echo "$ext_json" | json_extract "extension[$idx] metadata" "
 d = json.load(sys.stdin)
 print(d['name'], d['uuid'], 'true' if d.get('ego_approved', False) else 'false', sep='\t')
 ")"
@@ -278,8 +291,7 @@ print(d['name'], d['uuid'], 'true' if d.get('ego_approved', False) else 'false',
 
     # Extract counts
     local pass fail warn skip _counts_line
-    _counts_line="$(python3 -c "
-import json, sys
+    _counts_line="$(json_extract "$name counts" "
 d = json.load(sys.stdin)
 c = d['counts']
 print(c['pass'], c['fail'], c['warn'], c['skip'], sep='\t')
@@ -304,8 +316,7 @@ print(c['pass'], c['fail'], c['warn'], c['skip'], sep='\t')
         [[ -f "$annotation_file" ]] && diff_args+=("$annotation_file")
         python3 "$DIFF_BASELINES" "${diff_args[@]}" > "$diff_file"
         local _diff_line
-        _diff_line="$(python3 -c "
-import json, sys
+        _diff_line="$(json_extract "$name diff" "
 d = json.load(sys.stdin)
 print(str(d['changed']).lower(), len(d['new_findings']), len(d['resolved_findings']), len(d['unannotated_findings']), sep='\t')
 " < "$diff_file")"
@@ -338,8 +349,7 @@ print(str(d['changed']).lower(), len(d['new_findings']), len(d['resolved_finding
     # Append to history (write to temp file first for atomicity)
     local history_tmp
     history_tmp="$(mktemp)"
-    python3 -c "
-import json, sys
+    json_extract "$name history" "
 date, name, version, exit_code, p, f, w, s, changed = sys.argv[1:]
 entry = {
     'date': date, 'name': name, 'ego_lint_version': version,
@@ -527,8 +537,7 @@ for k in "${!REVIEW_STATUS[@]}"; do
     REVIEW_STATUS_LINES+="$k|${REVIEW_STATUS[$k]}"$'\n'
 done
 if [[ -n "$REVIEW_STATUS_LINES" ]]; then
-    REVIEW_STATUS_JSON="$(python3 -c "
-import json, sys
+    REVIEW_STATUS_JSON="$(json_extract "review status" "
 status = {}
 for line in sys.stdin:
     line = line.strip()
@@ -542,8 +551,7 @@ else
     REVIEW_STATUS_JSON="{}"
 fi
 
-ENTRIES_JSON="$(python3 -c "
-import json, sys
+ENTRIES_JSON="$(json_extract "summary entries" "
 review_status = json.loads(sys.argv[1])
 entries = []
 for line in sys.stdin:
@@ -570,8 +578,7 @@ for line in sys.stdin:
 print(json.dumps(entries))
 " "$REVIEW_STATUS_JSON" <<< "$(printf '%s\n' "${SUMMARY_ENTRIES[@]+"${SUMMARY_ENTRIES[@]}"}")")"
 
-SUMMARY_JSON="$(python3 -c "
-import json, sys
+SUMMARY_JSON="$(json_extract "summary" "
 extensions = json.loads(sys.argv[1])
 ts, version, processed, skipped, changed = sys.argv[2:7]
 tp, tf, tw, tsk, results_dir = sys.argv[7:]
