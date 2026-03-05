@@ -22,7 +22,8 @@ def read_file(path, warn_missing=False):
             print(f"Warning: file not found: {path}", file=sys.stderr)
         return ""
     except PermissionError:
-        print(f"Warning: cannot read {path}: permission denied", file=sys.stderr)
+        if warn_missing:
+            print(f"Warning: cannot read {path}: permission denied", file=sys.stderr)
         return ""
 
 

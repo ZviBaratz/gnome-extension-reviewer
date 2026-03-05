@@ -123,6 +123,10 @@ if [[ "$OPT_REVIEW" == true || "$OPT_REVIEW_CHANGED" == true ]] && [[ "$OPT_REVI
         echo "Error: 'claude' CLI not found. Required for --review/--review-changed." >&2
         exit 1
     fi
+    if ! command -v timeout &>/dev/null; then
+        echo "Error: 'timeout' command not found. Required for --review/--review-changed." >&2
+        exit 1
+    fi
 fi
 
 # Get ego-lint version
@@ -422,7 +426,7 @@ if [[ "$OPT_REVIEW" == true || "$OPT_REVIEW_CHANGED" == true ]]; then
         rfile="$RESULTS_DIR/$rname.review.md"
         if [[ ! -s "$rfile" ]]; then
             REVIEW_STATUS["$rname"]="no-report"
-            echo "  ⚠ No report written: $rname"
+            echo "  ⚠ No report written: $rname (exit code: $rc)"
         fi
     }
 
@@ -432,7 +436,9 @@ if [[ "$OPT_REVIEW" == true || "$OPT_REVIEW_CHANGED" == true ]]; then
     # Kill orphaned background claude sessions on interrupt/exit
     cleanup_reviews() {
         for pid in "${REVIEW_PIDS[@]+"${REVIEW_PIDS[@]}"}"; do
-            kill "$pid" 2>/dev/null || true
+            if kill -0 "$pid" 2>/dev/null; then
+                kill "$pid" 2>/dev/null || echo "  ⚠ Failed to kill review process $pid" >&2
+            fi
         done
         wait 2>/dev/null || true
     }
