@@ -52,6 +52,14 @@ HYDRATE_PROMPT="$SCRIPT_DIR/hydrate-review-prompt.py"
 REVIEW_TEMPLATE="$SCRIPT_DIR/review-prompt.md"
 PLUGIN_DIR="$ROOT_DIR"
 
+# Validate required scripts exist before processing
+for _req_script in "$EGO_LINT" "$PARSE_MANIFEST" "$PARSE_RESULTS" "$DIFF_BASELINES"; do
+    if [[ ! -f "$_req_script" ]]; then
+        echo "Error: required script not found: $_req_script" >&2
+        exit 1
+    fi
+done
+
 # Options
 OPT_UPDATE_BASELINES=false
 OPT_SINGLE_EXT=""
