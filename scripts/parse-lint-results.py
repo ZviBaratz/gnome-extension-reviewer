@@ -125,8 +125,9 @@ def make_finding_id(check, detail):
     stable_detail = re.sub(r':\d+', '', detail)
     # Strip "in N file(s): ..." suffix for pattern rules
     stable_detail = re.sub(r'\s+in\s+\d+\s+file\(s\):.*$', '', stable_detail)
-    # Strip leading file list for multi-file findings
-    stable_detail = re.sub(r'^[\w./,\s]+:\s+', '', stable_detail)
+    # Strip leading file list for multi-file findings (require path-like prefix
+    # with . or / to avoid stripping non-file prefixes like "GLib: message")
+    stable_detail = re.sub(r'^[\w./,\s]*[./][\w./,\s]*:\s+', '', stable_detail)
     # Normalize whitespace
     stable_detail = ' '.join(stable_detail.split())
 
