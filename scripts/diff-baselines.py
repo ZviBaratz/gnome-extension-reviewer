@@ -38,10 +38,15 @@ def parse_annotations(path):
                     current_id = val
                 continue
 
-            if ':' in stripped and current_id is not None:
+            if ':' in stripped:
                 k, v = stripped.split(':', 1)
                 k = k.strip()
                 v = v.strip().strip('"').strip("'")
+                if current_id is None:
+                    if k == 'classification':
+                        print(f"Warning: classification '{v}' has no preceding id",
+                              file=sys.stderr)
+                    continue
                 if k == 'id':
                     # New id without classification for previous — warn
                     if current_id not in annotations:
