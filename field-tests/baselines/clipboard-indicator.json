@@ -1,0 +1,292 @@
+{
+  "name": "clipboard-indicator",
+  "uuid": "clipboard-indicator@tudmotu.com",
+  "timestamp": "2026-03-04T22:16:56.118064+00:00",
+  "ego_lint_version": "0dbe7e8",
+  "ego_approved": true,
+  "exit_code": 1,
+  "counts": {
+    "pass": 192,
+    "fail": 2,
+    "warn": 24,
+    "skip": 17,
+    "total": 235
+  },
+  "metrics": {
+    "js_files": 6,
+    "total_lines": 2486,
+    "largest_file": "extension.js (1430)",
+    "css_lines": 75,
+    "schema_keys": 31
+  },
+  "provenance_score": null,
+  "findings": [
+    {
+      "id": "polkit/action-id-match::No polkit files found",
+      "status": "SKIP",
+      "check": "polkit/action-id-match",
+      "detail": "No polkit files found"
+    },
+    {
+      "id": "polkit/action-id-prefix::No polkit files found",
+      "status": "SKIP",
+      "check": "polkit/action-id-prefix",
+      "detail": "No polkit files found"
+    },
+    {
+      "id": "polkit/helper-exists::No polkit files found",
+      "status": "SKIP",
+      "check": "polkit/helper-exists",
+      "detail": "No polkit files found"
+    },
+    {
+      "id": "css/important::Found 1 !important usage(s) in stylesheet.css \u2014 !important overrides Shell theme; prefer higher specificity",
+      "status": "WARN",
+      "check": "css/important",
+      "detail": "Found 1 !important usage(s) in stylesheet.css \u2014 !important overrides Shell theme; prefer higher specificity"
+    },
+    {
+      "id": "css/shell-class-override::.popup-menu-item: overrides GNOME Shell theme class \u2014 use a scoped selector (.my-extension .popup-menu-item)",
+      "status": "FAIL",
+      "check": "css/shell-class-override",
+      "detail": ".popup-menu-item: overrides GNOME Shell theme class \u2014 use a scoped selector (.my-extension .popup-menu-item)"
+    },
+    {
+      "id": "accessibility/accessible-name::2 icon-only St.Button(s) without accessible_name: extension.js, extension.js",
+      "status": "WARN",
+      "check": "accessibility/accessible-name",
+      "detail": "2 icon-only St.Button(s) without accessible_name: extension.js:289, extension.js:552"
+    },
+    {
+      "id": "R-WEB-01::Not applicable for declared shell-version(s)",
+      "status": "SKIP",
+      "check": "R-WEB-01",
+      "detail": "Not applicable for declared shell-version(s)"
+    },
+    {
+      "id": "R-WEB-02::Not applicable for declared shell-version(s)",
+      "status": "SKIP",
+      "check": "R-WEB-02",
+      "detail": "Not applicable for declared shell-version(s)"
+    },
+    {
+      "id": "R-WEB-10::Not applicable for declared shell-version(s)",
+      "status": "SKIP",
+      "check": "R-WEB-10",
+      "detail": "Not applicable for declared shell-version(s)"
+    },
+    {
+      "id": "R-WEB-11::Not applicable for declared shell-version(s)",
+      "status": "SKIP",
+      "check": "R-WEB-11",
+      "detail": "Not applicable for declared shell-version(s)"
+    },
+    {
+      "id": "R-DEPR-04-legacy::Not applicable for declared shell-version(s)",
+      "status": "SKIP",
+      "check": "R-DEPR-04-legacy",
+      "detail": "Not applicable for declared shell-version(s)"
+    },
+    {
+      "id": "R-DEPR-09::Use const/let instead of var; var has function scope and causes bugs in closures",
+      "status": "WARN",
+      "check": "R-DEPR-09",
+      "detail": "extension.js:654: Use const/let instead of var; var has function scope and causes bugs in closures",
+      "fix": "Replace var with const (preferred) or let (when reassignment needed)."
+    },
+    {
+      "id": "R-DEPR-09::Use const/let instead of var; var has function scope and causes bugs in closures",
+      "status": "WARN",
+      "check": "R-DEPR-09",
+      "detail": "extension.js:1142: Use const/let instead of var; var has function scope and causes bugs in closures",
+      "fix": "Replace var with const (preferred) or let (when reassignment needed)."
+    },
+    {
+      "id": "R-DEPR-09::Use const/let instead of var; var has function scope and causes bugs in closures",
+      "status": "WARN",
+      "check": "R-DEPR-09",
+      "detail": "extension.js:1189: Use const/let instead of var; var has function scope and causes bugs in closures",
+      "fix": "Replace var with const (preferred) or let (when reassignment needed)."
+    },
+    {
+      "id": "R-DEPR-11::Shell.KeyBindingMode was removed before GNOME 40; use Shell.ActionMode",
+      "status": "FAIL",
+      "check": "R-DEPR-11",
+      "detail": "extension.js:1190: Shell.KeyBindingMode was removed before GNOME 40; use Shell.ActionMode",
+      "fix": "Replace Shell.KeyBindingMode with Shell.ActionMode"
+    },
+    {
+      "id": "R-SEC-06::GObject.run_dispose() should not be used unless absolutely necessary",
+      "status": "WARN",
+      "check": "R-SEC-06",
+      "detail": "keyboard.js:19: GObject.run_dispose() should not be used unless absolutely necessary",
+      "fix": "Remove run_dispose() call. If genuinely needed, add a comment explaining why."
+    },
+    {
+      "id": "R-PREFS-04c::GTK layout widget in prefs.js \u2014 verify no Adw equivalent for this specific use case",
+      "status": "WARN",
+      "check": "R-PREFS-04c",
+      "detail": "GTK layout widget in prefs.js \u2014 verify no Adw equivalent for this specific use case in 1 file(s): prefs.js",
+      "fix": "Gtk.ListBox with boxed-list CSS is valid for dynamic lists. Gtk.ScrolledWindow is valid for constrained-height content. Gtk.Grid/Stack may have Adw equivalents depending on usage."
+    },
+    {
+      "id": "R-SLOP-40::new Promise(resolve, reject) wrapper \u2014 consider Gio._promisify() for GIO async methods",
+      "status": "WARN",
+      "check": "R-SLOP-40",
+      "detail": "registry.js:250: new Promise(resolve, reject) wrapper \u2014 consider Gio._promisify() for GIO async methods",
+      "fix": "Use Gio._promisify() to promisify GIO async methods instead of manual Promise wrapping"
+    },
+    {
+      "id": "R-QUAL-34::enumerate_children() is synchronous \u2014 use enumerate_children_async() to avoid blocking the Shell main loop",
+      "status": "WARN",
+      "check": "R-QUAL-34",
+      "detail": "registry.js:194: enumerate_children() is synchronous \u2014 use enumerate_children_async() to avoid blocking the Shell main loop",
+      "fix": "Use file.enumerate_children_async(attributes, flags, priority, cancellable, callback)"
+    },
+    {
+      "id": "R-LIFE-19::global.stage.add_child() \u2014 ensure matching remove_child() in disable()/destroy()",
+      "status": "WARN",
+      "check": "R-LIFE-19",
+      "detail": "extension.js:1061: global.stage.add_child() \u2014 ensure matching remove_child() in disable()/destroy()",
+      "fix": "In disable(), call global.stage.remove_child(this._actor); this._actor = null;"
+    },
+    {
+      "id": "R-VER48-04b::vertical property in constructor config deprecated in GNOME 48; use orientation: Clutter.Orientation.VERTICAL (available since GNOME 47; keep vertical for GNOME <=46 compat)",
+      "status": "WARN",
+      "check": "R-VER48-04b",
+      "detail": "vertical property in constructor config deprecated in GNOME 48; use orientation: Clutter.Orientation.VERTICAL (available since GNOME 47; keep vertical for GNOME <=46 compat) in 2 file(s): confirmDialog.js, extension.js"
+    },
+    {
+      "id": "R-VER50-01::Not applicable for declared shell-version(s)",
+      "status": "SKIP",
+      "check": "R-VER50-01",
+      "detail": "Not applicable for declared shell-version(s)"
+    },
+    {
+      "id": "R-VER50-02::Not applicable for declared shell-version(s)",
+      "status": "SKIP",
+      "check": "R-VER50-02",
+      "detail": "Not applicable for declared shell-version(s)"
+    },
+    {
+      "id": "R-VER50-03::Not applicable for declared shell-version(s)",
+      "status": "SKIP",
+      "check": "R-VER50-03",
+      "detail": "Not applicable for declared shell-version(s)"
+    },
+    {
+      "id": "R-VER50-04::Not applicable for declared shell-version(s)",
+      "status": "SKIP",
+      "check": "R-VER50-04",
+      "detail": "Not applicable for declared shell-version(s)"
+    },
+    {
+      "id": "R-VER50-05::Not applicable for declared shell-version(s)",
+      "status": "SKIP",
+      "check": "R-VER50-05",
+      "detail": "Not applicable for declared shell-version(s)"
+    },
+    {
+      "id": "eslint::No eslint.config.mjs or node_modules/.bin/eslint found",
+      "status": "SKIP",
+      "check": "eslint",
+      "detail": "No eslint.config.mjs or node_modules/.bin/eslint found"
+    },
+    {
+      "id": "metadata/uuid-matches-dir::UUID 'clipboard-indicator@tudmotu.com' does not match directory 'clipboard-indicator' \u2014 must match when installed",
+      "status": "WARN",
+      "check": "metadata/uuid-matches-dir",
+      "detail": "UUID 'clipboard-indicator@tudmotu.com' does not match directory 'clipboard-indicator' \u2014 must match when installed"
+    },
+    {
+      "id": "schema-usage/unused-key::Dynamic key access detected \u2014 cannot verify statically",
+      "status": "SKIP",
+      "check": "schema-usage/unused-key",
+      "detail": "Dynamic key access detected \u2014 cannot verify statically"
+    },
+    {
+      "id": "schema-usage/undefined-key::Dynamic key access detected \u2014 cannot verify statically",
+      "status": "SKIP",
+      "check": "schema-usage/undefined-key",
+      "detail": "Dynamic key access detected \u2014 cannot verify statically"
+    },
+    {
+      "id": "quality/module-state::Module-level mutable state at extension.js, extension.js, extension.js, extension.js, extension.js \u2014 ensure reset in both enable() and disable()",
+      "status": "WARN",
+      "check": "quality/module-state",
+      "detail": "Module-level mutable state at extension.js:23, extension.js:24, extension.js:25, extension.js:34, extension.js:35 \u2014 ensure reset in both enable() and disable()"
+    },
+    {
+      "id": "quality/private-api::Main.panel private API access \u2014 requires reviewer justification and version pinning",
+      "status": "WARN",
+      "check": "quality/private-api",
+      "detail": "extension.js:1024, extension.js:1024: Main.panel private API access \u2014 requires reviewer justification and version pinning"
+    },
+    {
+      "id": "quality/run-dispose-no-comment::run_dispose() without explanatory comment \u2014 reviewers require justification",
+      "status": "WARN",
+      "check": "quality/run-dispose-no-comment",
+      "detail": "keyboard.js:19: run_dispose() without explanatory comment \u2014 reviewers require justification"
+    },
+    {
+      "id": "lifecycle/async-destroyed-guard::async/await used without _destroyed or _isDestroyed guard \u2014 extension may act on stale state after disable()",
+      "status": "WARN",
+      "check": "lifecycle/async-destroyed-guard",
+      "detail": "async/await used without _destroyed or _isDestroyed guard \u2014 extension may act on stale state after disable()"
+    },
+    {
+      "id": "lifecycle/clipboard-keybinding::St.Clipboard and addKeybinding() in same file \u2014 review whether keybinding-triggered clipboard access is intended and not a keylogger pattern",
+      "status": "WARN",
+      "check": "lifecycle/clipboard-keybinding",
+      "detail": "extension.js: St.Clipboard and addKeybinding() in same file \u2014 review whether keybinding-triggered clipboard access is intended and not a keylogger pattern"
+    },
+    {
+      "id": "lifecycle/timeout-reassignment::timeout/idle ID reassigned without prior GLib.Source.remove() \u2014 may leak GLib sources",
+      "status": "WARN",
+      "check": "lifecycle/timeout-reassignment",
+      "detail": "extension.js:880: timeout/idle ID reassigned without prior GLib.Source.remove() \u2014 may leak GLib sources"
+    },
+    {
+      "id": "gobject/missing-gtypename::GObject.registerClass without GTypeName \u2014 add GTypeName to avoid conflicts between extensions",
+      "status": "WARN",
+      "check": "gobject/missing-gtypename",
+      "detail": "confirmDialog.js:22: GObject.registerClass without GTypeName \u2014 add GTypeName to avoid conflicts between extensions"
+    },
+    {
+      "id": "async/no-cancellable::Gio async calls at registry.js, registry.js, registry.js without Gio.Cancellable \u2014 async operations should be cancellable via disable()",
+      "status": "WARN",
+      "check": "async/no-cancellable",
+      "detail": "Gio async calls at registry.js:87, registry.js:250, registry.js:58 without Gio.Cancellable \u2014 async operations should be cancellable via disable()"
+    },
+    {
+      "id": "async/missing-cancellable::_async() calls without Gio.Cancellable at registry.js, registry.js, registry.js (+6 more) \u2014 async operations may run after disable()",
+      "status": "WARN",
+      "check": "async/missing-cancellable",
+      "detail": "_async() calls without Gio.Cancellable at registry.js:53, registry.js:58, registry.js:73 (+6 more) \u2014 async operations may run after disable()"
+    },
+    {
+      "id": "async/disable-no-cancel::Extension uses async but disable() has no .cancel(), .abort(), or _destroyed flag \u2014 async operations may outlive disable()",
+      "status": "WARN",
+      "check": "async/disable-no-cancel",
+      "detail": "Extension uses async but disable() has no .cancel(), .abort(), or _destroyed flag \u2014 async operations may outlive disable()"
+    },
+    {
+      "id": "resource-tracking/no-destroy-method::registry.js \u2014 no cleanup method (destroy/disable/onDestroy) in registry.js",
+      "status": "WARN",
+      "check": "resource-tracking/no-destroy-method",
+      "detail": "registry.js:148 \u2014 no cleanup method (destroy/disable/onDestroy) in registry.js"
+    },
+    {
+      "id": "resource-tracking/ownership::5 files scanned, depth 2, 1 orphan detected",
+      "status": "WARN",
+      "check": "resource-tracking/ownership",
+      "detail": "5 files scanned, depth 2, 1 orphan detected"
+    },
+    {
+      "id": "package/exists::No zip package found in extension directory",
+      "status": "SKIP",
+      "check": "package/exists",
+      "detail": "No zip package found in extension directory"
+    }
+  ]
+}

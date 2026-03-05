@@ -1,0 +1,80 @@
+# Field test extension manifest
+# Each entry defines an extension source for batch ego-lint testing.
+# Source types: local (path on disk), github (repo + optional ref), github-release (repo + tag)
+
+extensions:
+  - name: hara-hachi-bu
+    uuid: hara-hachi-bu@ZviBaratz
+    source:
+      type: local
+      path: ~/.local/share/gnome-shell/extensions/hara-hachi-bu@ZviBaratz
+    baseline: true
+    ego_approved: false
+
+  - name: tiling-shell
+    uuid: tilingshell@ferrarodomenico.com
+    source:
+      type: github-release
+      repo: domferr/tilingshell
+      tag: v17.3
+    ego_approved: true
+
+  - name: v-shell
+    uuid: vertical-workspaces@G-dH.github.com
+    source:
+      type: local
+      path: ~/.local/share/gnome-shell/extensions/vertical-workspaces@G-dH.github.com
+    ego_approved: true
+
+  - name: gsconnect
+    uuid: gsconnect@andyholmes.github.io
+    source:
+      type: local
+      path: ~/Projects/field-test-backups/gsconnect/
+    ego_approved: true
+
+  - name: appindicator
+    uuid: appindicatorsupport@rgcjonas.gmail.com
+    source:
+      type: github
+      repo: ubuntu/gnome-shell-extension-appindicator
+      ref: be68add0382b1ee19eb8e851464e3a3ac6900c6a
+    ego_approved: true
+
+  - name: clipboard-indicator
+    uuid: clipboard-indicator@tudmotu.com
+    source:
+      type: github
+      repo: Tudmotu/gnome-shell-extension-clipboard-indicator
+      ref: 13ba8b10e080c5a4dd5b7941d443d437ae83b3cb
+    ego_approved: true
+
+  - name: blur-my-shell
+    uuid: blur-my-shell@aunetx
+    source:
+      type: github
+      repo: aunetx/blur-my-shell
+      ref: 2296e819c4238c4a8f061c4441292b56f00e4f30
+    ego_approved: true
+
+  - name: dash-to-panel
+    uuid: dash-to-panel@jderose9.github.com
+    source:
+      type: github
+      repo: home-sweet-gnome/dash-to-panel
+      ref: ebf64ab50b28d1eb6db45861f882bc2180f34f07
+    ego_approved: true
+
+  - name: media-controls
+    uuid: mediacontrols@cliffniff.github.com
+    source:
+      type: github
+      repo: cliffniff/Media-Controls
+    ego_approved: true
+
+  - name: just-perfection
+    uuid: just-perfection-desktop@just-perfection
+    source:
+      type: github
+      repo: jrahmatzadeh/just-perfection
+    ego_approved: true

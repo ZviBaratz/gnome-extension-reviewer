@@ -1,0 +1,177 @@
+{
+  "name": "just-perfection",
+  "uuid": "just-perfection-desktop@just-perfection",
+  "timestamp": "2026-03-04T22:17:51.029870+00:00",
+  "ego_lint_version": "0dbe7e8",
+  "ego_approved": true,
+  "exit_code": 1,
+  "counts": {
+    "pass": 195,
+    "fail": 4,
+    "warn": 9,
+    "skip": 12,
+    "total": 220
+  },
+  "metrics": {
+    "js_files": 7,
+    "total_lines": 7490,
+    "largest_file": "API.js (3663)",
+    "css_lines": 732,
+    "schema_keys": 73
+  },
+  "provenance_score": null,
+  "findings": [
+    {
+      "id": "non-gjs-scripts::Found 2 non-GJS script(s) \u2014 scripts MUST be written in GJS; no pkexec/privileged helper justification found",
+      "status": "FAIL",
+      "check": "non-gjs-scripts",
+      "detail": "Found 2 non-GJS script(s) \u2014 scripts MUST be written in GJS; no pkexec/privileged helper justification found"
+    },
+    {
+      "id": "polkit/action-id-match::No polkit files found",
+      "status": "SKIP",
+      "check": "polkit/action-id-match",
+      "detail": "No polkit files found"
+    },
+    {
+      "id": "polkit/action-id-prefix::No polkit files found",
+      "status": "SKIP",
+      "check": "polkit/action-id-prefix",
+      "detail": "No polkit files found"
+    },
+    {
+      "id": "polkit/helper-exists::No polkit files found",
+      "status": "SKIP",
+      "check": "polkit/helper-exists",
+      "detail": "No polkit files found"
+    },
+    {
+      "id": "R-WEB-01::Not applicable for declared shell-version(s)",
+      "status": "SKIP",
+      "check": "R-WEB-01",
+      "detail": "Not applicable for declared shell-version(s)"
+    },
+    {
+      "id": "R-WEB-02::Not applicable for declared shell-version(s)",
+      "status": "SKIP",
+      "check": "R-WEB-02",
+      "detail": "Not applicable for declared shell-version(s)"
+    },
+    {
+      "id": "R-WEB-10::Not applicable for declared shell-version(s)",
+      "status": "SKIP",
+      "check": "R-WEB-10",
+      "detail": "Not applicable for declared shell-version(s)"
+    },
+    {
+      "id": "R-WEB-11::Not applicable for declared shell-version(s)",
+      "status": "SKIP",
+      "check": "R-WEB-11",
+      "detail": "Not applicable for declared shell-version(s)"
+    },
+    {
+      "id": "R-DEPR-04-legacy::Not applicable for declared shell-version(s)",
+      "status": "SKIP",
+      "check": "R-DEPR-04-legacy",
+      "detail": "Not applicable for declared shell-version(s)"
+    },
+    {
+      "id": "R-SLOP-03::version field is deprecated; EGO manages versions for GNOME 45+",
+      "status": "WARN",
+      "check": "R-SLOP-03",
+      "detail": "src/metadata.json:12: version field is deprecated; EGO manages versions for GNOME 45+",
+      "fix": "Remove the version field from metadata.json; EGO manages versions automatically."
+    },
+    {
+      "id": "R-VER48-07::CSS class .quick-menu-toggle renamed to .quick-toggle-has-menu in GNOME 48",
+      "status": "FAIL",
+      "check": "R-VER48-07",
+      "detail": "src/stylesheet.css:167: CSS class .quick-menu-toggle renamed to .quick-toggle-has-menu in GNOME 48",
+      "fix": "Replace .quick-menu-toggle with .quick-toggle-has-menu"
+    },
+    {
+      "id": "eslint::No eslint.config.mjs or node_modules/.bin/eslint found",
+      "status": "SKIP",
+      "check": "eslint",
+      "detail": "No eslint.config.mjs or node_modules/.bin/eslint found"
+    },
+    {
+      "id": "metadata/uuid-matches-dir::UUID 'just-perfection-desktop@just-perfection' does not match directory 'just-perfection' \u2014 must match when installed",
+      "status": "WARN",
+      "check": "metadata/uuid-matches-dir",
+      "detail": "UUID 'just-perfection-desktop@just-perfection' does not match directory 'just-perfection' \u2014 must match when installed"
+    },
+    {
+      "id": "metadata/deprecated-version::version field is ignored by EGO for GNOME 45+; consider removing",
+      "status": "WARN",
+      "check": "metadata/deprecated-version",
+      "detail": "version field is ignored by EGO for GNOME 45+; consider removing"
+    },
+    {
+      "id": "metadata/future-shell-version::shell-version '50' is newer than current stable (49)",
+      "status": "FAIL",
+      "check": "metadata/future-shell-version",
+      "detail": "shell-version '50' is newer than current stable (49)"
+    },
+    {
+      "id": "schema/exists::settings-schema 'org.gnome.shell.extensions.just-perfection' in metadata.json but no .gschema.xml files found",
+      "status": "FAIL",
+      "check": "schema/exists",
+      "detail": "settings-schema 'org.gnome.shell.extensions.just-perfection' in metadata.json but no .gschema.xml files found"
+    },
+    {
+      "id": "schema-usage/unused-key::Dynamic key access detected \u2014 cannot verify statically",
+      "status": "SKIP",
+      "check": "schema-usage/unused-key",
+      "detail": "Dynamic key access detected \u2014 cannot verify statically"
+    },
+    {
+      "id": "schema-usage/undefined-key::Dynamic key access detected \u2014 cannot verify statically",
+      "status": "SKIP",
+      "check": "schema-usage/undefined-key",
+      "detail": "Dynamic key access detected \u2014 cannot verify statically"
+    },
+    {
+      "id": "quality/file-complexity::1636 non-blank lines \u2014 consider splitting into modules",
+      "status": "WARN",
+      "check": "quality/file-complexity",
+      "detail": "src/lib/Manager.js: 1636 non-blank lines \u2014 consider splitting into modules"
+    },
+    {
+      "id": "quality/private-api::src/lib/API.js, src/lib/API.js, src/lib/API.js, src/lib/API.js, src/lib/API.js (+3 more): statusArea private API access \u2014 requires reviewer justification and version pinning",
+      "status": "WARN",
+      "check": "quality/private-api",
+      "detail": "src/lib/API.js:2738, src/lib/API.js:2758, src/lib/API.js:2804, src/lib/API.js:2814, src/lib/API.js:3590 (+3 more): statusArea private API access \u2014 requires reviewer justification and version pinning"
+    },
+    {
+      "id": "lifecycle/prototype-override::BackgroundMenu.prototype.open \u2014 direct prototype modification should be restored in disable()",
+      "status": "WARN",
+      "check": "lifecycle/prototype-override",
+      "detail": "src/lib/API.js: BackgroundMenu.prototype.open \u2014 direct prototype modification should be restored in disable()"
+    },
+    {
+      "id": "lifecycle/prototype-override::SearchController.prototype.startSearch \u2014 direct prototype modification should be restored in disable()",
+      "status": "WARN",
+      "check": "lifecycle/prototype-override",
+      "detail": "src/lib/API.js: SearchController.prototype.startSearch \u2014 direct prototype modification should be restored in disable()"
+    },
+    {
+      "id": "lifecycle/prototype-override::WorkspaceSwitcherPopup.prototype.display \u2014 direct prototype modification should be restored in disable()",
+      "status": "WARN",
+      "check": "lifecycle/prototype-override",
+      "detail": "src/lib/API.js: WorkspaceSwitcherPopup.prototype.display \u2014 direct prototype modification should be restored in disable()"
+    },
+    {
+      "id": "disclosure/private-api::private-api capability detected in code but metadata description does not disclose it \u2014 reviewers expect disclosure",
+      "status": "WARN",
+      "check": "disclosure/private-api",
+      "detail": "private-api capability detected in code but metadata description does not disclose it \u2014 reviewers expect disclosure"
+    },
+    {
+      "id": "package/exists::No zip package found in extension directory",
+      "status": "SKIP",
+      "check": "package/exists",
+      "detail": "No zip package found in extension directory"
+    }
+  ]
+}

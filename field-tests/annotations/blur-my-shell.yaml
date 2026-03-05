@@ -1,0 +1,84 @@
+# Classified findings for Blur my Shell
+# Source: docs/internal/field-test-blur-my-shell.md
+findings:
+  # FAILs — Fixed False Positives
+  - id: "init/shell-modification::GObject.registerClass at module scope"
+    classification: fp
+    notes: "13 FPs — GObject.registerClass returns a class constructor, not an instance. Fixed: exemption in check-init.py."
+  - id: "file-structure/extension.js::src/ layout"
+    classification: fp
+    notes: "Extension uses src/ subdirectory layout. Fixed: src/ fallback in ego-lint.sh."
+  # FAILs — True Positives
+  - id: "R-DEPR-06::Tweener usage"
+    classification: tp
+    notes: "appfolders.js uses imports.tweener.tweener — would crash on GNOME 46+. 4 line hits."
+  - id: "R-VER47-01::Clutter.Color"
+    classification: borderline
+    notes: "appfolders.js has ternary runtime guard (Clutter.Color ? ... : Cogl.Color), but file crashes before reaching this code due to Tweener import"
+  # WARNs — False Positives
+  - id: "resource-tracking/destroy-not-called::disable() not recognized"
+    classification: fp
+    notes: "63 hits — components use .disable() not .destroy() as cleanup. Resource graph only recognizes destroy()."
+  - id: "quality/constructor-resources::pipeline instances"
+    classification: fp
+    notes: "17 hits — mostly FP, pipeline instances managed via parent lifecycle"
+  - id: "resource-tracking/no-destroy-method::utility classes"
+    classification: fp
+    notes: "10 hits — utility classes use disconnect_all(), remove() instead"
+  - id: "R-SLOP-38::descriptive identifier"
+    classification: fp
+    notes: "dash_not_already_destroyed is descriptive, not AI verbosity. Fixed: guard-pattern."
+  - id: "R-SLOP-24::non-extension schema"
+    classification: fp
+    notes: "new Gio.Settings({schema: 'org.gnome.mutter'}) correctly accesses system schema. Fixed: guard-pattern."
+  # WARNs — True Positives
+  - id: "lifecycle/prototype-override::UnlockDialog overrides"
+    classification: tp
+    notes: "6 instances — correctly flags lockscreen UnlockDialog overrides"
+  - id: "R-I18N-01::template literals in _()"
+    classification: tp
+    notes: "4 instances — breaks xgettext extraction"
+  - id: "R-SLOP-16::GLib.file_get_contents synchronous"
+    classification: tp
+    notes: "Synchronous file read advisory"
+  - id: "R-SLOP-03::version field deprecated"
+    classification: tp
+    notes: "Deprecated for GNOME 45+"
+  - id: "R-SEC-09::Main.extensionManager access"
+    classification: tp
+    notes: "Extension system interference for Dash to Panel compat"
+  - id: "R-DEPR-09::var usage"
+    classification: tp
+    notes: "var x, y; should use let"
+  - id: "quality/private-api::Main.overview._overview"
+    classification: tp
+    notes: "Private API access — correct advisory"
+  - id: "quality/module-state::module vars not reset"
+    classification: tp
+    notes: "sigma and brightness not reset in disable"
+  - id: "quality/empty-catch::empty catch block"
+    classification: tp
+    notes: "paint_signals.js — empty catch"
+  - id: "lifecycle/signal-balance::125 vs 28"
+    classification: tp
+    notes: "By design — Connections class auto-cleans, but signal-balance heuristic can't verify"
+  - id: "lifecycle/async-destroyed-guard::await import"
+    classification: tp
+    notes: "Low risk — await import() in utils.js without guard"
+  # WARNs — Mixed
+  - id: "lifecycle/untracked-timeout::prefs auto-cleanup"
+    classification: borderline
+    notes: "4 hits — 2 TP, 2 FP (prefs.js timeouts auto-cleanup on window close)"
+  # ego-review advisory findings (not caught by ego-lint)
+  - id: "lifecycle::actor.destroy missing parentheses"
+    classification: tp
+    notes: "L-3: coverflow_alt_tab.js:69 — actor.destroy is property access, not function call. Undetectable by pattern matching."
+  - id: "lifecycle::splice wrong argument type"
+    classification: tp
+    notes: "L-10: window_list.js:111 — passes object instead of index to splice()"
+  - id: "lifecycle::setTimeout source ID not stored"
+    classification: tp
+    notes: "L-1: panel.js:70 — can fire after disable"
+  - id: "lifecycle::GLib.idle_add source ID not stored"
+    classification: tp
+    notes: "L-2: panel.js:91 — can fire after disable"

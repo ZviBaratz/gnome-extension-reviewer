@@ -1,0 +1,72 @@
+# Classified findings for Media Controls
+# Source: docs/internal/field-test-media-controls.md
+findings:
+  # FAILs — False Positives
+  - id: "metadata/exists::src/metadata.json not found"
+    classification: fp
+    notes: "metadata.json in src/, no fallback. Fixed: src/metadata.json fallback."
+  - id: "file-structure/metadata.json::src/ layout"
+    classification: fp
+    notes: "Same root cause as metadata/exists — src/ layout not supported"
+  # FAILs — True Positives
+  - id: "css/shell-class-override::.panel-button"
+    classification: tp
+    notes: "Overrides GNOME Shell panel button styling for ALL panel buttons, not just this extension's"
+  # WARNs — False Positives
+  - id: "R-SLOP-02::JSDoc @returns"
+    classification: fp
+    notes: "103 hits — intentional TypeScript-compatible JSDoc typing strategy"
+  - id: "R-SLOP-01::JSDoc @param"
+    classification: fp
+    notes: "70 hits — same. Provenance score 3, threshold >= 4 too conservative. Fixed: threshold lowered to >= 3."
+  - id: "resource-tracking/no-destroy-method::onDestroy not recognized"
+    classification: fp
+    notes: "45 hits — PanelButton.js and MenuSlider.js use onDestroy() cleanup pattern not recognized. Fixed: onDestroy() added to cleanup detection."
+  # WARNs — True Positives
+  - id: "R-SLOP-11::GLib.source_remove"
+    classification: tp
+    notes: "10 instances — should use GLib.Source.remove()"
+  - id: "lifecycle/prototype-override::MprisSource._addPlayer"
+    classification: tp
+    notes: "2 instances — monkey-patched but original not saved/restored in disable()"
+  - id: "lifecycle/soup-session-abort::no abort on disable"
+    classification: tp
+    notes: "Soup.Session for album art with no abort() in cleanup"
+  - id: "lifecycle/async-destroyed-guard::no _destroyed guard"
+    classification: tp
+    notes: "Multiple async/await chains without guard"
+  - id: "async/no-cancellable::async without Gio.Cancellable"
+    classification: tp
+    notes: "D-Bus proxy creation and file operations"
+  - id: "async/missing-cancellable::_async without cancellable"
+    classification: tp
+    notes: "Same concern"
+  - id: "quality/constructor-resources::connect in AppChooser"
+    classification: tp
+    notes: "Prefs widget constructor — limited impact but noted"
+  - id: "quality/comment-density::45% comments"
+    classification: tp
+    notes: "utils/common.js — advisory"
+  - id: "quality/private-api::Main.panel"
+    classification: tp
+    notes: "Private API access"
+  - id: "quality/excessive-null-checks::117 null checks"
+    classification: tp
+    notes: "Ratio 0.025 — advisory"
+  - id: "R-QUAL-33::Gio._promisify module-scope"
+    classification: tp
+    notes: "4 files with undocumented promisify — advisory"
+  # WARNs — Debatable
+  - id: "R-SLOP-17::typeof method guard"
+    classification: borderline
+    notes: "3 instances — defensive check for optional API methods"
+  - id: "lifecycle/signal-balance::41 vs 10"
+    classification: borderline
+    notes: "Needs deeper analysis — some may use connectObject, some on child widgets"
+  # ego-review findings (not caught by ego-lint)
+  - id: "review/gsettings-signal-leak::28 GSettings handlers never disconnected"
+    classification: tp
+    notes: "28 bare .connect('changed::key') on GSettings with no disconnect in disable — highest-impact leak in field test corpus"
+  - id: "review/dbus-signal-leak::proxy NameOwnerChanged+PropertiesChanged+Seeked"
+    classification: tp
+    notes: "D-Bus proxy signals connected but never disconnected in disable()"

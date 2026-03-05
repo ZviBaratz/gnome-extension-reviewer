@@ -1,0 +1,349 @@
+{
+  "name": "media-controls",
+  "uuid": "mediacontrols@cliffniff.github.com",
+  "timestamp": "2026-03-04T22:17:47.470177+00:00",
+  "ego_lint_version": "0dbe7e8",
+  "ego_approved": true,
+  "exit_code": 1,
+  "counts": {
+    "pass": 183,
+    "fail": 6,
+    "warn": 28,
+    "skip": 17,
+    "total": 234
+  },
+  "metrics": {
+    "js_files": 17,
+    "total_lines": 5064,
+    "largest_file": "PanelButton.js (1236)",
+    "css_lines": 100,
+    "schema_keys": 29
+  },
+  "provenance_score": null,
+  "findings": [
+    {
+      "id": "polkit/action-id-match::No polkit files found",
+      "status": "SKIP",
+      "check": "polkit/action-id-match",
+      "detail": "No polkit files found"
+    },
+    {
+      "id": "polkit/action-id-prefix::No polkit files found",
+      "status": "SKIP",
+      "check": "polkit/action-id-prefix",
+      "detail": "No polkit files found"
+    },
+    {
+      "id": "polkit/helper-exists::No polkit files found",
+      "status": "SKIP",
+      "check": "polkit/helper-exists",
+      "detail": "No polkit files found"
+    },
+    {
+      "id": "css/shell-class-override::.panel-button: overrides GNOME Shell theme class \u2014 use a scoped selector (.my-extension .panel-button)",
+      "status": "FAIL",
+      "check": "css/shell-class-override",
+      "detail": ".panel-button: overrides GNOME Shell theme class \u2014 use a scoped selector (.my-extension .panel-button)"
+    },
+    {
+      "id": "R-WEB-01::Not applicable for declared shell-version(s)",
+      "status": "SKIP",
+      "check": "R-WEB-01",
+      "detail": "Not applicable for declared shell-version(s)"
+    },
+    {
+      "id": "R-WEB-02::Not applicable for declared shell-version(s)",
+      "status": "SKIP",
+      "check": "R-WEB-02",
+      "detail": "Not applicable for declared shell-version(s)"
+    },
+    {
+      "id": "R-WEB-10::Not applicable for declared shell-version(s)",
+      "status": "SKIP",
+      "check": "R-WEB-10",
+      "detail": "Not applicable for declared shell-version(s)"
+    },
+    {
+      "id": "R-WEB-11::Not applicable for declared shell-version(s)",
+      "status": "SKIP",
+      "check": "R-WEB-11",
+      "detail": "Not applicable for declared shell-version(s)"
+    },
+    {
+      "id": "R-DEPR-04-legacy::Not applicable for declared shell-version(s)",
+      "status": "SKIP",
+      "check": "R-DEPR-04-legacy",
+      "detail": "Not applicable for declared shell-version(s)"
+    },
+    {
+      "id": "R-SLOP-17::typeof method guard \u2014 verify this check is necessary; GObject and well-typed objects have known methods",
+      "status": "WARN",
+      "check": "R-SLOP-17",
+      "detail": "src/helpers/shell/MenuSlider.js:252: typeof method guard \u2014 verify this check is necessary; GObject and well-typed objects have known methods",
+      "fix": "Remove the typeof check. Use a null/undefined guard on the object instead, or add a comment if duck-typing is intentional."
+    },
+    {
+      "id": "R-SLOP-17::typeof method guard \u2014 verify this check is necessary; GObject and well-typed objects have known methods",
+      "status": "WARN",
+      "check": "R-SLOP-17",
+      "detail": "src/helpers/shell/MenuSlider.js:256: typeof method guard \u2014 verify this check is necessary; GObject and well-typed objects have known methods",
+      "fix": "Remove the typeof check. Use a null/undefined guard on the object instead, or add a comment if duck-typing is intentional."
+    },
+    {
+      "id": "R-SLOP-17::typeof method guard \u2014 verify this check is necessary; GObject and well-typed objects have known methods",
+      "status": "WARN",
+      "check": "R-SLOP-17",
+      "detail": "src/helpers/shell/MenuSlider.js:261: typeof method guard \u2014 verify this check is necessary; GObject and well-typed objects have known methods",
+      "fix": "Remove the typeof check. Use a null/undefined guard on the object instead, or add a comment if duck-typing is intentional."
+    },
+    {
+      "id": "R-SLOP-11::Non-existent GLib method \u2014 use GLib.timeout_add_seconds() and GLib.Source.remove()",
+      "status": "WARN",
+      "check": "R-SLOP-11",
+      "detail": "src/helpers/shell/ScrollingLabel.js:174: Non-existent GLib method \u2014 use GLib.timeout_add_seconds() and GLib.Source.remove()",
+      "fix": "GLib.timeout_add_seconds_full \u2192 GLib.timeout_add_seconds. GLib.source_remove \u2192 GLib.Source.remove."
+    },
+    {
+      "id": "R-SLOP-11::Non-existent GLib method \u2014 use GLib.timeout_add_seconds() and GLib.Source.remove()",
+      "status": "WARN",
+      "check": "R-SLOP-11",
+      "detail": "src/helpers/shell/ScrollingLabel.js:179: Non-existent GLib method \u2014 use GLib.timeout_add_seconds() and GLib.Source.remove()",
+      "fix": "GLib.timeout_add_seconds_full \u2192 GLib.timeout_add_seconds. GLib.source_remove \u2192 GLib.Source.remove."
+    },
+    {
+      "id": "R-SLOP-11::Non-existent GLib method \u2014 use GLib.timeout_add_seconds() and GLib.Source.remove()",
+      "status": "WARN",
+      "check": "R-SLOP-11",
+      "detail": "src/helpers/shell/ScrollingLabel.js:247: Non-existent GLib method \u2014 use GLib.timeout_add_seconds() and GLib.Source.remove()",
+      "fix": "GLib.timeout_add_seconds_full \u2192 GLib.timeout_add_seconds. GLib.source_remove \u2192 GLib.Source.remove."
+    },
+    {
+      "id": "R-SLOP-11::Non-existent GLib method \u2014 use GLib.timeout_add_seconds() and GLib.Source.remove()",
+      "status": "WARN",
+      "check": "R-SLOP-11",
+      "detail": "src/helpers/shell/ScrollingLabel.js:251: Non-existent GLib method \u2014 use GLib.timeout_add_seconds() and GLib.Source.remove()",
+      "fix": "GLib.timeout_add_seconds_full \u2192 GLib.timeout_add_seconds. GLib.source_remove \u2192 GLib.Source.remove."
+    },
+    {
+      "id": "R-SLOP-11::Non-existent GLib method \u2014 use GLib.timeout_add_seconds() and GLib.Source.remove()",
+      "status": "WARN",
+      "check": "R-SLOP-11",
+      "detail": "src/helpers/shell/ScrollingLabel.js:289: Non-existent GLib method \u2014 use GLib.timeout_add_seconds() and GLib.Source.remove()",
+      "fix": "GLib.timeout_add_seconds_full \u2192 GLib.timeout_add_seconds. GLib.source_remove \u2192 GLib.Source.remove."
+    },
+    {
+      "id": "R-SLOP-11::Non-existent GLib method \u2014 use GLib.timeout_add_seconds() and GLib.Source.remove()",
+      "status": "WARN",
+      "check": "R-SLOP-11",
+      "detail": "src/helpers/shell/PanelButton.js:1119: Non-existent GLib method \u2014 use GLib.timeout_add_seconds() and GLib.Source.remove()",
+      "fix": "GLib.timeout_add_seconds_full \u2192 GLib.timeout_add_seconds. GLib.source_remove \u2192 GLib.Source.remove."
+    },
+    {
+      "id": "R-SLOP-11::Non-existent GLib method \u2014 use GLib.timeout_add_seconds() and GLib.Source.remove()",
+      "status": "WARN",
+      "check": "R-SLOP-11",
+      "detail": "src/helpers/shell/PanelButton.js:1222: Non-existent GLib method \u2014 use GLib.timeout_add_seconds() and GLib.Source.remove()",
+      "fix": "GLib.timeout_add_seconds_full \u2192 GLib.timeout_add_seconds. GLib.source_remove \u2192 GLib.Source.remove."
+    },
+    {
+      "id": "R-SLOP-11::Non-existent GLib method \u2014 use GLib.timeout_add_seconds() and GLib.Source.remove()",
+      "status": "WARN",
+      "check": "R-SLOP-11",
+      "detail": "src/helpers/shell/PlayerProxy.js:168: Non-existent GLib method \u2014 use GLib.timeout_add_seconds() and GLib.Source.remove()",
+      "fix": "GLib.timeout_add_seconds_full \u2192 GLib.timeout_add_seconds. GLib.source_remove \u2192 GLib.Source.remove."
+    },
+    {
+      "id": "R-SLOP-11::Non-existent GLib method \u2014 use GLib.timeout_add_seconds() and GLib.Source.remove()",
+      "status": "WARN",
+      "check": "R-SLOP-11",
+      "detail": "src/helpers/shell/PlayerProxy.js:178: Non-existent GLib method \u2014 use GLib.timeout_add_seconds() and GLib.Source.remove()",
+      "fix": "GLib.timeout_add_seconds_full \u2192 GLib.timeout_add_seconds. GLib.source_remove \u2192 GLib.Source.remove."
+    },
+    {
+      "id": "R-SLOP-11::Non-existent GLib method \u2014 use GLib.timeout_add_seconds() and GLib.Source.remove()",
+      "status": "WARN",
+      "check": "R-SLOP-11",
+      "detail": "src/helpers/shell/PlayerProxy.js:606: Non-existent GLib method \u2014 use GLib.timeout_add_seconds() and GLib.Source.remove()",
+      "fix": "GLib.timeout_add_seconds_full \u2192 GLib.timeout_add_seconds. GLib.source_remove \u2192 GLib.Source.remove."
+    },
+    {
+      "id": "R-QUAL-33::Gio._promisify() permanently mutates shared GJS prototypes \u2014 document module-scope placement",
+      "status": "WARN",
+      "check": "R-QUAL-33",
+      "detail": "Gio._promisify() permanently mutates shared GJS prototypes \u2014 document module-scope placement in 4 file(s): src/extension.js, src/helpers/shell/PanelButton.js, src/prefs.js, src/utils/shell_only.js",
+      "fix": "Gio._promisify() is fine but cannot be undone on disable(); add a comment explaining the module-scope placement"
+    },
+    {
+      "id": "R-VER48-04b::vertical property in constructor config deprecated in GNOME 48; use orientation: Clutter.Orientation.VERTICAL (available since GNOME 47; keep vertical for GNOME <=46 compat)",
+      "status": "WARN",
+      "check": "R-VER48-04b",
+      "detail": "vertical property in constructor config deprecated in GNOME 48; use orientation: Clutter.Orientation.VERTICAL (available since GNOME 47; keep vertical for GNOME <=46 compat) in 2 file(s): src/helpers/shell/MenuSlider.js, src/helpers/shell/PanelButton.js"
+    },
+    {
+      "id": "R-VER49-02::Clutter.ClickAction removed in GNOME 49; use Clutter.ClickGesture",
+      "status": "FAIL",
+      "check": "R-VER49-02",
+      "detail": "src/helpers/shell/PanelButton.js:366: Clutter.ClickAction removed in GNOME 49; use Clutter.ClickGesture",
+      "fix": "Use new Clutter.ClickGesture() instead"
+    },
+    {
+      "id": "R-VER49-02::Clutter.ClickAction removed in GNOME 49; use Clutter.ClickGesture",
+      "status": "FAIL",
+      "check": "R-VER49-02",
+      "detail": "src/helpers/shell/PanelButton.js:449: Clutter.ClickAction removed in GNOME 49; use Clutter.ClickGesture",
+      "fix": "Use new Clutter.ClickGesture() instead"
+    },
+    {
+      "id": "R-VER49-02::Clutter.ClickAction removed in GNOME 49; use Clutter.ClickGesture",
+      "status": "FAIL",
+      "check": "R-VER49-02",
+      "detail": "src/helpers/shell/PanelButton.js:723: Clutter.ClickAction removed in GNOME 49; use Clutter.ClickGesture",
+      "fix": "Use new Clutter.ClickGesture() instead"
+    },
+    {
+      "id": "R-VER49-02::Clutter.ClickAction removed in GNOME 49; use Clutter.ClickGesture",
+      "status": "FAIL",
+      "check": "R-VER49-02",
+      "detail": "src/helpers/shell/PanelButton.js:907: Clutter.ClickAction removed in GNOME 49; use Clutter.ClickGesture",
+      "fix": "Use new Clutter.ClickGesture() instead"
+    },
+    {
+      "id": "R-VER50-01::Not applicable for declared shell-version(s)",
+      "status": "SKIP",
+      "check": "R-VER50-01",
+      "detail": "Not applicable for declared shell-version(s)"
+    },
+    {
+      "id": "R-VER50-02::Not applicable for declared shell-version(s)",
+      "status": "SKIP",
+      "check": "R-VER50-02",
+      "detail": "Not applicable for declared shell-version(s)"
+    },
+    {
+      "id": "R-VER50-03::Not applicable for declared shell-version(s)",
+      "status": "SKIP",
+      "check": "R-VER50-03",
+      "detail": "Not applicable for declared shell-version(s)"
+    },
+    {
+      "id": "R-VER50-04::Not applicable for declared shell-version(s)",
+      "status": "SKIP",
+      "check": "R-VER50-04",
+      "detail": "Not applicable for declared shell-version(s)"
+    },
+    {
+      "id": "R-VER50-05::Not applicable for declared shell-version(s)",
+      "status": "SKIP",
+      "check": "R-VER50-05",
+      "detail": "Not applicable for declared shell-version(s)"
+    },
+    {
+      "id": "eslint::No eslint.config.mjs or node_modules/.bin/eslint found",
+      "status": "SKIP",
+      "check": "eslint",
+      "detail": "No eslint.config.mjs or node_modules/.bin/eslint found"
+    },
+    {
+      "id": "metadata/uuid-matches-dir::UUID 'mediacontrols@cliffniff.github.com' does not match directory 'media-controls' \u2014 must match when installed",
+      "status": "WARN",
+      "check": "metadata/uuid-matches-dir",
+      "detail": "UUID 'mediacontrols@cliffniff.github.com' does not match directory 'media-controls' \u2014 must match when installed"
+    },
+    {
+      "id": "schema/exists::settings-schema 'org.gnome.shell.extensions.mediacontrols' in metadata.json but no .gschema.xml files found",
+      "status": "FAIL",
+      "check": "schema/exists",
+      "detail": "settings-schema 'org.gnome.shell.extensions.mediacontrols' in metadata.json but no .gschema.xml files found"
+    },
+    {
+      "id": "schema-usage/unused-key::Dynamic key access detected \u2014 cannot verify statically",
+      "status": "SKIP",
+      "check": "schema-usage/unused-key",
+      "detail": "Dynamic key access detected \u2014 cannot verify statically"
+    },
+    {
+      "id": "schema-usage/undefined-key::Dynamic key access detected \u2014 cannot verify statically",
+      "status": "SKIP",
+      "check": "schema-usage/undefined-key",
+      "detail": "Dynamic key access detected \u2014 cannot verify statically"
+    },
+    {
+      "id": "quality/constructor-resources::.connect() in constructor \u2014 move to enable()",
+      "status": "WARN",
+      "check": "quality/constructor-resources",
+      "detail": "src/helpers/prefs/AppChooser.js:51: .connect() in constructor \u2014 move to enable()"
+    },
+    {
+      "id": "quality/comment-density::215/216 lines are comments (99%) \u2014 may indicate AI-generated verbose comments",
+      "status": "WARN",
+      "check": "quality/comment-density",
+      "detail": "src/types/dbus.js: 215/216 lines are comments (99%) \u2014 may indicate AI-generated verbose comments"
+    },
+    {
+      "id": "quality/private-api::Main.panel private API access \u2014 requires reviewer justification and version pinning",
+      "status": "WARN",
+      "check": "quality/private-api",
+      "detail": "src/extension.js:711, src/extension.js:711, src/extension.js:712, src/extension.js:712: Main.panel private API access \u2014 requires reviewer justification and version pinning"
+    },
+    {
+      "id": "quality/excessive-null-checks::117 null/undefined checks across 4740 lines (ratio: 0.025) \u2014 prefer optional chaining (?.) or nullish coalescing (??)",
+      "status": "WARN",
+      "check": "quality/excessive-null-checks",
+      "detail": "117 null/undefined checks across 4740 lines (ratio: 0.025) \u2014 prefer optional chaining (?.) or nullish coalescing (??)"
+    },
+    {
+      "id": "lifecycle/signal-balance::41 manual .connect() calls but only 10 .disconnect() calls \u2014 verify all signals are disconnected in disable()",
+      "status": "WARN",
+      "check": "lifecycle/signal-balance",
+      "detail": "41 manual .connect() calls but only 10 .disconnect() calls \u2014 verify all signals are disconnected in disable()"
+    },
+    {
+      "id": "lifecycle/async-destroyed-guard::async/await used without _destroyed or _isDestroyed guard \u2014 extension may act on stale state after disable()",
+      "status": "WARN",
+      "check": "lifecycle/async-destroyed-guard",
+      "detail": "async/await used without _destroyed or _isDestroyed guard \u2014 extension may act on stale state after disable()"
+    },
+    {
+      "id": "lifecycle/prototype-override::MprisSource.prototype._addPlayer \u2014 direct prototype modification should be restored in disable()",
+      "status": "WARN",
+      "check": "lifecycle/prototype-override",
+      "detail": "src/extension.js: MprisSource.prototype._addPlayer \u2014 direct prototype modification should be restored in disable()"
+    },
+    {
+      "id": "lifecycle/soup-session-abort::Soup.Session created but no .abort() found \u2014 pending requests will continue after disable()",
+      "status": "WARN",
+      "check": "lifecycle/soup-session-abort",
+      "detail": "Soup.Session created but no .abort() found \u2014 pending requests will continue after disable()"
+    },
+    {
+      "id": "async/no-cancellable::Gio async calls at src/extension.js, src/extension.js, src/utils/shell_only.js without Gio.Cancellable \u2014 async operations should be cancellable via disable()",
+      "status": "WARN",
+      "check": "async/no-cancellable",
+      "detail": "Gio async calls at src/extension.js:351, src/extension.js:352, src/utils/shell_only.js:125 without Gio.Cancellable \u2014 async operations should be cancellable via disable()"
+    },
+    {
+      "id": "async/missing-cancellable::_async() calls without Gio.Cancellable at src/extension.js, src/extension.js, src/utils/shell_only.js (+6 more) \u2014 async operations may run after disable()",
+      "status": "WARN",
+      "check": "async/missing-cancellable",
+      "detail": "_async() calls without Gio.Cancellable at src/extension.js:480, src/extension.js:481, src/utils/shell_only.js:110 (+6 more) \u2014 async operations may run after disable()"
+    },
+    {
+      "id": "disclosure/network::network capability detected in code but metadata description does not disclose it \u2014 reviewers expect disclosure",
+      "status": "WARN",
+      "check": "disclosure/network",
+      "detail": "network capability detected in code but metadata description does not disclose it \u2014 reviewers expect disclosure"
+    },
+    {
+      "id": "disclosure/file-io::file-io capability detected in code but metadata description does not disclose it \u2014 reviewers expect disclosure",
+      "status": "WARN",
+      "check": "disclosure/file-io",
+      "detail": "file-io capability detected in code but metadata description does not disclose it \u2014 reviewers expect disclosure"
+    },
+    {
+      "id": "package/exists::No zip package found in extension directory",
+      "status": "SKIP",
+      "check": "package/exists",
+      "detail": "No zip package found in extension directory"
+    }
+  ]
+}

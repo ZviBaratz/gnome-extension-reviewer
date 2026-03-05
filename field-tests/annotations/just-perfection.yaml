@@ -1,0 +1,10 @@
+# Classified findings for Just Perfection
+# Source: ego-review field test 2026-03-05
+findings:
+  # ego-review findings (not caught by ego-lint)
+  - id: "review/settings-signal-leak::SupportNotifier bare .connect()"
+    classification: tp
+    notes: "GSettings bare .connect('changed') without disconnect in disable — same pattern as Media Controls"
+  - id: "review/notification-urgency::CRITICAL for donation prompt"
+    classification: tp
+    notes: "MessageTray.Urgency.CRITICAL used for donation/support notification — abuses urgency level intended for system alerts"

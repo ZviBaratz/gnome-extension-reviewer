@@ -1,0 +1,48 @@
+# Classified findings for V-Shell
+# Source: docs/internal/field-test-v-shell.md
+findings:
+  # All 23 FAILs classified as FP — runtime-guarded version compat
+  - id: "R-VER44-02::Meta.later_remove runtime-guarded"
+    classification: fp
+    notes: "if (global.compositor) { ... } else { Meta.later_remove() } — old API only reached on GNOME <48"
+  - id: "R-VER46-07::Clutter.Container feature-flag"
+    classification: fp
+    notes: "const shellVersion46 = !Clutter.Container — used as boolean, not API call. 2 instances."
+  - id: "R-VER48-02::Meta.disable_unredirect runtime-guarded"
+    classification: fp
+    notes: "if (Meta.disable_unredirect_for_display) ... else global.compositor — version-compat branch. 2 instances."
+  - id: "R-VER49-02::Clutter.ClickAction runtime-guarded"
+    classification: fp
+    notes: "All 13 use Clutter.ClickAction || Clutter.ClickGesture fallback or if (Clutter.ClickAction) guards"
+  - id: "imports/no-gtk-in-extension::prefs-only module"
+    classification: fp
+    notes: "optionsFactory.js only imported by prefs.js, never by extension.js. 2 instances."
+  - id: "init/shell-modification::constructor called from enable"
+    classification: fp
+    notes: "3 FPs in overviewBackground.js, appDisplay.js — constructors called from _initModules() inside enable()"
+  # Key WARNs — True Positives
+  - id: "quality/constructor-resources::connect in GObject constructors"
+    classification: tp
+    notes: "51 instances — V-Shell widgets manage own lifecycle"
+  - id: "R-SLOP-11::single-use constants"
+    classification: tp
+    notes: "23 hits — defensive coding style, not AI slop"
+  - id: "lifecycle/untracked-timeout::GLib timeouts without stored IDs"
+    classification: tp
+    notes: "15 instances"
+  - id: "R-SEC-09::extension system interference"
+    classification: tp
+    notes: "6 hits — core to V-Shell's purpose"
+  - id: "lifecycle/prototype-override::core pattern"
+    classification: tp
+    notes: "2 instances — expected for Shell customizer"
+  - id: "quality/private-api::extensive private API"
+    classification: tp
+    notes: "180+ locations — expected for Shell customizer"
+  - id: "quality/code-volume::large codebase"
+    classification: tp
+    notes: "16293 lines — large but expected for scope"
+  # ego-review blocking
+  - id: "lifecycle/signal-disconnect::wrong object"
+    classification: tp
+    notes: "B1: dash.js:189 disconnects _newWindowConId on global.windowManager instead of global.display — only detectable by semantic analysis"

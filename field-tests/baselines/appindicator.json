@@ -1,0 +1,550 @@
+{
+  "name": "appindicator",
+  "uuid": "appindicatorsupport@rgcjonas.gmail.com",
+  "timestamp": "2026-03-04T22:16:50.795403+00:00",
+  "ego_lint_version": "0dbe7e8",
+  "ego_approved": true,
+  "exit_code": 1,
+  "counts": {
+    "pass": 183,
+    "fail": 11,
+    "warn": 57,
+    "skip": 14,
+    "total": 265
+  },
+  "metrics": {
+    "js_files": 17,
+    "total_lines": 5655,
+    "largest_file": "appIndicator.js (1604)",
+    "css_lines": 0,
+    "schema_keys": 10
+  },
+  "provenance_score": null,
+  "findings": [
+    {
+      "id": "license::License file found but could not confirm GPL-compatibility",
+      "status": "WARN",
+      "check": "license",
+      "detail": "License file found but could not confirm GPL-compatibility"
+    },
+    {
+      "id": "no-deprecated-modules::Found 1 deprecated module import(s)",
+      "status": "FAIL",
+      "check": "no-deprecated-modules",
+      "detail": "Found 1 deprecated module import(s)"
+    },
+    {
+      "id": "non-gjs-scripts::Found 1 non-GJS script(s) \u2014 scripts MUST be written in GJS; no pkexec/privileged helper justification found",
+      "status": "FAIL",
+      "check": "non-gjs-scripts",
+      "detail": "Found 1 non-GJS script(s) \u2014 scripts MUST be written in GJS; no pkexec/privileged helper justification found"
+    },
+    {
+      "id": "polkit/action-id-match::No polkit files found",
+      "status": "SKIP",
+      "check": "polkit/action-id-match",
+      "detail": "No polkit files found"
+    },
+    {
+      "id": "polkit/action-id-prefix::No polkit files found",
+      "status": "SKIP",
+      "check": "polkit/action-id-prefix",
+      "detail": "No polkit files found"
+    },
+    {
+      "id": "polkit/helper-exists::No polkit files found",
+      "status": "SKIP",
+      "check": "polkit/helper-exists",
+      "detail": "No polkit files found"
+    },
+    {
+      "id": "css/scoping::No stylesheet.css found",
+      "status": "SKIP",
+      "check": "css/scoping",
+      "detail": "No stylesheet.css found"
+    },
+    {
+      "id": "css/shell-class-override::No stylesheet.css found",
+      "status": "SKIP",
+      "check": "css/shell-class-override",
+      "detail": "No stylesheet.css found"
+    },
+    {
+      "id": "R-WEB-01::Not applicable for declared shell-version(s)",
+      "status": "SKIP",
+      "check": "R-WEB-01",
+      "detail": "Not applicable for declared shell-version(s)"
+    },
+    {
+      "id": "R-WEB-02::Not applicable for declared shell-version(s)",
+      "status": "SKIP",
+      "check": "R-WEB-02",
+      "detail": "Not applicable for declared shell-version(s)"
+    },
+    {
+      "id": "R-WEB-10::Not applicable for declared shell-version(s)",
+      "status": "SKIP",
+      "check": "R-WEB-10",
+      "detail": "Not applicable for declared shell-version(s)"
+    },
+    {
+      "id": "R-WEB-11::Not applicable for declared shell-version(s)",
+      "status": "SKIP",
+      "check": "R-WEB-11",
+      "detail": "Not applicable for declared shell-version(s)"
+    },
+    {
+      "id": "R-WEB-12::Promise.race() is risky without _destroyed guards; verify async safety",
+      "status": "WARN",
+      "check": "R-WEB-12",
+      "detail": "appIndicator.js:1218: Promise.race() is risky without _destroyed guards; verify async safety",
+      "fix": "Ensure _destroyed is checked after the race resolves. Consider simpler alternatives."
+    },
+    {
+      "id": "R-DEPR-04::Legacy imports.* syntax; use ESM imports for GNOME 45+",
+      "status": "FAIL",
+      "check": "R-DEPR-04",
+      "detail": "indicatorStatusIcon.js:540: Legacy imports.* syntax; use ESM imports for GNOME 45+",
+      "fix": "Replace 'const X = imports.ui.main' with 'import * as Main from \"resource:///org/gnome/shell/ui/main.js\"'."
+    },
+    {
+      "id": "R-DEPR-04::Legacy imports.* syntax; use ESM imports for GNOME 45+",
+      "status": "FAIL",
+      "check": "R-DEPR-04",
+      "detail": "interfaces.js:25: Legacy imports.* syntax; use ESM imports for GNOME 45+",
+      "fix": "Replace 'const X = imports.ui.main' with 'import * as Main from \"resource:///org/gnome/shell/ui/main.js\"'."
+    },
+    {
+      "id": "R-DEPR-04::Legacy imports.* syntax; use ESM imports for GNOME 45+",
+      "status": "FAIL",
+      "check": "R-DEPR-04",
+      "detail": "appIndicator.js:44: Legacy imports.* syntax; use ESM imports for GNOME 45+",
+      "fix": "Replace 'const X = imports.ui.main' with 'import * as Main from \"resource:///org/gnome/shell/ui/main.js\"'."
+    },
+    {
+      "id": "R-DEPR-04-legacy::Not applicable for declared shell-version(s)",
+      "status": "SKIP",
+      "check": "R-DEPR-04-legacy",
+      "detail": "Not applicable for declared shell-version(s)"
+    },
+    {
+      "id": "R-DEPR-09::indicator-test-tool/testTool.js: Use const/let instead of var; var has function scope and causes bugs in closures",
+      "status": "WARN",
+      "check": "R-DEPR-09",
+      "detail": "indicator-test-tool/testTool.js:37: Use const/let instead of var; var has function scope and causes bugs in closures",
+      "fix": "Replace var with const (preferred) or let (when reassignment needed)."
+    },
+    {
+      "id": "R-DEPR-09::indicator-test-tool/testTool.js: Use const/let instead of var; var has function scope and causes bugs in closures",
+      "status": "WARN",
+      "check": "R-DEPR-09",
+      "detail": "indicator-test-tool/testTool.js:41: Use const/let instead of var; var has function scope and causes bugs in closures",
+      "fix": "Replace var with const (preferred) or let (when reassignment needed)."
+    },
+    {
+      "id": "R-DEPR-09::indicator-test-tool/testTool.js: Use const/let instead of var; var has function scope and causes bugs in closures",
+      "status": "WARN",
+      "check": "R-DEPR-09",
+      "detail": "indicator-test-tool/testTool.js:72: Use const/let instead of var; var has function scope and causes bugs in closures",
+      "fix": "Replace var with const (preferred) or let (when reassignment needed)."
+    },
+    {
+      "id": "R-DEPR-09::indicator-test-tool/testTool.js: Use const/let instead of var; var has function scope and causes bugs in closures",
+      "status": "WARN",
+      "check": "R-DEPR-09",
+      "detail": "indicator-test-tool/testTool.js:74: Use const/let instead of var; var has function scope and causes bugs in closures",
+      "fix": "Replace var with const (preferred) or let (when reassignment needed)."
+    },
+    {
+      "id": "R-DEPR-09::indicator-test-tool/testTool.js: Use const/let instead of var; var has function scope and causes bugs in closures",
+      "status": "WARN",
+      "check": "R-DEPR-09",
+      "detail": "indicator-test-tool/testTool.js:153: Use const/let instead of var; var has function scope and causes bugs in closures",
+      "fix": "Replace var with const (preferred) or let (when reassignment needed)."
+    },
+    {
+      "id": "R-DEPR-09::indicator-test-tool/testTool.js: Use const/let instead of var; var has function scope and causes bugs in closures",
+      "status": "WARN",
+      "check": "R-DEPR-09",
+      "detail": "indicator-test-tool/testTool.js:263: Use const/let instead of var; var has function scope and causes bugs in closures",
+      "fix": "Replace var with const (preferred) or let (when reassignment needed)."
+    },
+    {
+      "id": "R-SEC-06::GObject.run_dispose() should not be used unless absolutely necessary",
+      "status": "WARN",
+      "check": "R-SEC-06",
+      "detail": "statusNotifierWatcher.js:281: GObject.run_dispose() should not be used unless absolutely necessary",
+      "fix": "Remove run_dispose() call. If genuinely needed, add a comment explaining why."
+    },
+    {
+      "id": "R-LOG-03::print()/printerr() should not be used in production; use console.debug()",
+      "status": "WARN",
+      "check": "R-LOG-03",
+      "detail": "appIndicator.js:1231: print()/printerr() should not be used in production; use console.debug()",
+      "fix": "Replace print()/printerr() with console.debug() or console.error()."
+    },
+    {
+      "id": "R-LOG-03::indicator-test-tool/testTool.js: print()/printerr() should not be used in production; use console.debug()",
+      "status": "WARN",
+      "check": "R-LOG-03",
+      "detail": "indicator-test-tool/testTool.js:81: print()/printerr() should not be used in production; use console.debug()",
+      "fix": "Replace print()/printerr() with console.debug() or console.error()."
+    },
+    {
+      "id": "R-LOG-03::indicator-test-tool/testTool.js: print()/printerr() should not be used in production; use console.debug()",
+      "status": "WARN",
+      "check": "R-LOG-03",
+      "detail": "indicator-test-tool/testTool.js:84: print()/printerr() should not be used in production; use console.debug()",
+      "fix": "Replace print()/printerr() with console.debug() or console.error()."
+    },
+    {
+      "id": "R-LOG-03::indicator-test-tool/testTool.js: print()/printerr() should not be used in production; use console.debug()",
+      "status": "WARN",
+      "check": "R-LOG-03",
+      "detail": "indicator-test-tool/testTool.js:105: print()/printerr() should not be used in production; use console.debug()",
+      "fix": "Replace print()/printerr() with console.debug() or console.error()."
+    },
+    {
+      "id": "R-LOG-03::indicator-test-tool/testTool.js: print()/printerr() should not be used in production; use console.debug()",
+      "status": "WARN",
+      "check": "R-LOG-03",
+      "detail": "indicator-test-tool/testTool.js:272: print()/printerr() should not be used in production; use console.debug()",
+      "fix": "Replace print()/printerr() with console.debug() or console.error()."
+    },
+    {
+      "id": "R-LOG-03::indicator-test-tool/testTool.js: print()/printerr() should not be used in production; use console.debug()",
+      "status": "WARN",
+      "check": "R-LOG-03",
+      "detail": "indicator-test-tool/testTool.js:275: print()/printerr() should not be used in production; use console.debug()",
+      "fix": "Replace print()/printerr() with console.debug() or console.error()."
+    },
+    {
+      "id": "R-LOG-03::indicator-test-tool/testTool.js: print()/printerr() should not be used in production; use console.debug()",
+      "status": "WARN",
+      "check": "R-LOG-03",
+      "detail": "indicator-test-tool/testTool.js:284: print()/printerr() should not be used in production; use console.debug()",
+      "fix": "Replace print()/printerr() with console.debug() or console.error()."
+    },
+    {
+      "id": "R-LOG-03::indicator-test-tool/testTool.js: print()/printerr() should not be used in production; use console.debug()",
+      "status": "WARN",
+      "check": "R-LOG-03",
+      "detail": "indicator-test-tool/testTool.js:287: print()/printerr() should not be used in production; use console.debug()",
+      "fix": "Replace print()/printerr() with console.debug() or console.error()."
+    },
+    {
+      "id": "R-LOG-03::indicator-test-tool/testTool.js: print()/printerr() should not be used in production; use console.debug()",
+      "status": "WARN",
+      "check": "R-LOG-03",
+      "detail": "indicator-test-tool/testTool.js:290: print()/printerr() should not be used in production; use console.debug()",
+      "fix": "Replace print()/printerr() with console.debug() or console.error()."
+    },
+    {
+      "id": "R-LOG-03::indicator-test-tool/testTool.js: print()/printerr() should not be used in production; use console.debug()",
+      "status": "WARN",
+      "check": "R-LOG-03",
+      "detail": "indicator-test-tool/testTool.js:293: print()/printerr() should not be used in production; use console.debug()",
+      "fix": "Replace print()/printerr() with console.debug() or console.error()."
+    },
+    {
+      "id": "R-LOG-03::indicator-test-tool/testTool.js: print()/printerr() should not be used in production; use console.debug()",
+      "status": "WARN",
+      "check": "R-LOG-03",
+      "detail": "indicator-test-tool/testTool.js:300: print()/printerr() should not be used in production; use console.debug()",
+      "fix": "Replace print()/printerr() with console.debug() or console.error()."
+    },
+    {
+      "id": "R-SLOP-40::new Promise(resolve, reject) wrapper \u2014 consider Gio._promisify() for GIO async methods",
+      "status": "WARN",
+      "check": "R-SLOP-40",
+      "detail": "dbusProxy.js:74: new Promise(resolve, reject) wrapper \u2014 consider Gio._promisify() for GIO async methods",
+      "fix": "Use Gio._promisify() to promisify GIO async methods instead of manual Promise wrapping"
+    },
+    {
+      "id": "R-SLOP-43::Underscore-prefixed export \u2014 private convention conflicts with public export",
+      "status": "WARN",
+      "check": "R-SLOP-43",
+      "detail": "promiseUtils.js:314: Underscore-prefixed export \u2014 private convention conflicts with public export",
+      "fix": "Either remove the underscore (it's exported, so it's public) or don't export it"
+    },
+    {
+      "id": "R-SLOP-11::indicator-test-tool/testTool.js: Non-existent GLib method \u2014 use GLib.timeout_add_seconds() and GLib.Source.remove()",
+      "status": "WARN",
+      "check": "R-SLOP-11",
+      "detail": "indicator-test-tool/testTool.js:236: Non-existent GLib method \u2014 use GLib.timeout_add_seconds() and GLib.Source.remove()",
+      "fix": "GLib.timeout_add_seconds_full \u2192 GLib.timeout_add_seconds. GLib.source_remove \u2192 GLib.Source.remove."
+    },
+    {
+      "id": "R-SLOP-16::GLib.file_get_contents() is synchronous and blocks the main loop; prefer Gio.File.load_contents() or load_contents_async()",
+      "status": "WARN",
+      "check": "R-SLOP-16",
+      "detail": "interfaces.js:25: GLib.file_get_contents() is synchronous and blocks the main loop; prefer Gio.File.load_contents() or load_contents_async()",
+      "fix": "Use: const file = Gio.File.new_for_path(path); const [ok, contents] = file.load_contents(null); then new TextDecoder().decode(contents)."
+    },
+    {
+      "id": "R-QUAL-26::Custom Logger class is unnecessary \u2014 use console.debug/warn/error",
+      "status": "WARN",
+      "check": "R-QUAL-26",
+      "detail": "util.js:274: Custom Logger class is unnecessary \u2014 use console.debug/warn/error",
+      "fix": "Remove custom Logger; use console.debug() for messages, console.error() for errors"
+    },
+    {
+      "id": "R-QUAL-31::_onDestroy() should be renamed to destroy() with super.destroy() at the end",
+      "status": "WARN",
+      "check": "R-QUAL-31",
+      "detail": "indicatorStatusIcon.js:109: _onDestroy() should be renamed to destroy() with super.destroy() at the end",
+      "fix": "Rename to destroy() { /* cleanup */; super.destroy(); }"
+    },
+    {
+      "id": "R-QUAL-31::_onDestroy() should be renamed to destroy() with super.destroy() at the end",
+      "status": "WARN",
+      "check": "R-QUAL-31",
+      "detail": "indicatorStatusIcon.js:274: _onDestroy() should be renamed to destroy() with super.destroy() at the end",
+      "fix": "Rename to destroy() { /* cleanup */; super.destroy(); }"
+    },
+    {
+      "id": "R-QUAL-31::_onDestroy() should be renamed to destroy() with super.destroy() at the end",
+      "status": "WARN",
+      "check": "R-QUAL-31",
+      "detail": "indicatorStatusIcon.js:504: _onDestroy() should be renamed to destroy() with super.destroy() at the end",
+      "fix": "Rename to destroy() { /* cleanup */; super.destroy(); }"
+    },
+    {
+      "id": "R-QUAL-33::Gio._promisify() permanently mutates shared GJS prototypes \u2014 document module-scope placement",
+      "status": "WARN",
+      "check": "R-QUAL-33",
+      "detail": "Gio._promisify() permanently mutates shared GJS prototypes \u2014 document module-scope placement in 4 file(s): appIndicator.js, dbusMenu.js, dbusProxy.js, util.js",
+      "fix": "Gio._promisify() is fine but cannot be undone on disable(); add a comment explaining the module-scope placement"
+    },
+    {
+      "id": "R-VER44-01::Meta.later_add() removed in GNOME 44; use global.compositor.get_laters().addLater()",
+      "status": "FAIL",
+      "check": "R-VER44-01",
+      "detail": "promiseUtils.js:295: Meta.later_add() removed in GNOME 44; use global.compositor.get_laters().addLater()",
+      "fix": "Use global.compositor.get_laters().addLater(Meta.LaterType.BEFORE_REDRAW, callback)"
+    },
+    {
+      "id": "R-VER44-02::Meta.later_remove() removed in GNOME 44; use global.compositor.get_laters().removeLater()",
+      "status": "FAIL",
+      "check": "R-VER44-02",
+      "detail": "promiseUtils.js:307: Meta.later_remove() removed in GNOME 44; use global.compositor.get_laters().removeLater()",
+      "fix": "Use global.compositor.get_laters().removeLater(id)"
+    },
+    {
+      "id": "eslint::No eslint.config.mjs or node_modules/.bin/eslint found",
+      "status": "SKIP",
+      "check": "eslint",
+      "detail": "No eslint.config.mjs or node_modules/.bin/eslint found"
+    },
+    {
+      "id": "metadata/uuid-matches-dir::UUID 'appindicatorsupport@rgcjonas.gmail.com' does not match directory 'appindicator' \u2014 must match when installed",
+      "status": "WARN",
+      "check": "metadata/uuid-matches-dir",
+      "detail": "UUID 'appindicatorsupport@rgcjonas.gmail.com' does not match directory 'appindicator' \u2014 must match when installed"
+    },
+    {
+      "id": "metadata/future-shell-version::shell-version '50' is newer than current stable (49)",
+      "status": "FAIL",
+      "check": "metadata/future-shell-version",
+      "detail": "shell-version '50' is newer than current stable (49)"
+    },
+    {
+      "id": "schema-usage/unused-key::Dynamic key access detected \u2014 cannot verify statically",
+      "status": "SKIP",
+      "check": "schema-usage/unused-key",
+      "detail": "Dynamic key access detected \u2014 cannot verify statically"
+    },
+    {
+      "id": "schema-usage/undefined-key::Dynamic key access detected \u2014 cannot verify statically",
+      "status": "SKIP",
+      "check": "schema-usage/undefined-key",
+      "detail": "Dynamic key access detected \u2014 cannot verify statically"
+    },
+    {
+      "id": "imports/no-gtk-in-extension::20:import GdkPixbuf from 'gi://GdkPixbuf';",
+      "status": "FAIL",
+      "check": "imports/no-gtk-in-extension",
+      "detail": "appIndicator.js: 20:import GdkPixbuf from 'gi://GdkPixbuf';"
+    },
+    {
+      "id": "imports/no-gtk-in-extension::6:import Meta from 'gi://GdkPixbuf';",
+      "status": "FAIL",
+      "check": "imports/no-gtk-in-extension",
+      "detail": "promiseUtils.js: 6:import Meta from 'gi://GdkPixbuf';"
+    },
+    {
+      "id": "imports/no-gtk-in-extension::20:import GdkPixbuf from 'gi://GdkPixbuf';",
+      "status": "FAIL",
+      "check": "imports/no-gtk-in-extension",
+      "detail": "dbusMenu.js: 20:import GdkPixbuf from 'gi://GdkPixbuf';"
+    },
+    {
+      "id": "quality/destroy-try-catch::try-catch around .destroy() \u2014 usually unnecessary",
+      "status": "WARN",
+      "check": "quality/destroy-try-catch",
+      "detail": "trayIconsManager.js:89: try-catch around .destroy() \u2014 usually unnecessary"
+    },
+    {
+      "id": "quality/module-state::Module-level mutable state at settingsManager.js \u2014 ensure reset in both enable() and disable()",
+      "status": "WARN",
+      "check": "quality/module-state",
+      "detail": "Module-level mutable state at settingsManager.js:17 \u2014 ensure reset in both enable() and disable()"
+    },
+    {
+      "id": "quality/mock-in-production::indicator-test-tool/testTool.js: mock/test file should not ship in production extension",
+      "status": "WARN",
+      "check": "quality/mock-in-production",
+      "detail": "indicator-test-tool/testTool.js: mock/test file should not ship in production extension"
+    },
+    {
+      "id": "quality/constructor-resources::.connect() in constructor \u2014 move to enable()",
+      "status": "WARN",
+      "check": "quality/constructor-resources",
+      "detail": "promiseUtils.js:53: .connect() in constructor \u2014 move to enable()"
+    },
+    {
+      "id": "quality/constructor-resources::.connect() in constructor \u2014 move to enable()",
+      "status": "WARN",
+      "check": "quality/constructor-resources",
+      "detail": "promiseUtils.js:148: .connect() in constructor \u2014 move to enable()"
+    },
+    {
+      "id": "quality/private-api::Main.layoutManager private API access \u2014 requires reviewer justification and version pinning",
+      "status": "WARN",
+      "check": "quality/private-api",
+      "detail": "util.js:267, util.js:366, indicatorStatusIcon.js:421: Main.layoutManager private API access \u2014 requires reviewer justification and version pinning"
+    },
+    {
+      "id": "quality/redundant-cleanup::4 verbose destroy guards vs 0 idiomatic '?.destroy()' \u2014 prefer optional chaining for cleanup",
+      "status": "WARN",
+      "check": "quality/redundant-cleanup",
+      "detail": "4 verbose destroy guards vs 0 idiomatic '?.destroy()' \u2014 prefer optional chaining for cleanup"
+    },
+    {
+      "id": "quality/run-dispose-no-comment::run_dispose() without explanatory comment \u2014 reviewers require justification",
+      "status": "WARN",
+      "check": "quality/run-dispose-no-comment",
+      "detail": "statusNotifierWatcher.js:281: run_dispose() without explanatory comment \u2014 reviewers require justification"
+    },
+    {
+      "id": "lifecycle/untracked-timeout::timer/idle return value not stored \u2014 cannot be removed in disable()",
+      "status": "WARN",
+      "check": "lifecycle/untracked-timeout",
+      "detail": "promiseUtils.js:55: timer/idle return value not stored \u2014 cannot be removed in disable()"
+    },
+    {
+      "id": "lifecycle/untracked-timeout::indicator-test-tool/testTool.js: timer/idle return value not stored \u2014 cannot be removed in disable()",
+      "status": "WARN",
+      "check": "lifecycle/untracked-timeout",
+      "detail": "indicator-test-tool/testTool.js:80: timer/idle return value not stored \u2014 cannot be removed in disable()"
+    },
+    {
+      "id": "lifecycle/untracked-timeout::indicator-test-tool/testTool.js: timer/idle return value not stored \u2014 cannot be removed in disable()",
+      "status": "WARN",
+      "check": "lifecycle/untracked-timeout",
+      "detail": "indicator-test-tool/testTool.js:104: timer/idle return value not stored \u2014 cannot be removed in disable()"
+    },
+    {
+      "id": "lifecycle/untracked-timeout::indicator-test-tool/testTool.js: timer/idle return value not stored \u2014 cannot be removed in disable()",
+      "status": "WARN",
+      "check": "lifecycle/untracked-timeout",
+      "detail": "indicator-test-tool/testTool.js:245: timer/idle return value not stored \u2014 cannot be removed in disable()"
+    },
+    {
+      "id": "lifecycle/untracked-timeout::indicator-test-tool/testTool.js: timer/idle return value not stored \u2014 cannot be removed in disable()",
+      "status": "WARN",
+      "check": "lifecycle/untracked-timeout",
+      "detail": "indicator-test-tool/testTool.js:254: timer/idle return value not stored \u2014 cannot be removed in disable()"
+    },
+    {
+      "id": "lifecycle/timeout-return-value::promiseUtils.js, indicator-test-tool/testTool.js, indicator-test-tool/testTool.js",
+      "status": "WARN",
+      "check": "lifecycle/timeout-return-value",
+      "detail": "timeout_add/idle_add callback missing SOURCE_REMOVE/SOURCE_CONTINUE: promiseUtils.js:55, indicator-test-tool/testTool.js:245, indicator-test-tool/testTool.js:254"
+    },
+    {
+      "id": "lifecycle/destroy-no-null::.destroy() without null assignment \u2014 set reference to null after destroy to prevent stale access",
+      "status": "WARN",
+      "check": "lifecycle/destroy-no-null",
+      "detail": "promiseUtils.js:223: .destroy() without null assignment \u2014 set reference to null after destroy to prevent stale access"
+    },
+    {
+      "id": "lifecycle/destroy-no-null::.destroy() without null assignment \u2014 set reference to null after destroy to prevent stale access",
+      "status": "WARN",
+      "check": "lifecycle/destroy-no-null",
+      "detail": "indicatorStatusIcon.js:93: .destroy() without null assignment \u2014 set reference to null after destroy to prevent stale access"
+    },
+    {
+      "id": "lifecycle/destroy-no-null::.destroy() without null assignment \u2014 set reference to null after destroy to prevent stale access",
+      "status": "WARN",
+      "check": "lifecycle/destroy-no-null",
+      "detail": "indicatorStatusIcon.js:111: .destroy() without null assignment \u2014 set reference to null after destroy to prevent stale access"
+    },
+    {
+      "id": "lifecycle/destroy-no-null::.destroy() without null assignment \u2014 set reference to null after destroy to prevent stale access",
+      "status": "WARN",
+      "check": "lifecycle/destroy-no-null",
+      "detail": "indicatorStatusIcon.js:309: .destroy() without null assignment \u2014 set reference to null after destroy to prevent stale access"
+    },
+    {
+      "id": "lifecycle/destroy-no-null::.destroy() without null assignment \u2014 set reference to null after destroy to prevent stale access",
+      "status": "WARN",
+      "check": "lifecycle/destroy-no-null",
+      "detail": "appIndicator.js:729: .destroy() without null assignment \u2014 set reference to null after destroy to prevent stale access"
+    },
+    {
+      "id": "gobject/missing-gtypename::GObject.registerClass without GTypeName \u2014 add GTypeName to avoid conflicts between extensions",
+      "status": "WARN",
+      "check": "gobject/missing-gtypename",
+      "detail": "util.js:392: GObject.registerClass without GTypeName \u2014 add GTypeName to avoid conflicts between extensions"
+    },
+    {
+      "id": "gobject/missing-gtypename::GObject.registerClass without GTypeName \u2014 add GTypeName to avoid conflicts between extensions",
+      "status": "WARN",
+      "check": "gobject/missing-gtypename",
+      "detail": "indicatorStatusIcon.js:67: GObject.registerClass without GTypeName \u2014 add GTypeName to avoid conflicts between extensions"
+    },
+    {
+      "id": "gobject/missing-gtypename::GObject.registerClass without GTypeName \u2014 add GTypeName to avoid conflicts between extensions",
+      "status": "WARN",
+      "check": "gobject/missing-gtypename",
+      "detail": "indicatorStatusIcon.js:244: GObject.registerClass without GTypeName \u2014 add GTypeName to avoid conflicts between extensions"
+    },
+    {
+      "id": "gobject/missing-gtypename::GObject.registerClass without GTypeName \u2014 add GTypeName to avoid conflicts between extensions",
+      "status": "WARN",
+      "check": "gobject/missing-gtypename",
+      "detail": "indicatorStatusIcon.js:460: GObject.registerClass without GTypeName \u2014 add GTypeName to avoid conflicts between extensions"
+    },
+    {
+      "id": "gobject/missing-gtypename::GObject.registerClass without GTypeName \u2014 add GTypeName to avoid conflicts between extensions",
+      "status": "WARN",
+      "check": "gobject/missing-gtypename",
+      "detail": "dbusMenu.js:216: GObject.registerClass without GTypeName \u2014 add GTypeName to avoid conflicts between extensions"
+    },
+    {
+      "id": "async/missing-cancellable::_async() calls without Gio.Cancellable at dbusMenu.js, appIndicator.js \u2014 async operations may run after disable()",
+      "status": "WARN",
+      "check": "async/missing-cancellable",
+      "detail": "_async() calls without Gio.Cancellable at dbusMenu.js:761, appIndicator.js:1350 \u2014 async operations may run after disable()"
+    },
+    {
+      "id": "disclosure/private-api::private-api capability detected in code but metadata description does not disclose it \u2014 reviewers expect disclosure",
+      "status": "WARN",
+      "check": "disclosure/private-api",
+      "detail": "private-api capability detected in code but metadata description does not disclose it \u2014 reviewers expect disclosure"
+    },
+    {
+      "id": "disclosure/file-io::file-io capability detected in code but metadata description does not disclose it \u2014 reviewers expect disclosure",
+      "status": "WARN",
+      "check": "disclosure/file-io",
+      "detail": "file-io capability detected in code but metadata description does not disclose it \u2014 reviewers expect disclosure"
+    },
+    {
+      "id": "package/exists::No zip package found in extension directory",
+      "status": "SKIP",
+      "check": "package/exists",
+      "detail": "No zip package found in extension directory"
+    }
+  ]
+}

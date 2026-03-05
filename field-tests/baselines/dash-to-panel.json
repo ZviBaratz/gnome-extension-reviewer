@@ -1,0 +1,624 @@
+{
+  "name": "dash-to-panel",
+  "uuid": "dash-to-panel@jderose9.github.com",
+  "timestamp": "2026-03-04T22:17:42.671883+00:00",
+  "ego_lint_version": "0dbe7e8",
+  "ego_approved": true,
+  "exit_code": 1,
+  "counts": {
+    "pass": 168,
+    "fail": 12,
+    "warn": 65,
+    "skip": 17,
+    "total": 262
+  },
+  "metrics": {
+    "js_files": 18,
+    "total_lines": 16583,
+    "largest_file": "prefs.js (4052)",
+    "css_lines": 251,
+    "schema_keys": 247
+  },
+  "provenance_score": null,
+  "findings": [
+    {
+      "id": "polkit/action-id-match::No polkit files found",
+      "status": "SKIP",
+      "check": "polkit/action-id-match",
+      "detail": "No polkit files found"
+    },
+    {
+      "id": "polkit/action-id-prefix::No polkit files found",
+      "status": "SKIP",
+      "check": "polkit/action-id-prefix",
+      "detail": "No polkit files found"
+    },
+    {
+      "id": "polkit/helper-exists::No polkit files found",
+      "status": "SKIP",
+      "check": "polkit/helper-exists",
+      "detail": "No polkit files found"
+    },
+    {
+      "id": "css/unscoped-class::Found 2 potentially unscoped CSS class(es): .dashtopanelMainPanel, .dashtopanelSecondaryMenu \u2014 add a namespace prefix to avoid conflicts",
+      "status": "WARN",
+      "check": "css/unscoped-class",
+      "detail": "Found 2 potentially unscoped CSS class(es): .dashtopanelMainPanel, .dashtopanelSecondaryMenu \u2014 add a namespace prefix to avoid conflicts"
+    },
+    {
+      "id": "css/important::Found 15 !important usage(s) in stylesheet.css \u2014 !important overrides Shell theme; prefer higher specificity",
+      "status": "WARN",
+      "check": "css/important",
+      "detail": "Found 15 !important usage(s) in stylesheet.css \u2014 !important overrides Shell theme; prefer higher specificity"
+    },
+    {
+      "id": "css/shell-class-override::.popup-menu: overrides GNOME Shell theme class \u2014 use a scoped selector (.my-extension .popup-menu)",
+      "status": "FAIL",
+      "check": "css/shell-class-override",
+      "detail": ".popup-menu: overrides GNOME Shell theme class \u2014 use a scoped selector (.my-extension .popup-menu)"
+    },
+    {
+      "id": "accessibility/widget-role::6 custom St.Widget subclass(es) without accessible_role: src/windowPreview.js (PreviewMenu), src/windowPreview.js (Preview), src/panel.js (Panel), src/panel.js (SecondaryPanel), src/taskbar.js (TaskbarActor)",
+      "status": "WARN",
+      "check": "accessibility/widget-role",
+      "detail": "6 custom St.Widget subclass(es) without accessible_role: src/windowPreview.js:48 (PreviewMenu), src/windowPreview.js:828 (Preview), src/panel.js:56 (Panel), src/panel.js:1644 (SecondaryPanel), src/taskbar.js:95 (TaskbarActor)"
+    },
+    {
+      "id": "R-WEB-01::Not applicable for declared shell-version(s)",
+      "status": "SKIP",
+      "check": "R-WEB-01",
+      "detail": "Not applicable for declared shell-version(s)"
+    },
+    {
+      "id": "R-WEB-02::Not applicable for declared shell-version(s)",
+      "status": "SKIP",
+      "check": "R-WEB-02",
+      "detail": "Not applicable for declared shell-version(s)"
+    },
+    {
+      "id": "R-WEB-10::Not applicable for declared shell-version(s)",
+      "status": "SKIP",
+      "check": "R-WEB-10",
+      "detail": "Not applicable for declared shell-version(s)"
+    },
+    {
+      "id": "R-WEB-11::Not applicable for declared shell-version(s)",
+      "status": "SKIP",
+      "check": "R-WEB-11",
+      "detail": "Not applicable for declared shell-version(s)"
+    },
+    {
+      "id": "R-DEPR-04-legacy::Not applicable for declared shell-version(s)",
+      "status": "SKIP",
+      "check": "R-DEPR-04-legacy",
+      "detail": "Not applicable for declared shell-version(s)"
+    },
+    {
+      "id": "R-DEPR-05::ExtensionUtils removed in GNOME 45+; use Extension/ExtensionPreferences class methods",
+      "status": "FAIL",
+      "check": "R-DEPR-05",
+      "detail": "src/desktopIconsIntegration.js:60: ExtensionUtils removed in GNOME 45+; use Extension/ExtensionPreferences class methods",
+      "fix": "Use this.getSettings(), this.gettext(), this.path, etc. from the Extension base class"
+    },
+    {
+      "id": "R-DEPR-05::ExtensionUtils removed in GNOME 45+; use Extension/ExtensionPreferences class methods",
+      "status": "FAIL",
+      "check": "R-DEPR-05",
+      "detail": "src/desktopIconsIntegration.js:68: ExtensionUtils removed in GNOME 45+; use Extension/ExtensionPreferences class methods",
+      "fix": "Use this.getSettings(), this.gettext(), this.path, etc. from the Extension base class"
+    },
+    {
+      "id": "R-DEPR-05::ExtensionUtils removed in GNOME 45+; use Extension/ExtensionPreferences class methods",
+      "status": "FAIL",
+      "check": "R-DEPR-05",
+      "detail": "src/desktopIconsIntegration.js:69: ExtensionUtils removed in GNOME 45+; use Extension/ExtensionPreferences class methods",
+      "fix": "Use this.getSettings(), this.gettext(), this.path, etc. from the Extension base class"
+    },
+    {
+      "id": "R-DEPR-08::GLib.spawn_command_line_sync is deprecated; use Gio.Subprocess",
+      "status": "FAIL",
+      "check": "R-DEPR-08",
+      "detail": "src/prefs.js:3868: GLib.spawn_command_line_sync is deprecated; use Gio.Subprocess",
+      "fix": "Use new Gio.Subprocess({argv: [...], flags: ...}) instead."
+    },
+    {
+      "id": "R-SEC-03::Use HTTPS instead of HTTP for network requests",
+      "status": "WARN",
+      "check": "R-SEC-03",
+      "detail": "src/panelManager.js:25: Use HTTPS instead of HTTP for network requests",
+      "fix": "Change http:// to https://."
+    },
+    {
+      "id": "R-SEC-03::Use HTTPS instead of HTTP for network requests",
+      "status": "WARN",
+      "check": "R-SEC-03",
+      "detail": "src/panel.js:25: Use HTTPS instead of HTTP for network requests",
+      "fix": "Change http:// to https://."
+    },
+    {
+      "id": "R-SEC-09::Extension system interference is discouraged; modifying other extensions requires justification",
+      "status": "WARN",
+      "check": "R-SEC-09",
+      "detail": "src/desktopIconsIntegration.js:76: Extension system interference is discouraged; modifying other extensions requires justification",
+      "fix": "Avoid interacting with other extensions unless absolutely necessary. Document the justification."
+    },
+    {
+      "id": "R-SEC-09::Extension system interference is discouraged; modifying other extensions requires justification",
+      "status": "WARN",
+      "check": "R-SEC-09",
+      "detail": "src/extension.js:136: Extension system interference is discouraged; modifying other extensions requires justification",
+      "fix": "Avoid interacting with other extensions unless absolutely necessary. Document the justification."
+    },
+    {
+      "id": "R-SEC-22::Spawning gsettings/dconf CLI is forbidden \u2014 use Gio.Settings API directly",
+      "status": "FAIL",
+      "check": "R-SEC-22",
+      "detail": "src/prefs.js:3868: Spawning gsettings/dconf CLI is forbidden \u2014 use Gio.Settings API directly",
+      "fix": "Use this.getSettings() or new Gio.Settings() to access GSettings programmatically"
+    },
+    {
+      "id": "R-SEC-22::Spawning gsettings/dconf CLI is forbidden \u2014 use Gio.Settings API directly",
+      "status": "FAIL",
+      "check": "R-SEC-22",
+      "detail": "src/prefs.js:3889: Spawning gsettings/dconf CLI is forbidden \u2014 use Gio.Settings API directly",
+      "fix": "Use this.getSettings() or new Gio.Settings() to access GSettings programmatically"
+    },
+    {
+      "id": "R-PREFS-04b::GTK widget in prefs.js \u2014 Adwaita replacement available for GNOME 45+",
+      "status": "WARN",
+      "check": "R-PREFS-04b",
+      "detail": "GTK widget in prefs.js \u2014 Adwaita replacement available for GNOME 45+ in 1 file(s): src/prefs.js",
+      "fix": "Gtk.Frame \u2192 Adw.PreferencesGroup, Gtk.ComboBoxText \u2192 Adw.ComboRow, Gtk.RadioButton \u2192 Adw.ActionRow, Gtk.Revealer \u2192 Adw.ExpanderRow, Gtk.Expander \u2192 Adw.ExpanderRow, Gtk.FlowBox \u2192 Adw.PreferencesGroup"
+    },
+    {
+      "id": "R-PREFS-04c::GTK layout widget in prefs.js \u2014 verify no Adw equivalent for this specific use case",
+      "status": "WARN",
+      "check": "R-PREFS-04c",
+      "detail": "GTK layout widget in prefs.js \u2014 verify no Adw equivalent for this specific use case in 1 file(s): src/prefs.js",
+      "fix": "Gtk.ListBox with boxed-list CSS is valid for dynamic lists. Gtk.ScrolledWindow is valid for constrained-height content. Gtk.Grid/Stack may have Adw equivalents depending on usage."
+    },
+    {
+      "id": "R-SLOP-03::version field is deprecated; EGO manages versions for GNOME 45+",
+      "status": "WARN",
+      "check": "R-SLOP-03",
+      "detail": "metadata.json:9: version field is deprecated; EGO manages versions for GNOME 45+",
+      "fix": "Remove the version field from metadata.json; EGO manages versions automatically."
+    },
+    {
+      "id": "R-SLOP-29b::Empty destroy() override \u2014 GObject chains automatically; remove the no-op",
+      "status": "WARN",
+      "check": "R-SLOP-29b",
+      "detail": "src/proximity.js:47: Empty destroy() override \u2014 GObject chains automatically; remove the no-op",
+      "fix": "Remove the empty destroy() override; GObject handles cleanup chain automatically"
+    },
+    {
+      "id": "R-SLOP-35::Object.freeze() on config objects is an AI code smell \u2014 GNOME extensions rarely need frozen objects",
+      "status": "WARN",
+      "check": "R-SLOP-35",
+      "detail": "src/panelSettings.js:291: Object.freeze() on config objects is an AI code smell \u2014 GNOME extensions rarely need frozen objects",
+      "fix": "Remove Object.freeze(); use const declarations for immutability instead"
+    },
+    {
+      "id": "R-SLOP-38::Over-long identifier (>25 chars) is an AI verbosity indicator",
+      "status": "WARN",
+      "check": "R-SLOP-38",
+      "detail": "src/taskbar.js:1171: Over-long identifier (>25 chars) is an AI verbosity indicator",
+      "fix": "Shorten parameter names to be concise but clear (e.g., currentBatteryThresholdValue \u2192 threshold)"
+    },
+    {
+      "id": "R-SLOP-38::Over-long identifier (>25 chars) is an AI verbosity indicator",
+      "status": "WARN",
+      "check": "R-SLOP-38",
+      "detail": "src/taskbar.js:1658: Over-long identifier (>25 chars) is an AI verbosity indicator",
+      "fix": "Shorten parameter names to be concise but clear (e.g., currentBatteryThresholdValue \u2192 threshold)"
+    },
+    {
+      "id": "R-SLOP-40::new Promise(resolve, reject) wrapper \u2014 consider Gio._promisify() for GIO async methods",
+      "status": "WARN",
+      "check": "R-SLOP-40",
+      "detail": "src/panelSettings.js:226: new Promise(resolve, reject) wrapper \u2014 consider Gio._promisify() for GIO async methods",
+      "fix": "Use Gio._promisify() to promisify GIO async methods instead of manual Promise wrapping"
+    },
+    {
+      "id": "R-SLOP-11::Non-existent GLib method \u2014 use GLib.timeout_add_seconds() and GLib.Source.remove()",
+      "status": "WARN",
+      "check": "R-SLOP-11",
+      "detail": "src/appIcons.js:451: Non-existent GLib method \u2014 use GLib.timeout_add_seconds() and GLib.Source.remove()",
+      "fix": "GLib.timeout_add_seconds_full \u2192 GLib.timeout_add_seconds. GLib.source_remove \u2192 GLib.Source.remove."
+    },
+    {
+      "id": "R-SLOP-11::Non-existent GLib method \u2014 use GLib.timeout_add_seconds() and GLib.Source.remove()",
+      "status": "WARN",
+      "check": "R-SLOP-11",
+      "detail": "src/windowPreview.js:1067: Non-existent GLib method \u2014 use GLib.timeout_add_seconds() and GLib.Source.remove()",
+      "fix": "GLib.timeout_add_seconds_full \u2192 GLib.timeout_add_seconds. GLib.source_remove \u2192 GLib.Source.remove."
+    },
+    {
+      "id": "R-SLOP-11::Non-existent GLib method \u2014 use GLib.timeout_add_seconds() and GLib.Source.remove()",
+      "status": "WARN",
+      "check": "R-SLOP-11",
+      "detail": "src/panel.js:420: Non-existent GLib method \u2014 use GLib.timeout_add_seconds() and GLib.Source.remove()",
+      "fix": "GLib.timeout_add_seconds_full \u2192 GLib.timeout_add_seconds. GLib.source_remove \u2192 GLib.Source.remove."
+    },
+    {
+      "id": "R-SLOP-11::Non-existent GLib method \u2014 use GLib.timeout_add_seconds() and GLib.Source.remove()",
+      "status": "WARN",
+      "check": "R-SLOP-11",
+      "detail": "src/taskbar.js:446: Non-existent GLib method \u2014 use GLib.timeout_add_seconds() and GLib.Source.remove()",
+      "fix": "GLib.timeout_add_seconds_full \u2192 GLib.timeout_add_seconds. GLib.source_remove \u2192 GLib.Source.remove."
+    },
+    {
+      "id": "R-SLOP-11::Non-existent GLib method \u2014 use GLib.timeout_add_seconds() and GLib.Source.remove()",
+      "status": "WARN",
+      "check": "R-SLOP-11",
+      "detail": "src/desktopIconsIntegration.js:136: Non-existent GLib method \u2014 use GLib.timeout_add_seconds() and GLib.Source.remove()",
+      "fix": "GLib.timeout_add_seconds_full \u2192 GLib.timeout_add_seconds. GLib.source_remove \u2192 GLib.Source.remove."
+    },
+    {
+      "id": "R-SLOP-11::Non-existent GLib method \u2014 use GLib.timeout_add_seconds() and GLib.Source.remove()",
+      "status": "WARN",
+      "check": "R-SLOP-11",
+      "detail": "src/desktopIconsIntegration.js:145: Non-existent GLib method \u2014 use GLib.timeout_add_seconds() and GLib.Source.remove()",
+      "fix": "GLib.timeout_add_seconds_full \u2192 GLib.timeout_add_seconds. GLib.source_remove \u2192 GLib.Source.remove."
+    },
+    {
+      "id": "R-QUAL-27::String comparison on PACKAGE_VERSION is unreliable \u2014 use parseInt() for numeric comparison",
+      "status": "WARN",
+      "check": "R-QUAL-27",
+      "detail": "src/utils.js:200: String comparison on PACKAGE_VERSION is unreliable \u2014 use parseInt() for numeric comparison",
+      "fix": "Use parseInt(Config.PACKAGE_VERSION) >= 45 instead of Config.PACKAGE_VERSION >= '45'"
+    },
+    {
+      "id": "R-QUAL-27::String comparison on PACKAGE_VERSION is unreliable \u2014 use parseInt() for numeric comparison",
+      "status": "WARN",
+      "check": "R-QUAL-27",
+      "detail": "src/utils.js:207: String comparison on PACKAGE_VERSION is unreliable \u2014 use parseInt() for numeric comparison",
+      "fix": "Use parseInt(Config.PACKAGE_VERSION) >= 45 instead of Config.PACKAGE_VERSION >= '45'"
+    },
+    {
+      "id": "R-QUAL-27::String comparison on PACKAGE_VERSION is unreliable \u2014 use parseInt() for numeric comparison",
+      "status": "WARN",
+      "check": "R-QUAL-27",
+      "detail": "src/utils.js:228: String comparison on PACKAGE_VERSION is unreliable \u2014 use parseInt() for numeric comparison",
+      "fix": "Use parseInt(Config.PACKAGE_VERSION) >= 45 instead of Config.PACKAGE_VERSION >= '45'"
+    },
+    {
+      "id": "R-QUAL-27::String comparison on PACKAGE_VERSION is unreliable \u2014 use parseInt() for numeric comparison",
+      "status": "WARN",
+      "check": "R-QUAL-27",
+      "detail": "src/panel.js:1613: String comparison on PACKAGE_VERSION is unreliable \u2014 use parseInt() for numeric comparison",
+      "fix": "Use parseInt(Config.PACKAGE_VERSION) >= 45 instead of Config.PACKAGE_VERSION >= '45'"
+    },
+    {
+      "id": "R-QUAL-30::lookupByURL() is discouraged \u2014 use this.getSettings() and this.path from the entry point class",
+      "status": "WARN",
+      "check": "R-QUAL-30",
+      "detail": "src/prefs.js:158: lookupByURL() is discouraged \u2014 use this.getSettings() and this.path from the entry point class",
+      "fix": "Access settings and path via the Extension/ExtensionPreferences base class instead"
+    },
+    {
+      "id": "R-QUAL-30::lookupByURL() is discouraged \u2014 use this.getSettings() and this.path from the entry point class",
+      "status": "WARN",
+      "check": "R-QUAL-30",
+      "detail": "src/desktopIconsIntegration.js:74: lookupByURL() is discouraged \u2014 use this.getSettings() and this.path from the entry point class",
+      "fix": "Access settings and path via the Extension/ExtensionPreferences base class instead"
+    },
+    {
+      "id": "R-QUAL-31::_onDestroy() should be renamed to destroy() with super.destroy() at the end",
+      "status": "WARN",
+      "check": "R-QUAL-31",
+      "detail": "src/appIcons.js:447: _onDestroy() should be renamed to destroy() with super.destroy() at the end",
+      "fix": "Rename to destroy() { /* cleanup */; super.destroy(); }"
+    },
+    {
+      "id": "R-QUAL-31::_onDestroy() should be renamed to destroy() with super.destroy() at the end",
+      "status": "WARN",
+      "check": "R-QUAL-31",
+      "detail": "src/windowPreview.js:1065: _onDestroy() should be renamed to destroy() with super.destroy() at the end",
+      "fix": "Rename to destroy() { /* cleanup */; super.destroy(); }"
+    },
+    {
+      "id": "R-VER46-05::ExtensionState enum renamed in GNOME 46: ENABLED->ACTIVE, DISABLED->INACTIVE, etc.",
+      "status": "FAIL",
+      "check": "R-VER46-05",
+      "detail": "src/desktopIconsIntegration.js:68: ExtensionState enum renamed in GNOME 46: ENABLED->ACTIVE, DISABLED->INACTIVE, etc.",
+      "fix": "Use ACTIVE, INACTIVE, ENABLING, DISABLING instead"
+    },
+    {
+      "id": "R-VER48-02::Meta display functions moved to Meta.Compositor in GNOME 48; use global.compositor",
+      "status": "FAIL",
+      "check": "R-VER48-02",
+      "detail": "src/utils.js:233: Meta display functions moved to Meta.Compositor in GNOME 48; use global.compositor",
+      "fix": "Access via global.compositor instead of Meta directly"
+    },
+    {
+      "id": "R-VER48-02::Meta display functions moved to Meta.Compositor in GNOME 48; use global.compositor",
+      "status": "FAIL",
+      "check": "R-VER48-02",
+      "detail": "src/utils.js:237: Meta display functions moved to Meta.Compositor in GNOME 48; use global.compositor",
+      "fix": "Access via global.compositor instead of Meta directly"
+    },
+    {
+      "id": "R-VER48-04::St.Widget.vertical property deprecated in GNOME 48; use orientation: Clutter.Orientation.VERTICAL (available since GNOME 47; keep vertical for GNOME <=46 compat)",
+      "status": "WARN",
+      "check": "R-VER48-04",
+      "detail": "src/utils.js:203: St.Widget.vertical property deprecated in GNOME 48; use orientation: Clutter.Orientation.VERTICAL (available since GNOME 47; keep vertical for GNOME <=46 compat)"
+    },
+    {
+      "id": "R-VER50-01::Not applicable for declared shell-version(s)",
+      "status": "SKIP",
+      "check": "R-VER50-01",
+      "detail": "Not applicable for declared shell-version(s)"
+    },
+    {
+      "id": "R-VER50-02::Not applicable for declared shell-version(s)",
+      "status": "SKIP",
+      "check": "R-VER50-02",
+      "detail": "Not applicable for declared shell-version(s)"
+    },
+    {
+      "id": "R-VER50-03::Not applicable for declared shell-version(s)",
+      "status": "SKIP",
+      "check": "R-VER50-03",
+      "detail": "Not applicable for declared shell-version(s)"
+    },
+    {
+      "id": "R-VER50-04::Not applicable for declared shell-version(s)",
+      "status": "SKIP",
+      "check": "R-VER50-04",
+      "detail": "Not applicable for declared shell-version(s)"
+    },
+    {
+      "id": "R-VER50-05::Not applicable for declared shell-version(s)",
+      "status": "SKIP",
+      "check": "R-VER50-05",
+      "detail": "Not applicable for declared shell-version(s)"
+    },
+    {
+      "id": "eslint::No eslint.config.mjs or node_modules/.bin/eslint found",
+      "status": "SKIP",
+      "check": "eslint",
+      "detail": "No eslint.config.mjs or node_modules/.bin/eslint found"
+    },
+    {
+      "id": "metadata/uuid-matches-dir::UUID 'dash-to-panel@jderose9.github.com' does not match directory 'dash-to-panel' \u2014 must match when installed",
+      "status": "WARN",
+      "check": "metadata/uuid-matches-dir",
+      "detail": "UUID 'dash-to-panel@jderose9.github.com' does not match directory 'dash-to-panel' \u2014 must match when installed"
+    },
+    {
+      "id": "metadata/non-standard-field::'extension-id' is not a standard metadata field",
+      "status": "WARN",
+      "check": "metadata/non-standard-field",
+      "detail": "'extension-id' is not a standard metadata field"
+    },
+    {
+      "id": "metadata/deprecated-version::version field is ignored by EGO for GNOME 45+; consider removing",
+      "status": "WARN",
+      "check": "metadata/deprecated-version",
+      "detail": "version field is ignored by EGO for GNOME 45+; consider removing"
+    },
+    {
+      "id": "schema-usage/unused-key::Dynamic key access detected \u2014 cannot verify statically",
+      "status": "SKIP",
+      "check": "schema-usage/unused-key",
+      "detail": "Dynamic key access detected \u2014 cannot verify statically"
+    },
+    {
+      "id": "schema-usage/undefined-key::Dynamic key access detected \u2014 cannot verify statically",
+      "status": "SKIP",
+      "check": "schema-usage/undefined-key",
+      "detail": "Dynamic key access detected \u2014 cannot verify statically"
+    },
+    {
+      "id": "quality/module-state::Module-level mutable state at src/utils.js, src/utils.js, src/appIcons.js, src/appIcons.js, src/windowPreview.js \u2014 ensure reset in both enable() and disable()",
+      "status": "WARN",
+      "check": "quality/module-state",
+      "detail": "Module-level mutable state at src/utils.js:633, src/utils.js:740, src/appIcons.js:70, src/appIcons.js:71, src/windowPreview.js:55 \u2014 ensure reset in both enable() and disable()"
+    },
+    {
+      "id": "quality/code-volume::14146 non-blank JS lines \u2014 large codebase; ensure all code is necessary and manually reviewed",
+      "status": "WARN",
+      "check": "quality/code-volume",
+      "detail": "14146 non-blank JS lines \u2014 large codebase; ensure all code is necessary and manually reviewed"
+    },
+    {
+      "id": "quality/file-complexity::3564 non-blank lines \u2014 consider splitting into modules",
+      "status": "WARN",
+      "check": "quality/file-complexity",
+      "detail": "src/prefs.js: 3564 non-blank lines \u2014 consider splitting into modules"
+    },
+    {
+      "id": "quality/private-api::src/utils.js, src/utils.js, src/utils.js, src/utils.js, src/utils.js (+99 more): Main.overview private API access \u2014 requires reviewer justification and version pinning",
+      "status": "WARN",
+      "check": "quality/private-api",
+      "detail": "src/utils.js:252, src/utils.js:322, src/utils.js:324, src/utils.js:342, src/utils.js:354 (+99 more): Main.overview private API access \u2014 requires reviewer justification and version pinning"
+    },
+    {
+      "id": "quality/repeated-settings::6 getSettings()/Gio.Settings instances across extension files (src/overview.js, src/taskbar.js, src/extension.js, src/extension.js, src/extension.js) \u2014 store a single instance and pass via dependency injection",
+      "status": "WARN",
+      "check": "quality/repeated-settings",
+      "detail": "6 getSettings()/Gio.Settings instances across extension files (src/overview.js:400, src/taskbar.js:339, src/extension.js:63, src/extension.js:64, src/extension.js:67) \u2014 store a single instance and pass via dependency injection"
+    },
+    {
+      "id": "lifecycle/untracked-timeout::timer/idle return value not stored \u2014 cannot be removed in disable()",
+      "status": "WARN",
+      "check": "lifecycle/untracked-timeout",
+      "detail": "src/panelManager.js:268: timer/idle return value not stored \u2014 cannot be removed in disable()"
+    },
+    {
+      "id": "lifecycle/untracked-timeout::timer/idle return value not stored \u2014 cannot be removed in disable()",
+      "status": "WARN",
+      "check": "lifecycle/untracked-timeout",
+      "detail": "src/taskbar.js:1659: timer/idle return value not stored \u2014 cannot be removed in disable()"
+    },
+    {
+      "id": "lifecycle/connectObject-migration::15 manual signal connections found \u2014 consider using connectObject() for automatic cleanup",
+      "status": "WARN",
+      "check": "lifecycle/connectObject-migration",
+      "detail": "15 manual signal connections found \u2014 consider using connectObject() for automatic cleanup"
+    },
+    {
+      "id": "lifecycle/async-destroyed-guard::async/await used without _destroyed or _isDestroyed guard \u2014 extension may act on stale state after disable()",
+      "status": "WARN",
+      "check": "lifecycle/async-destroyed-guard",
+      "detail": "async/await used without _destroyed or _isDestroyed guard \u2014 extension may act on stale state after disable()"
+    },
+    {
+      "id": "lifecycle/timeout-return-value::src/appIcons.js, src/extension.js",
+      "status": "WARN",
+      "check": "lifecycle/timeout-return-value",
+      "detail": "timeout_add/idle_add callback missing SOURCE_REMOVE/SOURCE_CONTINUE: src/appIcons.js:1803, src/extension.js:144"
+    },
+    {
+      "id": "lifecycle/prototype-override::TaskbarAppIcon.prototype.scaleAndFade \u2014 direct prototype modification should be restored in disable()",
+      "status": "WARN",
+      "check": "lifecycle/prototype-override",
+      "detail": "src/appIcons.js: TaskbarAppIcon.prototype.scaleAndFade \u2014 direct prototype modification should be restored in disable()"
+    },
+    {
+      "id": "lifecycle/prototype-override::TaskbarAppIcon.prototype.undoScaleAndFade \u2014 direct prototype modification should be restored in disable()",
+      "status": "WARN",
+      "check": "lifecycle/prototype-override",
+      "detail": "src/appIcons.js: TaskbarAppIcon.prototype.undoScaleAndFade \u2014 direct prototype modification should be restored in disable()"
+    },
+    {
+      "id": "lifecycle/prototype-override::AppIcon.prototype._setPopupTimeout \u2014 direct prototype modification should be restored in disable()",
+      "status": "WARN",
+      "check": "lifecycle/prototype-override",
+      "detail": "src/panelManager.js: AppIcon.prototype._setPopupTimeout \u2014 direct prototype modification should be restored in disable()"
+    },
+    {
+      "id": "lifecycle/prototype-override::AppIcon.prototype._removeMenuTimeout \u2014 direct prototype modification should be restored in disable()",
+      "status": "WARN",
+      "check": "lifecycle/prototype-override",
+      "detail": "src/panelManager.js: AppIcon.prototype._removeMenuTimeout \u2014 direct prototype modification should be restored in disable()"
+    },
+    {
+      "id": "lifecycle/prototype-override::LookingGlass.prototype._oldResize \u2014 direct prototype modification should be restored in disable()",
+      "status": "WARN",
+      "check": "lifecycle/prototype-override",
+      "detail": "src/panelManager.js: LookingGlass.prototype._oldResize \u2014 direct prototype modification should be restored in disable()"
+    },
+    {
+      "id": "lifecycle/prototype-override::LookingGlass.prototype._resize \u2014 direct prototype modification should be restored in disable()",
+      "status": "WARN",
+      "check": "lifecycle/prototype-override",
+      "detail": "src/panelManager.js: LookingGlass.prototype._resize \u2014 direct prototype modification should be restored in disable()"
+    },
+    {
+      "id": "lifecycle/prototype-override::LookingGlass.prototype._oldOpen \u2014 direct prototype modification should be restored in disable()",
+      "status": "WARN",
+      "check": "lifecycle/prototype-override",
+      "detail": "src/panelManager.js: LookingGlass.prototype._oldOpen \u2014 direct prototype modification should be restored in disable()"
+    },
+    {
+      "id": "lifecycle/prototype-override::LookingGlass.prototype.open \u2014 direct prototype modification should be restored in disable()",
+      "status": "WARN",
+      "check": "lifecycle/prototype-override",
+      "detail": "src/panelManager.js: LookingGlass.prototype.open \u2014 direct prototype modification should be restored in disable()"
+    },
+    {
+      "id": "lifecycle/prototype-override::Workspace.prototype._oldIsMyWindow \u2014 direct prototype modification should be restored in disable()",
+      "status": "WARN",
+      "check": "lifecycle/prototype-override",
+      "detail": "src/panelManager.js: Workspace.prototype._oldIsMyWindow \u2014 direct prototype modification should be restored in disable()"
+    },
+    {
+      "id": "lifecycle/prototype-override::Workspace.prototype._isMyWindow \u2014 direct prototype modification should be restored in disable()",
+      "status": "WARN",
+      "check": "lifecycle/prototype-override",
+      "detail": "src/panelManager.js: Workspace.prototype._isMyWindow \u2014 direct prototype modification should be restored in disable()"
+    },
+    {
+      "id": "lifecycle/destroy-no-null::.destroy() without null assignment \u2014 set reference to null after destroy to prevent stale access",
+      "status": "WARN",
+      "check": "lifecycle/destroy-no-null",
+      "detail": "src/notificationsMonitor.js:77: .destroy() without null assignment \u2014 set reference to null after destroy to prevent stale access"
+    },
+    {
+      "id": "lifecycle/destroy-no-null::.destroy() without null assignment \u2014 set reference to null after destroy to prevent stale access",
+      "status": "WARN",
+      "check": "lifecycle/destroy-no-null",
+      "detail": "src/intellihide.js:159: .destroy() without null assignment \u2014 set reference to null after destroy to prevent stale access"
+    },
+    {
+      "id": "lifecycle/destroy-no-null::.destroy() without null assignment \u2014 set reference to null after destroy to prevent stale access",
+      "status": "WARN",
+      "check": "lifecycle/destroy-no-null",
+      "detail": "src/intellihide.js:160: .destroy() without null assignment \u2014 set reference to null after destroy to prevent stale access"
+    },
+    {
+      "id": "lifecycle/destroy-no-null::.destroy() without null assignment \u2014 set reference to null after destroy to prevent stale access",
+      "status": "WARN",
+      "check": "lifecycle/destroy-no-null",
+      "detail": "src/intellihide.js:327: .destroy() without null assignment \u2014 set reference to null after destroy to prevent stale access"
+    },
+    {
+      "id": "lifecycle/destroy-no-null::.destroy() without null assignment \u2014 set reference to null after destroy to prevent stale access",
+      "status": "WARN",
+      "check": "lifecycle/destroy-no-null",
+      "detail": "src/intellihide.js:328: .destroy() without null assignment \u2014 set reference to null after destroy to prevent stale access"
+    },
+    {
+      "id": "gobject/missing-gtypename::GObject.registerClass without GTypeName \u2014 add GTypeName to avoid conflicts between extensions",
+      "status": "WARN",
+      "check": "gobject/missing-gtypename",
+      "detail": "src/prefs.js:3951: GObject.registerClass without GTypeName \u2014 add GTypeName to avoid conflicts between extensions"
+    },
+    {
+      "id": "gobject/missing-gtypename::GObject.registerClass without GTypeName \u2014 add GTypeName to avoid conflicts between extensions",
+      "status": "WARN",
+      "check": "gobject/missing-gtypename",
+      "detail": "src/appIcons.js:116: GObject.registerClass without GTypeName \u2014 add GTypeName to avoid conflicts between extensions"
+    },
+    {
+      "id": "gobject/missing-gtypename::GObject.registerClass without GTypeName \u2014 add GTypeName to avoid conflicts between extensions",
+      "status": "WARN",
+      "check": "gobject/missing-gtypename",
+      "detail": "src/windowPreview.js:59: GObject.registerClass without GTypeName \u2014 add GTypeName to avoid conflicts between extensions"
+    },
+    {
+      "id": "gobject/missing-gtypename::GObject.registerClass without GTypeName \u2014 add GTypeName to avoid conflicts between extensions",
+      "status": "WARN",
+      "check": "gobject/missing-gtypename",
+      "detail": "src/windowPreview.js:841: GObject.registerClass without GTypeName \u2014 add GTypeName to avoid conflicts between extensions"
+    },
+    {
+      "id": "gobject/missing-gtypename::GObject.registerClass without GTypeName \u2014 add GTypeName to avoid conflicts between extensions",
+      "status": "WARN",
+      "check": "gobject/missing-gtypename",
+      "detail": "src/windowPreview.js:1389: GObject.registerClass without GTypeName \u2014 add GTypeName to avoid conflicts between extensions"
+    },
+    {
+      "id": "init/shell-modification::Shell modification outside enable()",
+      "status": "FAIL",
+      "check": "init/shell-modification",
+      "detail": "src/taskbar.js:46: Shell modification outside enable()"
+    },
+    {
+      "id": "init/shell-modification::Shell modification outside enable()",
+      "status": "FAIL",
+      "check": "init/shell-modification",
+      "detail": "src/extension.js:55: Shell modification outside enable()"
+    },
+    {
+      "id": "disclosure/private-api::private-api capability detected in code but metadata description does not disclose it \u2014 reviewers expect disclosure",
+      "status": "WARN",
+      "check": "disclosure/private-api",
+      "detail": "private-api capability detected in code but metadata description does not disclose it \u2014 reviewers expect disclosure"
+    },
+    {
+      "id": "disclosure/file-io::file-io capability detected in code but metadata description does not disclose it \u2014 reviewers expect disclosure",
+      "status": "WARN",
+      "check": "disclosure/file-io",
+      "detail": "file-io capability detected in code but metadata description does not disclose it \u2014 reviewers expect disclosure"
+    },
+    {
+      "id": "package/exists::No zip package found in extension directory",
+      "status": "SKIP",
+      "check": "package/exists",
+      "detail": "No zip package found in extension directory"
+    }
+  ]
+}
