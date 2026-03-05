@@ -404,7 +404,8 @@ if [[ "$OPT_REVIEW" == true || "$OPT_REVIEW_CHANGED" == true ]]; then
         if [[ ${#REVIEW_PIDS[@]} -ge $OPT_PARALLEL ]]; then
             wait -n 2>/dev/null || true
             # Collect finished processes
-            local new_pids=() new_names=()
+            new_pids=()
+            new_names=()
             for i in "${!REVIEW_PIDS[@]}"; do
                 if kill -0 "${REVIEW_PIDS[$i]}" 2>/dev/null; then
                     new_pids+=("${REVIEW_PIDS[$i]}")
