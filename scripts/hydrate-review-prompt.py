@@ -12,12 +12,14 @@ import json
 import sys
 
 
-def read_file(path):
+def read_file(path, warn_missing=False):
     """Read file contents, return empty string if missing."""
     try:
         with open(path) as f:
             return f.read()
     except FileNotFoundError:
+        if warn_missing:
+            print(f"Warning: file not found: {path}", file=sys.stderr)
         return ""
     except PermissionError:
         print(f"Warning: cannot read {path}: permission denied", file=sys.stderr)
@@ -48,7 +50,7 @@ def main():
     # Build diff section
     diff_section = ""
     if args.diff_json:
-        diff_content = read_file(args.diff_json)
+        diff_content = read_file(args.diff_json, warn_missing=True)
         if diff_content:
             diff_section = (
                 "## Baseline Comparison (Diff)\n\n"
@@ -62,7 +64,7 @@ def main():
     # Build annotations section
     ann_section = ""
     if args.annotations:
-        ann_content = read_file(args.annotations)
+        ann_content = read_file(args.annotations, warn_missing=True)
         if ann_content:
             ann_section = (
                 "## Known Finding Classifications\n\n"
