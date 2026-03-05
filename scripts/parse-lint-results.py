@@ -109,7 +109,7 @@ def parse_lint_output(lines):
     counts['total'] = sum(counts.values())
 
     if lines and counts['total'] == 0:
-        print("Warning: parsed 0 results from input. "
+        print("Warning: parsed 0 results from non-empty input. "
               "ego-lint output format may have changed.", file=sys.stderr)
 
     return findings, metrics, counts, provenance_score
@@ -162,6 +162,11 @@ def main():
 
     json.dump(result, sys.stdout, indent=2)
     print()
+
+    # Exit 2 (distinct from crash) when non-empty input produces 0 results,
+    # so the runner can detect format mismatches
+    if lines and counts['total'] == 0:
+        sys.exit(2)
 
 
 if __name__ == '__main__':
