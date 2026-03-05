@@ -62,7 +62,12 @@ while [[ $# -gt 0 ]]; do
         --lint-only)        shift ;;  # default behavior
         --review)           OPT_REVIEW=true; shift ;;
         --review-changed)   OPT_REVIEW_CHANGED=true; shift ;;
-        --parallel)         OPT_PARALLEL="$2"; shift 2 ;;
+        --parallel)
+            if ! [[ "$2" =~ ^[1-9][0-9]*$ ]]; then
+                echo "Error: --parallel requires a positive integer, got: $2" >&2
+                exit 1
+            fi
+            OPT_PARALLEL="$2"; shift 2 ;;
         --review-dry-run)   OPT_REVIEW_DRY_RUN=true; shift ;;
         --budget)           OPT_BUDGET="$2"; shift 2 ;;
         -h|--help)
