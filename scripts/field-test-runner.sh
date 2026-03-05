@@ -18,6 +18,7 @@
 #     --budget AMOUNT     Max USD per review session (default: 4.00)
 
 set -euo pipefail
+trap 'echo "Error: script failed at line $LINENO (exit code $?)" >&2' ERR
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 ROOT_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
