@@ -298,6 +298,12 @@ print(c['pass'], c['fail'], c['warn'], c['skip'], sep='\t')
 " < "$result_file")"
     IFS=$'\t' read -r pass fail warn skip <<< "$_counts_line"
 
+    # Sanity check: nonzero exit + zero results likely means ego-lint crashed
+    local total=$((pass + fail + warn + skip))
+    if [[ "$exit_code" -ne 0 && "$total" -eq 0 ]]; then
+        echo "  ⚠ WARNING: ego-lint exited $exit_code but produced 0 check results (possible crash)"
+    fi
+
     TOTAL_PASS=$((TOTAL_PASS + pass))
     TOTAL_FAIL=$((TOTAL_FAIL + fail))
     TOTAL_WARN=$((TOTAL_WARN + warn))
