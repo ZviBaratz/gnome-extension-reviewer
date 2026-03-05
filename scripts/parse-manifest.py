@@ -19,7 +19,7 @@ def parse_manifest(path):
     source = None
 
     with open(path) as f:
-        for raw_line in f:
+        for line_num, raw_line in enumerate(f, 1):
             stripped = raw_line.strip()
             if not stripped or stripped.startswith('#'):
                 continue
@@ -46,6 +46,8 @@ def parse_manifest(path):
                 continue
 
             if current is None:
+                print(f"Warning: {path}:{line_num}: ignoring line outside entry: {stripped}",
+                      file=sys.stderr)
                 continue
 
             # Source block (indent 6)
@@ -62,6 +64,9 @@ def parse_manifest(path):
                     source[k] = _parse_value(v)
                 elif indent >= 4:
                     current[k] = _parse_value(v)
+            else:
+                print(f"Warning: {path}:{line_num}: unrecognized line: {stripped}",
+                      file=sys.stderr)
 
     # Don't forget the last entry
     if current is not None:
