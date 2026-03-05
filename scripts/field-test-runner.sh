@@ -163,10 +163,11 @@ print(s.get('type',''), s.get('path',''), s.get('repo',''), s.get('ref', s.get('
 
             if [[ "$OPT_NO_FETCH" != true ]] && [[ ! -d "$RESOLVED_PATH" ]]; then
                 echo "  Fetching from github: $source_repo..."
-                if ! git clone --depth 1 "https://github.com/$source_repo.git" "$RESOLVED_PATH" 2>/dev/null; then
+                clone_err="$(git clone --depth 1 "https://github.com/$source_repo.git" "$RESOLVED_PATH" 2>&1)" || {
                     echo "  SKIP: failed to clone $source_repo"
+                    echo "  ${clone_err%%$'\n'*}" >&2
                     return 1
-                fi
+                }
                 if [[ -n "$source_ref" ]]; then
                     if ! git -C "$RESOLVED_PATH" fetch --depth 1 origin "$source_ref" 2>&1; then
                         echo "  SKIP: failed to fetch ref $source_ref from $source_repo"
@@ -190,10 +191,11 @@ print(s.get('type',''), s.get('path',''), s.get('repo',''), s.get('ref', s.get('
 
             if [[ "$OPT_NO_FETCH" != true ]] && [[ ! -d "$RESOLVED_PATH" ]]; then
                 echo "  Fetching from github release: $source_repo@$source_ref..."
-                if ! git clone --depth 1 --branch "$source_ref" "https://github.com/$source_repo.git" "$RESOLVED_PATH" 2>/dev/null; then
+                clone_err="$(git clone --depth 1 --branch "$source_ref" "https://github.com/$source_repo.git" "$RESOLVED_PATH" 2>&1)" || {
                     echo "  SKIP: failed to clone $source_repo@$source_ref"
+                    echo "  ${clone_err%%$'\n'*}" >&2
                     return 1
-                fi
+                }
             fi
             if [[ ! -d "$RESOLVED_PATH" ]]; then
                 echo "  SKIP: cache not found (run without --no-fetch)"
