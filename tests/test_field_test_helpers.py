@@ -21,7 +21,9 @@ parse_lint = import_module('parse-lint-results')
 diff_baselines = import_module('diff-baselines')
 
 make_finding_id = parse_lint.make_finding_id
+parse_lint_output = parse_lint.parse_lint_output
 parse_annotations = diff_baselines.parse_annotations
+diff_results = diff_baselines.diff_results
 
 
 class TestMakeFindingId(unittest.TestCase):
@@ -70,6 +72,117 @@ class TestMakeFindingId(unittest.TestCase):
     def test_check_name_preserved(self):
         result = make_finding_id('quality/ai-slop', 'some detail')
         self.assertTrue(result.startswith('quality/ai-slop::'))
+
+
+class TestParseLintOutput(unittest.TestCase):
+    """Test ego-lint output parsing."""
+
+    def test_result_lines(self):
+        lines = [
+            "[PASS] metadata/exists  metadata.json found\n",
+            "[FAIL] R-SEC-01  extension.js:42 uses eval()\n",
+            "[WARN] R-WEB-01  setTimeout in 2 file(s): a.js, b.js\n",
+            "[SKIP] schema/validate  no schemas found\n",
+        ]
+        findings, metrics, counts, prov = parse_lint_output(lines)
+        self.assertEqual(counts, {'pass': 1, 'fail': 1, 'warn': 1, 'skip': 1, 'total': 4})
+        self.assertEqual(len(findings), 3)  # PASS not in findings
+        self.assertEqual(findings[0]['status'], 'FAIL')
+        self.assertEqual(findings[0]['check'], 'R-SEC-01')
+
+    def test_metric_lines(self):
+        lines = [
+            "[METRIC] js-files: 5\n",
+            "[METRIC] total-lines: 1200\n",
+            "[METRIC] largest-file: extension.js (800 lines)\n",
+        ]
+        findings, metrics, counts, prov = parse_lint_output(lines)
+        self.assertEqual(metrics['js_files'], 5)
+        self.assertEqual(metrics['total_lines'], 1200)
+        self.assertEqual(metrics['largest_file'], 'extension.js (800 lines)')
+
+    def test_fix_suggestions(self):
+        lines = [
+            "[FAIL] R-WEB-01  setTimeout in 1 file(s): a.js\n",
+            "--- FIX SUGGESTIONS ---\n",
+            "  R-WEB-01: Use GLib.timeout_add() instead\n",
+            "------\n",
+        ]
+        findings, metrics, counts, prov = parse_lint_output(lines)
+        self.assertEqual(findings[0]['fix'], 'Use GLib.timeout_add() instead')
+
+    def test_provenance_score(self):
+        lines = [
+            "[PASS] quality/code-provenance  score 3 (hand-written)\n",
+        ]
+        findings, metrics, counts, prov = parse_lint_output(lines)
+        self.assertEqual(prov, 3)
+
+    def test_zero_results_warns(self):
+        import io
+        from contextlib import redirect_stderr
+        stderr = io.StringIO()
+        with redirect_stderr(stderr):
+            findings, metrics, counts, prov = parse_lint_output(["not a result line\n"])
+        self.assertIn('parsed 0 results', stderr.getvalue())
+
+    def test_empty_input(self):
+        findings, metrics, counts, prov = parse_lint_output([])
+        self.assertEqual(counts['total'], 0)
+        self.assertEqual(findings, [])
+        self.assertIsNone(prov)
+
+    def test_metric_non_integer_fallback(self):
+        lines = ["[METRIC] js-files: unknown\n"]
+        findings, metrics, counts, prov = parse_lint_output(lines)
+        self.assertEqual(metrics['js_files'], 'unknown')
+
+
+class TestDiffResults(unittest.TestCase):
+    """Test baseline diff computation."""
+
+    def _make_result(self, findings, counts=None):
+        if counts is None:
+            counts = {'pass': 0, 'fail': len(findings), 'warn': 0, 'skip': 0,
+                      'total': len(findings)}
+        return {'name': 'test', 'findings': findings, 'counts': counts,
+                'ego_lint_version': 'abc', 'timestamp': '2026-01-01'}
+
+    def test_identical_findings(self):
+        f = [{'id': 'a::1', 'status': 'FAIL', 'check': 'a', 'detail': '1'}]
+        result = diff_results(self._make_result(f), self._make_result(f), {})
+        self.assertFalse(result['changed'])
+        self.assertEqual(result['new_findings'], [])
+        self.assertEqual(result['resolved_findings'], [])
+
+    def test_new_finding(self):
+        old = [{'id': 'a::1', 'status': 'FAIL', 'check': 'a', 'detail': '1'}]
+        new = old + [{'id': 'b::2', 'status': 'WARN', 'check': 'b', 'detail': '2'}]
+        result = diff_results(self._make_result(new), self._make_result(old), {})
+        self.assertTrue(result['changed'])
+        self.assertEqual(len(result['new_findings']), 1)
+        self.assertEqual(result['new_findings'][0]['id'], 'b::2')
+
+    def test_resolved_finding(self):
+        old = [{'id': 'a::1', 'status': 'FAIL', 'check': 'a', 'detail': '1'}]
+        result = diff_results(self._make_result([]), self._make_result(old), {})
+        self.assertTrue(result['changed'])
+        self.assertEqual(len(result['resolved_findings']), 1)
+
+    def test_annotation_filtering(self):
+        f = [{'id': 'a::1', 'status': 'FAIL', 'check': 'a', 'detail': '1'}]
+        annotations = {'a::1': 'tp'}
+        result = diff_results(self._make_result(f), self._make_result(f), annotations)
+        self.assertEqual(len(result['unannotated_findings']), 0)
+
+    def test_unannotated_findings(self):
+        f = [{'id': 'a::1', 'status': 'FAIL', 'check': 'a', 'detail': '1'}]
+        result = diff_results(self._make_result(f), self._make_result(f), {})
+        self.assertEqual(len(result['unannotated_findings']), 1)
+
+    def test_empty_findings(self):
+        result = diff_results(self._make_result([]), self._make_result([]), {})
+        self.assertFalse(result['changed'])
 
 
 class TestParseAnnotations(unittest.TestCase):
