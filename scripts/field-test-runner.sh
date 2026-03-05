@@ -14,6 +14,7 @@
 #     --review-changed    Run ego-review only on extensions with changed lint results
 #     --parallel N        Max concurrent claude -p sessions (default: 3)
 #     --review-dry-run    Print hydrated prompts without invoking claude -p
+#     --budget AMOUNT     Max USD per review session (default: 4.00)
 
 set -euo pipefail
 
@@ -44,6 +45,7 @@ OPT_REVIEW=false
 OPT_REVIEW_CHANGED=false
 OPT_PARALLEL=3
 OPT_REVIEW_DRY_RUN=false
+OPT_BUDGET="4.00"
 
 while [[ $# -gt 0 ]]; do
     case "$1" in
@@ -58,6 +60,7 @@ while [[ $# -gt 0 ]]; do
         --review-changed)   OPT_REVIEW_CHANGED=true; shift ;;
         --parallel)         OPT_PARALLEL="$2"; shift 2 ;;
         --review-dry-run)   OPT_REVIEW_DRY_RUN=true; shift ;;
+        --budget)           OPT_BUDGET="$2"; shift 2 ;;
         -h|--help)
             echo "Usage: field-test-runner.sh [OPTIONS]"
             echo "  --lint-only         Only run ego-lint (default)"
@@ -71,6 +74,7 @@ while [[ $# -gt 0 ]]; do
             echo "  --review-changed    Run ego-review only on changed extensions"
             echo "  --parallel N        Max concurrent claude -p sessions (default: 3)"
             echo "  --review-dry-run    Print hydrated prompts without invoking claude"
+            echo "  --budget AMOUNT     Max USD per review session (default: 4.00)"
             exit 0
             ;;
         *) echo "Unknown option: $1" >&2; exit 1 ;;
@@ -411,7 +415,7 @@ if [[ "$OPT_REVIEW" == true || "$OPT_REVIEW_CHANGED" == true ]]; then
                 --plugin-dir "$PLUGIN_DIR" \
                 --add-dir "$ext_path" \
                 --dangerously-skip-permissions \
-                --max-budget-usd 2.00 \
+                --max-budget-usd "$OPT_BUDGET" \
                 "$prompt" > "$RESULTS_DIR/$name.review.out" 2>"$err_file"
         ) &
         REVIEW_PIDS+=($!)
