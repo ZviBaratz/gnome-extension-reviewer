@@ -214,7 +214,7 @@ print(json.dumps(exts[$idx]))
 
     # Filter by --extension if specified
     if [[ -n "$OPT_SINGLE_EXT" && "$name" != "$OPT_SINGLE_EXT" ]]; then
-        return 1  # signal: skipped by filter
+        return 2  # signal: silently filtered out
     fi
 
     echo "--- $name ($uuid) ---"
@@ -329,10 +329,15 @@ print(json.dumps(entry))
 
 # Main loop
 for idx in $(seq 0 $((EXT_COUNT - 1))); do
-    if ! process_extension "$idx"; then
+    rc=0
+    process_extension "$idx" || rc=$?
+    if [[ $rc -eq 1 ]]; then
         SKIPPED=$((SKIPPED + 1))
+        echo ""
+    elif [[ $rc -eq 0 ]]; then
+        echo ""
     fi
-    echo ""
+    # rc==2: silently filtered, no output
 done
 
 # ── Review Phase ──────────────────────────────────────────────────────
