@@ -69,7 +69,12 @@ while [[ $# -gt 0 ]]; do
             fi
             OPT_PARALLEL="$2"; shift 2 ;;
         --review-dry-run)   OPT_REVIEW_DRY_RUN=true; shift ;;
-        --budget)           OPT_BUDGET="$2"; shift 2 ;;
+        --budget)
+            if ! [[ "$2" =~ ^[0-9]+(\.[0-9]+)?$ ]]; then
+                echo "Error: --budget requires a numeric amount, got: $2" >&2
+                exit 1
+            fi
+            OPT_BUDGET="$2"; shift 2 ;;
         -h|--help)
             echo "Usage: field-test-runner.sh [OPTIONS]"
             echo "  --lint-only         Only run ego-lint (default)"
