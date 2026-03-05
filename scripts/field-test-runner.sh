@@ -137,6 +137,11 @@ if [[ "$OPT_REVIEW" == true || "$OPT_REVIEW_CHANGED" == true ]] && [[ "$OPT_REVI
     fi
 fi
 
+# Ensure baselines directory exists when updating
+if [[ "$OPT_UPDATE_BASELINES" == true ]]; then
+    mkdir -p "$BASELINES_DIR"
+fi
+
 # Get ego-lint version
 EGO_LINT_VERSION="$(git -C "$ROOT_DIR" rev-parse --short HEAD 2>/dev/null || echo "unknown")"
 
@@ -372,7 +377,10 @@ print(str(d['changed']).lower(), len(d['new_findings']), len(d['resolved_finding
 
     # Update baselines if requested
     if [[ "$OPT_UPDATE_BASELINES" == true ]]; then
-        cp "$result_file" "$baseline_file"
+        if ! cp "$result_file" "$baseline_file"; then
+            echo "  ERROR: failed to update baseline: $baseline_file" >&2
+            return 1
+        fi
         echo "  → baseline updated"
     fi
 
