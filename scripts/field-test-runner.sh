@@ -143,12 +143,13 @@ declare -A REVIEW_STATUS
 resolve_ext_path() {
     local ext_json="$1"
     local name="$2"
-    local source_type source_path source_repo source_ref
-    read -r source_type source_path source_repo source_ref < <(echo "$ext_json" | python3 -c "
+    local source_type source_path source_repo source_ref _src_line
+    _src_line="$(echo "$ext_json" | python3 -c "
 import json, sys
 s = json.load(sys.stdin).get('source', {})
 print(s.get('type',''), s.get('path',''), s.get('repo',''), s.get('ref', s.get('tag','')))
-")
+")"
+    read -r source_type source_path source_repo source_ref <<< "$_src_line"
 
     RESOLVED_PATH=""
     case "$source_type" in
@@ -220,12 +221,13 @@ exts = json.load(sys.stdin)
 print(json.dumps(exts[$idx]))
 ")"
 
-    local name uuid ego_approved
-    read -r name uuid ego_approved < <(echo "$ext_json" | python3 -c "
+    local name uuid ego_approved _ext_line
+    _ext_line="$(echo "$ext_json" | python3 -c "
 import json, sys
 d = json.load(sys.stdin)
 print(d['name'], d['uuid'], 'true' if d.get('ego_approved', False) else 'false')
-")
+")"
+    read -r name uuid ego_approved <<< "$_ext_line"
 
     # Filter by --extension / --exclude if specified
     if [[ -n "$OPT_SINGLE_EXT" && "$name" != "$OPT_SINGLE_EXT" ]]; then
@@ -271,13 +273,14 @@ print(d['name'], d['uuid'], 'true' if d.get('ego_approved', False) else 'false')
         > "$result_file"
 
     # Extract counts
-    local pass fail warn skip
-    read -r pass fail warn skip < <(python3 -c "
+    local pass fail warn skip _counts_line
+    _counts_line="$(python3 -c "
 import json, sys
 d = json.load(sys.stdin)
 c = d['counts']
 print(c['pass'], c['fail'], c['warn'], c['skip'])
-" < "$result_file")
+" < "$result_file")"
+    read -r pass fail warn skip <<< "$_counts_line"
 
     TOTAL_PASS=$((TOTAL_PASS + pass))
     TOTAL_FAIL=$((TOTAL_FAIL + fail))
@@ -296,11 +299,13 @@ print(c['pass'], c['fail'], c['warn'], c['skip'])
         local ann_arg=""
         [[ -f "$annotation_file" ]] && ann_arg="$annotation_file"
         python3 "$DIFF_BASELINES" "$result_file" "$baseline_file" $ann_arg > "$diff_file"
-        read -r changed new_count resolved_count unannotated_count < <(python3 -c "
+        local _diff_line
+        _diff_line="$(python3 -c "
 import json, sys
 d = json.load(sys.stdin)
 print(str(d['changed']).lower(), len(d['new_findings']), len(d['resolved_findings']), len(d['unannotated_findings']))
-" < "$diff_file")
+" < "$diff_file")"
+        read -r changed new_count resolved_count unannotated_count <<< "$_diff_line"
     fi
 
     if [[ "$changed" == "true" ]]; then
