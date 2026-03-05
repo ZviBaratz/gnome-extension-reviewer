@@ -11,7 +11,7 @@ First, write the header immediately:
 ## EGO Review Report — {{NAME}}
 ```
 
-Then after completing each section, APPEND it to the file by re-writing the full file (header + all completed sections so far). This ensures no work is lost if the session is terminated.
+Then after completing each section, re-write the full file (header + all completed sections so far) using the Write tool. This ensures no work is lost if the session is terminated.
 
 The report MUST contain ALL six sections in full detail. Do NOT summarize. Do NOT abbreviate. If a section has no findings, write "None" under it — do not omit the section.
 

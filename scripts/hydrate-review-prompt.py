@@ -80,7 +80,6 @@ def main():
     output = output.replace("{{LINT_JSON}}", lint_json.strip())
     output = output.replace("{{DIFF_JSON_SECTION}}", diff_section)
     output = output.replace("{{ANNOTATIONS_SECTION}}", ann_section)
-    output = output.replace("{{PLUGIN_DIR}}", args.plugin_dir)
     output = output.replace("{{REVIEW_OUTPUT_PATH}}", args.review_output)
 
     sys.stdout.write(output)
