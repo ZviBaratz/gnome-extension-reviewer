@@ -155,8 +155,16 @@ resolve_ext_path() {
                     return 1
                 fi
                 if [[ -n "$ref" ]]; then
-                    git -C "$RESOLVED_PATH" fetch --depth 1 origin "$ref" 2>/dev/null
-                    git -C "$RESOLVED_PATH" checkout "$ref" 2>/dev/null || true
+                    if ! git -C "$RESOLVED_PATH" fetch --depth 1 origin "$ref" 2>&1; then
+                        echo "  SKIP: failed to fetch ref $ref from $repo"
+                        rm -rf "$RESOLVED_PATH"
+                        return 1
+                    fi
+                    if ! git -C "$RESOLVED_PATH" checkout FETCH_HEAD 2>&1; then
+                        echo "  SKIP: failed to checkout ref $ref"
+                        rm -rf "$RESOLVED_PATH"
+                        return 1
+                    fi
                 fi
             fi
             if [[ ! -d "$RESOLVED_PATH" ]]; then
