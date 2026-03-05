@@ -208,16 +208,18 @@ print(s.get('type',''), s.get('path',''), s.get('repo',''), s.get('ref', s.get('
                     return 1
                 }
                 if [[ -n "$source_ref" ]]; then
-                    if ! git -C "$RESOLVED_PATH" fetch --depth 1 origin "$source_ref" 2>&1; then
+                    fetch_err="$(git -C "$RESOLVED_PATH" fetch --depth 1 origin "$source_ref" 2>&1)" || {
                         echo "  SKIP: failed to fetch ref $source_ref from $source_repo"
+                        echo "  ${fetch_err%%$'\n'*}" >&2
                         rm -rf "$RESOLVED_PATH"
                         return 1
-                    fi
-                    if ! git -C "$RESOLVED_PATH" checkout FETCH_HEAD 2>&1; then
+                    }
+                    checkout_err="$(git -C "$RESOLVED_PATH" checkout FETCH_HEAD 2>&1)" || {
                         echo "  SKIP: failed to checkout ref $source_ref"
+                        echo "  ${checkout_err%%$'\n'*}" >&2
                         rm -rf "$RESOLVED_PATH"
                         return 1
-                    fi
+                    }
                 fi
             fi
             if [[ ! -d "$RESOLVED_PATH" ]]; then
