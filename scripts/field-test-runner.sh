@@ -289,17 +289,25 @@ print(d['name'], d['uuid'], 'true' if d.get('ego_approved', False) else 'false',
     [[ "$ego_approved" == "true" ]] && parse_args+=(--ego-approved)
     parse_args+=(--exit-code "$exit_code" --version "$EGO_LINT_VERSION")
 
+    # NOTE: process_extension is called with || rc=$?, which disables set -e
+    # for the entire function body. Guard critical commands explicitly.
     local result_file="$RESULTS_DIR/$name.lint.json"
-    echo "$lint_output" | python3 "$PARSE_RESULTS" \
-        "${parse_args[@]}" > "$result_file"
+    if ! echo "$lint_output" | python3 "$PARSE_RESULTS" \
+        "${parse_args[@]}" > "$result_file"; then
+        echo "  ERROR: failed to parse lint results for $name" >&2
+        return 1
+    fi
 
     # Extract counts
     local pass fail warn skip _counts_line
-    _counts_line="$(json_extract "$name counts" "
+    if ! _counts_line="$(json_extract "$name counts" "
 d = json.load(sys.stdin)
 c = d['counts']
 print(c['pass'], c['fail'], c['warn'], c['skip'], sep='\t')
-" < "$result_file")"
+" < "$result_file")"; then
+        echo "  ERROR: failed to extract counts from $result_file" >&2
+        return 1
+    fi
     IFS=$'\t' read -r pass fail warn skip <<< "$_counts_line"
 
     # Sanity check: nonzero exit + zero results likely means ego-lint crashed
@@ -324,7 +332,9 @@ print(c['pass'], c['fail'], c['warn'], c['skip'], sep='\t')
     if [[ -f "$baseline_file" ]]; then
         local diff_args=("$result_file" "$baseline_file")
         [[ -f "$annotation_file" ]] && diff_args+=("$annotation_file")
-        python3 "$DIFF_BASELINES" "${diff_args[@]}" > "$diff_file"
+        if ! python3 "$DIFF_BASELINES" "${diff_args[@]}" > "$diff_file"; then
+            echo "  WARNING: baseline diff failed for $name" >&2
+        fi
         local _diff_line
         _diff_line="$(json_extract "$name diff" "
 d = json.load(sys.stdin)
