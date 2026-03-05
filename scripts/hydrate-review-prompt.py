@@ -30,6 +30,7 @@ def main():
     parser.add_argument("--plugin-dir", required=True, help="Plugin directory path")
     parser.add_argument("--diff-json", default="", help="Path to diff results JSON")
     parser.add_argument("--annotations", default="", help="Path to annotations YAML")
+    parser.add_argument("--review-output", default="", help="Path for review output file")
     parser.add_argument("--template", required=True, help="Path to prompt template")
     args = parser.parse_args()
 
@@ -80,6 +81,7 @@ def main():
     output = output.replace("{{DIFF_JSON_SECTION}}", diff_section)
     output = output.replace("{{ANNOTATIONS_SECTION}}", ann_section)
     output = output.replace("{{PLUGIN_DIR}}", args.plugin_dir)
+    output = output.replace("{{REVIEW_OUTPUT_PATH}}", args.review_output)
 
     sys.stdout.write(output)
 

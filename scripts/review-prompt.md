@@ -1,6 +1,10 @@
 Run /ego-review on the extension at {{EXT_PATH}}.
 
-Your ENTIRE text output will be saved as the review report file. Do NOT summarize at the end — your full output IS the deliverable. Write the complete report inline as you go, with all six sections in full detail. Every word you output goes into the report.
+After completing the review, you MUST write the full report to a file using the Write tool:
+
+Write the report to: {{REVIEW_OUTPUT_PATH}}
+
+The report MUST contain ALL six sections in full detail. Do NOT summarize. Do NOT abbreviate. If a section has no findings, write "None" under it — do not omit the section.
 
 ## Phase 0 Override
 
@@ -14,11 +18,10 @@ Skip Phase 0 (ego-lint). It has already been run. Use these pre-computed results
 
 {{ANNOTATIONS_SECTION}}
 
-## Required Output
+## Required Report Format
 
-Write the FULL ego-review report with ALL sections below. Do NOT abbreviate or skip any section. If a section has no findings, write "None" under it — do not omit it.
+The report file MUST start with:
 
-Start your output with:
 ```
 ## EGO Review Report — {{NAME}}
 ```

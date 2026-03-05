@@ -387,6 +387,7 @@ if [[ "$OPT_REVIEW" == true || "$OPT_REVIEW_CHANGED" == true ]]; then
             --lint-json "$local_lint"
             --plugin-dir "$PLUGIN_DIR"
             --template "$REVIEW_TEMPLATE"
+            --review-output "$review_file"
         )
         [[ -f "$local_diff" ]] && hydrate_args+=(--diff-json "$local_diff")
         [[ -f "$local_ann" ]] && hydrate_args+=(--annotations "$local_ann")
@@ -403,13 +404,15 @@ if [[ "$OPT_REVIEW" == true || "$OPT_REVIEW_CHANGED" == true ]]; then
         echo "  Launching review: $name"
 
         # Launch claude -p in background subshell
+        # Claude writes the report to $review_file via Write tool (instructed in prompt).
+        # Stdout goes to .review.out for debugging; stderr to .review.err.
         (
             timeout 600 claude -p \
                 --plugin-dir "$PLUGIN_DIR" \
                 --add-dir "$ext_path" \
                 --dangerously-skip-permissions \
                 --max-budget-usd 2.00 \
-                "$prompt" > "$review_file" 2>"$err_file"
+                "$prompt" > "$RESULTS_DIR/$name.review.out" 2>"$err_file"
         ) &
         REVIEW_PIDS+=($!)
         REVIEW_NAMES+=("$name")
