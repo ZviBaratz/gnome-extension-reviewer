@@ -6,7 +6,8 @@
 #     --lint-only         Only run ego-lint (default)
 #     --update-baselines  Save current results as new baselines
 #     --extension NAME    Run for a single extension
-#     --exclude NAME      Exclude extension (repeatable)
+#     --exclude NAME      Exclude extension from lint+review (repeatable)
+#     --review-exclude N  Exclude extension from review only (repeatable)
 #     --fetch-only        Only fetch/update extension sources
 #     --no-fetch          Skip fetching, use existing cache/paths
 #     --json              Output summary as JSON instead of table
@@ -38,6 +39,7 @@ PLUGIN_DIR="$ROOT_DIR"
 OPT_UPDATE_BASELINES=false
 OPT_SINGLE_EXT=""
 OPT_EXCLUDE_EXTS=()
+OPT_REVIEW_EXCLUDE_EXTS=()
 OPT_FETCH_ONLY=false
 OPT_NO_FETCH=false
 OPT_JSON=false
@@ -52,6 +54,7 @@ while [[ $# -gt 0 ]]; do
         --update-baselines) OPT_UPDATE_BASELINES=true; shift ;;
         --extension)        OPT_SINGLE_EXT="$2"; shift 2 ;;
         --exclude)          OPT_EXCLUDE_EXTS+=("$2"); shift 2 ;;
+        --review-exclude)   OPT_REVIEW_EXCLUDE_EXTS+=("$2"); shift 2 ;;
         --fetch-only)       OPT_FETCH_ONLY=true; shift ;;
         --no-fetch)         OPT_NO_FETCH=true; shift ;;
         --json)             OPT_JSON=true; shift ;;
@@ -66,7 +69,8 @@ while [[ $# -gt 0 ]]; do
             echo "  --lint-only         Only run ego-lint (default)"
             echo "  --update-baselines  Save current results as new baselines"
             echo "  --extension NAME    Run for a single extension"
-            echo "  --exclude NAME      Exclude extension (repeatable)"
+            echo "  --exclude NAME      Exclude extension from lint+review (repeatable)"
+            echo "  --review-exclude N  Exclude extension from review only (repeatable)"
             echo "  --fetch-only        Only fetch/update extension sources"
             echo "  --no-fetch          Skip fetching, use existing cache/paths"
             echo "  --json              Output summary as JSON instead of table"
@@ -371,6 +375,20 @@ if [[ "$OPT_REVIEW" == true || "$OPT_REVIEW_CHANGED" == true ]]; then
         ext_path="${EXT_PATHS[$name]}"
         changed="${EXT_CHANGED[$name]}"
 
+        # Filter: --review-exclude skips specific extensions from review
+        local review_excluded=false
+        for excl in "${OPT_REVIEW_EXCLUDE_EXTS[@]+"${OPT_REVIEW_EXCLUDE_EXTS[@]}"}"; do
+            if [[ "$name" == "$excl" ]]; then
+                review_excluded=true
+                break
+            fi
+        done
+        if [[ "$review_excluded" == true ]]; then
+            REVIEW_STATUS["$name"]="excluded"
+            echo "  SKIP (review-excluded): $name"
+            continue
+        fi
+
         # Filter: --review-changed skips unchanged extensions
         if [[ "$OPT_REVIEW_CHANGED" == true && "$changed" != "true" ]]; then
             REVIEW_STATUS["$name"]="skipped"
@@ -445,6 +463,12 @@ if [[ "$OPT_REVIEW" == true || "$OPT_REVIEW_CHANGED" == true ]]; then
                         REVIEW_STATUS["$rname"]="error"
                         echo "  ✗ Review error (exit $rc): $rname"
                     fi
+                    # Validate report file exists and is non-empty
+                    local rfile="$RESULTS_DIR/$rname.review.md"
+                    if [[ ! -s "$rfile" ]]; then
+                        REVIEW_STATUS["$rname"]="no-report"
+                        echo "  ⚠ No report written: $rname"
+                    fi
                 fi
             done
             REVIEW_PIDS=("${new_pids[@]}")
@@ -466,6 +490,12 @@ if [[ "$OPT_REVIEW" == true || "$OPT_REVIEW_CHANGED" == true ]]; then
         else
             REVIEW_STATUS["$rname"]="error"
             echo "  ✗ Review error (exit $rc): $rname"
+        fi
+        # Validate report file exists and is non-empty
+        local rfile="$RESULTS_DIR/$rname.review.md"
+        if [[ ! -s "$rfile" ]]; then
+            REVIEW_STATUS["$rname"]="no-report"
+            echo "  ⚠ No report written: $rname"
         fi
     done
 

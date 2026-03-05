@@ -96,3 +96,7 @@ findings:
   - id: "R-SLOP-29b::empty destroy placeholder"
     classification: borderline
     notes: "ProximityRectWatch destroy() {} is a class hierarchy placeholder"
+  # ego-review findings (not caught by ego-lint)
+  - id: "review/async-destroyed-guard::async enable() race after await"
+    classification: tp
+    notes: "Async enable() continues after await without guard — race condition if disable() called during await"

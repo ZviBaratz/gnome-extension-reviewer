@@ -63,3 +63,10 @@ findings:
   - id: "quality/constructor-resources::signal connects in ctors"
     classification: borderline
     notes: "10 hits — some are real (signal connects in ctors), some are esbuild patterns"
+  # ego-review findings (not caught by ego-lint)
+  - id: "review/gsettings-signal-leak::WindowBorderManager accent-color raw .connect()"
+    classification: tp
+    notes: "GSettings bare .connect('changed::accent-color') without disconnect in disable"
+  - id: "review/async-destroyed-guard::_computeBorderRadius after await"
+    classification: tp
+    notes: "Async method continues after await without checking if extension was disabled"

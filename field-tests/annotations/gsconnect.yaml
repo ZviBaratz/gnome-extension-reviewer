@@ -65,3 +65,13 @@ findings:
   - id: "R-QUAL-32::unnecessary version specifier"
     classification: borderline
     notes: "7 hits — version specifiers correct for standalone daemon scripts"
+  # ego-review findings (not caught by ego-lint)
+  - id: "review/constructor-side-effects::Setup.setup+Clipboard+prototype in constructor"
+    classification: tp
+    notes: "Extension constructor calls Setup.setup(), modifies Clipboard prototype — side effects belong in enable()"
+  - id: "review/prototype-restore::notification patches not fully undone in disable"
+    classification: tp
+    notes: "Notification.Source.prototype patches not fully restored in disable() — semantic analysis only"
+  - id: "review/module-scope-state::SubprocessLauncher+Shell state at module scope"
+    classification: borderline
+    notes: "Gio.SubprocessLauncher and Shell state access at module scope in daemon context — less relevant for service/ files"
