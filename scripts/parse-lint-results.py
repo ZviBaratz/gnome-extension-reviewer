@@ -108,6 +108,10 @@ def parse_lint_output(lines):
 
     counts['total'] = sum(counts.values())
 
+    if lines and counts['total'] == 0:
+        print("Warning: parsed 0 results from input. "
+              "ego-lint output format may have changed.", file=sys.stderr)
+
     return findings, metrics, counts, provenance_score
 
 
