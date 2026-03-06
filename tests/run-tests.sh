@@ -217,6 +217,8 @@ assert_exit_code "exits with 1 (has module-scope violation)" 1
 assert_output_contains "fails on module-scope Main access" "\[FAIL\].*init/shell-modification"
 assert_output_not_contains "no FP on helper constructor" "init/shell-modification.*helper.js"
 assert_output_not_contains "no FP on arrow function definition" "init/shell-modification.*extension.js:8"
+assert_output_not_contains "no FP on async arrow function" "init/shell-modification.*extension.js:11"
+assert_output_not_contains "no FP on arrow GObject constructor" "init/shell-modification.*extension.js:14"
 echo ""
 
 # --- lifecycle-imbalance ---
