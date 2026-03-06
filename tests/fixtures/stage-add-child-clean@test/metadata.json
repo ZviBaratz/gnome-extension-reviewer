@@ -1,0 +1,7 @@
+{
+  "uuid": "stage-add-child-clean@test",
+  "name": "Stage Add Child Clean Test",
+  "description": "Test fixture for R-LIFE-22 negative test",
+  "shell-version": ["45"],
+  "url": ""
+}

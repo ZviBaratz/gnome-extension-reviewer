@@ -1,0 +1,7 @@
+{
+  "uuid": "messagetray-source-leak@test",
+  "name": "MessageTray Source Leak Test",
+  "description": "Test fixture for R-LIFE-24",
+  "shell-version": ["45"],
+  "url": ""
+}

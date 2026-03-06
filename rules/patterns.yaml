@@ -799,14 +799,6 @@
 # --- Lifecycle (advisory) ---
 # Pattern-based lifecycle checks (complement script-based checks in check-lifecycle.py).
 
-- id: R-LIFE-19
-  pattern: "global\\.stage\\.add_child\\s*\\("
-  scope: ["*.js"]
-  severity: advisory
-  message: "global.stage.add_child() — ensure matching remove_child() in disable()/destroy()"
-  category: lifecycle
-  fix: "In disable(), call global.stage.remove_child(this._actor); this._actor = null;"
-
 # --- GNOME 44-46 migration (version-gated) ---
 # APIs removed or renamed in GNOME 44-46 transition to ESM.
 
