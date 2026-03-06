@@ -19,6 +19,31 @@
     height: 20px;
 }
 
+/* Dialog class — should trigger shell-class-override */
+.modal-dialog {
+    border-radius: 12px;
+}
+
+/* Popup context menu — should trigger shell-class-override */
+.background-menu {
+    opacity: 0.9;
+}
+
+/* Dash class — should trigger shell-class-override */
+.dash-background {
+    background: transparent;
+}
+
+/* Panel class — should trigger shell-class-override */
+.panel-status-indicators-box {
+    spacing: 6px;
+}
+
+/* Window picker class — should trigger shell-class-override */
+.window-caption {
+    font-size: 11pt;
+}
+
 /* Scoped usage — should NOT trigger shell-class-override */
 .my-extension .popup-menu-arrow {
     color: red;
