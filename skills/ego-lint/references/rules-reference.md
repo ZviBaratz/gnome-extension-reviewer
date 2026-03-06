@@ -2090,7 +2090,7 @@ Rules for APIs removed or changed in specific GNOME Shell versions. These rules 
 - **Rule**: `.destroy` must be called as a method (`.destroy()`), not accessed as a property (`.destroy`).
 - **Rationale**: In JavaScript, `obj.destroy` without parentheses is a property access that evaluates to the function object but does not call it. The object is never destroyed, causing a silent resource leak. This is a common typo, especially in `forEach` callbacks: `actors.forEach(a => a.destroy)` does nothing.
 - **Fix**: Add parentheses: `actors.forEach(a => a.destroy())`.
-- **Suppressed when**: The line contains `connect(`, `connectSmart(`, `connectObject(`, or `.bind(` (callback reference); `if (` or `typeof` before `.destroy` (existence check); followed by `=` (property assignment); destructuring `{ destroy }`.
+- **Suppressed when**: The line contains `connect(`, `connectSmart(`, `connectObject(` before `.destroy`, or `.bind(` before or after `.destroy` (callback reference); `if (` or `typeof` before `.destroy` (existence check); followed by `=` (property assignment); destructuring `{ destroy }`.
 - **Tested by**: `tests/fixtures/destroy-no-call@test/`
 
 ---

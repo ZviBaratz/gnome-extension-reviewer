@@ -968,6 +968,8 @@ def check_destroy_without_call(ext_dir):
                 # Skip: callback reference in signal connection or bind
                 if re.search(r'connect\w*\s*\(|\.bind\s*\(', before):
                     continue
+                if re.search(r'\.bind\s*\(', after):
+                    continue
 
                 # Skip: property existence check
                 if re.search(r'\bif\s*\(', before) or re.search(r'\btypeof\b', before):
@@ -983,15 +985,15 @@ def check_destroy_without_call(ext_dir):
                     continue
 
                 violations.append(f"{rel}:{lineno}")
-                break  # One per file
-
-        if len(violations) >= 5:
-            break
 
     if violations:
-        for loc in violations:
+        locs = violations[:5]
+        for loc in locs:
             result("WARN", "lifecycle/destroy-no-call",
                    f"{loc}: .destroy without () — property access, not method call")
+        if len(violations) > 5:
+            result("WARN", "lifecycle/destroy-no-call",
+                   f"(and {len(violations) - 5} more)")
     else:
         result("PASS", "lifecycle/destroy-no-call",
                "All .destroy references include parentheses")

@@ -28,5 +28,14 @@ export default class TestExtension extends Extension {
         if (typeof this._widget.destroy === 'function') {
             this._widget.destroy();
         }
+
+        // GOOD: bound method reference (FP suppression)
+        const cleanup = this._widget.destroy.bind(this._widget);
+
+        // GOOD: property assignment (FP suppression)
+        this._widget.destroy = null;
+
+        // GOOD: destructuring (FP suppression)
+        const {destroy} = this._widget;
     }
 }
