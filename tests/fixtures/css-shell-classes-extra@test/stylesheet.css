@@ -23,3 +23,8 @@
 .my-extension .popup-menu-arrow {
     color: red;
 }
+
+/* Compound scoped — should NOT trigger override */
+.quick-settings-grid.my-ext-grid {
+    padding: 4px;
+}
