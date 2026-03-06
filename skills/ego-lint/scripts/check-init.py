@@ -65,6 +65,7 @@ def is_skip_line(line):
 # module scope).  Detect `const fn = (...) => expr` patterns.
 ARROW_FN_DEF = re.compile(
     r'(?:const|let|var)\s+\w+\s*=\s*'   # variable assignment
+    r'(?:async\s+)?'                      # optional async keyword
     r'(?:\([^)]*\)|\w+)'                 # parameter list or single param
     r'\s*=>'                              # arrow
 )
@@ -198,6 +199,10 @@ def check_init_modifications(ext_dir):
                     continue
                 violations.append(f"{rel}:{lineno}")
             elif GOBJECT_CONSTRUCTORS.search(line):
+                # Arrow function definitions are lazy — not executed at
+                # module scope
+                if ARROW_FN_DEF.search(line):
+                    continue
                 # GObject.registerClass() returns a class, not an instance
                 if not REGISTER_CLASS.search(line) and \
                         not VALUE_TYPES.search(line):
