@@ -960,15 +960,18 @@ def check_destroy_without_call(ext_dir):
         rel = os.path.relpath(filepath, ext_dir)
 
         for lineno, line in enumerate(content.splitlines(), 1):
-            # Find .destroy NOT followed by ( or ?.( or word char (avoids .destroy(), .destroy?.(), .destroyAll)
+            # Match .destroy at word boundary (excludes .destroyAll etc.), not followed by () or ?.() (excludes actual calls)
             for m in re.finditer(r'\.destroy\b(?!\s*(\?\.)?\s*\()', line):
                 before = line[:m.start()]
                 after = line[m.end():]
 
-                # Skip: callback reference in signal connection or bind
-                if re.search(r'(?<!dis)connect\w*\s*\(|\.bind\s*\(', before):
+                # Skip: callback reference in signal connection
+                if re.search(r'(?<!dis)connect\w*\s*\(', before):
                     continue
-                if re.search(r'\.bind\s*\(', after):
+                # Skip: Function.prototype reference (.bind/.call/.apply)
+                if re.search(r'\.(bind|call|apply)\s*\(', before):
+                    continue
+                if re.search(r'\.(bind|call|apply)\s*\(', after):
                     continue
 
                 # Skip: property existence check (only when .destroy is inside the condition)

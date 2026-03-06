@@ -2090,7 +2090,14 @@ Rules for APIs removed or changed in specific GNOME Shell versions. These rules 
 - **Rule**: `.destroy` must be called as a method (`.destroy()`), not accessed as a property (`.destroy`).
 - **Rationale**: In JavaScript, `obj.destroy` without parentheses is a property access that evaluates to the function object but does not call it. The object is never destroyed, causing a silent resource leak. This is a common typo, especially in `forEach` callbacks: `actors.forEach(a => a.destroy)` does nothing.
 - **Fix**: Add parentheses: `actors.forEach(a => a.destroy())`.
-- **Suppressed when**: The line contains any `connect`-prefixed call (e.g., `connect(`, `connectSmart(`, `connectObject(`) before `.destroy` (but not `disconnect()`), or `.bind(` before or after `.destroy` (callback reference); `.destroy` is inside an `if()` condition or preceded by `typeof` (existence check); `.destroy?.()` optional chaining call; followed by `=` (property assignment); destructuring `{ destroy }`.
+- **Not matched**: `.destroy()` and `.destroy?.()` (actual calls), `.destroyAll()` etc. (different methods) are excluded by the primary regex pattern.
+- **Suppressed when**:
+  - `connect`/`connectSmart`/`connectObject(` before `.destroy` (callback reference, but not `disconnect()`)
+  - `.bind(`/`.call(`/`.apply(` before or after `.destroy` (Function.prototype reference)
+  - `.destroy` inside an `if()` condition or preceded by `typeof` (existence check)
+  - Followed by `=` but not `==` (property assignment)
+  - `{ destroy }` on the same line (destructuring)
+  - Ternary `?` after `.destroy` but not `?.` (existence check)
 - **Tested by**: `tests/fixtures/destroy-no-call@test/`
 
 ---

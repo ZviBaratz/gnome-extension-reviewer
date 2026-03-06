@@ -38,6 +38,10 @@ export default class TestExtension extends Extension {
         // GOOD: bound method reference (FP suppression)
         const cleanup = this._widget.destroy.bind(this._widget);
 
+        // GOOD: .call/.apply invocation (FP suppression)
+        St.Widget.prototype.destroy.call(this._widget);
+        St.Widget.prototype.destroy.apply(this._widget, []);
+
         // GOOD: property assignment (FP suppression)
         this._widget.destroy = null;
 
