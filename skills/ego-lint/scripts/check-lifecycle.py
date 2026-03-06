@@ -1162,7 +1162,9 @@ def check_gsettings_signal_leak(ext_dir):
         content = strip_comments(read_file(filepath))
         rel = os.path.relpath(filepath, ext_dir)
 
-        # Check for file-level auto-cleanup mechanisms
+        # Extension-wide (not per-file) auto-cleanup detection: connectObject/
+        # disconnectObject typically operate on `this`, so a central disable()
+        # calling disconnectObject(this) cleans signals registered from any file.
         if (re.search(r'\.disconnectObject\s*\(', content) or
                 re.search(r'\.connectObject\s*\(', content) or
                 re.search(r'\b(SignalTracker|SignalManager|connectSmart|disconnectSmart)\b', content)):

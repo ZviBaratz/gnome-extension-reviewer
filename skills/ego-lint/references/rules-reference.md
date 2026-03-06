@@ -2081,7 +2081,8 @@ Rules for APIs removed or changed in specific GNOME Shell versions. These rules 
 - **Rationale**: Without a stored signal ID, there is no way to call `.disconnect(id)` later. These handlers accumulate across enable/disable cycles, causing duplicate callbacks, memory leaks, and potential crashes. This is the highest-impact gap found in field testing — 4 of 10 extensions had this issue.
 - **Fix**: Use `connectObject()` (recommended — auto-disconnects via `disconnectObject(this)` in disable) or store the return value and call `disconnect(id)` in `disable()`.
 - **Scope exclusions**: prefs.js (manages own lifecycle), `service/` directory (daemon lifecycle).
-- **Tested by**: `tests/fixtures/gsettings-bare-connect@test/`
+- **Known limitations**: Multi-line `.connect(\n'changed::...'` calls are not detected (per-line scanning). Signal IDs stored via `.push()` rather than direct assignment may false-positive.
+- **Tested by**: `tests/fixtures/gsettings-bare-connect@test/`, `tests/fixtures/gsettings-auto-cleanup@test/`
 
 ---
 
