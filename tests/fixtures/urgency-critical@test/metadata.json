@@ -1,0 +1,7 @@
+{
+    "uuid": "urgency-critical@test",
+    "name": "Urgency Critical Test",
+    "description": "Tests detection of CRITICAL notification urgency abuse",
+    "shell-version": ["48"],
+    "url": "https://github.com/test/urgency-critical"
+}
