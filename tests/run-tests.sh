@@ -600,6 +600,7 @@ assert_output_contains "detects notification-banner override" "css/shell-class-o
 assert_output_contains "detects osd-window override" "css/shell-class-override.*osd-window"
 assert_output_contains "detects slider override" "css/shell-class-override.*slider"
 assert_output_not_contains "no unscoped-class FP on new shell classes" "css/unscoped-class"
+assert_output_not_contains "compound selector not flagged" "css/shell-class-override.*quick-settings-grid"
 echo ""
 
 # --- ego-lint-ignore ---
