@@ -43,11 +43,25 @@ assert_exit_code "exits with 0 (no FAIL)" 0
 assert_output_not_contains "no constructor-resources WARN for prefs.js" "\[WARN\].*quality/constructor-resources"
 echo ""
 
-# --- stage-add-child (R-LIFE-19) ---
+# --- stage-add-child (R-LIFE-22) ---
 echo "=== stage-add-child ==="
 run_lint "stage-add-child@test"
-assert_exit_code "exits with 0 (advisory only)" 0
-assert_output_contains "warns on global.stage.add_child" "\[WARN\].*R-LIFE-19"
+assert_exit_code "exits with 1 (FAIL — stage actor leak)" 1
+assert_output_contains "fails on stage actor leak" "\[FAIL\].*lifecycle/stage-actor-leak"
+echo ""
+
+# --- messagetray-source-leak (R-LIFE-24) ---
+echo "=== messagetray-source-leak ==="
+run_lint "messagetray-source-leak@test"
+assert_exit_code "exits with 0 (WARN only)" 0
+assert_output_contains "warns on messageTray source leak" "\[WARN\].*lifecycle/messagetray-source-leak"
+echo ""
+
+# --- stage-add-child-clean (R-LIFE-22 negative) ---
+echo "=== stage-add-child-clean ==="
+run_lint "stage-add-child-clean@test"
+assert_exit_code "exits with 0 (clean)" 0
+assert_output_not_contains "no stage actor leak" "lifecycle/stage-actor-leak.*FAIL"
 echo ""
 
 # --- shell-keybinding-mode (R-DEPR-11) ---

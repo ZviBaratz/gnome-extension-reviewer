@@ -2049,13 +2049,22 @@ Rules for APIs removed or changed in specific GNOME Shell versions. These rules 
 - **Fix**: Add `this._session.abort()` before nullifying the session reference in `disable()`.
 - **Tested by**: `tests/fixtures/soup-session-no-abort@test/`
 
-### R-LIFE-19: global.stage.add_child() without matching remove_child()
+### R-LIFE-22: Stage/chrome actor leak (add without remove)
+- **Severity**: blocking
+- **Checked by**: check-lifecycle.py
+- **Rule**: `global.stage.add_child()`, `Main.layoutManager.addTopChrome()`, and `Main.layoutManager.addChrome()` must have a matching removal (`remove_child`/`removeTopChrome`/`removeChrome`) or `.destroy()` in `disable()`/`destroy()`. Only tracks `this._xxx` patterns.
+- **Rationale**: Actors added to `global.stage` or the layout manager chrome persist on the compositor stage across enable/disable cycles. Unlike container widgets that are destroyed with their parent, stage children must be explicitly removed or they leak — causing visible artifacts and memory growth. Nulling the reference (`this._actor = null`) does NOT remove the actor from the stage.
+- **Fix**: In `disable()`, call `global.stage.remove_child(this._actor); this._actor.destroy(); this._actor = null;` or just `this._actor.destroy()` (destroying a Clutter actor removes it from its parent).
+- **Tested by**: `tests/fixtures/stage-add-child@test/`, `tests/fixtures/stage-add-child-clean@test/` (negative)
+- **Supersedes**: R-LIFE-19 (advisory pattern rule)
+
+### R-LIFE-24: MessageTray source leak (add without destroy)
 - **Severity**: advisory
-- **Checked by**: apply-patterns.py
-- **Rule**: `global.stage.add_child()` must have a matching `remove_child()` in `disable()` or `destroy()`.
-- **Rationale**: Actors added to `global.stage` persist on the compositor stage across enable/disable cycles. Unlike container widgets that are destroyed with their parent, stage children must be explicitly removed or they leak — causing visual artifacts and memory growth.
-- **Fix**: In `disable()`, call `global.stage.remove_child(this._actor); this._actor = null;`.
-- **Tested by**: `tests/fixtures/stage-add-child@test/`
+- **Checked by**: check-lifecycle.py
+- **Rule**: `Main.messageTray.add(this._source)` must have a matching `this._source.destroy()` in `disable()`/`destroy()`. Only tracks `this._xxx` patterns.
+- **Rationale**: Notification sources added to the message tray persist if not explicitly destroyed. While lower impact than stage actor leaks (notifications expire and sources may be GC'd), they can accumulate across enable/disable cycles.
+- **Fix**: In `disable()`, call `this._source.destroy(); this._source = null;`.
+- **Tested by**: `tests/fixtures/messagetray-source-leak@test/`
 
 ### R-LIFE-20: Bus name ownership without release
 - **Severity**: advisory
@@ -2064,6 +2073,16 @@ Rules for APIs removed or changed in specific GNOME Shell versions. These rules 
 - **Rationale**: D-Bus bus names claimed with `bus_own_name()` persist after `disable()` if not explicitly released. This prevents other extensions or future enable() cycles from claiming the same name, and leaks the associated D-Bus service.
 - **Fix**: In `disable()`, call `Gio.bus_unown_name(this._ownerId)`.
 - **Tested by**: `tests/fixtures/bus-name-leak@test/`
+
+### R-LIFE-21: GSettings signal leak (bare connect without disconnect)
+- **Severity**: blocking
+- **Checked by**: check-lifecycle.py
+- **Rule**: `settings.connect('changed::...')` calls where the return value is not stored (no `=` before `.connect` on the line) and no auto-cleanup mechanism (`disconnectObject`, `connectObject`, `SignalTracker`, `connectSmart`) is present in the extension.
+- **Rationale**: Without a stored signal ID, there is no way to call `.disconnect(id)` later. These handlers accumulate across enable/disable cycles, causing duplicate callbacks, memory leaks, and potential crashes. This is the highest-impact gap found in field testing — 4 of 10 extensions had this issue.
+- **Fix**: Use `connectObject()` (recommended — auto-disconnects via `disconnectObject(this)` in disable) or store the return value and call `disconnect(id)` in `disable()`.
+- **Scope exclusions**: prefs.js (manages own lifecycle), `service/` directory (daemon lifecycle).
+- **Known limitations**: Multi-line `.connect(\n'changed::...'` calls are not detected (per-line scanning). Signal IDs stored via `.push()` rather than direct assignment may false-positive.
+- **Tested by**: `tests/fixtures/gsettings-bare-connect@test/`, `tests/fixtures/gsettings-auto-cleanup@test/`
 
 ---
 

@@ -1,0 +1,7 @@
+{
+  "uuid": "gsettings-bare-connect@test",
+  "name": "GSettings Bare Connect Test",
+  "shell-version": ["45"],
+  "description": "Fixture for R-LIFE-21: bare settings.connect without stored ID",
+  "url": "https://example.com"
+}

@@ -1,0 +1,7 @@
+{
+  "uuid": "gsettings-auto-cleanup@test",
+  "name": "GSettings Auto Cleanup Test",
+  "shell-version": ["45"],
+  "description": "Fixture for R-LIFE-21: bare settings.connect with disconnectObject cleanup",
+  "url": "https://example.com"
+}

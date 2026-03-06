@@ -76,10 +76,10 @@ findings:
   - id: "resource-tracking/ownership::orphan detected"
     classification: tp
     notes: "1 orphan detected — correct"
-  # ego-review blocking issues
-  - id: "lifecycle::_historyLabel on global.stage never removed"
+  # stage/messageTray actor leaks (now detected by ego-lint)
+  - id: "lifecycle/stage-actor-leak::this._historyLabel"
     classification: tp
-    notes: "B1: Actor leak on every enable/disable cycle — ego-review finding"
-  - id: "lifecycle::_notifSource never destroyed in disable()"
+    notes: "B1: Actor leak on every enable/disable cycle — now detected by R-LIFE-22"
+  - id: "lifecycle/messagetray-source-leak::this._notifSource"
     classification: tp
-    notes: "B2: Notification source persists — ego-review finding"
+    notes: "B2: Notification source persists — now detected by R-LIFE-24"
