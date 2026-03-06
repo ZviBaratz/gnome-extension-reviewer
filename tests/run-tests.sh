@@ -217,6 +217,8 @@ assert_exit_code "exits with 1 (has module-scope violation)" 1
 assert_output_contains "fails on module-scope Main access" "\[FAIL\].*init/shell-modification"
 assert_output_not_contains "no FP on helper constructor" "init/shell-modification.*helper.js"
 assert_output_not_contains "no FP on arrow function definition" "init/shell-modification.*extension.js:8"
+assert_output_not_contains "no FP on async arrow function" "init/shell-modification.*extension.js:11"
+assert_output_not_contains "no FP on arrow GObject constructor" "init/shell-modification.*extension.js:14"
 echo ""
 
 # --- lifecycle-imbalance ---
@@ -599,6 +601,11 @@ assert_output_contains "detects popup-menu-boxpointer override" "css/shell-class
 assert_output_contains "detects notification-banner override" "css/shell-class-override.*notification-banner"
 assert_output_contains "detects osd-window override" "css/shell-class-override.*osd-window"
 assert_output_contains "detects slider override" "css/shell-class-override.*slider"
+assert_output_contains "detects modal-dialog override" "css/shell-class-override.*modal-dialog"
+assert_output_contains "detects background-menu override" "css/shell-class-override.*background-menu"
+assert_output_contains "detects dash-background override" "css/shell-class-override.*dash-background"
+assert_output_contains "detects panel-status-indicators-box override" "css/shell-class-override.*panel-status-indicators-box"
+assert_output_contains "detects window-caption override" "css/shell-class-override.*window-caption"
 assert_output_not_contains "no unscoped-class FP on new shell classes" "css/unscoped-class"
 assert_output_not_contains "compound selector not flagged" "css/shell-class-override.*quick-settings-grid"
 echo ""
