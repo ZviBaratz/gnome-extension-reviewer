@@ -464,6 +464,29 @@ else
 fi
 
 # ---------------------------------------------------------------------------
+# Compiled TypeScript detection
+# ---------------------------------------------------------------------------
+# esbuild/tsc emit helper functions (var __defProp, __decorateClass, etc.)
+# that are definitive markers of transpiled output. When detected, noisy rules
+# that flag transpiler artifacts (var declarations, verbose identifiers) are
+# suppressed, and resource-tracking/no-destroy-method is skipped.
+
+COMPILED_TS=false
+while IFS= read -r -d '' f; do
+    if grep -qE 'var __defProp|__decorateClass|__publicField' "$f" 2>/dev/null; then
+        COMPILED_TS=true
+        break
+    fi
+done < <(find "$EXT_DIR" -name '*.js' -not -path '*/node_modules/*' -not -path '*/.git/*' -print0 2>/dev/null)
+
+if [[ "$COMPILED_TS" == true ]]; then
+    export EGO_LINT_COMPILED_TS=1
+    print_result "WARN" "compiled-typescript" "Extension appears compiled from TypeScript — some lint checks adjusted"
+else
+    print_result "PASS" "compiled-typescript" "No transpiler artifacts detected"
+fi
+
+# ---------------------------------------------------------------------------
 # CSS scoping check (delegated to check-css.py)
 # ---------------------------------------------------------------------------
 

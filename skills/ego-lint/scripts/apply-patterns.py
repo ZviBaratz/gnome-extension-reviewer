@@ -266,6 +266,7 @@ def main():
     rules = parse_rules(rules_file)
     shell_versions = _get_shell_versions(ext_dir)
     min_shell = min(shell_versions) if shell_versions else None
+    is_compiled_ts = os.environ.get('EGO_LINT_COMPILED_TS') == '1'
 
     for rule in rules:
         rid = rule.get('id', '?')
@@ -278,6 +279,11 @@ def main():
         # Version gating: skip rules that don't apply to declared shell versions
         if not _version_gate_applies(rule, shell_versions):
             print(f"SKIP|{rid}|Not applicable for declared shell-version(s)")
+            continue
+
+        # Compiled TypeScript gating: skip rules that flag transpiler artifacts
+        if is_compiled_ts and rule.get('skip-if-compiled', '') == 'true':
+            print(f"SKIP|{rid}|Not applicable for compiled TypeScript")
             continue
 
         if isinstance(scopes, str):

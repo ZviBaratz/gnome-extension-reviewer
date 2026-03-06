@@ -124,19 +124,27 @@ def main():
     depth = summary.get('ownership_depth', 0)
     orphan_count = summary.get('orphan_count', len(orphans))
 
+    # Compiled TypeScript: suppress no-destroy-method findings (transpiler
+    # fragments classes across files; cleanup is handled by parent hierarchies)
+    is_compiled_ts = os.environ.get('EGO_LINT_COMPILED_TS') == '1'
+
     # Emit per-orphan warnings
+    emitted_count = 0
     for orphan in orphans:
         check_id, detail = classify_orphan(orphan)
+        if is_compiled_ts and check_id == 'resource-tracking/no-destroy-method':
+            continue
         result('WARN', check_id, detail)
+        emitted_count += 1
 
     # Emit summary line
-    if orphan_count == 0:
+    if emitted_count == 0:
         result('PASS', 'resource-tracking/ownership',
                f'{files_scanned} files scanned, depth {depth}, 0 orphans')
     else:
         result('WARN', 'resource-tracking/ownership',
                f'{files_scanned} files scanned, depth {depth}, '
-               f'{orphan_count} orphan{"s" if orphan_count != 1 else ""} detected')
+               f'{emitted_count} orphan{"s" if emitted_count != 1 else ""} detected')
 
 
 if __name__ == '__main__':
