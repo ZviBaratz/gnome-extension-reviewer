@@ -1,0 +1,7 @@
+{
+  "uuid": "dbus-signal-auto-cleanup@test",
+  "name": "D-Bus Signal Auto Cleanup Test",
+  "shell-version": ["45"],
+  "description": "Fixture for R-LIFE-25: connectSignal with auto-cleanup present",
+  "url": "https://example.com"
+}

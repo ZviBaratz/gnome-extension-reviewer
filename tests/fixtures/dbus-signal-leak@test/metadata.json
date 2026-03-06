@@ -1,0 +1,7 @@
+{
+  "uuid": "dbus-signal-leak@test",
+  "name": "D-Bus Signal Leak Test",
+  "shell-version": ["45"],
+  "description": "Fixture for R-LIFE-25: bare proxy.connectSignal without stored ID",
+  "url": "https://example.com"
+}
