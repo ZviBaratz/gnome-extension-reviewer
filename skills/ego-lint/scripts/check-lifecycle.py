@@ -960,8 +960,8 @@ def check_destroy_without_call(ext_dir):
         rel = os.path.relpath(filepath, ext_dir)
 
         for lineno, line in enumerate(content.splitlines(), 1):
-            # Find .destroy NOT followed by ( or word char (avoids .destroy(), .destroyAll)
-            for m in re.finditer(r'\.destroy\b(?!\s*\()', line):
+            # Find .destroy NOT followed by ( or ?.( or word char (avoids .destroy(), .destroy?.(), .destroyAll)
+            for m in re.finditer(r'\.destroy\b(?!\s*(\?\.)?\s*\()', line):
                 before = line[:m.start()]
                 after = line[m.end():]
 

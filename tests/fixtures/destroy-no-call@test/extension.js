@@ -14,6 +14,9 @@ export default class TestExtension extends Extension {
 
         // GOOD: .destroy() with parens
         this._widget.destroy();
+
+        // GOOD: optional chaining call (FP suppression)
+        this._widget.destroy?.();
         this._widget = null;
 
         // GOOD: callback reference in connectSmart (FP suppression)
