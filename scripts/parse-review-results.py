@@ -355,8 +355,11 @@ def parse_review(text, name=None, source_file=None):
     if not name:
         name = header.get('name', 'unknown')
 
-    # Check for truncated reports (no sections found)
-    truncated = len(sections) < 6
+    # Truncated = partially complete (1-5 sections out of 6).
+    # 0 sections on non-empty text is a format mismatch, not truncation —
+    # signaled via exit code 2 in main().  Downstream consumers can check
+    # sections_parsed == 0 to distinguish format issues from partial reports.
+    truncated = len(sections) < 6 and len(sections) > 0
 
     # Extract findings from sections 1-3
     findings = []
