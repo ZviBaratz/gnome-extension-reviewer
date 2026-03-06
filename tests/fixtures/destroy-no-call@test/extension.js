@@ -12,6 +12,9 @@ export default class TestExtension extends Extension {
         // BAD: .destroy without () — property access, not method call
         this._actors.forEach((actor) => actor.destroy);
 
+        // BAD: .destroy in if-body, not condition (should still flag)
+        if (this._shouldCleanup) this._widget.destroy;
+
         // GOOD: .destroy() with parens
         this._widget.destroy();
 

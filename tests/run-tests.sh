@@ -639,7 +639,7 @@ echo "=== destroy-no-call ==="
 run_lint "destroy-no-call@test"
 assert_exit_code "exits with 0 (advisory only)" 0
 assert_output_contains "detects .destroy without parens" "\[WARN\].*lifecycle/destroy-no-call.*without \(\)"
-assert_output_count "exactly 1 destroy-no-call warning" "\[WARN\].*lifecycle/destroy-no-call" 1
+assert_output_count "exactly 2 destroy-no-call warnings" "\[WARN\].*lifecycle/destroy-no-call" 2
 echo ""
 
 # Extended assertion files (auto-sourced from assertions/ directory)

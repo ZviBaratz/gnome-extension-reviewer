@@ -971,9 +971,24 @@ def check_destroy_without_call(ext_dir):
                 if re.search(r'\.bind\s*\(', after):
                     continue
 
-                # Skip: property existence check
-                if re.search(r'\bif\s*\(', before) or re.search(r'\btypeof\b', before):
+                # Skip: property existence check (only when .destroy is inside the condition)
+                if re.search(r'\btypeof\b', before):
                     continue
+                if_match = re.search(r'\bif\s*\(', before)
+                if if_match:
+                    # Check .destroy is inside the condition, not in the body
+                    after_if_open = before[if_match.end():]
+                    depth = 1
+                    for ch in after_if_open:
+                        if ch == '(':
+                            depth += 1
+                        elif ch == ')':
+                            depth -= 1
+                            if depth == 0:
+                                break
+                    if depth > 0:
+                        # Condition still open — .destroy is being tested
+                        continue
 
                 # Skip: property assignment (not comparison)
                 after_stripped = after.lstrip()
