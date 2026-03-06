@@ -1,7 +1,7 @@
 ---
 name: New Rule Proposal
 about: Suggest a new check for ego-lint
-labels: enhancement
+labels: new-rule, ego-lint
 ---
 
 **What should ego-lint catch?**

@@ -144,7 +144,7 @@ test(ego-lint): add fixture for deprecated ByteArray usage
 - **Required status check**: `test` must pass before merging (enforced by `main-protection` ruleset). Admin can bypass for hotfixes
 - **Auto-merge**: Enabled — can be activated per-PR to merge automatically when CI passes
 - **Branch protection**: `main` is protected against deletion and force push via repository ruleset (not classic branch protection)
-- **Labels**: `false-positive`, `new-rule`, `severity-change`, `ego-lint`, `ego-review` (plus GitHub defaults)
+- **Labels**: `false-positive`, `new-rule`, `severity-change`, `ego-lint`, `ego-review`, `ego-simulate`, `ego-field-test`, `ego-scaffold`, `ego-submit` (plus GitHub defaults)
 
 ## Development Workflow
 

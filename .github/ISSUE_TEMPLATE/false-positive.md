@@ -1,7 +1,7 @@
 ---
 name: False Positive Report
 about: Report a rule that fires incorrectly
-labels: false-positive
+labels: false-positive, ego-lint
 ---
 
 **Rule ID** (e.g., R-SEC-07):
