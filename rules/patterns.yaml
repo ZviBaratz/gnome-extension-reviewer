@@ -787,6 +787,14 @@
   category: code-quality
   fix: "Use .call() / .get() / .set() with async callback or Gio._promisify() instead of _sync()"
 
+- id: R-QUAL-36
+  pattern: "\\.urgency\\s*=\\s*.*Urgency\\.CRITICAL"
+  scope: ["*.js"]
+  severity: advisory
+  message: "CRITICAL notification urgency bypasses Do Not Disturb — reserved for system alerts, not extension notifications"
+  category: code-quality
+  fix: "Use MessageTray.Urgency.NORMAL (or .HIGH at most) for extension notifications"
+
 # --- Lifecycle (advisory) ---
 # Pattern-based lifecycle checks (complement script-based checks in check-lifecycle.py).
 

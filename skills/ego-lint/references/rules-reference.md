@@ -2540,6 +2540,14 @@ Rules for APIs removed or changed in specific GNOME Shell versions. These rules 
 - **Fix**: Use the async variant (`.call()`, `.get()`, `.set()`) with a callback or `Gio._promisify()`.
 - **Tested by**: `tests/fixtures/dbus-sync-call@test/`
 
+### R-QUAL-36: CRITICAL notification urgency
+- **Severity**: advisory
+- **Checked by**: apply-patterns.py
+- **Rule**: Assigning `Urgency.CRITICAL` to a notification's urgency property.
+- **Rationale**: `MessageTray.Urgency.CRITICAL` bypasses Do Not Disturb mode and forces immediate display — it is intended for system-level emergencies (battery critical, disk full). Extensions using CRITICAL for promotional or informational notifications disrupt the user experience and will be flagged by EGO reviewers.
+- **Fix**: Use `MessageTray.Urgency.NORMAL` (or `.HIGH` at most) for extension notifications.
+- **Tested by**: `tests/fixtures/urgency-critical@test/`
+
 ---
 
 ## Version Compatibility (R-VER49) — continued
