@@ -383,6 +383,7 @@ import {Extension} from 'resource:///org/gnome/shell/extensions/extension.js';
 - **Rule**: Extension code should use `const` or `let` instead of `var`.
 - **Rationale**: `var` has function scope rather than block scope, which causes subtle bugs in closures and loops. Modern JavaScript uses `const` (preferred) and `let` (when reassignment is needed). EGO reviewers view `var` usage as a sign of outdated or AI-generated code.
 - **Fix**: Replace `var` with `const` (preferred) or `let` (when reassignment is needed).
+- **Note**: Suppressed (`skip-if-compiled`) for extensions compiled from TypeScript via esbuild, where `var` is emitted for transpiler helper functions.
 
 ### R-DEPR-04-legacy: Legacy imports.* syntax (pre-GNOME 45)
 - **Severity**: advisory
@@ -2432,6 +2433,7 @@ Rules for APIs removed or changed in specific GNOME Shell versions. These rules 
 - **Rationale**: AI-generated code tends to use excessively descriptive camelCase names like `currentBatteryThresholdValue` or `updatedNotificationMessage`. Human-written GNOME code favors concise names (`threshold`, `message`). The lowercase-start filter avoids false positives on PascalCase class names and UPPER_SNAKE constants. Threshold raised from 20 to 25 to avoid FPs on standard Clutter API names (e.g., `brightnessContrastEffect` at 24 chars).
 - **Fix**: Shorten parameter/argument names to be concise but clear.
 - **Tested by**: `tests/fixtures/slop-long-params@test/`
+- **Note**: Suppressed (`skip-if-compiled`) for extensions compiled from TypeScript via esbuild, where verbose parameter names from TypeScript signatures survive compilation.
 
 ### R-SLOP-40: Manual Promise wrapper
 - **Severity**: advisory

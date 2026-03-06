@@ -466,10 +466,12 @@ fi
 # ---------------------------------------------------------------------------
 # Compiled TypeScript detection
 # ---------------------------------------------------------------------------
-# esbuild/tsc emit helper functions (var __defProp, __decorateClass, etc.)
+# esbuild emits helper functions (var __defProp, __decorateClass, etc.)
 # that are definitive markers of transpiled output. When detected, noisy rules
 # that flag transpiler artifacts (var declarations, verbose identifiers) are
 # suppressed, and resource-tracking/no-destroy-method is skipped.
+# Note: these markers are esbuild-specific. Plain tsc emits different helpers
+# (__decorate, __metadata, __awaiter) — add those if tsc-only extensions appear.
 
 COMPILED_TS=false
 while IFS= read -r -d '' f; do
