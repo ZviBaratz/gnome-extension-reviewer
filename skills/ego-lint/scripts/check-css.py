@@ -21,30 +21,36 @@ def result(status, check, detail):
 
 # Known GNOME Shell theme classes that are OK to target
 KNOWN_SHELL_CLASSES = {
-    # Panel
+    # Panel (_panel.scss)
     'panel', 'panel-button', 'system-status-icon',
-    # Popup menu
+    'panel-status-indicators-box', 'clock-display',
+    # Popup menu (_popovers.scss + popupMenu.js)
     'popup-menu', 'popup-menu-item', 'popup-separator-menu-item',
     'popup-sub-menu', 'popup-menu-section',
     'popup-menu-content', 'popup-menu-arrow', 'popup-menu-boxpointer',
     'popup-menu-icon', 'popup-menu-ornament',
     'popup-inactive-menu-item', 'popup-ornamented-menu-item',
-    # Quick settings
+    'popup-status-menu-item', 'panel-menu', 'background-menu',
+    # Quick settings (_quick-settings.scss)
     'quick-toggle', 'quick-settings', 'quick-settings-item',
     'quick-settings-grid', 'quick-menu-toggle', 'quick-toggle-menu',
     'quick-slider',
-    # Notifications / messages
+    # Notifications / messages (_notifications.scss, _message-list.scss)
     'message', 'message-list', 'notification', 'notification-banner',
-    # Calendar / date
+    # Calendar / date (_calendar.scss)
     'calendar', 'events-button',
-    # Overview / workspace
+    # Overview / workspace (_overview.scss, _window-picker.scss)
     'overview', 'workspace', 'workspace-background',
-    'workspace-thumbnails',
-    # Search
+    'workspace-thumbnails', 'window-picker', 'window-caption',
+    'window-close',
+    # Search (_search-entry.scss)
     'search-entry',
-    # Dash / app grid
+    # Dash / app grid (_dash.scss, _app-grid.scss)
     'app-well-icon', 'dash', 'show-apps',
-    # OSD / other
+    'dash-background', 'overview-icon', 'icon-grid', 'app-folder',
+    # Dialogs (_dialogs.scss)
+    'modal-dialog',
+    # OSD / other (_osd.scss, _slider.scss)
     'osd-window', 'slider',
 }
 
