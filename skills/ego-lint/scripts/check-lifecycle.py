@@ -990,8 +990,12 @@ def check_destroy_without_call(ext_dir):
                         # Condition still open — .destroy is being tested
                         continue
 
-                # Skip: property assignment (not comparison)
+                # Skip: ternary existence check (e.g., actor.destroy ? actor.destroy() : null)
                 after_stripped = after.lstrip()
+                if after_stripped.startswith('?') and not after_stripped.startswith('?.'):
+                    continue
+
+                # Skip: property assignment (not comparison)
                 if after_stripped.startswith('=') and not after_stripped.startswith('=='):
                     continue
 

@@ -41,6 +41,9 @@ export default class TestExtension extends Extension {
         // GOOD: property assignment (FP suppression)
         this._widget.destroy = null;
 
+        // GOOD: ternary existence check (FP suppression)
+        this._widget.destroy ? this._widget.destroy() : null;
+
         // GOOD: destructuring (FP suppression)
         const {destroy} = this._widget;
     }
