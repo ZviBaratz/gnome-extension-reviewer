@@ -216,6 +216,20 @@ This skips matches inside `//` single-line comments and `/* */` block comments (
 - Deprecated API names mentioned in migration comments
 - Commented-out legacy code that hasn't been removed
 
+### Compiled TypeScript Suppression (`skip-if-compiled`)
+
+When a rule flags artifacts produced by JavaScript transpilers (e.g., esbuild), use `skip-if-compiled: true` to suppress it for compiled extensions. ego-lint detects esbuild output by scanning for transpiler helper functions (`__defProp`, `__decorateClass`, `__publicField`). When detected, rules with this field are emitted as SKIP instead of WARN/FAIL.
+
+```yaml
+- id: R-DEPR-09
+  pattern: "^\\s*var\\s+\\w"
+  severity: advisory
+  message: "Use const/let instead of var"
+  skip-if-compiled: true
+```
+
+esbuild emits `var` for hoisted helpers and verbose parameter names from TypeScript signatures — these are build artifacts, not author choices. Only use this field for rules where compiled output is a known false-positive source.
+
 ### Fix Version Gating (`fix-min-version`)
 
 When a deprecation rule suggests a fix that only works on newer GNOME versions, use `fix-min-version` to suppress the fix text for extensions whose minimum shell-version is below the threshold. The warning still fires (developers should know about deprecations), but the fix suggestion is omitted when applying it would break backward compatibility.

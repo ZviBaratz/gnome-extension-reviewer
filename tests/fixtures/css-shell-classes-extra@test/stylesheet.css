@@ -1,0 +1,25 @@
+/* Unscoped overrides of newly-added shell classes — should trigger shell-class-override */
+.popup-menu-content {
+    padding: 8px;
+}
+
+.popup-menu-boxpointer {
+    border: none;
+}
+
+.notification-banner {
+    background: rgba(0, 0, 0, 0.8);
+}
+
+.osd-window {
+    margin: 10px;
+}
+
+.slider {
+    height: 20px;
+}
+
+/* Scoped usage — should NOT trigger shell-class-override */
+.my-extension .popup-menu-arrow {
+    color: red;
+}

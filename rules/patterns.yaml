@@ -181,6 +181,7 @@
   message: "Use const/let instead of var; var has function scope and causes bugs in closures"
   category: deprecated
   fix: "Replace var with const (preferred) or let (when reassignment needed)."
+  skip-if-compiled: true
 
 - id: R-DEPR-10
   pattern: "\\bimports\\.format\\b"
@@ -607,6 +608,7 @@
   category: ai-slop
   fix: "Shorten parameter names to be concise but clear (e.g., currentBatteryThresholdValue → threshold)"
   guard-pattern: "\\w{25,}\\s*="
+  skip-if-compiled: true
 
 - id: R-SLOP-40
   pattern: "new\\s+Promise\\s*\\(\\s*\\(\\s*resolve\\s*,\\s*reject\\s*\\)"

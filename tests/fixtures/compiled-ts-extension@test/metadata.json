@@ -1,0 +1,7 @@
+{
+  "uuid": "compiled-ts-extension@test",
+  "name": "Compiled TS Extension",
+  "description": "Test fixture for compiled TypeScript detection",
+  "shell-version": ["46", "47", "48"],
+  "url": ""
+}
