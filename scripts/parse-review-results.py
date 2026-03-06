@@ -356,7 +356,7 @@ def parse_review(text, name=None, source_file=None):
         name = header.get('name', 'unknown')
 
     # Check for truncated reports (no sections found)
-    truncated = len(sections) < 6 and len(sections) > 0
+    truncated = len(sections) < 6
 
     # Extract findings from sections 1-3
     findings = []
@@ -434,7 +434,7 @@ def main():
     print()
 
     # Exit 2 when non-empty file produces zero sections (format mismatch)
-    if text.strip() and result['sections_parsed'] == 0 and not result['truncated']:
+    if text.strip() and result['sections_parsed'] == 0:
         sys.exit(2)
 
 

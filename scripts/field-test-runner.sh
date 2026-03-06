@@ -605,7 +605,7 @@ if [[ "$OPT_REVIEW" == true || "$OPT_REVIEW_CHANGED" == true ]]; then
         [[ -f "$local_ann" ]] && parse_args+=(--annotations "$local_ann")
         if python3 "$SCRIPT_DIR/parse-review-results.py" "$review_md" \
                 "${parse_args[@]}" > "$review_json" 2>>"$RESULTS_DIR/parse-review.log"; then
-            total=$(python3 -c "import json,sys; d=json.load(open(sys.argv[1])); print(d['counts']['total'])" "$review_json")
+            total=$(python3 -c "import json,sys; d=json.load(open(sys.argv[1])); print(d['counts']['total'])" "$review_json" 2>/dev/null || echo "?")
             echo "  → Parsed review: $rname ($total findings)"
         else
             echo "  ⚠ Failed to parse review: $rname" >&2
