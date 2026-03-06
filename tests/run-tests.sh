@@ -591,6 +591,17 @@ assert_output_contains "detects unscoped CSS classes" "css/unscoped-class"
 assert_output_contains "detects !important usage" "css/important"
 echo ""
 
+# --- css-shell-classes-extra ---
+echo "=== css-shell-classes-extra ==="
+run_lint "css-shell-classes-extra@test"
+assert_output_contains "detects popup-menu-content override" "css/shell-class-override.*popup-menu-content"
+assert_output_contains "detects popup-menu-boxpointer override" "css/shell-class-override.*popup-menu-boxpointer"
+assert_output_contains "detects notification-banner override" "css/shell-class-override.*notification-banner"
+assert_output_contains "detects osd-window override" "css/shell-class-override.*osd-window"
+assert_output_contains "detects slider override" "css/shell-class-override.*slider"
+assert_output_not_contains "no unscoped-class FP on new shell classes" "css/unscoped-class"
+echo ""
+
 # --- ego-lint-ignore ---
 echo "=== ego-lint-ignore ==="
 run_lint "ego-lint-ignore@test"
