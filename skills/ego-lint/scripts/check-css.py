@@ -21,13 +21,31 @@ def result(status, check, detail):
 
 # Known GNOME Shell theme classes that are OK to target
 KNOWN_SHELL_CLASSES = {
+    # Panel
     'panel', 'panel-button', 'system-status-icon',
+    # Popup menu
     'popup-menu', 'popup-menu-item', 'popup-separator-menu-item',
     'popup-sub-menu', 'popup-menu-section',
+    'popup-menu-content', 'popup-menu-arrow', 'popup-menu-boxpointer',
+    'popup-menu-icon', 'popup-menu-ornament',
+    'popup-inactive-menu-item', 'popup-ornamented-menu-item',
+    # Quick settings
     'quick-toggle', 'quick-settings', 'quick-settings-item',
-    'message', 'message-list', 'notification',
-    'overview', 'workspace', 'search-entry',
+    'quick-settings-grid', 'quick-menu-toggle', 'quick-toggle-menu',
+    'quick-slider',
+    # Notifications / messages
+    'message', 'message-list', 'notification', 'notification-banner',
+    # Calendar / date
+    'calendar', 'events-button',
+    # Overview / workspace
+    'overview', 'workspace', 'workspace-background',
+    'workspace-thumbnails',
+    # Search
+    'search-entry',
+    # Dash / app grid
     'app-well-icon', 'dash', 'show-apps',
+    # OSD / other
+    'osd-window', 'slider',
 }
 
 
@@ -118,12 +136,19 @@ def check_shell_class_override(ext_dir):
             continue
         # A top-level match: the first class selector on the line is a known
         # shell class (no preceding class/id/element selector that would scope it).
-        # e.g. ".panel-button { ..." or ".panel-button.foo { ..."
-        # but NOT ".my-extension .panel-button { ..."
-        m = re.match(r'^\.([\w-]+)', stripped)
+        # e.g. ".panel-button { ..." — bare shell class override
+        # but NOT ".my-extension .panel-button { ..." (descendant scoping)
+        # and NOT ".panel-button.my-ext-class { ..." (compound scoping)
+        m = re.match(r'^\.([\w-]+)(.*)', stripped)
         if m:
             cls = m.group(1)
+            rest = m.group(2)
             if cls in KNOWN_SHELL_CLASSES:
+                # Skip compound selectors where shell class is paired with
+                # a non-shell class (e.g. .quick-menu-toggle.my-ext-toggle)
+                compound = re.match(r'^\.([\w-]+)', rest)
+                if compound and compound.group(1) not in KNOWN_SHELL_CLASSES:
+                    continue
                 overrides.append(cls)
 
     if overrides:

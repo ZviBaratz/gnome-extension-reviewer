@@ -593,6 +593,18 @@ assert_output_contains "detects unscoped CSS classes" "css/unscoped-class"
 assert_output_contains "detects !important usage" "css/important"
 echo ""
 
+# --- css-shell-classes-extra ---
+echo "=== css-shell-classes-extra ==="
+run_lint "css-shell-classes-extra@test"
+assert_output_contains "detects popup-menu-content override" "css/shell-class-override.*popup-menu-content"
+assert_output_contains "detects popup-menu-boxpointer override" "css/shell-class-override.*popup-menu-boxpointer"
+assert_output_contains "detects notification-banner override" "css/shell-class-override.*notification-banner"
+assert_output_contains "detects osd-window override" "css/shell-class-override.*osd-window"
+assert_output_contains "detects slider override" "css/shell-class-override.*slider"
+assert_output_not_contains "no unscoped-class FP on new shell classes" "css/unscoped-class"
+assert_output_not_contains "compound selector not flagged" "css/shell-class-override.*quick-settings-grid"
+echo ""
+
 # --- ego-lint-ignore ---
 echo "=== ego-lint-ignore ==="
 run_lint "ego-lint-ignore@test"
@@ -634,6 +646,14 @@ run_lint "on-destroy-cleanup@test"
 assert_exit_code "exits with 0 (no blocking issues)" 0
 assert_output_not_contains "no no-destroy-method for widget with onDestroy" "\[WARN\].*resource-tracking/no-destroy-method.*widget"
 assert_output_contains "resource tracking ran" "(PASS|WARN|FAIL).*resource-tracking"
+echo ""
+
+# --- destroy-no-call ---
+echo "=== destroy-no-call ==="
+run_lint "destroy-no-call@test"
+assert_exit_code "exits with 0 (advisory only)" 0
+assert_output_contains "detects .destroy without parens" "\[WARN\].*lifecycle/destroy-no-call.*without \(\)"
+assert_output_count "exactly 2 destroy-no-call warnings" "\[WARN\].*lifecycle/destroy-no-call" 2
 echo ""
 
 # Extended assertion files (auto-sourced from assertions/ directory)

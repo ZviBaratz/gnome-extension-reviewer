@@ -383,6 +383,7 @@ import {Extension} from 'resource:///org/gnome/shell/extensions/extension.js';
 - **Rule**: Extension code should use `const` or `let` instead of `var`.
 - **Rationale**: `var` has function scope rather than block scope, which causes subtle bugs in closures and loops. Modern JavaScript uses `const` (preferred) and `let` (when reassignment is needed). EGO reviewers view `var` usage as a sign of outdated or AI-generated code.
 - **Fix**: Replace `var` with `const` (preferred) or `let` (when reassignment is needed).
+- **Note**: Suppressed (`skip-if-compiled`) for extensions compiled from TypeScript via esbuild, where `var` is emitted for transpiler helper functions.
 
 ### R-DEPR-04-legacy: Legacy imports.* syntax (pre-GNOME 45)
 - **Severity**: advisory
@@ -2084,6 +2085,22 @@ Rules for APIs removed or changed in specific GNOME Shell versions. These rules 
 - **Known limitations**: Multi-line `.connect(\n'changed::...'` calls are not detected (per-line scanning). Signal IDs stored via `.push()` rather than direct assignment may false-positive.
 - **Tested by**: `tests/fixtures/gsettings-bare-connect@test/`, `tests/fixtures/gsettings-auto-cleanup@test/`
 
+### R-LIFE-23: .destroy without parentheses
+- **Severity**: advisory
+- **Checked by**: check-lifecycle.py
+- **Rule**: `.destroy` must be called as a method (`.destroy()`), not accessed as a property (`.destroy`).
+- **Rationale**: In JavaScript, `obj.destroy` without parentheses is a property access that evaluates to the function object but does not call it. The object is never destroyed, causing a silent resource leak. This is a common typo, especially in `forEach` callbacks: `actors.forEach(a => a.destroy)` does nothing.
+- **Fix**: Add parentheses: `actors.forEach(a => a.destroy())`.
+- **Not matched**: `.destroy()` and `.destroy?.()` (actual calls), `.destroyAll()` etc. (different methods) are excluded by the primary regex pattern.
+- **Suppressed when**:
+  - `connect`/`connectSmart`/`connectObject(` before `.destroy` (callback reference, but not `disconnect()`)
+  - `.bind(`/`.call(`/`.apply(` before or after `.destroy` (Function.prototype reference)
+  - `.destroy` inside an `if()` condition or preceded by `typeof` (existence check)
+  - Followed by `=` but not `==` (property assignment)
+  - `{ destroy }` on the same line (destructuring)
+  - Ternary `?` after `.destroy` but not `?.` (existence check)
+- **Tested by**: `tests/fixtures/destroy-no-call@test/`
+
 ---
 
 ## Security (R-SEC) — continued
@@ -2432,6 +2449,7 @@ Rules for APIs removed or changed in specific GNOME Shell versions. These rules 
 - **Rationale**: AI-generated code tends to use excessively descriptive camelCase names like `currentBatteryThresholdValue` or `updatedNotificationMessage`. Human-written GNOME code favors concise names (`threshold`, `message`). The lowercase-start filter avoids false positives on PascalCase class names and UPPER_SNAKE constants. Threshold raised from 20 to 25 to avoid FPs on standard Clutter API names (e.g., `brightnessContrastEffect` at 24 chars).
 - **Fix**: Shorten parameter/argument names to be concise but clear.
 - **Tested by**: `tests/fixtures/slop-long-params@test/`
+- **Note**: Suppressed (`skip-if-compiled`) for extensions compiled from TypeScript via esbuild, where verbose parameter names from TypeScript signatures survive compilation.
 
 ### R-SLOP-40: Manual Promise wrapper
 - **Severity**: advisory

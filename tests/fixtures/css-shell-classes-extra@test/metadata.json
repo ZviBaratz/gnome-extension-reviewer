@@ -1,0 +1,6 @@
+{
+  "uuid": "css-shell-classes-extra@test",
+  "name": "CSS Shell Classes Extra Test",
+  "description": "Tests newly added shell class recognition",
+  "shell-version": ["48"]
+}

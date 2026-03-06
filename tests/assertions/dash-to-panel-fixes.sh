@@ -16,6 +16,13 @@ assert_exit_code "exits with 0 (version guard suppresses R-VER48-02)" 0
 assert_output_not_contains "no FAIL for R-VER48-02 with PACKAGE_VERSION guard" "\[FAIL\].*R-VER48-02"
 echo ""
 
+# --- version-guard-distant (R-VER48-02 guard-window with distant guard) ---
+echo "=== version-guard-distant ==="
+run_lint "version-guard-distant@test"
+assert_exit_code "exits with 0 (distant version guard suppresses R-VER48-02)" 0
+assert_output_not_contains "no FAIL for R-VER48-02 with distant PACKAGE_VERSION guard" "\[FAIL\].*R-VER48-02"
+echo ""
+
 # --- deprecated-in-comments (skip-comments for R-DEPR-05/06) ---
 echo "=== deprecated-in-comments ==="
 run_lint "deprecated-in-comments@test"
