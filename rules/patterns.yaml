@@ -923,7 +923,7 @@
   fix: "Access via global.compositor instead of Meta directly"
   min-version: 48
   guard-pattern: "if\\s*\\(\\s*Meta\\.disable_unredirect|PACKAGE_VERSION.*['\"]4[89]|PACKAGE_VERSION.*['\"][5-9]"
-  guard-window: 3
+  guard-window: 10
 
 - id: R-VER48-03
   pattern: "\\bCursorTracker\\.get_for_display\\b"

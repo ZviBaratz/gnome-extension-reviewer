@@ -1,0 +1,7 @@
+{
+    "uuid": "version-guard-distant@test",
+    "name": "Distant Version Guard Test",
+    "description": "Tests R-VER48-02 guard-window with guard far from deprecated call",
+    "shell-version": ["48"],
+    "url": "https://example.com"
+}
