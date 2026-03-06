@@ -966,7 +966,7 @@ def check_destroy_without_call(ext_dir):
                 after = line[m.end():]
 
                 # Skip: callback reference in signal connection or bind
-                if re.search(r'connect\w*\s*\(|\.bind\s*\(', before):
+                if re.search(r'(?<!dis)connect\w*\s*\(|\.bind\s*\(', before):
                     continue
                 if re.search(r'\.bind\s*\(', after):
                     continue
