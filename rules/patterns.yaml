@@ -791,6 +791,7 @@
   pattern: "\\.urgency\\s*=(?!=)\\s*.*Urgency\\.CRITICAL"
   scope: ["*.js"]
   severity: advisory
+  skip-comments: true
   message: "CRITICAL notification urgency bypasses Do Not Disturb — reserved for system alerts, not extension notifications"
   category: code-quality
   fix: "Use MessageTray.Urgency.NORMAL (or .HIGH at most) for extension notifications"
