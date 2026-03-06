@@ -1012,6 +1012,32 @@ def check_widget_lifecycle(ext_dir):
                f"All {len(created_widgets)} widget(s) properly cleaned up")
 
 
+def extract_cleanup_bodies(js_files):
+    """Extract concatenated text of disable/destroy/onDestroy method bodies."""
+    cleanup_re = re.compile(
+        r'\b(?:disable|destroy|_destroy\w*|onDestroy)\s*\(')
+    cleanup_text = ''
+    for filepath in js_files:
+        content = strip_comments(read_file(filepath))
+        lines = content.splitlines()
+        i = 0
+        while i < len(lines):
+            if cleanup_re.search(lines[i]):
+                depth = 0
+                started = False
+                for j in range(i, len(lines)):
+                    depth += lines[j].count('{') - lines[j].count('}')
+                    if '{' in lines[j]:
+                        started = True
+                    cleanup_text += lines[j] + '\n'
+                    if started and depth <= 0:
+                        break
+                i = j + 1 if started else i + 1
+            else:
+                i += 1
+    return cleanup_text
+
+
 def check_stage_actor_lifecycle(ext_dir):
     """R-LIFE-22: Stage actor add without matching remove in disable()/destroy()."""
     js_files = find_js_files(ext_dir, exclude_prefs=True)
@@ -1039,29 +1065,7 @@ def check_stage_actor_lifecycle(ext_dir):
     if not added_actors:
         return
 
-    # Extract cleanup method bodies across all files
-    cleanup_re = re.compile(
-        r'\b(?:disable|destroy|_destroy\w*|onDestroy)\s*\(')
-
-    cleanup_text = ''
-    for filepath in js_files:
-        content = strip_comments(read_file(filepath))
-        lines = content.splitlines()
-        i = 0
-        while i < len(lines):
-            if cleanup_re.search(lines[i]):
-                depth = 0
-                started = False
-                for j in range(i, len(lines)):
-                    depth += lines[j].count('{') - lines[j].count('}')
-                    if '{' in lines[j]:
-                        started = True
-                    cleanup_text += lines[j] + '\n'
-                    if started and depth <= 0:
-                        break
-                i = j + 1 if started else i + 1
-            else:
-                i += 1
+    cleanup_text = extract_cleanup_bodies(js_files)
 
     leaked = []
     for var_name, rel, lineno, remove_method in added_actors:
@@ -1102,29 +1106,7 @@ def check_message_tray_lifecycle(ext_dir):
     if not added_sources:
         return
 
-    # Extract cleanup method bodies across all files
-    cleanup_re = re.compile(
-        r'\b(?:disable|destroy|_destroy\w*|onDestroy)\s*\(')
-
-    cleanup_text = ''
-    for filepath in js_files:
-        content = strip_comments(read_file(filepath))
-        lines = content.splitlines()
-        i = 0
-        while i < len(lines):
-            if cleanup_re.search(lines[i]):
-                depth = 0
-                started = False
-                for j in range(i, len(lines)):
-                    depth += lines[j].count('{') - lines[j].count('}')
-                    if '{' in lines[j]:
-                        started = True
-                    cleanup_text += lines[j] + '\n'
-                    if started and depth <= 0:
-                        break
-                i = j + 1 if started else i + 1
-            else:
-                i += 1
+    cleanup_text = extract_cleanup_bodies(js_files)
 
     leaked = []
     for var_name, rel, lineno in added_sources:
