@@ -25,6 +25,7 @@ Checks:
   - R-LIFE-20: Bus name ownership without release
   - R-LIFE-21: GSettings signal leak (bare connect without disconnect)
   - R-LIFE-22: Stage actor leak (add_child/addChrome without remove)
+  - R-LIFE-23: .destroy without parentheses (property access, not method call)
   - R-LIFE-24: MessageTray source leak (add without destroy)
   - R-SEC-16: Clipboard + keybinding cross-reference
   - R-FILE-07: Missing export default class
@@ -947,6 +948,55 @@ def check_bus_name_lifecycle(ext_dir):
     # If no bus name ownership, skip silently
 
 
+def check_destroy_without_call(ext_dir):
+    """R-LIFE-23: .destroy without () is property access, not method call."""
+    js_files = find_js_files(ext_dir, exclude_prefs=True)
+    if not js_files:
+        return
+
+    violations = []
+    for filepath in js_files:
+        content = strip_comments(read_file(filepath))
+        rel = os.path.relpath(filepath, ext_dir)
+
+        for lineno, line in enumerate(content.splitlines(), 1):
+            # Find .destroy NOT followed by ( or word char (avoids .destroy(), .destroyAll)
+            for m in re.finditer(r'\.destroy\b(?!\s*\()', line):
+                before = line[:m.start()]
+                after = line[m.end():]
+
+                # Skip: callback reference in signal connection or bind
+                if re.search(r'connect\w*\s*\(|\.bind\s*\(', before):
+                    continue
+
+                # Skip: property existence check
+                if re.search(r'\bif\s*\(', before) or re.search(r'\btypeof\b', before):
+                    continue
+
+                # Skip: property assignment (not comparison)
+                after_stripped = after.lstrip()
+                if after_stripped.startswith('=') and not after_stripped.startswith('=='):
+                    continue
+
+                # Skip: destructuring
+                if re.search(r'\{\s*destroy\b', line):
+                    continue
+
+                violations.append(f"{rel}:{lineno}")
+                break  # One per file
+
+        if len(violations) >= 5:
+            break
+
+    if violations:
+        for loc in violations:
+            result("WARN", "lifecycle/destroy-no-call",
+                   f"{loc}: .destroy without () — property access, not method call")
+    else:
+        result("PASS", "lifecycle/destroy-no-call",
+               "All .destroy references include parentheses")
+
+
 def check_widget_lifecycle(ext_dir):
     """Detect widgets created in enable() but not destroyed in disable()."""
     ext_file = os.path.join(ext_dir, 'extension.js')
@@ -1239,6 +1289,7 @@ def main():
     check_clipboard_network(ext_dir)
     check_soup_session_abort(ext_dir)
     check_destroy_then_null(ext_dir)
+    check_destroy_without_call(ext_dir)
     check_widget_lifecycle(ext_dir)
     check_stage_actor_lifecycle(ext_dir)
     check_message_tray_lifecycle(ext_dir)
