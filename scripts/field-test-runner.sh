@@ -595,6 +595,23 @@ if [[ "$OPT_REVIEW" == true || "$OPT_REVIEW_CHANGED" == true ]]; then
         collect_review_result "${REVIEW_PIDS[$i]}" "${REVIEW_NAMES[$i]}"
     done
 
+    # Parse review reports into structured JSON
+    for rname in "${!REVIEW_STATUS[@]}"; do
+        [[ "${REVIEW_STATUS[$rname]}" != "ok" ]] && continue
+        review_md="$RESULTS_DIR/$rname.review.md"
+        review_json="$RESULTS_DIR/$rname.review.json"
+        local_ann="$ANNOTATIONS_DIR/$rname.yaml"
+        parse_args=(--name "$rname")
+        [[ -f "$local_ann" ]] && parse_args+=(--annotations "$local_ann")
+        if python3 "$SCRIPT_DIR/parse-review-results.py" "$review_md" \
+                "${parse_args[@]}" > "$review_json" 2>>"$RESULTS_DIR/parse-review.log"; then
+            total=$(python3 -c "import json,sys; d=json.load(open(sys.argv[1])); print(d['counts']['total'])" "$review_json" 2>/dev/null || echo "?")
+            echo "  → Parsed review: $rname ($total findings)"
+        else
+            echo "  ⚠ Failed to parse review: $rname" >&2
+        fi
+    done
+
     echo ""
 fi
 
