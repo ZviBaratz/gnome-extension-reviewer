@@ -5,4 +5,5 @@ echo "=== urgency-critical ==="
 run_lint "urgency-critical@test"
 assert_exit_code "exits with 0 (advisory only)" 0
 assert_output_contains "warns on CRITICAL urgency" "\[WARN\].*R-QUAL-36"
+assert_output_count "only one R-QUAL-36 hit (comparison excluded)" "R-QUAL-36" 1
 echo ""

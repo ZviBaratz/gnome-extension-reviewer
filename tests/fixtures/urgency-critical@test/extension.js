@@ -7,6 +7,10 @@ export default class UrgencyCriticalExtension extends Extension {
         const notification = new Main.MessageTray.Notification(source, 'Hello');
         // BAD: CRITICAL urgency for a non-system notification
         notification.urgency = Main.MessageTray.Urgency.CRITICAL;
+        // OK: comparison should not trigger
+        if (notification.urgency === Main.MessageTray.Urgency.CRITICAL) {
+            log('already critical');
+        }
         Main.messageTray.add(source);
         source.showNotification(notification);
     }

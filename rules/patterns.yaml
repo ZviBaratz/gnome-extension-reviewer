@@ -788,7 +788,7 @@
   fix: "Use .call() / .get() / .set() with async callback or Gio._promisify() instead of _sync()"
 
 - id: R-QUAL-36
-  pattern: "\\.urgency\\s*=\\s*.*Urgency\\.CRITICAL"
+  pattern: "\\.urgency\\s*=(?!=)\\s*.*Urgency\\.CRITICAL"
   scope: ["*.js"]
   severity: advisory
   message: "CRITICAL notification urgency bypasses Do Not Disturb — reserved for system alerts, not extension notifications"
