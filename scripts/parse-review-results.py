@@ -23,7 +23,7 @@ from datetime import datetime, timezone
 CATEGORY_KEYWORDS = [
     (['signal', 'disconnect', 'destroy', 'enable', 'disable', 'leak',
       'cleanup', 'dispose', 'remove_child', 'messagetray'], 'lifecycle'),
-    (['spawn', 'dconf', 'pkexec', 'telemetry', 'injection', 'xss'], 'security'),
+    (['spawn', 'pkexec', 'telemetry', 'injection', 'xss'], 'security'),
     (['css', 'selector', 'scoping', 'stylesheet', 'theme class'], 'css'),
     (['async', 'await', '_destroyed', 'cancellable', 'promise'], 'async'),
     (['deprecated', 'removed api', 'dead code', 'removed before'], 'deprecated'),
@@ -356,7 +356,7 @@ def parse_review(text, name=None, source_file=None):
         name = header.get('name', 'unknown')
 
     # Check for truncated reports (no sections found)
-    truncated = len(sections) < 6
+    truncated = len(sections) < 6 and len(sections) > 0
 
     # Extract findings from sections 1-3
     findings = []
