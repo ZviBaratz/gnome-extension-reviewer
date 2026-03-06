@@ -1,0 +1,1 @@
+{"uuid": "destroy-no-call@test", "name": "Destroy No Call Test", "description": "Tests .destroy without parentheses detection", "shell-version": ["48"], "url": "https://github.com/test/destroy-no-call"}
