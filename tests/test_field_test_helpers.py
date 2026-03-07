@@ -118,7 +118,7 @@ class TestParseLintOutput(unittest.TestCase):
 
     def test_provenance_score(self):
         lines = [
-            "[PASS] quality/code-provenance  score 3 (hand-written)\n",
+            "[PASS] quality/code-provenance  Strong hand-written indicators: provenance-score=3; signals=[domain-vocabulary(5)]; files=2\n",
         ]
         findings, metrics, counts, prov = parse_lint_output(lines)
         self.assertEqual(prov, 3)

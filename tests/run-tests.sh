@@ -165,6 +165,16 @@ assert_output_contains "warns on empty catch" "\[WARN\].*quality/empty-catch"
 assert_output_contains "warns on JSDoc" "\[WARN\].*R-SLOP-01"
 echo ""
 
+# --- provenance-jsdoc (provenance post-filter suppresses R-SLOP-01/02) ---
+echo "=== provenance-jsdoc ==="
+run_lint "provenance-jsdoc@test"
+assert_exit_code "exits with 0 (warnings only)" 0
+assert_output_contains "suppresses JSDoc via provenance" "\[PASS\].*provenance/jsdoc-suppressed"
+assert_output_not_contains "no R-SLOP-01 WARNs after suppression" "\[WARN\].*R-SLOP-01"
+assert_output_not_contains "no R-SLOP-02 WARNs after suppression" "\[WARN\].*R-SLOP-02"
+assert_output_contains "provenance score >= 3" "provenance-score=4"
+echo ""
+
 # --- security-patterns ---
 echo "=== security-patterns ==="
 run_lint "security-patterns@test"

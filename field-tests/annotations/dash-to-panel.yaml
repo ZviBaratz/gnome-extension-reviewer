@@ -81,8 +81,8 @@ findings:
     classification: fp
     notes: "5 hits — desktop.interface, desktop.notifications, shell.app-switcher, KEYBINDINGS_SCHEMA. Correct API for system schemas."
   - id: "R-SLOP-01::JSDoc despite provenance score 4"
-    classification: fp
-    notes: "5 hits — provenance post-filter reports suppression but WARNs still appear (bug)"
+    classification: expected
+    notes: "5 hits — suppressed by provenance post-filter (score 4 >= 3 threshold). Fixed in deferred approach."
   - id: "R-SLOP-38::descriptive identifiers"
     classification: fp
     notes: "2 hits — sortWindowsCompareFunction, taskbarBoxAllocationChangedId are descriptive"
