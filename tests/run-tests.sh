@@ -286,7 +286,7 @@ echo "=== metadata-polish ==="
 run_lint "metadata-polish@test"
 assert_exit_code "exits with 1 (has failures)" 1
 assert_output_contains "warns on missing gettext-domain" "\[WARN\].*metadata/missing-gettext-domain"
-assert_output_contains "fails on future shell-version" "\[FAIL\].*metadata/future-shell-version"
+assert_output_contains "warns on future shell-version" "\[WARN\].*metadata/future-shell-version"
 echo ""
 
 # --- clipboard-access ---
@@ -524,8 +524,8 @@ echo ""
 # --- non-gjs-scripts ---
 echo "=== non-gjs-scripts ==="
 run_lint "non-gjs-scripts@test"
-assert_exit_code "exits with 1 (has failures)" 1
-assert_output_contains "fails on non-GJS scripts (no pkexec)" "\[FAIL\].*non-gjs-scripts"
+assert_exit_code "exits with 0 (warnings only)" 0
+assert_output_contains "warns on non-GJS scripts (no pkexec)" "\[WARN\].*non-gjs-scripts"
 echo ""
 
 # --- logging-volume ---

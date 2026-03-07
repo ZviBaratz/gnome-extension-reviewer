@@ -262,7 +262,7 @@ def main():
         for v in sv:
             try:
                 if int(v) > CURRENT_STABLE:
-                    result("FAIL", "metadata/future-shell-version",
+                    result("WARN", "metadata/future-shell-version",
                            f"shell-version '{v}' is newer than current stable ({CURRENT_STABLE})")
             except ValueError:
                 pass

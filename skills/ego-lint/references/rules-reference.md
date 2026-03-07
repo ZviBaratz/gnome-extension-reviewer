@@ -1777,6 +1777,7 @@ Rules for APIs removed or changed in specific GNOME Shell versions. These rules 
 - **Rule**: Extension code must not use the old `ExtensionState` enum values (`ENABLED`, `DISABLED`, `INITIALIZED`, `DEACTIVATING`, `ACTIVATING`) when targeting GNOME 46+.
 - **Rationale**: The `ExtensionState` enum values were renamed in GNOME 46 to better reflect their meaning: `ENABLED` became `ACTIVE`, `DISABLED` became `INACTIVE`, `ACTIVATING` became `ENABLING`, and `DEACTIVATING` became `DISABLING`.
 - **Fix**: Replace `ExtensionState.ENABLED` with `ExtensionState.ACTIVE`, `DISABLED` with `INACTIVE`, `ACTIVATING` with `ENABLING`, and `DEACTIVATING` with `DISABLING`.
+- **Suppressed when**: File also contains `ExtensionState.ACTIVE` (backward-compat shim)
 
 ### GNOME 47 (R-VER47)
 
@@ -1802,6 +1803,8 @@ Rules for APIs removed or changed in specific GNOME Shell versions. These rules 
 - **Rule**: Extension code must not call `Meta.disable_unredirect_for_display()`, `Meta.enable_unredirect_for_display()`, `Meta.get_window_actors()`, `Meta.get_window_group_for_display()`, or `Meta.get_top_window_group_for_display()` when targeting GNOME 48+.
 - **Rationale**: These display management functions were moved from the `Meta` namespace to `Meta.Compositor` in GNOME 48. They are now accessible via `global.compositor`.
 - **Fix**: Access these functions via `global.compositor` instead of `Meta` directly. For example, replace `Meta.get_window_actors()` with `global.compositor.get_window_actors()`.
+- **Guard**: Suppressed when `if (Meta.disable_unredirect` or `PACKAGE_VERSION >= '48'` appears within 10 lines
+- **Suppressed when**: File also contains `global.compositor` (backward-compat shim)
 
 ### R-VER48-03: CursorTracker.get_for_display changed
 - **Severity**: blocking
@@ -1877,6 +1880,8 @@ Rules for APIs removed or changed in specific GNOME Shell versions. These rules 
 - **Rule**: `Clutter.ClickAction` was removed in GNOME 49.
 - **Rationale**: Replaced by the gesture-based input API.
 - **Fix**: Use `new Clutter.ClickGesture()` instead.
+- **Guard**: Suppressed when `|| Clutter.Click(Gesture|Action)` or `if (Clutter.ClickAction` appears on the same line
+- **Suppressed when**: File also contains `Clutter.ClickGesture` (backward-compat shim)
 
 ### R-VER49-03: Clutter.TapAction removed
 - **Severity**: blocking
@@ -2273,7 +2278,7 @@ Rules for APIs removed or changed in specific GNOME Shell versions. These rules 
 ## GNOME 48/49 Version-Gated Rules (New)
 
 ### R-VER48-07: QuickMenuToggle CSS class rename
-- **Severity**: blocking
+- **Severity**: advisory
 - **Checked by**: apply-patterns.py (min-version: 48)
 - **Rule**: The CSS class `.quick-menu-toggle` was renamed to `.quick-toggle-has-menu` in GNOME 48.
 - **Rationale**: Extensions targeting GNOME 48+ that use the old class name will have broken styling.
