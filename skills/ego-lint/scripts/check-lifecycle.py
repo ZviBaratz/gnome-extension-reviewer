@@ -1348,7 +1348,7 @@ def check_module_scope_state(ext_dir):
 
     if leaked:
         for rel, lineno, varname, typ in leaked:
-            result("WARN", "R-LIFE-26",
+            result("WARN", "lifecycle/module-scope-state",
                    f"{rel}:{lineno}: module-scope {typ} '{varname}' not cleared "
                    f"in disable()|fix:Add {varname}.clear() to disable()")
     else:
