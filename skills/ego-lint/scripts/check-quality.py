@@ -797,10 +797,21 @@ def check_run_dispose_comment(ext_dir, js_files):
 
 
 def check_repeated_settings(ext_dir, js_files):
-    """R-QUAL-28: Flag multiple getSettings()/Gio.Settings instances across extension files."""
+    """R-QUAL-28: Flag multiple getSettings()/Gio.Settings instances across extension files.
+
+    Calls with distinct string-literal schema arguments are not redundant —
+    each fetches a different settings object.  Only same-schema (or no-arg)
+    duplicates count toward the threshold.
+    """
     settings_re = re.compile(r'(\.getSettings\s*\(|new\s+Gio\.Settings\s*\()')
+    # Extract string literal schema from getSettings('...') or Gio.Settings({schema: '...'})
+    schema_extract_re = re.compile(
+        r"""(?:\.getSettings|Gio\.Settings)\s*\(\s*\{?\s*(?:schema(?:_id)?\s*:\s*)?['"]([^'"]+)['"]"""
+    )
     total = 0
     locations = []
+    seen_schemas = set()
+    distinct_schema_count = 0
 
     for filepath in js_files:
         # Exclude prefs.js — multiple getSettings there is normal
@@ -815,8 +826,16 @@ def check_repeated_settings(ext_dir, js_files):
                 if settings_re.search(line):
                     total += 1
                     locations.append(f"{rel}:{lineno}")
+                    # Check for a distinct string-literal schema argument
+                    m = schema_extract_re.search(line)
+                    if m:
+                        schema = m.group(1)
+                        if schema not in seen_schemas:
+                            seen_schemas.add(schema)
+                            distinct_schema_count += 1
 
-    if total > 2:
+    effective = total - distinct_schema_count
+    if effective > 2:
         locs = ', '.join(locations[:5])
         result("WARN", "quality/repeated-settings",
                f"{total} getSettings()/Gio.Settings instances across extension files ({locs}) "

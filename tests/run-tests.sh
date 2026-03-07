@@ -661,6 +661,20 @@ assert_output_contains "detects .destroy without parens" "\[WARN\].*lifecycle/de
 assert_output_count "exactly 2 destroy-no-call warnings" "\[WARN\].*lifecycle/destroy-no-call" 2
 echo ""
 
+# --- repeated-settings ---
+echo "=== repeated-settings ==="
+run_lint "repeated-settings@test"
+assert_exit_code "exits with 0 (warnings only)" 0
+assert_output_contains "warns on repeated same-schema getSettings" "\[WARN\].*quality/repeated-settings"
+echo ""
+
+# --- distinct-settings ---
+echo "=== distinct-settings ==="
+run_lint "distinct-settings@test"
+assert_exit_code "exits with 0 (no failures)" 0
+assert_output_contains "passes when schemas are distinct" "\[PASS\].*quality/repeated-settings"
+echo ""
+
 # Extended assertion files (auto-sourced from assertions/ directory)
 ASSERTIONS_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/assertions"
 for assertion_file in "$ASSERTIONS_DIR"/*.sh; do
