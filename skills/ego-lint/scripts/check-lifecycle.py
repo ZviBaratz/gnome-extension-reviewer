@@ -1286,7 +1286,7 @@ def check_dbus_signal_leak(ext_dir):
         return
 
     bare_connects = []
-    has_auto_cleanup = False
+    has_dbus_disconnect = False
 
     for filepath in js_files:
         content = strip_comments(read_file(filepath))
@@ -1295,7 +1295,7 @@ def check_dbus_signal_leak(ext_dir):
         # D-Bus-specific cleanup detection: only disconnectSignal counts
         # (connectObject/disconnectObject manage GObject signals, not D-Bus signals)
         if re.search(r'\.disconnectSignal\s*\(', content):
-            has_auto_cleanup = True
+            has_dbus_disconnect = True
 
         prev_stripped = ''
         for lineno, line in enumerate(content.splitlines(), 1):
@@ -1324,7 +1324,7 @@ def check_dbus_signal_leak(ext_dir):
             bare_connects.append(f"{rel}:{lineno}")
             prev_stripped = stripped
 
-    if bare_connects and not has_auto_cleanup:
+    if bare_connects and not has_dbus_disconnect:
         count = len(bare_connects)
         locs = ', '.join(bare_connects[:5])
         suffix = f' (and {count - 5} more)' if count > 5 else ''
