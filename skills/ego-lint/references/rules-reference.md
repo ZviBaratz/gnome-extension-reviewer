@@ -2075,7 +2075,7 @@ Rules for APIs removed or changed in specific GNOME Shell versions. These rules 
 - **Fix**: Store the return value and call `proxy.disconnectSignal(id)` in `disable()`, or use `connectObject()`/`disconnectObject()` for auto-cleanup.
 - **Scope exclusions**: prefs.js (manages own lifecycle), `service/` directory (daemon lifecycle).
 - **Known limitations**: Multi-line `.connectSignal(\n'...'` calls are not detected (per-line scanning).
-- **Tested by**: `tests/fixtures/dbus-signal-leak@test/`, `tests/fixtures/dbus-signal-auto-cleanup@test/`
+- **Tested by**: `tests/fixtures/dbus-signal-leak@test/`, `tests/fixtures/dbus-signal-auto-cleanup@test/`, `tests/fixtures/dbus-signal-array-storage@test/`
 
 ### R-LIFE-26: Module-scope mutable state not cleared in disable()
 - **Severity**: advisory

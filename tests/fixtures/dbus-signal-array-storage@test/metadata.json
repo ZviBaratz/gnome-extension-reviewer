@@ -1,0 +1,7 @@
+{
+  "uuid": "dbus-signal-array-storage@test",
+  "name": "D-Bus Signal Array Storage Test",
+  "shell-version": ["45"],
+  "description": "Fixture for R-LIFE-25: array-based signal ID storage via push()",
+  "url": "https://example.com"
+}
