@@ -94,7 +94,16 @@ Produce `field-tests/reports/<date>-regression.md` with:
 5. **High-priority FP candidates**: Rules that fire as FP on 2+ approved extensions
 6. **Gaps**: Findings ego-review caught that ego-lint missed (only if `--review`)
 
-### Step 6: Issue Creation (if FPs confirmed)
+### Step 6: Update field-tests/README.md
+
+Update the "Latest Lint Results" and "Annotation Coverage" tables in `field-tests/README.md` to reflect the current run:
+
+1. **Latest Lint Results**: Replace the ego-lint version, per-extension PASS/FAIL/WARN/SKIP counts, and totals row with values from the latest `history.jsonl` entries
+2. **Annotation Coverage**: Update TP/FP/borderline/expected/classified/unannotated counts from `annotations/*.yaml` and the diff output
+
+Keep the "Extension Catalog" and "Code Metrics" sections unchanged unless a new extension was added to the manifest.
+
+### Step 7: Issue Creation (if FPs confirmed)
 
 For new false positives on EGO-approved extensions that are confirmed FP (not borderline):
 
@@ -103,7 +112,7 @@ Create a GitHub issue:
 - Title: `False positive: R-XXXX-NN on <extension>`
 - Body: Rule ID, file:line, why it's FP, which other extensions are affected, suggested fix
 
-### Step 7: Update Baselines (if `--update-baselines`)
+### Step 8: Update Baselines (if `--update-baselines`)
 
 ```bash
 bash scripts/field-test-runner.sh --update-baselines --no-fetch
@@ -148,6 +157,7 @@ findings:
 1. Make a code change (guard pattern, threshold tweak, new rule)
 2. Run `/ego-field-test` — see immediate impact across all extensions
 3. Classify new unannotated findings
-4. If FPs found, create issues and fix them
-5. Run `/ego-field-test --update-baselines` to snapshot improved state
-6. Repeat
+4. Update `field-tests/README.md` results and annotation tables
+5. If FPs found, create issues and fix them
+6. Run `/ego-field-test --update-baselines` to snapshot improved state
+7. Repeat

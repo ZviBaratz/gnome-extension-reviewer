@@ -184,7 +184,7 @@ Key unwritten rules discovered:
 7. Subprocesses must have cancellation path in `disable()`
 8. No `convenience.js` patterns
 
-Full research: [docs/research/](docs/research/) | Coverage gaps: [docs/research/gap-analysis.md](docs/research/gap-analysis.md) | Field testing: [docs/internal/](docs/internal/) — 7 real-world extensions tested with TP/FP classification and calibration lessons
+Full research: [docs/research/](docs/research/) | Coverage gaps: [docs/research/gap-analysis.md](docs/research/gap-analysis.md) | Field testing: [field-tests/](field-tests/) — 10 real-world extensions tested with TP/FP classification and calibration lessons
 
 ## 🗺️ Roadmap
 
