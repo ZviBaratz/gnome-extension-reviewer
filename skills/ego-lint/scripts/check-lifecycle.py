@@ -63,10 +63,15 @@ def read_file(path):
         return f.read()
 
 
+def _preserve_newlines(match):
+    """Replace block comment content with empty lines to preserve line numbers."""
+    return '\n' * match.group(0).count('\n')
+
+
 def strip_comments(content):
     """Remove single-line and block comments from JS content."""
     # Remove block comments
-    content = re.sub(r'/\*.*?\*/', '', content, flags=re.DOTALL)
+    content = re.sub(r'/\*.*?\*/', _preserve_newlines, content, flags=re.DOTALL)
     # Remove single-line comments
     content = re.sub(r'//.*$', '', content, flags=re.MULTILINE)
     return content

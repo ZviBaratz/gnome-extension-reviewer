@@ -55,9 +55,14 @@ KNOWN_SHELL_CLASSES = {
 }
 
 
+def _preserve_newlines(match):
+    """Replace block comment content with empty lines to preserve line numbers."""
+    return '\n' * match.group(0).count('\n')
+
+
 def strip_css_comments(content):
     """Remove CSS block comments."""
-    return re.sub(r'/\*.*?\*/', '', content, flags=re.DOTALL)
+    return re.sub(r'/\*.*?\*/', _preserve_newlines, content, flags=re.DOTALL)
 
 
 def find_stylesheet(ext_dir):
