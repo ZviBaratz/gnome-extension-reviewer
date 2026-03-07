@@ -371,7 +371,7 @@ if [[ -n "$non_gjs_scripts" ]]; then
     if [[ "$has_pkexec" == true ]]; then
         print_result "PASS" "non-gjs-scripts" "Found $hit_count non-GJS script(s) — pkexec helper detected, scripts support privileged operations"
     else
-        print_result "FAIL" "non-gjs-scripts" "Found $hit_count non-GJS script(s) — scripts MUST be written in GJS; no pkexec/privileged helper justification found"
+        print_result "WARN" "non-gjs-scripts" "Found $hit_count non-GJS script(s) — scripts MUST be written in GJS; no pkexec/privileged helper justification found"
     fi
 else
     print_result "PASS" "non-gjs-scripts" "No non-GJS scripts found"

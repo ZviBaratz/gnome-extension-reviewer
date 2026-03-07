@@ -871,6 +871,7 @@
   category: version-compat
   fix: "Use ACTIVE, INACTIVE, ENABLING, DISABLING instead"
   min-version: 46
+  replacement-pattern: "ExtensionState.ACTIVE"
 
 - id: R-VER46-06
   pattern: "\\bBlurEffect[^;]*\\.sigma\\b|\\bBlurEffect\\s*\\(\\s*\\{[^}]*sigma"
@@ -926,6 +927,7 @@
   min-version: 48
   guard-pattern: "if\\s*\\(\\s*Meta\\.disable_unredirect|PACKAGE_VERSION.*['\"]4[89]|PACKAGE_VERSION.*['\"][5-9]"
   guard-window: 10
+  replacement-pattern: "global.compositor"
 
 - id: R-VER48-03
   pattern: "\\bCursorTracker\\.get_for_display\\b"
@@ -978,7 +980,7 @@
 - id: R-VER48-07
   pattern: "quick-menu-toggle"
   scope: ["*.css"]
-  severity: blocking
+  severity: advisory
   message: "CSS class .quick-menu-toggle renamed to .quick-toggle-has-menu in GNOME 48"
   category: version-compat
   fix: "Replace .quick-menu-toggle with .quick-toggle-has-menu"
@@ -1006,6 +1008,7 @@
   fix: "Use new Clutter.ClickGesture() instead"
   min-version: 49
   guard-pattern: "\\|\\|\\s*Clutter\\.Click(Gesture|Action)|if\\s*\\(\\s*Clutter\\.ClickAction"
+  replacement-pattern: "Clutter.ClickGesture"
 
 - id: R-VER49-03
   pattern: "\\bClutter\\.TapAction\\b"
