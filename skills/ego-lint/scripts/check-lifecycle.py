@@ -27,6 +27,7 @@ Checks:
   - R-LIFE-22: Stage actor leak (add_child/addChrome without remove)
   - R-LIFE-23: .destroy without parentheses (property access, not method call)
   - R-LIFE-24: MessageTray source leak (add without destroy)
+  - R-LIFE-25: D-Bus proxy signal leak (connectSignal without disconnectSignal)
   - R-LIFE-26: Module-scope mutable state (Map/Set) not cleared in disable()
   - R-SEC-16: Clipboard + keybinding cross-reference
   - R-FILE-07: Missing export default class
@@ -1258,6 +1259,57 @@ def check_gsettings_signal_leak(ext_dir):
     # If no bare connects, skip silently
 
 
+def check_dbus_signal_leak(ext_dir):
+    """R-LIFE-25: Bare proxy.connectSignal() without stored ID is a guaranteed leak."""
+    js_files = find_js_files(ext_dir, exclude_prefs=True)
+    if not js_files:
+        return
+
+    # Skip service/ directory (different lifecycle)
+    js_files = [f for f in js_files
+                if '/service/' not in f.replace(os.sep, '/')]
+    if not js_files:
+        return
+
+    bare_connects = []
+    has_auto_cleanup = False
+
+    for filepath in js_files:
+        content = strip_comments(read_file(filepath))
+        rel = os.path.relpath(filepath, ext_dir)
+
+        # Extension-wide auto-cleanup detection
+        if (re.search(r'\.disconnectObject\s*\(', content) or
+                re.search(r'\.connectObject\s*\(', content) or
+                re.search(r'\b(SignalTracker|SignalManager|connectSmart|disconnectSmart)\b', content)):
+            has_auto_cleanup = True
+
+        for lineno, line in enumerate(content.splitlines(), 1):
+            stripped = line.strip()
+            # Match proxy.connectSignal(
+            if not re.search(r'\.connectSignal\s*\(', stripped):
+                continue
+            # Skip if return value is stored (has = before .connectSignal on this line)
+            if re.search(r'=\s*\S+\.connectSignal\s*\(', stripped):
+                continue
+            # Skip connectObject/connectSmart variants
+            if re.search(r'\.(connectObject|connectSmart)\s*\(', stripped):
+                continue
+            bare_connects.append(f"{rel}:{lineno}")
+
+    if bare_connects and not has_auto_cleanup:
+        count = len(bare_connects)
+        locs = ', '.join(bare_connects[:5])
+        suffix = f' (and {count - 5} more)' if count > 5 else ''
+        result("FAIL", "lifecycle/dbus-signal-leak",
+               f"{count} bare proxy.connectSignal() without stored ID "
+               f"and no disconnectObject/connectObject cleanup: {locs}{suffix}")
+    elif bare_connects:
+        result("PASS", "lifecycle/dbus-signal-leak",
+               "Bare connectSignal() found but auto-cleanup mechanism present")
+    # If no bare connectSignal calls, skip silently
+
+
 def check_settings_cleanup(ext_dir):
     """Detect getSettings() without cleanup in disable()."""
     ext_file = os.path.join(ext_dir, 'extension.js')
@@ -1392,6 +1444,7 @@ def main():
     check_stage_actor_lifecycle(ext_dir)
     check_message_tray_lifecycle(ext_dir)
     check_gsettings_signal_leak(ext_dir)
+    check_dbus_signal_leak(ext_dir)
     check_settings_cleanup(ext_dir)
     check_module_scope_state(ext_dir)
 

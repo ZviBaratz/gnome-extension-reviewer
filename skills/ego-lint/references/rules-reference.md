@@ -2067,6 +2067,16 @@ Rules for APIs removed or changed in specific GNOME Shell versions. These rules 
 - **Fix**: In `disable()`, call `this._source.destroy(); this._source = null;`.
 - **Tested by**: `tests/fixtures/messagetray-source-leak@test/`
 
+### R-LIFE-25: D-Bus proxy signal leak (connectSignal without disconnectSignal)
+- **Severity**: blocking
+- **Checked by**: check-lifecycle.py
+- **Rule**: `proxy.connectSignal('...')` calls where the return value is not stored (no `=` before `.connectSignal` on the line) and no auto-cleanup mechanism (`disconnectObject`, `connectObject`, `SignalTracker`, `connectSmart`) is present in the extension.
+- **Rationale**: Without a stored signal ID, there is no way to call `proxy.disconnectSignal(id)` later. These D-Bus signal handlers accumulate across enable/disable cycles, causing duplicate callbacks and memory leaks. This is distinct from GObject `.connect()` — `connectSignal()` is specific to `Gio.DBusProxy` for subscribing to D-Bus signals (e.g., `PropertiesChanged`, `NameOwnerChanged`).
+- **Fix**: Store the return value and call `proxy.disconnectSignal(id)` in `disable()`, or use `connectObject()`/`disconnectObject()` for auto-cleanup.
+- **Scope exclusions**: prefs.js (manages own lifecycle), `service/` directory (daemon lifecycle).
+- **Known limitations**: Multi-line `.connectSignal(\n'...'` calls are not detected (per-line scanning). Signal IDs stored via `.push()` rather than direct assignment may false-positive.
+- **Tested by**: `tests/fixtures/dbus-signal-leak@test/`, `tests/fixtures/dbus-signal-auto-cleanup@test/`
+
 ### R-LIFE-26: Module-scope mutable state not cleared in disable()
 - **Severity**: advisory
 - **Checked by**: check-lifecycle.py
