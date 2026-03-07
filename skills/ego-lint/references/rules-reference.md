@@ -2070,12 +2070,12 @@ Rules for APIs removed or changed in specific GNOME Shell versions. These rules 
 ### R-LIFE-25: D-Bus proxy signal leak (connectSignal without disconnectSignal)
 - **Severity**: blocking
 - **Checked by**: check-lifecycle.py
-- **Rule**: `proxy.connectSignal('...')` calls where the return value is not stored (no `=` or `.push()` before `.connectSignal` on the line) and no auto-cleanup mechanism (`disconnectObject`, `connectObject`, `SignalTracker`, `connectSmart`) is present in the extension.
+- **Rule**: `proxy.connectSignal('...')` calls where the return value is not stored (no `=` or `.push()` before `.connectSignal` on the line) and no `disconnectSignal()` call is present in the extension. GObject cleanup mechanisms (`connectObject`, `disconnectObject`, `SignalTracker`, `connectSmart`) do NOT clean up D-Bus proxy signals and are not considered valid cleanup.
 - **Rationale**: Without a stored signal ID, there is no way to call `proxy.disconnectSignal(id)` later. These D-Bus signal handlers accumulate across enable/disable cycles, causing duplicate callbacks and memory leaks. This is distinct from GObject `.connect()` — `connectSignal()` is specific to `Gio.DBusProxy` for subscribing to D-Bus signals (e.g., `PropertiesChanged`, `NameOwnerChanged`).
-- **Fix**: Store the return value and call `proxy.disconnectSignal(id)` in `disable()`, or use `connectObject()`/`disconnectObject()` for auto-cleanup.
+- **Fix**: Store the return value and call `proxy.disconnectSignal(id)` in `disable()`.
 - **Scope exclusions**: prefs.js (manages own lifecycle), `service/` directory (daemon lifecycle).
 - **Known limitations**: Multi-line `.connectSignal(\n'...'` calls are not detected (per-line scanning).
-- **Tested by**: `tests/fixtures/dbus-signal-leak@test/`, `tests/fixtures/dbus-signal-auto-cleanup@test/`, `tests/fixtures/dbus-signal-array-storage@test/`
+- **Tested by**: `tests/fixtures/dbus-signal-leak@test/`, `tests/fixtures/dbus-signal-auto-cleanup@test/`, `tests/fixtures/dbus-signal-array-storage@test/`, `tests/fixtures/dbus-signal-mixed-cleanup@test/`
 
 ### R-LIFE-26: Module-scope mutable state not cleared in disable()
 - **Severity**: advisory

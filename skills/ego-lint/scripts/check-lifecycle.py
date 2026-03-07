@@ -1292,10 +1292,9 @@ def check_dbus_signal_leak(ext_dir):
         content = strip_comments(read_file(filepath))
         rel = os.path.relpath(filepath, ext_dir)
 
-        # Extension-wide auto-cleanup detection
-        if (re.search(r'\.disconnectObject\s*\(', content) or
-                re.search(r'\.connectObject\s*\(', content) or
-                re.search(r'\b(SignalTracker|SignalManager|connectSmart|disconnectSmart)\b', content)):
+        # D-Bus-specific cleanup detection: only disconnectSignal counts
+        # (connectObject/disconnectObject manage GObject signals, not D-Bus signals)
+        if re.search(r'\.disconnectSignal\s*\(', content):
             has_auto_cleanup = True
 
         prev_stripped = ''
@@ -1331,10 +1330,10 @@ def check_dbus_signal_leak(ext_dir):
         suffix = f' (and {count - 5} more)' if count > 5 else ''
         result("FAIL", "lifecycle/dbus-signal-leak",
                f"{count} bare proxy.connectSignal() without stored ID "
-               f"and no disconnectObject/connectObject cleanup: {locs}{suffix}")
+               f"and no disconnectSignal() cleanup: {locs}{suffix}")
     elif bare_connects:
         result("PASS", "lifecycle/dbus-signal-leak",
-               "Bare connectSignal() found but auto-cleanup mechanism present")
+               "Bare connectSignal() found but disconnectSignal() cleanup present")
     # If no bare connectSignal calls, skip silently
 
 

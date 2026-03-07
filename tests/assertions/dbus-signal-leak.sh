@@ -20,3 +20,10 @@ run_lint "dbus-signal-array-storage@test"
 assert_exit_code "exits with 0 (array storage is not bare connect)" 0
 assert_output_not_contains "no dbus-signal-leak FP on array storage" "\[FAIL\].*lifecycle/dbus-signal-leak"
 echo ""
+
+echo "=== dbus-signal-mixed-cleanup ==="
+run_lint "dbus-signal-mixed-cleanup@test"
+assert_exit_code "exits with 1 (has failures)" 1
+assert_output_contains "fails despite GObject cleanup" "\[FAIL\].*lifecycle/dbus-signal-leak"
+assert_output_not_contains "no false auto-cleanup pass" "\[PASS\].*lifecycle/dbus-signal-leak"
+echo ""

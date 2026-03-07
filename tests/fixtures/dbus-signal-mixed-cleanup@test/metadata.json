@@ -1,0 +1,7 @@
+{
+  "uuid": "dbus-signal-mixed-cleanup@test",
+  "name": "D-Bus Signal Mixed Cleanup Test",
+  "shell-version": ["45"],
+  "description": "Fixture for R-LIFE-25: bare connectSignal with GObject-only cleanup",
+  "url": "https://example.com"
+}
