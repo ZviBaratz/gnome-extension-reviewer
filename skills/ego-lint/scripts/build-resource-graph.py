@@ -76,7 +76,6 @@ CREATE_PATTERNS = {
         re.compile(r'Gio\.DBusProxy\.new_for_bus'),
         re.compile(r'new\s+Gio\.DBusProxy'),
         re.compile(r'makeProxyWrapper'),
-        re.compile(r'\.connectSignal\s*\('),
     ],
     'filemonitor': [
         re.compile(r'\.monitor_file\s*\('),
