@@ -6,16 +6,16 @@ Batch ego-lint runner for regression testing across 10 real-world GNOME Shell ex
 
 | Extension | Description | Source | EGO Approved |
 |---|---|---|---|
-| [hara-hachi-bu](https://github.com/ZviBaratz/hara-hachi-bu) | Mindful eating timer with pomodoro-style reminders | local | No |
-| [tiling-shell](https://github.com/domferr/tilingshell) | Tiling window manager (compiled TypeScript) | github-release (v17.3) | Yes |
-| [v-shell](https://github.com/G-dH/vertical-workspaces) | Vertical workspaces and Shell UI customization | local | Yes |
-| [gsconnect](https://github.com/GSConnect/gnome-shell-extension-gsconnect) | KDE Connect implementation for GNOME (D-Bus daemon) | local | Yes |
-| [appindicator](https://github.com/ubuntu/gnome-shell-extension-appindicator) | System tray / StatusNotifierItem support | github | Yes |
+| [hara-hachi-bu](https://github.com/ZviBaratz/hara-hachi-bu) | Power profile and battery charge limit control from Quick Settings (polkit, clipboard) | local | No |
+| [tiling-shell](https://github.com/domferr/tilingshell) | Advanced tiling window management with Snap Assistant and custom layouts (compiled TypeScript) | github-release (v17.3) | Yes |
+| [v-shell](https://github.com/G-dH/vertical-workspaces) | Customizable horizontal/vertical workspace layout and Shell UX tweaks | local | Yes |
+| [gsconnect](https://github.com/GSConnect/gnome-shell-extension-gsconnect) | KDE Connect implementation for GNOME — device sharing, SMS, remote control (D-Bus daemon) | local | Yes |
+| [appindicator](https://github.com/ubuntu/gnome-shell-extension-appindicator) | AppIndicator, KStatusNotifierItem, and legacy tray icon support | github | Yes |
 | [clipboard-indicator](https://github.com/Tudmotu/gnome-shell-extension-clipboard-indicator) | Clipboard manager with history | github | Yes |
-| [blur-my-shell](https://github.com/aunetx/blur-my-shell) | Blur effects for Shell UI elements | github | Yes |
-| [dash-to-panel](https://github.com/home-sweet-gnome/dash-to-panel) | Moves the dash into a Windows-style taskbar panel | github | Yes |
-| [media-controls](https://github.com/cliffniff/Media-Controls) | Media player controls in the top panel | github | Yes |
-| [just-perfection](https://github.com/jrahmatzadeh/just-perfection) | GNOME Shell UI tweaks and customization | github | Yes |
+| [blur-my-shell](https://github.com/aunetx/blur-my-shell) | Blur effects for top panel, dash, and overview | github | Yes |
+| [dash-to-panel](https://github.com/home-sweet-gnome/dash-to-panel) | Icon taskbar combining dash and system tray into the main panel | github | Yes |
+| [media-controls](https://github.com/cliffniff/Media-Controls) | Currently playing media controls and info in the panel | github | Yes |
+| [just-perfection](https://github.com/jrahmatzadeh/just-perfection) | Tweak tool to customize Shell behavior and disable UI elements | github | Yes |
 
 ## Code Metrics
 
