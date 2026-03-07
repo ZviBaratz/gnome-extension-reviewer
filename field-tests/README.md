@@ -4,18 +4,18 @@ Batch ego-lint runner for regression testing across 10 real-world GNOME Shell ex
 
 ## Extension Catalog
 
-| Extension | Description | Source | EGO Approved |
-|---|---|---|---|
-| [hara-hachi-bu](https://github.com/ZviBaratz/hara-hachi-bu) | Power profile and battery charge limit control from Quick Settings (polkit, clipboard) | local | No |
-| [tiling-shell](https://github.com/domferr/tilingshell) | Advanced tiling window management with Snap Assistant and custom layouts (compiled TypeScript) | github-release (v17.3) | Yes |
-| [v-shell](https://github.com/G-dH/vertical-workspaces) | Customizable horizontal/vertical workspace layout and Shell UX tweaks | local | Yes |
-| [gsconnect](https://github.com/GSConnect/gnome-shell-extension-gsconnect) | KDE Connect implementation for GNOME — device sharing, SMS, remote control (D-Bus daemon) | local | Yes |
-| [appindicator](https://github.com/ubuntu/gnome-shell-extension-appindicator) | AppIndicator, KStatusNotifierItem, and legacy tray icon support | github | Yes |
-| [clipboard-indicator](https://github.com/Tudmotu/gnome-shell-extension-clipboard-indicator) | Clipboard manager with history | github | Yes |
-| [blur-my-shell](https://github.com/aunetx/blur-my-shell) | Blur effects for top panel, dash, and overview | github | Yes |
-| [dash-to-panel](https://github.com/home-sweet-gnome/dash-to-panel) | Icon taskbar combining dash and system tray into the main panel | github | Yes |
-| [media-controls](https://github.com/cliffniff/Media-Controls) | Currently playing media controls and info in the panel | github | Yes |
-| [just-perfection](https://github.com/jrahmatzadeh/just-perfection) | Tweak tool to customize Shell behavior and disable UI elements | github | Yes |
+| Extension | Description | EGO Approved |
+|---|---|---|
+| [hara-hachi-bu](https://github.com/ZviBaratz/hara-hachi-bu) | Power profile and battery charge limit control from Quick Settings (polkit, clipboard) | No |
+| [tiling-shell](https://github.com/domferr/tilingshell) | Advanced tiling window management with Snap Assistant and custom layouts (compiled TypeScript) | Yes |
+| [v-shell](https://github.com/G-dH/vertical-workspaces) | Customizable horizontal/vertical workspace layout and Shell UX tweaks | Yes |
+| [gsconnect](https://github.com/GSConnect/gnome-shell-extension-gsconnect) | KDE Connect implementation for GNOME — device sharing, SMS, remote control (D-Bus daemon) | Yes |
+| [appindicator](https://github.com/ubuntu/gnome-shell-extension-appindicator) | AppIndicator, KStatusNotifierItem, and legacy tray icon support | Yes |
+| [clipboard-indicator](https://github.com/Tudmotu/gnome-shell-extension-clipboard-indicator) | Clipboard manager with history | Yes |
+| [blur-my-shell](https://github.com/aunetx/blur-my-shell) | Blur effects for top panel, dash, and overview | Yes |
+| [dash-to-panel](https://github.com/home-sweet-gnome/dash-to-panel) | Icon taskbar combining dash and system tray into the main panel | Yes |
+| [media-controls](https://github.com/cliffniff/Media-Controls) | Currently playing media controls and info in the panel | Yes |
+| [just-perfection](https://github.com/jrahmatzadeh/just-perfection) | Tweak tool to customize Shell behavior and disable UI elements | Yes |
 
 ## Code Metrics
 
