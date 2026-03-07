@@ -645,6 +645,14 @@ assert_output_contains "metadata.json found in src/" "\[PASS\].*file-structure/m
 assert_output_not_contains "no metadata/exists FAIL" "\[FAIL\].*metadata/exists"
 echo ""
 
+# --- src-schema-layout (schemas in src/schemas/) ---
+echo "=== src-schema-layout ==="
+run_lint "src-schema-layout@test"
+assert_exit_code "exits with 0 (no blocking issues)" 0
+assert_output_contains "schema found in src/schemas/" "\[PASS\].*schema/exists"
+assert_output_contains "schema ID matches metadata" "\[PASS\].*schema/id-matches"
+echo ""
+
 # --- on-destroy-cleanup (onDestroy recognized as cleanup) ---
 echo "=== on-destroy-cleanup ==="
 run_lint "on-destroy-cleanup@test"
