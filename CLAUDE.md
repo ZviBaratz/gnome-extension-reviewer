@@ -202,6 +202,7 @@ The `--review` flag runs headless `claude -p` sessions after lint. Each session 
 - `--review` — review all extensions; `--review-changed` — only changed ones
 - `--review-exclude NAME` — skip specific extensions from review (repeatable); `--exclude` skips from both lint and review
 - `--budget AMOUNT` — max USD per review session (default: 4.00)
+- `--timeout SECONDS` — max seconds per review session (default: 900)
 - `--parallel N` — max concurrent sessions (default: 3)
 - `--review-dry-run` — write hydrated prompts without invoking claude
 

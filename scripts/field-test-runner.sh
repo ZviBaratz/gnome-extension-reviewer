@@ -16,6 +16,7 @@
 #     --parallel N        Max concurrent claude -p sessions (default: 3)
 #     --review-dry-run    Print hydrated prompts without invoking claude -p
 #     --budget AMOUNT     Max USD per review session (default: 4.00)
+#     --timeout SECONDS   Max seconds per review session (default: 900)
 
 set -euo pipefail
 trap 'echo "Error: script failed at line $LINENO (exit code $?): $BASH_COMMAND" >&2' ERR
@@ -80,6 +81,7 @@ OPT_REVIEW_CHANGED=false
 OPT_PARALLEL=3
 OPT_REVIEW_DRY_RUN=false
 OPT_BUDGET="4.00"
+OPT_TIMEOUT=900
 
 while [[ $# -gt 0 ]]; do
     case "$1" in
@@ -106,6 +108,12 @@ while [[ $# -gt 0 ]]; do
                 exit 1
             fi
             OPT_BUDGET="$2"; shift 2 ;;
+        --timeout)
+            if ! [[ "$2" =~ ^[1-9][0-9]*$ ]]; then
+                echo "Error: --timeout requires a positive integer (seconds), got: $2" >&2
+                exit 1
+            fi
+            OPT_TIMEOUT="$2"; shift 2 ;;
         -h|--help)
             echo "Usage: field-test-runner.sh [OPTIONS]"
             echo "  --lint-only         Only run ego-lint (default)"
@@ -121,6 +129,7 @@ while [[ $# -gt 0 ]]; do
             echo "  --parallel N        Max concurrent claude -p sessions (default: 3)"
             echo "  --review-dry-run    Print hydrated prompts without invoking claude"
             echo "  --budget AMOUNT     Max USD per review session (default: 4.00)"
+            echo "  --timeout SECONDS   Max seconds per review session (default: 900)"
             exit 0
             ;;
         *) echo "Unknown option: $1" >&2; exit 1 ;;
@@ -559,7 +568,7 @@ if [[ "$OPT_REVIEW" == true || "$OPT_REVIEW_CHANGED" == true ]]; then
         # Claude writes the report to $review_file via Write tool (instructed in prompt).
         # Stdout goes to .review.out for debugging; stderr to .review.err.
         (
-            timeout 600 claude -p \
+            timeout "$OPT_TIMEOUT" claude -p \
                 --plugin-dir "$PLUGIN_DIR" \
                 --add-dir "$ext_path" \
                 --dangerously-skip-permissions \

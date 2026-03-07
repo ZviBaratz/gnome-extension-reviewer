@@ -2070,12 +2070,12 @@ Rules for APIs removed or changed in specific GNOME Shell versions. These rules 
 ### R-LIFE-25: D-Bus proxy signal leak (connectSignal without disconnectSignal)
 - **Severity**: blocking
 - **Checked by**: check-lifecycle.py
-- **Rule**: `proxy.connectSignal('...')` calls where the return value is not stored (no `=` before `.connectSignal` on the line) and no auto-cleanup mechanism (`disconnectObject`, `connectObject`, `SignalTracker`, `connectSmart`) is present in the extension.
+- **Rule**: `proxy.connectSignal('...')` calls where the return value is not stored (no `=` or `.push()` before `.connectSignal` on the line) and no auto-cleanup mechanism (`disconnectObject`, `connectObject`, `SignalTracker`, `connectSmart`) is present in the extension.
 - **Rationale**: Without a stored signal ID, there is no way to call `proxy.disconnectSignal(id)` later. These D-Bus signal handlers accumulate across enable/disable cycles, causing duplicate callbacks and memory leaks. This is distinct from GObject `.connect()` — `connectSignal()` is specific to `Gio.DBusProxy` for subscribing to D-Bus signals (e.g., `PropertiesChanged`, `NameOwnerChanged`).
 - **Fix**: Store the return value and call `proxy.disconnectSignal(id)` in `disable()`, or use `connectObject()`/`disconnectObject()` for auto-cleanup.
 - **Scope exclusions**: prefs.js (manages own lifecycle), `service/` directory (daemon lifecycle).
-- **Known limitations**: Multi-line `.connectSignal(\n'...'` calls are not detected (per-line scanning). Signal IDs stored via `.push()` rather than direct assignment may false-positive.
-- **Tested by**: `tests/fixtures/dbus-signal-leak@test/`, `tests/fixtures/dbus-signal-auto-cleanup@test/`
+- **Known limitations**: Multi-line `.connectSignal(\n'...'` calls are not detected (per-line scanning).
+- **Tested by**: `tests/fixtures/dbus-signal-leak@test/`, `tests/fixtures/dbus-signal-auto-cleanup@test/`, `tests/fixtures/dbus-signal-array-storage@test/`
 
 ### R-LIFE-26: Module-scope mutable state not cleared in disable()
 - **Severity**: advisory
@@ -2098,12 +2098,12 @@ Rules for APIs removed or changed in specific GNOME Shell versions. These rules 
 ### R-LIFE-21: GSettings signal leak (bare connect without disconnect)
 - **Severity**: blocking
 - **Checked by**: check-lifecycle.py
-- **Rule**: `settings.connect('changed::...')` calls where the return value is not stored (no `=` before `.connect` on the line) and no auto-cleanup mechanism (`disconnectObject`, `connectObject`, `SignalTracker`, `connectSmart`) is present in the extension.
+- **Rule**: `settings.connect('changed::...')` calls where the return value is not stored (no `=` or `.push()` before `.connect` on the line) and no auto-cleanup mechanism (`disconnectObject`, `connectObject`, `SignalTracker`, `connectSmart`) is present in the extension.
 - **Rationale**: Without a stored signal ID, there is no way to call `.disconnect(id)` later. These handlers accumulate across enable/disable cycles, causing duplicate callbacks, memory leaks, and potential crashes. This is the highest-impact gap found in field testing — 4 of 10 extensions had this issue.
 - **Fix**: Use `connectObject()` (recommended — auto-disconnects via `disconnectObject(this)` in disable) or store the return value and call `disconnect(id)` in `disable()`.
 - **Scope exclusions**: prefs.js (manages own lifecycle), `service/` directory (daemon lifecycle).
-- **Known limitations**: Multi-line `.connect(\n'changed::...'` calls are not detected (per-line scanning). Signal IDs stored via `.push()` rather than direct assignment may false-positive.
-- **Tested by**: `tests/fixtures/gsettings-bare-connect@test/`, `tests/fixtures/gsettings-auto-cleanup@test/`
+- **Known limitations**: Multi-line `.connect(\n'changed::...'` calls are not detected (per-line scanning).
+- **Tested by**: `tests/fixtures/gsettings-bare-connect@test/`, `tests/fixtures/gsettings-auto-cleanup@test/`, `tests/fixtures/gsettings-array-storage@test/`
 
 ### R-LIFE-23: .destroy without parentheses
 - **Severity**: advisory

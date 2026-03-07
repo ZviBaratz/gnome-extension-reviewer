@@ -1,0 +1,7 @@
+{
+  "uuid": "gsettings-array-storage@test",
+  "name": "GSettings Array Storage Test",
+  "shell-version": ["45"],
+  "description": "Fixture for R-LIFE-21: array-based signal ID storage via push()",
+  "url": "https://example.com"
+}

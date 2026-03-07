@@ -1233,18 +1233,32 @@ def check_gsettings_signal_leak(ext_dir):
                 re.search(r'\b(SignalTracker|SignalManager|connectSmart|disconnectSmart)\b', content)):
             has_auto_cleanup = True
 
+        prev_stripped = ''
         for lineno, line in enumerate(content.splitlines(), 1):
             stripped = line.strip()
             # Match settings.connect('changed...') without assignment
             if not re.search(r"\.connect\s*\(\s*['\"]changed", stripped):
+                if stripped:
+                    prev_stripped = stripped
                 continue
             # Skip if return value is stored (has = before .connect on this line)
             if re.search(r'=\s*\S+\.connect\s*\(', stripped):
+                prev_stripped = stripped
+                continue
+            # Skip if pushed to array (.push(settings.connect(...)))
+            if re.search(r'\.push\s*\(\s*\S+\.connect\s*\(', stripped):
+                prev_stripped = stripped
+                continue
+            # Skip if this line is inside a .push() call (multi-line pattern)
+            if re.search(r'\.push\s*\(\s*$', prev_stripped):
+                prev_stripped = stripped
                 continue
             # Skip connectObject/connectSmart variants
             if re.search(r'\.(connectObject|connectSmart)\s*\(', stripped):
+                prev_stripped = stripped
                 continue
             bare_connects.append(f"{rel}:{lineno}")
+            prev_stripped = stripped
 
     if bare_connects and not has_auto_cleanup:
         count = len(bare_connects)
@@ -1284,18 +1298,32 @@ def check_dbus_signal_leak(ext_dir):
                 re.search(r'\b(SignalTracker|SignalManager|connectSmart|disconnectSmart)\b', content)):
             has_auto_cleanup = True
 
+        prev_stripped = ''
         for lineno, line in enumerate(content.splitlines(), 1):
             stripped = line.strip()
             # Match proxy.connectSignal(
             if not re.search(r'\.connectSignal\s*\(', stripped):
+                if stripped:
+                    prev_stripped = stripped
                 continue
             # Skip if return value is stored (has = before .connectSignal on this line)
             if re.search(r'=\s*\S+\.connectSignal\s*\(', stripped):
+                prev_stripped = stripped
+                continue
+            # Skip if pushed to array (.push(proxy.connectSignal(...)))
+            if re.search(r'\.push\s*\(\s*\S+\.connectSignal\s*\(', stripped):
+                prev_stripped = stripped
+                continue
+            # Skip if this line is inside a .push() call (multi-line pattern)
+            if re.search(r'\.push\s*\(\s*$', prev_stripped):
+                prev_stripped = stripped
                 continue
             # Skip connectObject/connectSmart variants
             if re.search(r'\.(connectObject|connectSmart)\s*\(', stripped):
+                prev_stripped = stripped
                 continue
             bare_connects.append(f"{rel}:{lineno}")
+            prev_stripped = stripped
 
     if bare_connects and not has_auto_cleanup:
         count = len(bare_connects)
