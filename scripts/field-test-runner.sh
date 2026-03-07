@@ -34,10 +34,12 @@ HISTORY_FILE="$ROOT_DIR/field-tests/history.jsonl"
 json_extract() {
     local context="$1"; shift
     local expr="$1"; shift
+    local indented
+    indented="$(printf '%s\n' "$expr" | sed '/^[[:space:]]*$/d' | sed 's/^/    /')"
     python3 -c "
 import json, sys
 try:
-    $expr
+$indented
 except (json.JSONDecodeError, KeyError, IndexError, TypeError) as e:
     print(f'Error ($context): {type(e).__name__}: {e}', file=sys.stderr)
     sys.exit(1)
