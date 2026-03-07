@@ -453,6 +453,15 @@ assert_output_not_contains "no R-VER49-08 with ternary guard" "\[FAIL\].*R-VER49
 assert_output_not_contains "no R-VER49-11 with ternary guard" "\[FAIL\].*R-VER49-11"
 echo ""
 
+# --- ver-replacement-compat ---
+echo "=== ver-replacement-compat ==="
+run_lint "ver-replacement-compat@test"
+assert_output_not_contains "no R-VER44-02 with replacement-pattern" "\[FAIL\].*R-VER44-02"
+assert_output_not_contains "no R-VER46-04 with replacement-pattern" "\[FAIL\].*R-VER46-04"
+assert_output_not_contains "no R-VER49-08 with replacement-pattern" "\[FAIL\].*R-VER49-08"
+assert_output_not_contains "no R-VER49-11 with replacement-pattern" "\[FAIL\].*R-VER49-11"
+echo ""
+
 # --- gnome46-extras ---
 echo "=== gnome46-extras ==="
 run_lint "gnome46-extras@test"
