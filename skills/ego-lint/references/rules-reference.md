@@ -2067,6 +2067,16 @@ Rules for APIs removed or changed in specific GNOME Shell versions. These rules 
 - **Fix**: In `disable()`, call `this._source.destroy(); this._source = null;`.
 - **Tested by**: `tests/fixtures/messagetray-source-leak@test/`
 
+### R-LIFE-26: Module-scope mutable state not cleared in disable()
+- **Severity**: advisory
+- **Checked by**: check-lifecycle.py
+- **Rule**: Module-scope `new Map()` or `new Set()` declarations must have a matching `.clear()` call in `disable()` or `destroy()`.
+- **Rationale**: Module-scope collections persist across enable/disable cycles. Without clearing, state accumulates on each re-enable, causing memory leaks and stale data bugs. Unlike instance properties (`this._map`), module-scope variables are shared across all instances and survive the full extension lifecycle.
+- **Fix**: Add `varName.clear()` to `disable()` for each module-scope Map/Set.
+- **Scope exclusions**: prefs.js (manages own lifecycle), `service/` directory (daemon lifecycle). `WeakMap`/`WeakSet` are exempt (GC-friendly — entries are automatically collected when keys become unreachable).
+- **Known limitations**: Only detects direct `const/let/var x = new Map()` at module scope (brace depth 0). Destructured or factory-created collections not detected. Multi-file module-scope state (imported from another module) not tracked.
+- **Tested by**: `tests/fixtures/module-scope-state@test/`, `tests/fixtures/module-scope-state-cleared@test/`
+
 ### R-LIFE-20: Bus name ownership without release
 - **Severity**: advisory
 - **Checked by**: check-lifecycle.py
