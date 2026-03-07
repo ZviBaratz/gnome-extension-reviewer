@@ -1,0 +1,7 @@
+{
+    "uuid": "module-scope-state-cleared@test",
+    "name": "Module Scope State Cleared Test",
+    "description": "Tests module-scope Map/Set properly cleared",
+    "shell-version": ["45"],
+    "url": "https://example.com"
+}

@@ -1,0 +1,7 @@
+{
+    "uuid": "module-scope-state@test",
+    "name": "Module Scope State Test",
+    "description": "Tests module-scope Map/Set leak detection",
+    "shell-version": ["45"],
+    "url": "https://example.com"
+}

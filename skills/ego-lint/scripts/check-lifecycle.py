@@ -27,6 +27,7 @@ Checks:
   - R-LIFE-22: Stage actor leak (add_child/addChrome without remove)
   - R-LIFE-23: .destroy without parentheses (property access, not method call)
   - R-LIFE-24: MessageTray source leak (add without destroy)
+  - R-LIFE-26: Module-scope mutable state (Map/Set) not cleared in disable()
   - R-SEC-16: Clipboard + keybinding cross-reference
   - R-FILE-07: Missing export default class
 
@@ -1282,6 +1283,74 @@ def check_settings_cleanup(ext_dir):
                f"All settings objects properly cleaned up")
 
 
+def check_module_scope_state(ext_dir):
+    """R-LIFE-26: Module-scope Map/Set not cleared in disable()."""
+    files = find_js_files(ext_dir, exclude_prefs=True)
+    if not files:
+        return
+
+    # Skip service/ directory (different lifecycle model)
+    files = [f for f in files if '/service/' not in f.replace(os.sep, '/')]
+
+    MODULE_STATE_RE = re.compile(
+        r'(?:const|let|var)\s+(\w+)\s*=\s*new\s+(Map|Set)\s*\(')
+
+    found = []
+    for filepath in files:
+        content = read_file(filepath)
+        clean = strip_comments(content)
+        lines = clean.split('\n')
+        rel = os.path.relpath(filepath, ext_dir)
+
+        # Track brace depth to find module-scope lines
+        depth = 0
+        for lineno, line in enumerate(lines, 1):
+            if depth == 0:
+                m = MODULE_STATE_RE.search(line)
+                if m:
+                    found.append((rel, lineno, m.group(1), m.group(2)))
+            depth += line.count('{') - line.count('}')
+            if depth < 0:
+                depth = 0
+
+    if not found:
+        result("PASS", "lifecycle/module-scope-state",
+               "No uncleared module-scope Map/Set found")
+        return
+
+    # Extract disable() + destroy() bodies from all files for cleanup check
+    cleanup_body = ''
+    for filepath in files:
+        content = strip_comments(read_file(filepath))
+        for method_pat in [r'\bdisable\s*\(\s*\)\s*\{', r'\bdestroy\s*\(\s*\)\s*\{']:
+            for m_method in re.finditer(method_pat, content):
+                start = m_method.end()
+                d = 1
+                pos = start
+                while pos < len(content) and d > 0:
+                    if content[pos] == '{':
+                        d += 1
+                    elif content[pos] == '}':
+                        d -= 1
+                    pos += 1
+                cleanup_body += content[start:pos] + '\n'
+
+    leaked = []
+    for rel, lineno, varname, typ in found:
+        clear_pat = rf'\b{re.escape(varname)}\.clear\s*\('
+        if not re.search(clear_pat, cleanup_body):
+            leaked.append((rel, lineno, varname, typ))
+
+    if leaked:
+        for rel, lineno, varname, typ in leaked:
+            result("WARN", "R-LIFE-26",
+                   f"{rel}:{lineno}: module-scope {typ} '{varname}' not cleared "
+                   f"in disable()|fix:Add {varname}.clear() to disable()")
+    else:
+        result("PASS", "lifecycle/module-scope-state",
+               "All module-scope Map/Set properly cleared")
+
+
 def main():
     if len(sys.argv) < 2:
         result("FAIL", "lifecycle/args", "No extension directory provided")
@@ -1319,6 +1388,7 @@ def main():
     check_message_tray_lifecycle(ext_dir)
     check_gsettings_signal_leak(ext_dir)
     check_settings_cleanup(ext_dir)
+    check_module_scope_state(ext_dir)
 
 
 if __name__ == '__main__':
