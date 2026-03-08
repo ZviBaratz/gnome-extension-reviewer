@@ -22,5 +22,6 @@ echo ""
 
 echo "=== gsettings-cross-file-leak ==="
 run_lint "gsettings-cross-file-leak@test"
+assert_exit_code "exits with 1 (cross-file leak detected)" 1
 assert_output_contains "fails on cross-file bare GSettings connect" "\[FAIL\].*lifecycle/gsettings-signal-leak"
 echo ""

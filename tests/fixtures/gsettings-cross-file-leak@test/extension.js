@@ -1,6 +1,6 @@
 import {Extension} from 'resource:///org/gnome/shell/extensions/extension.js';
 
-export default class CrossFilLeakExtension extends Extension {
+export default class CrossFileLeakExtension extends Extension {
     enable() {
         this._settings = this.getSettings();
         this._settings.connect('changed::interval', () => this._onChanged());
