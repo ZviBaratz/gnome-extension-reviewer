@@ -625,7 +625,6 @@ deferred_count=${#DEFERRED_SLOP_JSDOC[@]}
 if [[ "$provenance_score" -ge 3 && "$deferred_count" -gt 0 ]]; then
     # Suppress deferred R-SLOP-01/02 WARNs (moderate-to-high provenance = intentional JSDoc)
     WARN_COUNT=$((WARN_COUNT - deferred_count))
-    PASS_COUNT=$((PASS_COUNT + 1))
     print_result "PASS" "provenance/jsdoc-suppressed" \
         "Suppressed $deferred_count JSDoc warnings (R-SLOP-01/02) — provenance score $provenance_score indicates hand-written code"
 else

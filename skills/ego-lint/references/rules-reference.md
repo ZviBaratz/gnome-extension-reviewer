@@ -2093,6 +2093,15 @@ Rules for APIs removed or changed in specific GNOME Shell versions. These rules 
 - **Known limitations**: Only detects direct `const/let/var x = new Map()` at module scope (brace depth 0). Destructured or factory-created collections not detected. Multi-file module-scope state (imported from another module) not tracked.
 - **Tested by**: `tests/fixtures/module-scope-state@test/`, `tests/fixtures/module-scope-state-cleared@test/`
 
+### R-LIFE-27: Module-scope prototype mutation
+- **Severity**: advisory
+- **Checked by**: check-lifecycle.py
+- **Rule**: `.prototype.` assignments and `Object.assign(...prototype, ...)` at module scope (brace depth 0) are flagged.
+- **Rationale**: Module-scope prototype mutations execute at import time, before `enable()` is called. They persist after `disable()` because they were never part of the enable/disable lifecycle. This permanently mutates shared global objects, affecting all code that uses those prototypes.
+- **Fix**: Move prototype mutations into `enable()` and restore the original methods in `disable()`.
+- **Scope exclusions**: prefs.js (manages own lifecycle), `service/` directory (daemon lifecycle).
+- **Tested by**: `tests/fixtures/prototype-mutation@test/`
+
 ### R-LIFE-20: Bus name ownership without release
 - **Severity**: advisory
 - **Checked by**: check-lifecycle.py
@@ -2471,11 +2480,11 @@ Rules for APIs removed or changed in specific GNOME Shell versions. These rules 
 ### R-SLOP-38: Over-long identifier in function call
 - **Severity**: advisory
 - **Checked by**: apply-patterns.py
-- **Rule**: Identifiers 26+ characters (starting with lowercase) inside function call parentheses.
-- **Rationale**: AI-generated code tends to use excessively descriptive camelCase names like `currentBatteryThresholdValue` or `updatedNotificationMessage`. Human-written GNOME code favors concise names (`threshold`, `message`). The lowercase-start filter avoids false positives on PascalCase class names and UPPER_SNAKE constants. Threshold raised from 20 to 25 to avoid FPs on standard Clutter API names (e.g., `brightnessContrastEffect` at 24 chars).
+- **Rule**: Alphanumeric identifiers 26+ characters (starting with lowercase, no underscores) inside function call parentheses.
+- **Rationale**: AI-generated code tends to use excessively descriptive camelCase names like `currentBatteryThresholdValue` or `updatedNotificationMessage`. Human-written GNOME code favors concise names (`threshold`, `message`). The lowercase-start filter avoids false positives on PascalCase class names and UPPER_SNAKE constants. Threshold raised from 20 to 25 to avoid FPs on standard Clutter API names (e.g., `brightnessContrastEffect` at 24 chars). Snake_case identifiers (GLib/C naming convention) are excluded from the pattern since AI never generates underscore-separated names in JavaScript.
 - **Fix**: Shorten parameter/argument names to be concise but clear.
-- **Tested by**: `tests/fixtures/slop-long-params@test/`
-- **Note**: Suppressed (`skip-if-compiled`) for extensions compiled from TypeScript via esbuild, where verbose parameter names from TypeScript signatures survive compilation.
+- **Tested by**: `tests/fixtures/slop-long-params@test/`, `tests/fixtures/slop-long-id-guard@test/`
+- **Note**: Suppressed (`skip-if-compiled`) for extensions compiled from TypeScript via esbuild, where verbose parameter names from TypeScript signatures survive compilation. Also suppressed for identifiers ending in domain-specific suffixes (`Function`, `Callback`, `Handler`, `Listener`, long `Id`) which are common in GNOME/GLib naming conventions.
 
 ### R-SLOP-40: Manual Promise wrapper
 - **Severity**: advisory
