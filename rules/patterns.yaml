@@ -157,6 +157,7 @@
   category: deprecated
   fix: "Use actor.ease({property: value, duration: ms, mode: Clutter.AnimationMode.EASE_OUT_QUAD})."
   skip-comments: true
+  exclude-dirs: ["service"]
 
 - id: R-DEPR-07
   pattern: "imports\\.misc\\.convenience"
@@ -190,6 +191,7 @@
   message: "imports.format is deprecated; use ES6 template literals"
   category: deprecated
   fix: "Replace format() calls with template literals: `my ${variable} string`."
+  exclude-dirs: ["service"]
 
 - id: R-DEPR-11
   pattern: "\\bShell\\.KeyBindingMode\\b"
