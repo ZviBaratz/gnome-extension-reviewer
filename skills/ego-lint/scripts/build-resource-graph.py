@@ -316,6 +316,28 @@ def scan_file(file_path, ext_dir):
                 inst['destroy_line'] = lineno
                 break
 
+    # Second pass: for instantiations still unresolved, check if ANY method
+    # call or null assignment on the ref appears inside a cleanup method body.
+    # This catches custom cleanup patterns like ref.disconnect_all(),
+    # ref.remove(), ref.cleanup(), etc.
+    for inst in instantiates:
+        if inst['has_destroy_call']:
+            continue
+        ref = inst['stored_as']
+        if not ref:
+            continue
+        any_cleanup_pat = re.compile(
+            re.escape(ref) + r'(?:\??\.\w+\s*\(|\s*=\s*null\b)'
+        )
+        for method_name in ('destroy', 'disable', '_destroy', 'onDestroy'):
+            mb = find_method_body(content, method_name)
+            if mb:
+                _, _, body = mb
+                if any_cleanup_pat.search(body):
+                    inst['has_destroy_call'] = True
+                    inst['destroy_line'] = mb[0]
+                    break
+
     # Track widget refs that are added as children (auto-cleanup on parent destroy)
     child_refs = set()
     child_add_pat = re.compile(
@@ -499,6 +521,8 @@ def detect_orphans(file_scans, ownership):
 
         # Case 1: Module creates resources but has no cleanup method
         if not has_cleanup_method:
+            if parent_calls_destroy:
+                continue  # Parent manages this child via custom cleanup method
             for c in creates:
                 orphans.append({
                     'file': rel,

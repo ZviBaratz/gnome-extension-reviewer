@@ -1,0 +1,7 @@
+{
+    "uuid": "parent-managed-cleanup@test",
+    "name": "Parent Managed Cleanup Test",
+    "description": "Tests custom cleanup method recognition",
+    "shell-version": ["48"],
+    "url": "https://example.com"
+}

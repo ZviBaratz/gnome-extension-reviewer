@@ -2019,6 +2019,7 @@ Rules for APIs removed or changed in specific GNOME Shell versions. These rules 
 - **Checked by**: check-resources.py → build-resource-graph.py
 - **Rule**: Module creates resources but has no cleanup method (`destroy()`, `disable()`, or `onDestroy()`) for cleanup.
 - **Fix**: Add a `destroy()` method that cleans up all resources, or use `onDestroy()` connected via `this.connect('destroy', this.onDestroy.bind(this))`.
+- **Note**: Suppressed when the parent calls any method on the child ref (e.g., `this._helper.disconnect_all()`) or nulls it inside a cleanup method body. This covers utility classes with custom cleanup methods managed by their parent.
 
 ### resource-tracking/destroy-not-called
 - **Severity**: advisory
@@ -2091,6 +2092,15 @@ Rules for APIs removed or changed in specific GNOME Shell versions. These rules 
 - **Scope exclusions**: prefs.js (manages own lifecycle), `service/` directory (daemon lifecycle). `WeakMap`/`WeakSet` are exempt (GC-friendly — entries are automatically collected when keys become unreachable).
 - **Known limitations**: Only detects direct `const/let/var x = new Map()` at module scope (brace depth 0). Destructured or factory-created collections not detected. Multi-file module-scope state (imported from another module) not tracked.
 - **Tested by**: `tests/fixtures/module-scope-state@test/`, `tests/fixtures/module-scope-state-cleared@test/`
+
+### R-LIFE-27: Module-scope prototype mutation
+- **Severity**: advisory
+- **Checked by**: check-lifecycle.py
+- **Rule**: `.prototype.` assignments and `Object.assign(...prototype, ...)` at module scope (brace depth 0) are flagged.
+- **Rationale**: Module-scope prototype mutations execute at import time, before `enable()` is called. They persist after `disable()` because they were never part of the enable/disable lifecycle. This permanently mutates shared global objects, affecting all code that uses those prototypes.
+- **Fix**: Move prototype mutations into `enable()` and restore the original methods in `disable()`.
+- **Scope exclusions**: prefs.js (manages own lifecycle), `service/` directory (daemon lifecycle).
+- **Tested by**: `tests/fixtures/prototype-mutation@test/`
 
 ### R-LIFE-20: Bus name ownership without release
 - **Severity**: advisory
