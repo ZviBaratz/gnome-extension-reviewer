@@ -2113,12 +2113,13 @@ Rules for APIs removed or changed in specific GNOME Shell versions. These rules 
 ### R-LIFE-21: GSettings signal leak (bare connect without disconnect)
 - **Severity**: blocking
 - **Checked by**: check-lifecycle.py
-- **Rule**: `settings.connect('changed::...')` calls where the return value is not stored (no `=` or `.push()` before `.connect` on the line) and no auto-cleanup mechanism (`disconnectObject`, `connectObject`, `SignalTracker`, `connectSmart`) is present in the extension.
+- **Rule**: `settings.connect('changed::...')` calls where the return value is not stored (no `=` or `.push()` before `.connect` on the line) and no auto-cleanup mechanism (`disconnectObject`, `connectObject`, `SignalTracker`, `connectSmart`) is present in the **same file**.
 - **Rationale**: Without a stored signal ID, there is no way to call `.disconnect(id)` later. These handlers accumulate across enable/disable cycles, causing duplicate callbacks, memory leaks, and potential crashes. This is the highest-impact gap found in field testing — 4 of 10 extensions had this issue.
 - **Fix**: Use `connectObject()` (recommended — auto-disconnects via `disconnectObject(this)` in disable) or store the return value and call `disconnect(id)` in `disable()`.
 - **Scope exclusions**: prefs.js (manages own lifecycle), `service/` directory (daemon lifecycle).
+- **Auto-cleanup detection**: Per-file (not extension-wide). `connectObject`/`disconnectObject` in a helper file does not suppress bare `.connect()` findings in other files, because signal ownership is per-object-per-owner.
 - **Known limitations**: Multi-line `.connect(\n'changed::...'` calls are not detected (per-line scanning).
-- **Tested by**: `tests/fixtures/gsettings-bare-connect@test/`, `tests/fixtures/gsettings-auto-cleanup@test/`, `tests/fixtures/gsettings-array-storage@test/`
+- **Tested by**: `tests/fixtures/gsettings-bare-connect@test/`, `tests/fixtures/gsettings-auto-cleanup@test/`, `tests/fixtures/gsettings-array-storage@test/`, `tests/fixtures/gsettings-cross-file-leak@test/`
 
 ### R-LIFE-23: .destroy without parentheses
 - **Severity**: advisory

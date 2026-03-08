@@ -1229,20 +1229,21 @@ def check_gsettings_signal_leak(ext_dir):
         return
 
     bare_connects = []
-    has_auto_cleanup = False
+    has_auto_cleanup_bare = False
 
     for filepath in js_files:
         content = strip_comments(read_file(filepath))
         rel = os.path.relpath(filepath, ext_dir)
 
-        # Extension-wide (not per-file) auto-cleanup detection: connectObject/
-        # disconnectObject typically operate on `this`, so a central disable()
-        # calling disconnectObject(this) cleans signals registered from any file.
-        if (re.search(r'\.disconnectObject\s*\(', content) or
-                re.search(r'\.connectObject\s*\(', content) or
-                re.search(r'\b(SignalTracker|SignalManager|connectSmart|disconnectSmart)\b', content)):
-            has_auto_cleanup = True
+        # Per-file auto-cleanup detection: connectObject/disconnectObject
+        # manage signals per-object-per-owner, so auto-cleanup in one file
+        # does NOT protect bare .connect() calls in a different file.
+        file_has_auto_cleanup = bool(
+            re.search(r'\.disconnectObject\s*\(', content) or
+            re.search(r'\.connectObject\s*\(', content) or
+            re.search(r'\b(SignalTracker|SignalManager|connectSmart|disconnectSmart)\b', content))
 
+        file_bare_connects = []
         prev_stripped = ''
         for lineno, line in enumerate(content.splitlines(), 1):
             stripped = line.strip()
@@ -1267,17 +1268,23 @@ def check_gsettings_signal_leak(ext_dir):
             if re.search(r'\.(connectObject|connectSmart)\s*\(', stripped):
                 prev_stripped = stripped
                 continue
-            bare_connects.append(f"{rel}:{lineno}")
+            file_bare_connects.append(f"{rel}:{lineno}")
             prev_stripped = stripped
 
-    if bare_connects and not has_auto_cleanup:
+        if file_bare_connects:
+            if file_has_auto_cleanup:
+                has_auto_cleanup_bare = True
+            else:
+                bare_connects.extend(file_bare_connects)
+
+    if bare_connects:
         count = len(bare_connects)
         locs = ', '.join(bare_connects[:5])
         suffix = f' (and {count - 5} more)' if count > 5 else ''
         result("FAIL", "lifecycle/gsettings-signal-leak",
                f"{count} bare settings.connect('changed::...') without stored ID "
                f"and no disconnectObject/connectObject cleanup: {locs}{suffix}")
-    elif bare_connects:
+    elif has_auto_cleanup_bare:
         result("PASS", "lifecycle/gsettings-signal-leak",
                "Bare settings.connect() found but auto-cleanup mechanism present")
     # If no bare connects, skip silently

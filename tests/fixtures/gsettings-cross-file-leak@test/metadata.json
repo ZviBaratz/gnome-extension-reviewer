@@ -1,0 +1,7 @@
+{
+    "uuid": "gsettings-cross-file-leak@test",
+    "name": "GSettings Cross-File Leak Test",
+    "description": "Tests that auto-cleanup in one file does not suppress bare connect in another",
+    "shell-version": ["47"],
+    "url": ""
+}
