@@ -11,6 +11,12 @@ const variant = new GLib.Variant('s', 'hello');
 // R-SLOP-24 should NOT fire for new Gio.Settings() in service/
 const userSettings = new Gio.Settings({schema_id: 'org.example.user'});
 
+// R-DEPR-06 should NOT fire for Tweener in service/
+const Tweener = imports.tweener.tweener;
+
+// R-DEPR-10 should NOT fire for imports.format in service/
+let fmt = imports.format;
+
 // constructor-resources should NOT fire for service daemon classes
 class DaemonService extends GObject.Object {
     constructor() {
