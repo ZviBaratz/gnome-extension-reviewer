@@ -11,6 +11,9 @@ try {
 
 export default class VersionReplacementCompat extends Extension {
     enable() {
+        // R-VER44-01: old API (suppressed — file contains "get_laters")
+        this._laterId = Meta.later_add(Meta.LaterType.BEFORE_REDRAW, () => {});
+
         // R-VER44-02: old API (suppressed — file contains "get_laters")
         Meta.later_remove(this._laterId);
 

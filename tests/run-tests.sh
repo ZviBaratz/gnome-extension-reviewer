@@ -456,6 +456,7 @@ echo ""
 # --- ver-replacement-compat ---
 echo "=== ver-replacement-compat ==="
 run_lint "ver-replacement-compat@test"
+assert_output_not_contains "no R-VER44-01 with replacement-pattern" "\[FAIL\].*R-VER44-01"
 assert_output_not_contains "no R-VER44-02 with replacement-pattern" "\[FAIL\].*R-VER44-02"
 assert_output_not_contains "no R-VER46-04 with replacement-pattern" "\[FAIL\].*R-VER46-04"
 assert_output_not_contains "no R-VER49-08 with replacement-pattern" "\[FAIL\].*R-VER49-08"

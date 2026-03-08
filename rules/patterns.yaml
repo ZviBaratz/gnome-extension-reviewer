@@ -812,6 +812,7 @@
   category: version-compat
   fix: "Use global.compositor.get_laters().addLater(Meta.LaterType.BEFORE_REDRAW, callback)"
   min-version: 44
+  replacement-pattern: "get_laters"
 
 - id: R-VER44-02
   pattern: "\\bMeta\\.later_remove\\b"
