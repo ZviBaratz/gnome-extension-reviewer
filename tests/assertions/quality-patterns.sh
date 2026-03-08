@@ -16,8 +16,8 @@ echo ""
 # --- shell-class-override ---
 echo "=== shell-class-override ==="
 run_lint "shell-class-override@test"
-assert_exit_code "exits with 1 (has failures)" 1
-assert_output_contains "fails on shell class override" "\[FAIL\].*css/shell-class-override"
+assert_exit_code "exits with 0 (advisory only)" 0
+assert_output_contains "warns on shell class override" "\[WARN\].*css/shell-class-override"
 echo ""
 
 # --- mock-excluded-by-package ---
