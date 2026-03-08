@@ -1,0 +1,7 @@
+{
+  "uuid": "provenance-jsdoc@test",
+  "name": "Provenance JSDoc Test",
+  "description": "Test fixture for provenance post-filter",
+  "shell-version": ["45"],
+  "url": ""
+}
