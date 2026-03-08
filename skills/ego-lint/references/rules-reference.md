@@ -2074,14 +2074,16 @@ Rules for APIs removed or changed in specific GNOME Shell versions. These rules 
 - **Tested by**: `tests/fixtures/messagetray-source-leak@test/`
 
 ### R-LIFE-25: D-Bus proxy signal leak (connectSignal without disconnectSignal)
-- **Severity**: blocking
+- **Severity**: blocking (bare connects), advisory (stored IDs without disconnect)
 - **Checked by**: check-lifecycle.py
-- **Rule**: `proxy.connectSignal('...')` calls where the return value is not stored (no `=` or `.push()` before `.connectSignal` on the line) and no `disconnectSignal()` call is present in the extension. GObject cleanup mechanisms (`connectObject`, `disconnectObject`, `SignalTracker`, `connectSmart`) do NOT clean up D-Bus proxy signals and are not considered valid cleanup.
+- **Rule**: Two tiers of detection:
+  - **Bare connects** (FAIL): `proxy.connectSignal('...')` where the return value is not stored (no `=` or `.push()` before `.connectSignal` on the line). These are always leaks — you cannot call `disconnectSignal(id)` without having stored `id`. Not masked by `disconnectSignal()` elsewhere.
+  - **Stored without disconnect** (WARN): `connectSignal()` return values are stored but no `disconnectSignal()` call exists in the same file (per-file scoping). GObject cleanup mechanisms (`connectObject`, `disconnectObject`, `SignalTracker`, `connectSmart`) do NOT clean up D-Bus proxy signals and are not considered valid cleanup. `.disconnectSignal.bind()` is recognized as valid cleanup.
 - **Rationale**: Without a stored signal ID, there is no way to call `proxy.disconnectSignal(id)` later. These D-Bus signal handlers accumulate across enable/disable cycles, causing duplicate callbacks and memory leaks. This is distinct from GObject `.connect()` — `connectSignal()` is specific to `Gio.DBusProxy` for subscribing to D-Bus signals (e.g., `PropertiesChanged`, `NameOwnerChanged`).
 - **Fix**: Store the return value and call `proxy.disconnectSignal(id)` in `disable()`.
 - **Scope exclusions**: prefs.js (manages own lifecycle), `service/` directory (daemon lifecycle).
 - **Known limitations**: Multi-line `.connectSignal(\n'...'` calls are not detected (per-line scanning).
-- **Tested by**: `tests/fixtures/dbus-signal-leak@test/`, `tests/fixtures/dbus-signal-auto-cleanup@test/`, `tests/fixtures/dbus-signal-array-storage@test/`, `tests/fixtures/dbus-signal-mixed-cleanup@test/`
+- **Tested by**: `tests/fixtures/dbus-signal-leak@test/`, `tests/fixtures/dbus-signal-auto-cleanup@test/`, `tests/fixtures/dbus-signal-array-storage@test/`, `tests/fixtures/dbus-signal-mixed-cleanup@test/`, `tests/fixtures/dbus-signal-stored-no-disconnect@test/`, `tests/fixtures/dbus-signal-bind-cleanup@test/`
 
 ### R-LIFE-26: Module-scope mutable state not cleared in disable()
 - **Severity**: advisory

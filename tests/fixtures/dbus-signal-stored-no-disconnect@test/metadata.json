@@ -1,0 +1,7 @@
+{
+  "uuid": "dbus-signal-stored-no-disconnect@test",
+  "name": "D-Bus Signal Stored No Disconnect Test",
+  "shell-version": ["45"],
+  "description": "Fixture for R-LIFE-25: stored connectSignal ID without disconnectSignal",
+  "url": "https://example.com"
+}

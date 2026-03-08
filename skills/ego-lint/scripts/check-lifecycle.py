@@ -27,7 +27,7 @@ Checks:
   - R-LIFE-22: Stage actor leak (add_child/addChrome without remove)
   - R-LIFE-23: .destroy without parentheses (property access, not method call)
   - R-LIFE-24: MessageTray source leak (add without destroy)
-  - R-LIFE-25: D-Bus proxy signal leak (connectSignal without disconnectSignal)
+  - R-LIFE-25: D-Bus proxy signal leak (bare connectSignal always fails; stored without disconnect warns)
   - R-LIFE-26: Module-scope mutable state (Map/Set) not cleared in disable()
   - R-LIFE-27: Module-scope prototype mutation
   - R-SEC-16: Clipboard + keybinding cross-reference
@@ -1291,7 +1291,13 @@ def check_gsettings_signal_leak(ext_dir):
 
 
 def check_dbus_signal_leak(ext_dir):
-    """R-LIFE-25: Bare proxy.connectSignal() without stored ID is a guaranteed leak."""
+    """R-LIFE-25: D-Bus proxy signal leak detection.
+
+    Bare proxy.connectSignal() without stored ID is a guaranteed leak (FAIL).
+    Stored connectSignal() IDs without disconnectSignal() in same file are
+    advisory (WARN) — per-file scoping avoids cross-file false positives.
+    Recognizes .disconnectSignal.bind() as valid cleanup pattern.
+    """
     js_files = find_js_files(ext_dir, exclude_prefs=True)
     if not js_files:
         return
@@ -1303,17 +1309,18 @@ def check_dbus_signal_leak(ext_dir):
         return
 
     bare_connects = []
-    has_dbus_disconnect = False
+    stored_no_disconnect_files = []
 
     for filepath in js_files:
         content = strip_comments(read_file(filepath))
         rel = os.path.relpath(filepath, ext_dir)
 
-        # D-Bus-specific cleanup detection: only disconnectSignal counts
+        # Per-file D-Bus cleanup detection: disconnectSignal() or .disconnectSignal.bind(
         # (connectObject/disconnectObject manage GObject signals, not D-Bus signals)
-        if re.search(r'\.disconnectSignal\s*\(', content):
-            has_dbus_disconnect = True
+        file_has_disconnect = bool(
+            re.search(r'\.disconnectSignal\s*[\(.]', content))
 
+        file_stored_connects = []
         prev_stripped = ''
         for lineno, line in enumerate(content.splitlines(), 1):
             stripped = line.strip()
@@ -1322,36 +1329,52 @@ def check_dbus_signal_leak(ext_dir):
                 if stripped:
                     prev_stripped = stripped
                 continue
-            # Skip if return value is stored (has = before .connectSignal on this line)
-            if re.search(r'=\s*\S+\.connectSignal\s*\(', stripped):
-                prev_stripped = stripped
-                continue
-            # Skip if pushed to array (.push(proxy.connectSignal(...)))
-            if re.search(r'\.push\s*\(\s*\S+\.connectSignal\s*\(', stripped):
-                prev_stripped = stripped
-                continue
-            # Skip if this line is inside a .push() call (multi-line pattern)
-            if re.search(r'\.push\s*\(\s*$', prev_stripped):
-                prev_stripped = stripped
-                continue
             # Skip connectObject/connectSmart variants
             if re.search(r'\.(connectObject|connectSmart)\s*\(', stripped):
+                prev_stripped = stripped
+                continue
+            # Check if return value is stored (has = before .connectSignal on this line)
+            if re.search(r'=\s*\S+\.connectSignal\s*\(', stripped):
+                file_stored_connects.append(f"{rel}:{lineno}")
+                prev_stripped = stripped
+                continue
+            # Check if pushed to array (.push(proxy.connectSignal(...)))
+            if re.search(r'\.push\s*\(\s*\S+\.connectSignal\s*\(', stripped):
+                file_stored_connects.append(f"{rel}:{lineno}")
+                prev_stripped = stripped
+                continue
+            # Check if this line is inside a .push() call (multi-line pattern)
+            if re.search(r'\.push\s*\(\s*$', prev_stripped):
+                file_stored_connects.append(f"{rel}:{lineno}")
                 prev_stripped = stripped
                 continue
             bare_connects.append(f"{rel}:{lineno}")
             prev_stripped = stripped
 
-    if bare_connects and not has_dbus_disconnect:
+        # Track files with stored connects but no disconnect
+        if file_stored_connects and not file_has_disconnect:
+            stored_no_disconnect_files.append((rel, file_stored_connects))
+
+    # Bare connects always FAIL — can't disconnect what you never stored
+    if bare_connects:
         count = len(bare_connects)
         locs = ', '.join(bare_connects[:5])
         suffix = f' (and {count - 5} more)' if count > 5 else ''
         result("FAIL", "lifecycle/dbus-signal-leak",
-               f"{count} bare proxy.connectSignal() without stored ID "
-               f"and no disconnectSignal() cleanup: {locs}{suffix}")
-    elif bare_connects:
-        result("PASS", "lifecycle/dbus-signal-leak",
-               "Bare connectSignal() found but disconnectSignal() cleanup present")
-    # If no bare connectSignal calls, skip silently
+               f"{count} bare proxy.connectSignal() without stored ID: "
+               f"{locs}{suffix}")
+
+    # Stored connects in files without any disconnectSignal → advisory
+    if stored_no_disconnect_files:
+        all_locs = []
+        for _rel, locs in stored_no_disconnect_files:
+            all_locs.extend(locs)
+        count = len(all_locs)
+        loc_str = ', '.join(all_locs[:5])
+        suffix = f' (and {count - 5} more)' if count > 5 else ''
+        result("WARN", "lifecycle/dbus-signal-leak",
+               f"{count} stored connectSignal() ID(s) without "
+               f"disconnectSignal() in same file: {loc_str}{suffix}")
 
 
 def check_settings_cleanup(ext_dir):
