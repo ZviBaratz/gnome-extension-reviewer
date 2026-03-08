@@ -46,7 +46,8 @@ get_local_imports() {
 # ---------------------------------------------------------------------------
 
 # Banned in extension runtime: gi://Gtk, gi://Gdk, gi://Adw
-gtk_pattern="gi://Gtk|gi://Gdk|gi://Adw"
+# Anchor on import string terminators to avoid matching gi://GdkPixbuf (standalone image library)
+gtk_pattern="gi://Gtk['\";?]|gi://Gdk['\";?]|gi://Adw"
 
 # Build list of runtime JS files reachable from extension.js via import graph.
 # Files in lib/ that are only imported by prefs.js should not be flagged.
