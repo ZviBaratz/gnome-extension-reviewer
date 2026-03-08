@@ -1,0 +1,7 @@
+{
+  "uuid": "distinct-settings@test",
+  "name": "Distinct Settings Test",
+  "description": "Test fixture for distinct getSettings schema arguments",
+  "shell-version": ["45"],
+  "url": "https://example.com"
+}
