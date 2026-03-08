@@ -46,8 +46,8 @@ get_local_imports() {
 # ---------------------------------------------------------------------------
 
 # Banned in extension runtime: gi://Gtk, gi://Gdk, gi://Adw
-# Anchor on import string terminators to avoid matching gi://GdkPixbuf (standalone image library)
-gtk_pattern="gi://Gtk['\";?]|gi://Gdk['\";?]|gi://Adw"
+# Note: gi://GdkPixbuf is excluded via grep -v (standalone image library, not a GTK widget toolkit)
+gtk_pattern="gi://Gtk|gi://Gdk|gi://Adw"
 
 # Build list of runtime JS files reachable from extension.js via import graph.
 # Files in lib/ that are only imported by prefs.js should not be flagged.
@@ -81,7 +81,7 @@ for f in "${runtime_files[@]}"; do
         rel_path="${f#"$EXT_DIR/"}"
         echo "FAIL|imports/no-gtk-in-extension|$rel_path: $match"
         violations=$((violations + 1))
-    done < <(grep -nE "$gtk_pattern" "$f" 2>/dev/null || true)
+    done < <(grep -nE "$gtk_pattern" "$f" 2>/dev/null | grep -vE "gi://GdkPixbuf" || true)
 done
 
 # ---------------------------------------------------------------------------
