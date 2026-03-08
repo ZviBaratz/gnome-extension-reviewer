@@ -1,0 +1,7 @@
+{
+  "uuid": "dbus-signal-bind-cleanup@test",
+  "name": "D-Bus Signal Bind Cleanup Test",
+  "shell-version": ["45"],
+  "description": "Fixture for R-LIFE-25: .disconnectSignal.bind() recognized as valid cleanup",
+  "url": "https://example.com"
+}
