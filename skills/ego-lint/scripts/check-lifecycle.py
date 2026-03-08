@@ -29,6 +29,7 @@ Checks:
   - R-LIFE-24: MessageTray source leak (add without destroy)
   - R-LIFE-25: D-Bus proxy signal leak (connectSignal without disconnectSignal)
   - R-LIFE-26: Module-scope mutable state (Map/Set) not cleared in disable()
+  - R-LIFE-27: Module-scope prototype mutation
   - R-SEC-16: Clipboard + keybinding cross-reference
   - R-FILE-07: Missing export default class
 
@@ -384,24 +385,33 @@ def check_injection_manager(ext_dir):
                "InjectionManager with .clear() cleanup detected")
 
     # WS1-D: Detect direct prototype overrides
+    # Skip module-scope matches (depth 0) — R-LIFE-27 handles those
     prototype_overrides = []
     seen_overrides = set()
     for filepath in js_files:
         content = strip_comments(read_file(filepath))
         rel = os.path.relpath(filepath, ext_dir)
-        # SomeClass.prototype.methodName = ...
-        for m in re.finditer(r'(\w+\.prototype\.\w+)\s*=', content):
-            key = (rel, m.group(1))
-            if key not in seen_overrides:
-                seen_overrides.add(key)
-                prototype_overrides.append(key)
-        # Object.assign(SomeClass.prototype, ...)
-        for m in re.finditer(r'Object\.assign\s*\(\s*(\w+\.prototype)', content):
-            label = f"Object.assign({m.group(1)}, ...)"
-            key = (rel, label)
-            if key not in seen_overrides:
-                seen_overrides.add(key)
-                prototype_overrides.append(key)
+        lines = content.split('\n')
+        depth = 0
+        for line in lines:
+            if depth > 0:
+                # SomeClass.prototype.methodName = ...
+                for m in re.finditer(r'(\w+\.prototype\.\w+)\s*=(?!=)', line):
+                    key = (rel, m.group(1))
+                    if key not in seen_overrides:
+                        seen_overrides.add(key)
+                        prototype_overrides.append(key)
+                # Object.assign(SomeClass.prototype, ...)
+                for m in re.finditer(
+                        r'Object\.assign\s*\(\s*(\w+\.prototype)', line):
+                    label = f"Object.assign({m.group(1)}, ...)"
+                    key = (rel, label)
+                    if key not in seen_overrides:
+                        seen_overrides.add(key)
+                        prototype_overrides.append(key)
+            depth += line.count('{') - line.count('}')
+            if depth < 0:
+                depth = 0
 
     if prototype_overrides:
         # Check if disable() restores prototypes
@@ -422,7 +432,7 @@ def check_injection_manager(ext_dir):
                     pos += 1
                 disable_body = ext_content[start:pos]
                 # Check for prototype restoration in disable
-                if re.search(r'\w+\.prototype\.\w+\s*=', disable_body):
+                if re.search(r'\w+\.prototype\.\w+\s*=(?!=)', disable_body):
                     disable_restores = True
 
         if not disable_restores:
@@ -1435,6 +1445,67 @@ def check_module_scope_state(ext_dir):
                "All module-scope Map/Set properly cleared")
 
 
+def check_module_scope_prototype(ext_dir):
+    """R-LIFE-27: Module-scope prototype mutation detection."""
+    files = find_js_files(ext_dir, exclude_prefs=True)
+    if not files:
+        return
+
+    # Skip service/ directory (different lifecycle model)
+    files = [f for f in files if '/service/' not in f.replace(os.sep, '/')]
+
+    PROTO_ASSIGN = re.compile(r'([\w.]+\.prototype\.\w+)\s*=(?!=)')
+    PROTO_OBJ_ASSIGN = re.compile(
+        r'Object\.assign\s*\(\s*([\w.]+\.prototype)')
+
+    found = []
+    seen = set()
+    for filepath in files:
+        content = read_file(filepath)
+        clean = strip_comments(content)
+        lines = clean.split('\n')
+        rel = os.path.relpath(filepath, ext_dir)
+
+        depth = 0
+        for lineno, line in enumerate(lines, 1):
+            if depth == 0:
+                stripped = line.strip()
+                if not stripped or stripped.startswith('import '):
+                    depth += line.count('{') - line.count('}')
+                    if depth < 0:
+                        depth = 0
+                    continue
+
+                m = PROTO_ASSIGN.search(line)
+                if m:
+                    key = (rel, m.group(1))
+                    if key not in seen:
+                        seen.add(key)
+                        found.append((rel, lineno, m.group(1)))
+                else:
+                    m = PROTO_OBJ_ASSIGN.search(line)
+                    if m:
+                        label = f"Object.assign({m.group(1)}, ...)"
+                        key = (rel, label)
+                        if key not in seen:
+                            seen.add(key)
+                            found.append((rel, lineno, label))
+
+            depth += line.count('{') - line.count('}')
+            if depth < 0:
+                depth = 0
+
+    if found:
+        for rel, lineno, expr in found:
+            result("WARN", "lifecycle/module-scope-prototype",
+                   f"{rel}:{lineno}: {expr} — prototype mutation at module "
+                   f"scope persists after disable()|fix:Move into enable() "
+                   f"and restore original in disable()")
+    else:
+        result("PASS", "lifecycle/module-scope-prototype",
+               "No module-scope prototype mutations found")
+
+
 def main():
     if len(sys.argv) < 2:
         result("FAIL", "lifecycle/args", "No extension directory provided")
@@ -1474,6 +1545,7 @@ def main():
     check_dbus_signal_leak(ext_dir)
     check_settings_cleanup(ext_dir)
     check_module_scope_state(ext_dir)
+    check_module_scope_prototype(ext_dir)
 
 
 if __name__ == '__main__':
