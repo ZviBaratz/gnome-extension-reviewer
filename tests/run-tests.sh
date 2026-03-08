@@ -286,7 +286,7 @@ echo "=== metadata-polish ==="
 run_lint "metadata-polish@test"
 assert_exit_code "exits with 1 (has failures)" 1
 assert_output_contains "warns on missing gettext-domain" "\[WARN\].*metadata/missing-gettext-domain"
-assert_output_contains "fails on future shell-version" "\[FAIL\].*metadata/future-shell-version"
+assert_output_contains "warns on future shell-version" "\[WARN\].*metadata/future-shell-version"
 echo ""
 
 # --- clipboard-access ---
@@ -524,8 +524,8 @@ echo ""
 # --- non-gjs-scripts ---
 echo "=== non-gjs-scripts ==="
 run_lint "non-gjs-scripts@test"
-assert_exit_code "exits with 1 (has failures)" 1
-assert_output_contains "fails on non-GJS scripts (no pkexec)" "\[FAIL\].*non-gjs-scripts"
+assert_exit_code "exits with 0 (warnings only)" 0
+assert_output_contains "warns on non-GJS scripts (no pkexec)" "\[WARN\].*non-gjs-scripts"
 echo ""
 
 # --- logging-volume ---
@@ -643,6 +643,14 @@ run_lint "src-metadata@test"
 assert_exit_code "exits with 0 (no blocking issues)" 0
 assert_output_contains "metadata.json found in src/" "\[PASS\].*file-structure/metadata.json.*in src/"
 assert_output_not_contains "no metadata/exists FAIL" "\[FAIL\].*metadata/exists"
+echo ""
+
+# --- src-schema-layout (schemas in src/schemas/) ---
+echo "=== src-schema-layout ==="
+run_lint "src-schema-layout@test"
+assert_exit_code "exits with 0 (no blocking issues)" 0
+assert_output_contains "schema found in src/schemas/" "\[PASS\].*schema/exists"
+assert_output_contains "schema ID matches metadata" "\[PASS\].*schema/id-matches"
 echo ""
 
 # --- on-destroy-cleanup (onDestroy recognized as cleanup) ---

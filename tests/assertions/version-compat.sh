@@ -5,7 +5,7 @@
 echo "=== gnome48-css-compat ==="
 run_lint "gnome48-css-compat@test"
 assert_exit_code "exits with 1 (has failures)" 1
-assert_output_contains "detects quick-menu-toggle CSS rename" "\[FAIL\].*R-VER48-07"
+assert_output_contains "detects quick-menu-toggle CSS rename" "\[WARN\].*R-VER48-07"
 echo ""
 
 # --- gnome49-maximize ---

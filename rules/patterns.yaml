@@ -601,13 +601,13 @@
   guard-pattern: "\\b(const|export\\s+const)\\s+\\w+\\s*=\\s*Object\\.freeze"
 
 - id: R-SLOP-38
-  pattern: "\\(\\s*[a-z]\\w{25,}\\s*[,)]"
+  pattern: "\\(\\s*[a-z][a-zA-Z0-9]{25,}\\s*[,)]"
   scope: ["*.js"]
   severity: advisory
   message: "Over-long identifier (>25 chars) is an AI verbosity indicator"
   category: ai-slop
   fix: "Shorten parameter names to be concise but clear (e.g., currentBatteryThresholdValue → threshold)"
-  guard-pattern: "\\w{25,}\\s*="
+  guard-pattern: "[a-zA-Z0-9]{26,}\\s*=|\\w{15,}(?:Function|Callback|Handler|Listener)\\b|\\w{20,}Id\\b"
   skip-if-compiled: true
 
 - id: R-SLOP-40
@@ -871,6 +871,7 @@
   category: version-compat
   fix: "Use ACTIVE, INACTIVE, ENABLING, DISABLING instead"
   min-version: 46
+  replacement-pattern: "ExtensionState.ACTIVE"
 
 - id: R-VER46-06
   pattern: "\\bBlurEffect[^;]*\\.sigma\\b|\\bBlurEffect\\s*\\(\\s*\\{[^}]*sigma"
@@ -926,6 +927,7 @@
   min-version: 48
   guard-pattern: "if\\s*\\(\\s*Meta\\.disable_unredirect|PACKAGE_VERSION.*['\"]4[89]|PACKAGE_VERSION.*['\"][5-9]"
   guard-window: 10
+  replacement-pattern: "global.compositor"
 
 - id: R-VER48-03
   pattern: "\\bCursorTracker\\.get_for_display\\b"
@@ -978,7 +980,7 @@
 - id: R-VER48-07
   pattern: "quick-menu-toggle"
   scope: ["*.css"]
-  severity: blocking
+  severity: advisory
   message: "CSS class .quick-menu-toggle renamed to .quick-toggle-has-menu in GNOME 48"
   category: version-compat
   fix: "Replace .quick-menu-toggle with .quick-toggle-has-menu"
@@ -1006,6 +1008,7 @@
   fix: "Use new Clutter.ClickGesture() instead"
   min-version: 49
   guard-pattern: "\\|\\|\\s*Clutter\\.Click(Gesture|Action)|if\\s*\\(\\s*Clutter\\.ClickAction"
+  replacement-pattern: "Clutter.ClickGesture"
 
 - id: R-VER49-03
   pattern: "\\bClutter\\.TapAction\\b"
