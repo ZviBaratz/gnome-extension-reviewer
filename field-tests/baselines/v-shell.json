@@ -1,16 +1,16 @@
 {
   "name": "v-shell",
   "uuid": "vertical-workspaces@G-dH.github.com",
-  "timestamp": "2026-03-04T22:16:41.186185+00:00",
-  "ego_lint_version": "0dbe7e8",
+  "timestamp": "2026-03-08T14:19:40.558640+00:00",
+  "ego_lint_version": "05523f9",
   "ego_approved": true,
-  "exit_code": 0,
+  "exit_code": 1,
   "counts": {
-    "pass": 185,
-    "fail": 0,
+    "pass": 188,
+    "fail": 2,
     "warn": 91,
     "skip": 17,
-    "total": 293
+    "total": 298
   },
   "metrics": {
     "js_files": 28,
@@ -19,7 +19,7 @@
     "css_lines": 396,
     "schema_keys": 152
   },
-  "provenance_score": null,
+  "provenance_score": 4,
   "findings": [
     {
       "id": "polkit/action-id-match::No polkit files found",
@@ -40,16 +40,22 @@
       "detail": "No polkit files found"
     },
     {
+      "id": "css/shell-class-override::.osd-window: overrides GNOME Shell theme class \u2014 use a scoped selector (.my-extension .osd-window)",
+      "status": "FAIL",
+      "check": "css/shell-class-override",
+      "detail": ".osd-window: overrides GNOME Shell theme class \u2014 use a scoped selector (.my-extension .osd-window)"
+    },
+    {
       "id": "accessibility/accessible-name::3 icon-only St.Button(s) without accessible_name: lib/windowPreview.js, lib/appDisplay.js, lib/appDisplay.js",
       "status": "WARN",
       "check": "accessibility/accessible-name",
-      "detail": "3 icon-only St.Button(s) without accessible_name: lib/windowPreview.js:307, lib/appDisplay.js:1494, lib/appDisplay.js:1550"
+      "detail": "3 icon-only St.Button(s) without accessible_name: lib/windowPreview.js:315, lib/appDisplay.js:1506, lib/appDisplay.js:1567"
     },
     {
       "id": "accessibility/widget-role::1 custom St.Widget subclass(es) without accessible_role: lib/workspace.js (WorkspaceWindowContainer)",
       "status": "WARN",
       "check": "accessibility/widget-role",
-      "detail": "1 custom St.Widget subclass(es) without accessible_role: lib/workspace.js:714 (WorkspaceWindowContainer)"
+      "detail": "1 custom St.Widget subclass(es) without accessible_role: lib/workspace.js:744 (WorkspaceWindowContainer)"
     },
     {
       "id": "R-WEB-01::Not applicable for declared shell-version(s)",
@@ -691,6 +697,12 @@
       "status": "WARN",
       "check": "lifecycle/destroy-no-null",
       "detail": "lib/dash.js:807: .destroy() without null assignment \u2014 set reference to null after destroy to prevent stale access"
+    },
+    {
+      "id": "lifecycle/gsettings-signal-leak::3 bare settings.connect('changed::...') without stored ID and no disconnectObject/connectObject cleanup: lib/optionsFactory.js, lib/optionsFactory.js, lib/settings.js",
+      "status": "FAIL",
+      "check": "lifecycle/gsettings-signal-leak",
+      "detail": "3 bare settings.connect('changed::...') without stored ID and no disconnectObject/connectObject cleanup: lib/optionsFactory.js:119, lib/optionsFactory.js:321, lib/settings.js:24"
     },
     {
       "id": "disclosure/clipboard::clipboard capability detected in code but metadata description does not disclose it \u2014 reviewers expect disclosure",

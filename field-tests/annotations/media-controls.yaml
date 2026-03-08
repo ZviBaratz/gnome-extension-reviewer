@@ -63,10 +63,14 @@ findings:
   - id: "lifecycle/signal-balance::41 vs 10"
     classification: borderline
     notes: "Needs deeper analysis — some may use connectObject, some on child widgets"
-  # ego-review findings (not caught by ego-lint)
+  # Resolved in 03-08
+  - id: "R-VER49-02::version-compat suppressed"
+    classification: resolved
+    notes: "FAIL resolved — Clutter.ClickGesture fallback recognized as version-compat"
+  # ego-review findings (NOW caught by ego-lint in 03-08)
   - id: "review/gsettings-signal-leak::28 GSettings handlers never disconnected"
     classification: tp
-    notes: "28 bare .connect('changed::key') on GSettings with no disconnect in disable — highest-impact leak in field test corpus"
+    notes: "28 bare .connect('changed::key') on GSettings with no disconnect in disable — highest-impact leak in field test corpus. NOW caught by lint: lifecycle/gsettings-signal-leak FAIL (PR #87)"
   - id: "review/dbus-signal-leak::proxy NameOwnerChanged+PropertiesChanged+Seeked"
     classification: tp
-    notes: "D-Bus proxy signals connected but never disconnected in disable()"
+    notes: "D-Bus proxy signals connected but never disconnected in disable(). NOW caught by lint: lifecycle/dbus-signal-leak FAIL (PR #91)"

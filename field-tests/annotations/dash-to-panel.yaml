@@ -89,6 +89,23 @@ findings:
   - id: "R-SLOP-35::Object.freeze shared state"
     classification: fp
     notes: "Object.freeze(monitorInfos) prevents accidental mutation — not AI pattern"
+  # New in 03-08 (lint gap closure — module-scope mutations)
+  - id: "lifecycle/module-scope-prototype::TaskbarAppIcon scaleAndFade"
+    classification: tp
+    notes: "R-LIFE-27: TaskbarAppIcon.prototype.scaleAndFade/undoScaleAndFade mutated at module scope in src/appIcons.js — persists after disable()"
+  - id: "lifecycle/module-scope-state::iconCacheMap"
+    classification: tp
+    notes: "R-LIFE-26: module-scope Map 'iconCacheMap' in src/utils.js not cleared in disable()"
+  # Resolved in 03-08
+  - id: "R-VER46-05::version-compat suppressed"
+    classification: resolved
+    notes: "FAIL resolved — replacement-pattern version-compat suppression (PR #84)"
+  - id: "R-VER48-02::version-compat suppressed"
+    classification: resolved
+    notes: "FAIL resolved — replacement-pattern version-compat suppression (PR #84). Was 2 FPs, now 0."
+  - id: "lifecycle/prototype-override::superseded by R-LIFE-27"
+    classification: resolved
+    notes: "2 WARNs (scaleAndFade, undoScaleAndFade) superseded by lifecycle/module-scope-prototype"
   # WARNs — Debatable
   - id: "lifecycle/untracked-timeout::one-shot GLib.idle_add"
     classification: borderline

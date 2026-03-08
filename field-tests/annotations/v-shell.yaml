@@ -42,6 +42,13 @@ findings:
   - id: "quality/code-volume::large codebase"
     classification: tp
     notes: "16293 lines — large but expected for scope"
+  # New in 03-08 (lint gap closure — GSettings signal leak)
+  - id: "css/shell-class-override::.osd-window"
+    classification: tp
+    notes: "Overrides .osd-window Shell theme class — detected by CSS class list expansion (PR #57)"
+  - id: "lifecycle/gsettings-signal-leak::optionsFactory+settings"
+    classification: tp
+    notes: "3 bare settings.connect() in lib/optionsFactory.js (×2) and lib/settings.js — no disconnectObject cleanup"
   # ego-review blocking
   - id: "lifecycle/signal-disconnect::wrong object"
     classification: tp

@@ -65,6 +65,17 @@ findings:
   - id: "R-QUAL-32::unnecessary version specifier"
     classification: borderline
     notes: "7 hits — version specifiers correct for standalone daemon scripts"
+  # Resolved in 03-08 — service/ directory exempted (PR #88)
+  - id: "lifecycle/prototype-override::service/ exempted"
+    classification: resolved
+    notes: "5 WARNs in service/init.js and service/utils/ui.js resolved — service/ exempted by PR #88"
+  - id: "resource-tracking::service/ exempted"
+    classification: resolved
+    notes: "3 WARNs (destroy-not-called, no-destroy-method, ownership count) resolved — service/ exempted by PR #88"
+  # Updated in 03-08 — orphan count improved
+  - id: "resource-tracking/ownership::orphan count 19→13"
+    classification: borderline
+    notes: "Orphan count reduced from 19 to 13 after service/ exemption and no-destroy-method FP reduction (PRs #86, #88)"
   # ego-review findings (not caught by ego-lint)
   - id: "review/constructor-side-effects::Setup.setup+Clipboard+prototype in constructor"
     classification: tp

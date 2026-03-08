@@ -1,16 +1,16 @@
 {
   "name": "media-controls",
   "uuid": "mediacontrols@cliffniff.github.com",
-  "timestamp": "2026-03-04T22:17:47.470177+00:00",
-  "ego_lint_version": "0dbe7e8",
+  "timestamp": "2026-03-08T14:19:49.415735+00:00",
+  "ego_lint_version": "05523f9",
   "ego_approved": true,
   "exit_code": 1,
   "counts": {
-    "pass": 183,
-    "fail": 6,
+    "pass": 188,
+    "fail": 4,
     "warn": 28,
     "skip": 17,
-    "total": 234
+    "total": 237
   },
   "metrics": {
     "js_files": 17,
@@ -19,7 +19,7 @@
     "css_lines": 100,
     "schema_keys": 29
   },
-  "provenance_score": null,
+  "provenance_score": 3,
   "findings": [
     {
       "id": "polkit/action-id-match::No polkit files found",
@@ -180,34 +180,6 @@
       "detail": "vertical property in constructor config deprecated in GNOME 48; use orientation: Clutter.Orientation.VERTICAL (available since GNOME 47; keep vertical for GNOME <=46 compat) in 2 file(s): src/helpers/shell/MenuSlider.js, src/helpers/shell/PanelButton.js"
     },
     {
-      "id": "R-VER49-02::Clutter.ClickAction removed in GNOME 49; use Clutter.ClickGesture",
-      "status": "FAIL",
-      "check": "R-VER49-02",
-      "detail": "src/helpers/shell/PanelButton.js:366: Clutter.ClickAction removed in GNOME 49; use Clutter.ClickGesture",
-      "fix": "Use new Clutter.ClickGesture() instead"
-    },
-    {
-      "id": "R-VER49-02::Clutter.ClickAction removed in GNOME 49; use Clutter.ClickGesture",
-      "status": "FAIL",
-      "check": "R-VER49-02",
-      "detail": "src/helpers/shell/PanelButton.js:449: Clutter.ClickAction removed in GNOME 49; use Clutter.ClickGesture",
-      "fix": "Use new Clutter.ClickGesture() instead"
-    },
-    {
-      "id": "R-VER49-02::Clutter.ClickAction removed in GNOME 49; use Clutter.ClickGesture",
-      "status": "FAIL",
-      "check": "R-VER49-02",
-      "detail": "src/helpers/shell/PanelButton.js:723: Clutter.ClickAction removed in GNOME 49; use Clutter.ClickGesture",
-      "fix": "Use new Clutter.ClickGesture() instead"
-    },
-    {
-      "id": "R-VER49-02::Clutter.ClickAction removed in GNOME 49; use Clutter.ClickGesture",
-      "status": "FAIL",
-      "check": "R-VER49-02",
-      "detail": "src/helpers/shell/PanelButton.js:907: Clutter.ClickAction removed in GNOME 49; use Clutter.ClickGesture",
-      "fix": "Use new Clutter.ClickGesture() instead"
-    },
-    {
       "id": "R-VER50-01::Not applicable for declared shell-version(s)",
       "status": "SKIP",
       "check": "R-VER50-01",
@@ -316,10 +288,22 @@
       "detail": "Soup.Session created but no .abort() found \u2014 pending requests will continue after disable()"
     },
     {
+      "id": "lifecycle/gsettings-signal-leak::28 bare settings.connect('changed::...') without stored ID and no disconnectObject/connectObject cleanup: src/extension.js, src/extension.js, src/extension.js, src/extension.js, src/extension.js (and 23 more)",
+      "status": "FAIL",
+      "check": "lifecycle/gsettings-signal-leak",
+      "detail": "28 bare settings.connect('changed::...') without stored ID and no disconnectObject/connectObject cleanup: src/extension.js:350, src/extension.js:354, src/extension.js:358, src/extension.js:362, src/extension.js:366 (and 23 more)"
+    },
+    {
+      "id": "lifecycle/dbus-signal-leak::2 bare proxy.connectSignal() without stored ID: src/extension.js, src/helpers/shell/PlayerProxy.js",
+      "status": "FAIL",
+      "check": "lifecycle/dbus-signal-leak",
+      "detail": "2 bare proxy.connectSignal() without stored ID: src/extension.js:528, src/helpers/shell/PlayerProxy.js:91"
+    },
+    {
       "id": "async/no-cancellable::Gio async calls at src/extension.js, src/extension.js, src/utils/shell_only.js without Gio.Cancellable \u2014 async operations should be cancellable via disable()",
       "status": "WARN",
       "check": "async/no-cancellable",
-      "detail": "Gio async calls at src/extension.js:351, src/extension.js:352, src/utils/shell_only.js:125 without Gio.Cancellable \u2014 async operations should be cancellable via disable()"
+      "detail": "Gio async calls at src/extension.js:480, src/extension.js:481, src/utils/shell_only.js:136 without Gio.Cancellable \u2014 async operations should be cancellable via disable()"
     },
     {
       "id": "async/missing-cancellable::_async() calls without Gio.Cancellable at src/extension.js, src/extension.js, src/utils/shell_only.js (+6 more) \u2014 async operations may run after disable()",

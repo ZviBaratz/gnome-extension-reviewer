@@ -1,16 +1,16 @@
 {
   "name": "blur-my-shell",
   "uuid": "blur-my-shell@aunetx",
-  "timestamp": "2026-03-04T22:17:02.867751+00:00",
-  "ego_lint_version": "0dbe7e8",
+  "timestamp": "2026-03-08T14:19:46.844651+00:00",
+  "ego_lint_version": "05523f9",
   "ego_approved": true,
   "exit_code": 1,
   "counts": {
-    "pass": 187,
+    "pass": 193,
     "fail": 4,
-    "warn": 42,
+    "warn": 40,
     "skip": 17,
-    "total": 250
+    "total": 254
   },
   "metrics": {
     "js_files": 49,
@@ -19,7 +19,7 @@
     "css_lines": 572,
     "schema_keys": 95
   },
-  "provenance_score": null,
+  "provenance_score": 4,
   "findings": [
     {
       "id": "polkit/action-id-match::No polkit files found",
@@ -146,13 +146,6 @@
       "fix": "Remove the version field from metadata.json; EGO manages versions automatically."
     },
     {
-      "id": "R-SLOP-38::Over-long identifier (>25 chars) is an AI verbosity indicator",
-      "status": "WARN",
-      "check": "R-SLOP-38",
-      "detail": "src/components/dash_to_dock.js:55: Over-long identifier (>25 chars) is an AI verbosity indicator",
-      "fix": "Shorten parameter names to be concise but clear (e.g., currentBatteryThresholdValue \u2192 threshold)"
-    },
-    {
       "id": "R-SLOP-16::GLib.file_get_contents() is synchronous and blocks the main loop; prefer Gio.File.load_contents() or load_contents_async()",
       "status": "WARN",
       "check": "R-SLOP-16",
@@ -262,12 +255,6 @@
       "detail": "src/extension.js:103, src/components/panel.js:288, src/components/panel.js:364, src/components/appfolders.js:148, src/components/appfolders.js:160 (+1 more): Main.layoutManager private API access \u2014 requires reviewer justification and version pinning"
     },
     {
-      "id": "quality/repeated-settings::3 getSettings()/Gio.Settings instances across extension files (src/extension.js, src/extension.js, src/components/applications.js) \u2014 store a single instance and pass via dependency injection",
-      "status": "WARN",
-      "check": "quality/repeated-settings",
-      "detail": "3 getSettings()/Gio.Settings instances across extension files (src/extension.js:35, src/extension.js:39, src/components/applications.js:27) \u2014 store a single instance and pass via dependency injection"
-    },
-    {
       "id": "lifecycle/signal-balance::30 manual .connect() calls but only 28 .disconnect() calls \u2014 verify all signals are disconnected in disable()",
       "status": "WARN",
       "check": "lifecycle/signal-balance",
@@ -322,10 +309,16 @@
       "detail": "src/components/lockscreen.js: UnlockDialog.prototype._updateBackgrounds \u2014 direct prototype modification should be restored in disable()"
     },
     {
-      "id": "init/shell-modification::Shell modification outside enable()",
+      "id": "lifecycle/destroy-no-call::.destroy without () \u2014 property access, not method call",
+      "status": "WARN",
+      "check": "lifecycle/destroy-no-call",
+      "detail": "src/components/coverflow_alt_tab.js:69: .destroy without () \u2014 property access, not method call"
+    },
+    {
+      "id": "lifecycle/gsettings-signal-leak::1 bare settings.connect('changed::...') without stored ID and no disconnectObject/connectObject cleanup: src/preferences/applications_management/application_row.js",
       "status": "FAIL",
-      "check": "init/shell-modification",
-      "detail": "src/components/appfolders.js:14: Shell modification outside enable()"
+      "check": "lifecycle/gsettings-signal-leak",
+      "detail": "1 bare settings.connect('changed::...') without stored ID and no disconnectObject/connectObject cleanup: src/preferences/applications_management/application_row.js:60"
     },
     {
       "id": "resource-tracking/no-destroy-method::src/conveniences/paint_signals.js \u2014 no cleanup method (destroy/disable/onDestroy) in src/conveniences/paint_signals.js",
@@ -338,12 +331,6 @@
       "status": "WARN",
       "check": "resource-tracking/no-destroy-method",
       "detail": "src/conveniences/paint_signals.js:39 \u2014 no cleanup method (destroy/disable/onDestroy) in src/conveniences/paint_signals.js"
-    },
-    {
-      "id": "resource-tracking/no-destroy-method::src/conveniences/settings.js \u2014 no cleanup method (destroy/disable/onDestroy) in src/conveniences/settings.js",
-      "status": "WARN",
-      "check": "resource-tracking/no-destroy-method",
-      "detail": "src/conveniences/settings.js:303 \u2014 no cleanup method (destroy/disable/onDestroy) in src/conveniences/settings.js"
     },
     {
       "id": "resource-tracking/no-destroy-method::src/conveniences/effects_manager.js \u2014 no cleanup method (destroy/disable/onDestroy) in src/conveniences/effects_manager.js",
@@ -400,10 +387,10 @@
       "detail": "src/components/applications.js:27 \u2014 this.mutter_gsettings created but not cleaned up in destroy()"
     },
     {
-      "id": "resource-tracking/ownership::48 files scanned, depth 3, 12 orphans detected",
+      "id": "resource-tracking/ownership::48 files scanned, depth 3, 11 orphans detected",
       "status": "WARN",
       "check": "resource-tracking/ownership",
-      "detail": "48 files scanned, depth 3, 12 orphans detected"
+      "detail": "48 files scanned, depth 3, 11 orphans detected"
     },
     {
       "id": "package/exists::No zip package found in extension directory",

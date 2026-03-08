@@ -1,16 +1,16 @@
 {
   "name": "clipboard-indicator",
   "uuid": "clipboard-indicator@tudmotu.com",
-  "timestamp": "2026-03-04T22:16:56.118064+00:00",
-  "ego_lint_version": "0dbe7e8",
+  "timestamp": "2026-03-08T14:19:45.441997+00:00",
+  "ego_lint_version": "05523f9",
   "ego_approved": true,
   "exit_code": 1,
   "counts": {
-    "pass": 192,
-    "fail": 2,
+    "pass": 197,
+    "fail": 3,
     "warn": 24,
     "skip": 17,
-    "total": 235
+    "total": 241
   },
   "metrics": {
     "js_files": 6,
@@ -19,7 +19,7 @@
     "css_lines": 75,
     "schema_keys": 31
   },
-  "provenance_score": null,
+  "provenance_score": 3,
   "findings": [
     {
       "id": "polkit/action-id-match::No polkit files found",
@@ -55,7 +55,7 @@
       "id": "accessibility/accessible-name::2 icon-only St.Button(s) without accessible_name: extension.js, extension.js",
       "status": "WARN",
       "check": "accessibility/accessible-name",
-      "detail": "2 icon-only St.Button(s) without accessible_name: extension.js:289, extension.js:552"
+      "detail": "2 icon-only St.Button(s) without accessible_name: extension.js:292, extension.js:562"
     },
     {
       "id": "R-WEB-01::Not applicable for declared shell-version(s)",
@@ -142,13 +142,6 @@
       "check": "R-QUAL-34",
       "detail": "registry.js:194: enumerate_children() is synchronous \u2014 use enumerate_children_async() to avoid blocking the Shell main loop",
       "fix": "Use file.enumerate_children_async(attributes, flags, priority, cancellable, callback)"
-    },
-    {
-      "id": "R-LIFE-19::global.stage.add_child() \u2014 ensure matching remove_child() in disable()/destroy()",
-      "status": "WARN",
-      "check": "R-LIFE-19",
-      "detail": "extension.js:1061: global.stage.add_child() \u2014 ensure matching remove_child() in disable()/destroy()",
-      "fix": "In disable(), call global.stage.remove_child(this._actor); this._actor = null;"
     },
     {
       "id": "R-VER48-04b::vertical property in constructor config deprecated in GNOME 48; use orientation: Clutter.Orientation.VERTICAL (available since GNOME 47; keep vertical for GNOME <=46 compat)",
@@ -244,7 +237,19 @@
       "id": "lifecycle/timeout-reassignment::timeout/idle ID reassigned without prior GLib.Source.remove() \u2014 may leak GLib sources",
       "status": "WARN",
       "check": "lifecycle/timeout-reassignment",
-      "detail": "extension.js:880: timeout/idle ID reassigned without prior GLib.Source.remove() \u2014 may leak GLib sources"
+      "detail": "extension.js:890: timeout/idle ID reassigned without prior GLib.Source.remove() \u2014 may leak GLib sources"
+    },
+    {
+      "id": "lifecycle/stage-actor-leak::Actor(s) added to stage/chrome but not removed in disable()/destroy(): this._historyLabel (extension.js)",
+      "status": "FAIL",
+      "check": "lifecycle/stage-actor-leak",
+      "detail": "Actor(s) added to stage/chrome but not removed in disable()/destroy(): this._historyLabel (extension.js:1061)"
+    },
+    {
+      "id": "lifecycle/messagetray-source-leak::MessageTray source(s) added but not destroyed in disable()/destroy(): this._notifSource (extension.js)",
+      "status": "WARN",
+      "check": "lifecycle/messagetray-source-leak",
+      "detail": "MessageTray source(s) added but not destroyed in disable()/destroy(): this._notifSource (extension.js:1003)"
     },
     {
       "id": "gobject/missing-gtypename::GObject.registerClass without GTypeName \u2014 add GTypeName to avoid conflicts between extensions",

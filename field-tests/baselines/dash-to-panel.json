@@ -1,16 +1,16 @@
 {
   "name": "dash-to-panel",
   "uuid": "dash-to-panel@jderose9.github.com",
-  "timestamp": "2026-03-04T22:17:42.671883+00:00",
-  "ego_lint_version": "0dbe7e8",
+  "timestamp": "2026-03-08T14:19:48.459493+00:00",
+  "ego_lint_version": "05523f9",
   "ego_approved": true,
   "exit_code": 1,
   "counts": {
-    "pass": 168,
-    "fail": 12,
-    "warn": 65,
+    "pass": 173,
+    "fail": 9,
+    "warn": 64,
     "skip": 17,
-    "total": 262
+    "total": 263
   },
   "metrics": {
     "js_files": 18,
@@ -19,7 +19,7 @@
     "css_lines": 251,
     "schema_keys": 247
   },
-  "provenance_score": null,
+  "provenance_score": 4,
   "findings": [
     {
       "id": "polkit/action-id-match::No polkit files found",
@@ -61,7 +61,7 @@
       "id": "accessibility/widget-role::6 custom St.Widget subclass(es) without accessible_role: src/windowPreview.js (PreviewMenu), src/windowPreview.js (Preview), src/panel.js (Panel), src/panel.js (SecondaryPanel), src/taskbar.js (TaskbarActor)",
       "status": "WARN",
       "check": "accessibility/widget-role",
-      "detail": "6 custom St.Widget subclass(es) without accessible_role: src/windowPreview.js:48 (PreviewMenu), src/windowPreview.js:828 (Preview), src/panel.js:56 (Panel), src/panel.js:1644 (SecondaryPanel), src/taskbar.js:95 (TaskbarActor)"
+      "detail": "6 custom St.Widget subclass(es) without accessible_role: src/windowPreview.js:63 (PreviewMenu), src/windowPreview.js:843 (Preview), src/panel.js:83 (Panel), src/panel.js:1671 (SecondaryPanel), src/taskbar.js:128 (TaskbarActor)"
     },
     {
       "id": "R-WEB-01::Not applicable for declared shell-version(s)",
@@ -199,20 +199,6 @@
       "fix": "Remove Object.freeze(); use const declarations for immutability instead"
     },
     {
-      "id": "R-SLOP-38::Over-long identifier (>25 chars) is an AI verbosity indicator",
-      "status": "WARN",
-      "check": "R-SLOP-38",
-      "detail": "src/taskbar.js:1171: Over-long identifier (>25 chars) is an AI verbosity indicator",
-      "fix": "Shorten parameter names to be concise but clear (e.g., currentBatteryThresholdValue \u2192 threshold)"
-    },
-    {
-      "id": "R-SLOP-38::Over-long identifier (>25 chars) is an AI verbosity indicator",
-      "status": "WARN",
-      "check": "R-SLOP-38",
-      "detail": "src/taskbar.js:1658: Over-long identifier (>25 chars) is an AI verbosity indicator",
-      "fix": "Shorten parameter names to be concise but clear (e.g., currentBatteryThresholdValue \u2192 threshold)"
-    },
-    {
       "id": "R-SLOP-40::new Promise(resolve, reject) wrapper \u2014 consider Gio._promisify() for GIO async methods",
       "status": "WARN",
       "check": "R-SLOP-40",
@@ -316,27 +302,6 @@
       "check": "R-QUAL-31",
       "detail": "src/windowPreview.js:1065: _onDestroy() should be renamed to destroy() with super.destroy() at the end",
       "fix": "Rename to destroy() { /* cleanup */; super.destroy(); }"
-    },
-    {
-      "id": "R-VER46-05::ExtensionState enum renamed in GNOME 46: ENABLED->ACTIVE, DISABLED->INACTIVE, etc.",
-      "status": "FAIL",
-      "check": "R-VER46-05",
-      "detail": "src/desktopIconsIntegration.js:68: ExtensionState enum renamed in GNOME 46: ENABLED->ACTIVE, DISABLED->INACTIVE, etc.",
-      "fix": "Use ACTIVE, INACTIVE, ENABLING, DISABLING instead"
-    },
-    {
-      "id": "R-VER48-02::Meta display functions moved to Meta.Compositor in GNOME 48; use global.compositor",
-      "status": "FAIL",
-      "check": "R-VER48-02",
-      "detail": "src/utils.js:233: Meta display functions moved to Meta.Compositor in GNOME 48; use global.compositor",
-      "fix": "Access via global.compositor instead of Meta directly"
-    },
-    {
-      "id": "R-VER48-02::Meta display functions moved to Meta.Compositor in GNOME 48; use global.compositor",
-      "status": "FAIL",
-      "check": "R-VER48-02",
-      "detail": "src/utils.js:237: Meta display functions moved to Meta.Compositor in GNOME 48; use global.compositor",
-      "fix": "Access via global.compositor instead of Meta directly"
     },
     {
       "id": "R-VER48-04::St.Widget.vertical property deprecated in GNOME 48; use orientation: Clutter.Orientation.VERTICAL (available since GNOME 47; keep vertical for GNOME <=46 compat)",
@@ -471,18 +436,6 @@
       "detail": "timeout_add/idle_add callback missing SOURCE_REMOVE/SOURCE_CONTINUE: src/appIcons.js:1803, src/extension.js:144"
     },
     {
-      "id": "lifecycle/prototype-override::TaskbarAppIcon.prototype.scaleAndFade \u2014 direct prototype modification should be restored in disable()",
-      "status": "WARN",
-      "check": "lifecycle/prototype-override",
-      "detail": "src/appIcons.js: TaskbarAppIcon.prototype.scaleAndFade \u2014 direct prototype modification should be restored in disable()"
-    },
-    {
-      "id": "lifecycle/prototype-override::TaskbarAppIcon.prototype.undoScaleAndFade \u2014 direct prototype modification should be restored in disable()",
-      "status": "WARN",
-      "check": "lifecycle/prototype-override",
-      "detail": "src/appIcons.js: TaskbarAppIcon.prototype.undoScaleAndFade \u2014 direct prototype modification should be restored in disable()"
-    },
-    {
       "id": "lifecycle/prototype-override::AppIcon.prototype._setPopupTimeout \u2014 direct prototype modification should be restored in disable()",
       "status": "WARN",
       "check": "lifecycle/prototype-override",
@@ -559,6 +512,27 @@
       "status": "WARN",
       "check": "lifecycle/destroy-no-null",
       "detail": "src/intellihide.js:328: .destroy() without null assignment \u2014 set reference to null after destroy to prevent stale access"
+    },
+    {
+      "id": "lifecycle/module-scope-state::module-scope Map 'iconCacheMap' not cleared in disable()",
+      "status": "WARN",
+      "check": "lifecycle/module-scope-state",
+      "detail": "src/utils.js:740: module-scope Map 'iconCacheMap' not cleared in disable()",
+      "fix": "Add iconCacheMap.clear() to disable()"
+    },
+    {
+      "id": "lifecycle/module-scope-prototype::TaskbarAppIcon.prototype.scaleAndFade \u2014 prototype mutation at module scope persists after disable()",
+      "status": "WARN",
+      "check": "lifecycle/module-scope-prototype",
+      "detail": "src/appIcons.js:1743: TaskbarAppIcon.prototype.scaleAndFade \u2014 prototype mutation at module scope persists after disable()",
+      "fix": "Move into enable() and restore original in disable()"
+    },
+    {
+      "id": "lifecycle/module-scope-prototype::TaskbarAppIcon.prototype.undoScaleAndFade \u2014 prototype mutation at module scope persists after disable()",
+      "status": "WARN",
+      "check": "lifecycle/module-scope-prototype",
+      "detail": "src/appIcons.js:1744: TaskbarAppIcon.prototype.undoScaleAndFade \u2014 prototype mutation at module scope persists after disable()",
+      "fix": "Move into enable() and restore original in disable()"
     },
     {
       "id": "gobject/missing-gtypename::GObject.registerClass without GTypeName \u2014 add GTypeName to avoid conflicts between extensions",

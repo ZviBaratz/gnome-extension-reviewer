@@ -1,16 +1,16 @@
 {
   "name": "just-perfection",
   "uuid": "just-perfection-desktop@just-perfection",
-  "timestamp": "2026-03-04T22:17:51.029870+00:00",
-  "ego_lint_version": "0dbe7e8",
+  "timestamp": "2026-03-08T14:19:50.509621+00:00",
+  "ego_lint_version": "05523f9",
   "ego_approved": true,
   "exit_code": 1,
   "counts": {
-    "pass": 195,
-    "fail": 4,
-    "warn": 9,
+    "pass": 204,
+    "fail": 1,
+    "warn": 13,
     "skip": 12,
-    "total": 220
+    "total": 230
   },
   "metrics": {
     "js_files": 7,
@@ -19,11 +19,11 @@
     "css_lines": 732,
     "schema_keys": 73
   },
-  "provenance_score": null,
+  "provenance_score": 3,
   "findings": [
     {
       "id": "non-gjs-scripts::Found 2 non-GJS script(s) \u2014 scripts MUST be written in GJS; no pkexec/privileged helper justification found",
-      "status": "FAIL",
+      "status": "WARN",
       "check": "non-gjs-scripts",
       "detail": "Found 2 non-GJS script(s) \u2014 scripts MUST be written in GJS; no pkexec/privileged helper justification found"
     },
@@ -83,8 +83,15 @@
       "fix": "Remove the version field from metadata.json; EGO manages versions automatically."
     },
     {
+      "id": "R-QUAL-36::CRITICAL notification urgency bypasses Do Not Disturb \u2014 reserved for system alerts, not extension notifications",
+      "status": "WARN",
+      "check": "R-QUAL-36",
+      "detail": "src/lib/SupportNotifier.js:263: CRITICAL notification urgency bypasses Do Not Disturb \u2014 reserved for system alerts, not extension notifications",
+      "fix": "Use MessageTray.Urgency.NORMAL (or .HIGH at most) for extension notifications"
+    },
+    {
       "id": "R-VER48-07::CSS class .quick-menu-toggle renamed to .quick-toggle-has-menu in GNOME 48",
-      "status": "FAIL",
+      "status": "WARN",
       "check": "R-VER48-07",
       "detail": "src/stylesheet.css:167: CSS class .quick-menu-toggle renamed to .quick-toggle-has-menu in GNOME 48",
       "fix": "Replace .quick-menu-toggle with .quick-toggle-has-menu"
@@ -109,15 +116,9 @@
     },
     {
       "id": "metadata/future-shell-version::shell-version '50' is newer than current stable (49)",
-      "status": "FAIL",
+      "status": "WARN",
       "check": "metadata/future-shell-version",
       "detail": "shell-version '50' is newer than current stable (49)"
-    },
-    {
-      "id": "schema/exists::settings-schema 'org.gnome.shell.extensions.just-perfection' in metadata.json but no .gschema.xml files found",
-      "status": "FAIL",
-      "check": "schema/exists",
-      "detail": "settings-schema 'org.gnome.shell.extensions.just-perfection' in metadata.json but no .gschema.xml files found"
     },
     {
       "id": "schema-usage/unused-key::Dynamic key access detected \u2014 cannot verify statically",
@@ -160,6 +161,12 @@
       "status": "WARN",
       "check": "lifecycle/prototype-override",
       "detail": "src/lib/API.js: WorkspaceSwitcherPopup.prototype.display \u2014 direct prototype modification should be restored in disable()"
+    },
+    {
+      "id": "lifecycle/gsettings-signal-leak::1 bare settings.connect('changed::...') without stored ID and no disconnectObject/connectObject cleanup: src/lib/SupportNotifier.js",
+      "status": "FAIL",
+      "check": "lifecycle/gsettings-signal-leak",
+      "detail": "1 bare settings.connect('changed::...') without stored ID and no disconnectObject/connectObject cleanup: src/lib/SupportNotifier.js:81"
     },
     {
       "id": "disclosure/private-api::private-api capability detected in code but metadata description does not disclose it \u2014 reviewers expect disclosure",

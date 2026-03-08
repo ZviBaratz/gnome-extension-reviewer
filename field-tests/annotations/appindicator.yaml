@@ -67,6 +67,10 @@ findings:
   - id: "disclosure/file-io::undisclosed"
     classification: tp
     notes: "File I/O not disclosed in metadata"
+  # New in 03-08 (lint gap closure — GSettings signal leak)
+  - id: "lifecycle/gsettings-signal-leak::prefs bare connects"
+    classification: tp
+    notes: "3 bare settings.connect() in preferences/customIconPage.js, preferences/generalPage.js, preferences/indicatorPage.js — prefs-only, lower severity but real leak"
   # WARNs — False Positives
   - id: "R-SLOP-13::this instanceof in factory"
     classification: fp

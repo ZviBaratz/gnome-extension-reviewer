@@ -1,16 +1,16 @@
 {
   "name": "tiling-shell",
   "uuid": "tilingshell@ferrarodomenico.com",
-  "timestamp": "2026-03-04T22:16:37.148356+00:00",
-  "ego_lint_version": "0dbe7e8",
+  "timestamp": "2026-03-08T14:19:38.052628+00:00",
+  "ego_lint_version": "05523f9",
   "ego_approved": true,
   "exit_code": 1,
   "counts": {
-    "pass": 135,
-    "fail": 4,
-    "warn": 4,
+    "pass": 139,
+    "fail": 3,
+    "warn": 5,
     "skip": 51,
-    "total": 194
+    "total": 198
   },
   "metrics": {
     "js_files": 1,
@@ -19,7 +19,7 @@
     "css_lines": 0,
     "schema_keys": 61
   },
-  "provenance_score": null,
+  "provenance_score": 0,
   "findings": [
     {
       "id": "file-structure/extension.js::extension.js is missing",
@@ -35,7 +35,7 @@
     },
     {
       "id": "non-gjs-scripts::Found 1 non-GJS script(s) \u2014 scripts MUST be written in GJS; no pkexec/privileged helper justification found",
-      "status": "FAIL",
+      "status": "WARN",
       "check": "non-gjs-scripts",
       "detail": "Found 1 non-GJS script(s) \u2014 scripts MUST be written in GJS; no pkexec/privileged helper justification found"
     },

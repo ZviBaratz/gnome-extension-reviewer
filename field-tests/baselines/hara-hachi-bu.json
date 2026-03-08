@@ -1,16 +1,16 @@
 {
   "name": "hara-hachi-bu",
   "uuid": "hara-hachi-bu@ZviBaratz",
-  "timestamp": "2026-03-04T22:16:02.522858+00:00",
-  "ego_lint_version": "0dbe7e8",
+  "timestamp": "2026-03-08T14:19:37.273780+00:00",
+  "ego_lint_version": "05523f9",
   "ego_approved": false,
   "exit_code": 0,
   "counts": {
-    "pass": 204,
+    "pass": 208,
     "fail": 0,
     "warn": 9,
     "skip": 23,
-    "total": 236
+    "total": 240
   },
   "metrics": {
     "js_files": 18,
@@ -19,7 +19,7 @@
     "css_lines": 126,
     "schema_keys": 26
   },
-  "provenance_score": null,
+  "provenance_score": 3,
   "findings": [
     {
       "id": "polkit-files::Found 2 polkit policy/rules file(s) \u2014 requires security review",

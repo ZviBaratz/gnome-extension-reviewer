@@ -1,10 +1,14 @@
 # Classified findings for Just Perfection
-# Source: ego-review field test 2026-03-05
+# Source: ego-review field test 2026-03-05, updated 2026-03-08
 findings:
-  # ego-review findings (not caught by ego-lint)
+  # Resolved in 03-08
+  - id: "schema/exists::src/schemas/ fallback"
+    classification: resolved
+    notes: "FAIL resolved — src/schemas/ directory now searched as fallback (PR #80)"
+  # ego-review findings (NOW caught by ego-lint in 03-08)
   - id: "review/settings-signal-leak::SupportNotifier bare .connect()"
     classification: tp
-    notes: "GSettings bare .connect('changed') without disconnect in disable — same pattern as Media Controls"
+    notes: "GSettings bare .connect('changed') without disconnect in disable — same pattern as Media Controls. NOW caught by lint: lifecycle/gsettings-signal-leak FAIL (PR #87)"
   - id: "review/notification-urgency::CRITICAL for donation prompt"
     classification: tp
-    notes: "MessageTray.Urgency.CRITICAL used for donation/support notification — abuses urgency level intended for system alerts"
+    notes: "MessageTray.Urgency.CRITICAL used for donation/support notification — abuses urgency level intended for system alerts. NOW caught by lint: R-QUAL-36 WARN"

@@ -1,16 +1,16 @@
 {
   "name": "gsconnect",
   "uuid": "gsconnect@andyholmes.github.io",
-  "timestamp": "2026-03-04T22:16:45.507644+00:00",
-  "ego_lint_version": "0dbe7e8",
+  "timestamp": "2026-03-08T14:19:43.093314+00:00",
+  "ego_lint_version": "05523f9",
   "ego_approved": true,
   "exit_code": 1,
   "counts": {
-    "pass": 167,
-    "fail": 12,
-    "warn": 144,
+    "pass": 172,
+    "fail": 11,
+    "warn": 134,
     "skip": 17,
-    "total": 340
+    "total": 334
   },
   "metrics": {
     "js_files": 65,
@@ -19,7 +19,7 @@
     "css_lines": 127,
     "schema_keys": 48
   },
-  "provenance_score": null,
+  "provenance_score": 4,
   "findings": [
     {
       "id": "license::No LICENSE or COPYING file \u2014 MUST use GPL-compatible license",
@@ -29,7 +29,7 @@
     },
     {
       "id": "non-gjs-scripts::Found 1 non-GJS script(s) \u2014 scripts MUST be written in GJS; no pkexec/privileged helper justification found",
-      "status": "FAIL",
+      "status": "WARN",
       "check": "non-gjs-scripts",
       "detail": "Found 1 non-GJS script(s) \u2014 scripts MUST be written in GJS; no pkexec/privileged helper justification found"
     },
@@ -920,36 +920,6 @@
       "detail": "utils/setup.js: String.prototype.format \u2014 direct prototype modification should be restored in disable()"
     },
     {
-      "id": "lifecycle/prototype-override::String.prototype.toPhoneNumber \u2014 direct prototype modification should be restored in disable()",
-      "status": "WARN",
-      "check": "lifecycle/prototype-override",
-      "detail": "service/init.js: String.prototype.toPhoneNumber \u2014 direct prototype modification should be restored in disable()"
-    },
-    {
-      "id": "lifecycle/prototype-override::String.prototype.equalsPhoneNumber \u2014 direct prototype modification should be restored in disable()",
-      "status": "WARN",
-      "check": "lifecycle/prototype-override",
-      "detail": "service/init.js: String.prototype.equalsPhoneNumber \u2014 direct prototype modification should be restored in disable()"
-    },
-    {
-      "id": "lifecycle/prototype-override::Variant.prototype.full_unpack \u2014 direct prototype modification should be restored in disable()",
-      "status": "WARN",
-      "check": "lifecycle/prototype-override",
-      "detail": "service/init.js: Variant.prototype.full_unpack \u2014 direct prototype modification should be restored in disable()"
-    },
-    {
-      "id": "lifecycle/prototype-override::Window.prototype.restoreGeometry \u2014 direct prototype modification should be restored in disable()",
-      "status": "WARN",
-      "check": "lifecycle/prototype-override",
-      "detail": "service/utils/ui.js: Window.prototype.restoreGeometry \u2014 direct prototype modification should be restored in disable()"
-    },
-    {
-      "id": "lifecycle/prototype-override::Window.prototype.saveGeometry \u2014 direct prototype modification should be restored in disable()",
-      "status": "WARN",
-      "check": "lifecycle/prototype-override",
-      "detail": "service/utils/ui.js: Window.prototype.saveGeometry \u2014 direct prototype modification should be restored in disable()"
-    },
-    {
       "id": "lifecycle/destroy-no-null::.destroy() without null assignment \u2014 set reference to null after destroy to prevent stale access",
       "status": "WARN",
       "check": "lifecycle/destroy-no-null",
@@ -1001,7 +971,7 @@
       "id": "async/catch-on-sync::.catch() on non-async GetMimetypes() \u2014 verify method returns a Promise",
       "status": "WARN",
       "check": "async/catch-on-sync",
-      "detail": "wl_clipboard.js:171: .catch() on non-async GetMimetypes() \u2014 verify method returns a Promise"
+      "detail": "wl_clipboard.js:187: .catch() on non-async GetMimetypes() \u2014 verify method returns a Promise"
     },
     {
       "id": "init/shell-modification::Shell modification outside enable()",
@@ -1019,12 +989,6 @@
       "id": "resource-tracking/destroy-not-called::shell/tooltip.js \u2014 parent does not call cleanup method on shell/tooltip.js",
       "status": "WARN",
       "check": "resource-tracking/destroy-not-called",
-      "detail": "shell/tooltip.js:28 \u2014 parent does not call cleanup method on shell/tooltip.js"
-    },
-    {
-      "id": "resource-tracking/destroy-not-called::shell/tooltip.js \u2014 parent does not call cleanup method on shell/tooltip.js",
-      "status": "WARN",
-      "check": "resource-tracking/destroy-not-called",
       "detail": "shell/tooltip.js:33 \u2014 parent does not call cleanup method on shell/tooltip.js"
     },
     {
@@ -1037,13 +1001,13 @@
       "id": "resource-tracking/destroy-not-called::shell/tooltip.js \u2014 parent does not call cleanup method on shell/tooltip.js",
       "status": "WARN",
       "check": "resource-tracking/destroy-not-called",
-      "detail": "shell/tooltip.js:142 \u2014 parent does not call cleanup method on shell/tooltip.js"
+      "detail": "shell/tooltip.js:43 \u2014 parent does not call cleanup method on shell/tooltip.js"
     },
     {
       "id": "resource-tracking/destroy-not-called::shell/tooltip.js \u2014 parent does not call cleanup method on shell/tooltip.js",
       "status": "WARN",
       "check": "resource-tracking/destroy-not-called",
-      "detail": "shell/tooltip.js:152 \u2014 parent does not call cleanup method on shell/tooltip.js"
+      "detail": "shell/tooltip.js:147 \u2014 parent does not call cleanup method on shell/tooltip.js"
     },
     {
       "id": "resource-tracking/destroy-not-called::shell/tooltip.js \u2014 parent does not call cleanup method on shell/tooltip.js",
@@ -1055,85 +1019,55 @@
       "id": "resource-tracking/destroy-not-called::shell/tooltip.js \u2014 parent does not call cleanup method on shell/tooltip.js",
       "status": "WARN",
       "check": "resource-tracking/destroy-not-called",
-      "detail": "shell/tooltip.js:161 \u2014 parent does not call cleanup method on shell/tooltip.js"
+      "detail": "shell/tooltip.js:162 \u2014 parent does not call cleanup method on shell/tooltip.js"
     },
     {
       "id": "resource-tracking/destroy-not-called::shell/tooltip.js \u2014 parent does not call cleanup method on shell/tooltip.js",
       "status": "WARN",
       "check": "resource-tracking/destroy-not-called",
-      "detail": "shell/tooltip.js:169 \u2014 parent does not call cleanup method on shell/tooltip.js"
+      "detail": "shell/tooltip.js:166 \u2014 parent does not call cleanup method on shell/tooltip.js"
     },
     {
       "id": "resource-tracking/destroy-not-called::shell/tooltip.js \u2014 parent does not call cleanup method on shell/tooltip.js",
       "status": "WARN",
       "check": "resource-tracking/destroy-not-called",
-      "detail": "shell/tooltip.js:185 \u2014 parent does not call cleanup method on shell/tooltip.js"
+      "detail": "shell/tooltip.js:174 \u2014 parent does not call cleanup method on shell/tooltip.js"
     },
     {
       "id": "resource-tracking/destroy-not-called::shell/tooltip.js \u2014 parent does not call cleanup method on shell/tooltip.js",
       "status": "WARN",
       "check": "resource-tracking/destroy-not-called",
-      "detail": "shell/tooltip.js:251 \u2014 parent does not call cleanup method on shell/tooltip.js"
+      "detail": "shell/tooltip.js:190 \u2014 parent does not call cleanup method on shell/tooltip.js"
     },
     {
       "id": "resource-tracking/destroy-not-called::shell/tooltip.js \u2014 parent does not call cleanup method on shell/tooltip.js",
       "status": "WARN",
       "check": "resource-tracking/destroy-not-called",
-      "detail": "shell/tooltip.js:272 \u2014 parent does not call cleanup method on shell/tooltip.js"
+      "detail": "shell/tooltip.js:256 \u2014 parent does not call cleanup method on shell/tooltip.js"
+    },
+    {
+      "id": "resource-tracking/destroy-not-called::shell/tooltip.js \u2014 parent does not call cleanup method on shell/tooltip.js",
+      "status": "WARN",
+      "check": "resource-tracking/destroy-not-called",
+      "detail": "shell/tooltip.js:277 \u2014 parent does not call cleanup method on shell/tooltip.js"
     },
     {
       "id": "resource-tracking/orphan-gsettings::service/manager.js \u2014 this._settings created but not cleaned up in destroy()",
       "status": "WARN",
       "check": "resource-tracking/orphan-gsettings",
-      "detail": "service/manager.js:83 \u2014 this._settings created but not cleaned up in destroy()"
+      "detail": "service/manager.js:85 \u2014 this._settings created but not cleaned up in destroy()"
     },
     {
       "id": "resource-tracking/orphan-gsettings::service/manager.js \u2014 this._settings created but not cleaned up in destroy()",
       "status": "WARN",
       "check": "resource-tracking/orphan-gsettings",
-      "detail": "service/manager.js:217 \u2014 this._settings created but not cleaned up in destroy()"
+      "detail": "service/manager.js:219 \u2014 this._settings created but not cleaned up in destroy()"
     },
     {
-      "id": "resource-tracking/no-destroy-method::service/ui/mousepad.js \u2014 no cleanup method (destroy/disable/onDestroy) in service/ui/mousepad.js",
-      "status": "WARN",
-      "check": "resource-tracking/no-destroy-method",
-      "detail": "service/ui/mousepad.js:112 \u2014 no cleanup method (destroy/disable/onDestroy) in service/ui/mousepad.js"
-    },
-    {
-      "id": "resource-tracking/no-destroy-method::service/ui/mousepad.js \u2014 no cleanup method (destroy/disable/onDestroy) in service/ui/mousepad.js",
-      "status": "WARN",
-      "check": "resource-tracking/no-destroy-method",
-      "detail": "service/ui/mousepad.js:117 \u2014 no cleanup method (destroy/disable/onDestroy) in service/ui/mousepad.js"
-    },
-    {
-      "id": "resource-tracking/no-destroy-method::service/ui/mousepad.js \u2014 no cleanup method (destroy/disable/onDestroy) in service/ui/mousepad.js",
-      "status": "WARN",
-      "check": "resource-tracking/no-destroy-method",
-      "detail": "service/ui/mousepad.js:360 \u2014 no cleanup method (destroy/disable/onDestroy) in service/ui/mousepad.js"
-    },
-    {
-      "id": "resource-tracking/destroy-not-called::service/components/contacts.js \u2014 parent does not call cleanup method on service/components/contacts.js",
-      "status": "WARN",
-      "check": "resource-tracking/destroy-not-called",
-      "detail": "service/components/contacts.js:176 \u2014 parent does not call cleanup method on service/components/contacts.js"
-    },
-    {
-      "id": "resource-tracking/destroy-not-called::service/components/contacts.js \u2014 parent does not call cleanup method on service/components/contacts.js",
-      "status": "WARN",
-      "check": "resource-tracking/destroy-not-called",
-      "detail": "service/components/contacts.js:270 \u2014 parent does not call cleanup method on service/components/contacts.js"
-    },
-    {
-      "id": "resource-tracking/destroy-not-called::service/components/contacts.js \u2014 parent does not call cleanup method on service/components/contacts.js",
-      "status": "WARN",
-      "check": "resource-tracking/destroy-not-called",
-      "detail": "service/components/contacts.js:274 \u2014 parent does not call cleanup method on service/components/contacts.js"
-    },
-    {
-      "id": "resource-tracking/ownership::64 files scanned, depth 2, 19 orphans detected",
+      "id": "resource-tracking/ownership::64 files scanned, depth 2, 13 orphans detected",
       "status": "WARN",
       "check": "resource-tracking/ownership",
-      "detail": "64 files scanned, depth 2, 19 orphans detected"
+      "detail": "64 files scanned, depth 2, 13 orphans detected"
     },
     {
       "id": "disclosure/private-api::private-api capability detected in code but metadata description does not disclose it \u2014 reviewers expect disclosure",

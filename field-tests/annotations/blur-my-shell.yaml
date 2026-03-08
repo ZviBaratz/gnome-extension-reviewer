@@ -69,10 +69,24 @@ findings:
   - id: "lifecycle/untracked-timeout::prefs auto-cleanup"
     classification: borderline
     notes: "4 hits — 2 TP, 2 FP (prefs.js timeouts auto-cleanup on window close)"
-  # ego-review advisory findings (not caught by ego-lint)
+  # New in 03-08 (lint gap closure)
+  - id: "lifecycle/gsettings-signal-leak::prefs bare connect"
+    classification: tp
+    notes: "1 bare settings.connect() in src/preferences — no disconnectObject cleanup"
+  - id: "resource-tracking/ownership::orphan count 12→11"
+    classification: borderline
+    notes: "Orphan count reduced from 12 to 11 after no-destroy-method FP reduction (PR #86)"
+  # Resolved in 03-08
+  - id: "init/shell-modification::appfolders.js exempted"
+    classification: resolved
+    notes: "FAIL resolved — appfolders.js exempted by init/shell-modification expansion (PR #88)"
+  - id: "resource-tracking/no-destroy-method::settings.js resolved"
+    classification: resolved
+    notes: "WARN resolved — settings.js cleanup pattern now recognized (PR #86)"
+  # ego-review advisory findings (now partially caught by ego-lint)
   - id: "lifecycle::actor.destroy missing parentheses"
     classification: tp
-    notes: "L-3: coverflow_alt_tab.js:69 — actor.destroy is property access, not function call. Undetectable by pattern matching."
+    notes: "L-3: coverflow_alt_tab.js:69 — actor.destroy is property access, not function call. Now caught by R-LIFE-23 lint check."
   - id: "lifecycle::splice wrong argument type"
     classification: tp
     notes: "L-10: window_list.js:111 — passes object instead of index to splice()"
