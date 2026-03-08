@@ -1,0 +1,7 @@
+{
+    "uuid": "constructor-lifecycle-expanded@test",
+    "name": "Constructor Lifecycle Expanded Test",
+    "description": "Tests expanded lifecycle and value type exemptions",
+    "shell-version": ["48"],
+    "url": "https://example.com"
+}

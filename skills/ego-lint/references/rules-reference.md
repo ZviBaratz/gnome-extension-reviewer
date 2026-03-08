@@ -1094,10 +1094,10 @@ Rules for security-sensitive patterns that will cause EGO rejection.
 ### R-QUAL-08: No resource allocation in constructors
 - **Severity**: advisory
 - **Checked by**: check-quality.py
-- **Rule**: Constructors should not call `this.getSettings()`, `.connect()`, `.connectObject()`, `timeout_add`, or `new Gio.DBusProxy()`. Skips classes with `destroy()` method or `connectSmart`/`disconnectSmart` (lifecycle-aware).
+- **Rule**: Constructors should not call `this.getSettings()`, `.connect()`, `.connectObject()`, `timeout_add`, or `new Gio.DBusProxy()`. Skips widget base classes (St.Widget, Clutter.Actor, Clutter.Effect, Clutter.ShaderEffect, Shell.BlurEffect, etc.), classes with `destroy()`/`_destroy()`/`onDestroy()`/`disable()` methods, and classes using `connectSmart`/`connectObject` (lifecycle-aware).
 - **Rationale**: GNOME Shell extensions should perform resource allocation in `enable()` and cleanup in `disable()`. Allocating resources in constructors means they persist across enable/disable cycles, leading to resource leaks and zombie signal handlers.
 - **Fix**: Move resource allocation from `constructor()`/`_init()` to `enable()`. Move cleanup to `disable()`.
-- **Tested by**: `tests/fixtures/constructor-smart-cleanup@test/`
+- **Tested by**: `tests/fixtures/constructor-smart-cleanup@test/`, `tests/fixtures/constructor-lifecycle-expanded@test/`
 
 ---
 
@@ -1317,10 +1317,10 @@ Rules for code that runs at module load or constructor time, before `enable()` i
 
 - **Severity**: blocking
 - **Checked by**: check-init.py
-- **Rule**: Must not create GObjects from any GI namespace (St, Clutter, Gio, GLib, GObject, Meta, Shell, Pango, Soup, Cogl, Atk, GdkPixbuf) at module scope or in `extension.js` constructors. GObject constructors in helper file constructors are not flagged (runtime-only, instantiated from `enable()`). Shell globals are flagged everywhere.
+- **Rule**: Must not create GObjects from any GI namespace (St, Clutter, Gio, GLib, GObject, Meta, Shell, Pango, Soup, Cogl, Atk, GdkPixbuf) at module scope or in `extension.js` constructors. GObject constructors in helper file constructors are not flagged (runtime-only, instantiated from `enable()`). Shell globals are flagged everywhere. **Exemptions**: `GObject.registerClass()` (class registration, not instantiation), arrow function definitions (lazy evaluation), value types (`GLib.Bytes`, `GLib.Variant`, `GLib.DateTime`, `GLib.TimeZone`, `GLib.Regex`, `GLib.Uri`, `Cogl.Color`, `Clutter.Color`).
 - **Rationale**: GObjects created before enable() cannot be properly cleaned up; #1 rejection cause
 - **Fix**: Move all GObject creation to enable()
-- **Tested by**: `tests/fixtures/init-modification@test/`, `tests/fixtures/init-helper-constructor@test/`
+- **Tested by**: `tests/fixtures/init-modification@test/`, `tests/fixtures/init-helper-constructor@test/`, `tests/fixtures/constructor-lifecycle-expanded@test/`
 
 #### Example
 
