@@ -386,6 +386,8 @@ def check_constructor_resources(ext_dir, js_files):
         'St.Widget', 'St.BoxLayout', 'St.Button', 'St.Label', 'St.Bin',
         'St.Icon', 'St.Entry', 'St.ScrollView', 'St.Viewport',
         'Clutter.Actor', 'Clutter.LayoutManager',
+        'Clutter.Effect', 'Clutter.ShaderEffect',
+        'Shell.BlurEffect',
         'GObject.Object',
         'QuickToggle', 'QuickMenuToggle', 'QuickSlider',
         'SystemIndicator',
@@ -448,7 +450,7 @@ def check_constructor_resources(ext_dir, js_files):
             next_class = re.search(r'\nclass\s+\w+', content[m.start():])
             class_end = m.start() + next_class.start() if next_class else len(content)
             class_body = content[class_start:class_end]
-            if re.search(r'\b(?:destroy|disable)\s*\(\s*\)\s*\{', class_body):
+            if re.search(r'\b(?:_?destroy|disable|onDestroy)\s*\(\s*\)\s*\{', class_body):
                 continue  # Class manages its own lifecycle
             if re.search(r'\.(connectSmart|disconnectSmart)\s*\(', class_body):
                 continue  # Class uses smart signal management
