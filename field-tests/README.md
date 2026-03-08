@@ -4,18 +4,20 @@ Batch ego-lint runner for regression testing across 10 real-world GNOME Shell ex
 
 ## Extension Catalog
 
-| Extension | Description | EGO Approved |
-|---|---|---|
-| [hara-hachi-bu](https://github.com/ZviBaratz/hara-hachi-bu) | Power profile and battery charge limit control from Quick Settings (polkit, clipboard) | No |
-| [tiling-shell](https://github.com/domferr/tilingshell) | Advanced tiling window management with Snap Assistant and custom layouts (compiled TypeScript) | Yes |
-| [v-shell](https://github.com/G-dH/vertical-workspaces) | Customizable horizontal/vertical workspace layout and Shell UX tweaks | Yes |
-| [gsconnect](https://github.com/GSConnect/gnome-shell-extension-gsconnect) | KDE Connect implementation for GNOME — device sharing, SMS, remote control (D-Bus daemon) | Yes |
-| [appindicator](https://github.com/ubuntu/gnome-shell-extension-appindicator) | AppIndicator, KStatusNotifierItem, and legacy tray icon support | Yes |
-| [clipboard-indicator](https://github.com/Tudmotu/gnome-shell-extension-clipboard-indicator) | Clipboard manager with history | Yes |
-| [blur-my-shell](https://github.com/aunetx/blur-my-shell) | Blur effects for top panel, dash, and overview | Yes |
-| [dash-to-panel](https://github.com/home-sweet-gnome/dash-to-panel) | Icon taskbar combining dash and system tray into the main panel | Yes |
-| [media-controls](https://github.com/cliffniff/Media-Controls) | Currently playing media controls and info in the panel | Yes |
-| [just-perfection](https://github.com/jrahmatzadeh/just-perfection) | Tweak tool to customize Shell behavior and disable UI elements | Yes |
+| Extension | Version | Shell Versions | EGO |
+|---|---|---|---|
+| [hara-hachi-bu](https://github.com/ZviBaratz/hara-hachi-bu) | dev | 46–48 | No |
+| [tiling-shell](https://github.com/domferr/tilingshell) | 17.3 | 42–49 | Yes |
+| [v-shell](https://github.com/G-dH/vertical-workspaces) | 49.13 | 45–49 | Yes |
+| [gsconnect](https://github.com/GSConnect/gnome-shell-extension-gsconnect) | 71 | 46–49 | Yes |
+| [appindicator](https://github.com/ubuntu/gnome-shell-extension-appindicator) | `be68add` | 45–50 | Yes |
+| [clipboard-indicator](https://github.com/Tudmotu/gnome-shell-extension-clipboard-indicator) | `13ba8b1` | 46–49 | Yes |
+| [blur-my-shell](https://github.com/aunetx/blur-my-shell) | 70 | 46–49 | Yes |
+| [dash-to-panel](https://github.com/home-sweet-gnome/dash-to-panel) | `ebf64ab` | 46–49 | Yes |
+| [media-controls](https://github.com/cliffniff/Media-Controls) | 2.4.4 | 46–49 | Yes |
+| [just-perfection](https://github.com/jrahmatzadeh/just-perfection) | 36 | 45–50 | Yes |
+
+> **Version pinning**: Some extensions lack a version field in metadata.json — for those, the git short ref is shown instead. See `manifest.yaml` for full source details.
 
 ## Code Metrics
 
@@ -34,41 +36,41 @@ Batch ego-lint runner for regression testing across 10 real-world GNOME Shell ex
 
 > **Note**: tiling-shell metrics reflect the compiled release zip — the TypeScript source is much larger. The high SKIP count (51) is due to checks that don't apply to bundled output.
 
-## Latest Lint Results (2026-03-07)
+## Latest Lint Results (2026-03-08)
 
-ego-lint version: `ae650be`
+ego-lint version: `05523f9`
 
 | Extension | Exit | PASS | FAIL | WARN | SKIP | Verdict |
 |---|---|---|---|---|---|---|
-| hara-hachi-bu | 0 | 207 | 0 | 9 | 23 | Pass |
-| tiling-shell | 1 | 138 | 4 | 4 | 51 | Fail |
-| v-shell | 1 | 188 | 1 | 91 | 17 | Fail |
-| gsconnect | 1 | 171 | 12 | 144 | 17 | Fail |
-| appindicator | 1 | 187 | 11 | 57 | 14 | Fail |
-| clipboard-indicator | 1 | 196 | 3 | 24 | 17 | Fail |
-| blur-my-shell | 1 | 190 | 4 | 43 | 17 | Fail |
-| dash-to-panel | 1 | 171 | 11 | 66 | 17 | Fail |
-| media-controls | 1 | 188 | 6 | 28 | 17 | Fail |
-| just-perfection | 1 | 198 | 4 | 10 | 12 | Fail |
-| **Totals** | — | **1,834** | **56** | **476** | **202** | — |
+| hara-hachi-bu | 0 | 208 | 0 | 9 | 23 | Pass |
+| tiling-shell | 1 | 139 | 3 | 5 | 51 | Fail |
+| v-shell | 1 | 188 | 2 | 91 | 17 | Fail |
+| gsconnect | 1 | 172 | 11 | 134 | 17 | Fail |
+| appindicator | 1 | 187 | 10 | 59 | 14 | Fail |
+| clipboard-indicator | 1 | 197 | 3 | 24 | 17 | Fail |
+| blur-my-shell | 1 | 193 | 4 | 40 | 17 | Fail |
+| dash-to-panel | 1 | 173 | 9 | 64 | 17 | Fail |
+| media-controls | 1 | 188 | 4 | 28 | 17 | Fail |
+| just-perfection | 1 | 204 | 1 | 13 | 12 | Fail |
+| **Totals** | — | **1,849** | **47** | **467** | **202** | — |
 
 ## Annotation Coverage
 
-Each extension has a classification file in `annotations/` where findings are labeled as true positive (tp), false positive (fp), borderline, or expected.
+Each extension has a classification file in `annotations/` where findings are labeled as true positive (tp), false positive (fp), borderline, expected, or resolved (finding no longer emitted).
 
-| Extension | TP | FP | Borderline | Expected | Classified | Unannotated |
-|---|---|---|---|---|---|---|
-| hara-hachi-bu | 7 | 10 | 0 | 1 | 18 | 32 |
-| tiling-shell | 13 | 7 | 4 | 0 | 24 | 59 |
-| v-shell | 8 | 5 | 1 | 0 | 14 | 48 |
-| gsconnect | 12 | 8 | 8 | 0 | 28 | 76 |
-| appindicator | 23 | 12 | 3 | 0 | 38 | 51 |
-| clipboard-indicator | 28 | 8 | 0 | 0 | 36 | 42 |
-| blur-my-shell | 23 | 11 | 4 | 0 | 38 | 50 |
-| dash-to-panel | 18 | 10 | 3 | 0 | 31 | 68 |
-| media-controls | 16 | 3 | 2 | 0 | 21 | 37 |
-| just-perfection | 2 | 0 | 0 | 0 | 2 | 26 |
-| **Totals** | **150** | **74** | **25** | **1** | **250** | **489** |
+| Extension | TP | FP | Borderline | Expected | Resolved | Classified | Unannotated |
+|---|---|---|---|---|---|---|---|
+| hara-hachi-bu | 7 | 9 | 0 | 1 | 0 | 17 | 32 |
+| tiling-shell | 10 | 9 | 2 | 0 | 0 | 21 | 59 |
+| v-shell | 10 | 6 | 0 | 0 | 0 | 16 | 49 |
+| gsconnect | 11 | 6 | 7 | 0 | 2 | 26 | 69 |
+| appindicator | 17 | 10 | 4 | 0 | 0 | 31 | 52 |
+| clipboard-indicator | 20 | 6 | 0 | 0 | 0 | 26 | 42 |
+| blur-my-shell | 17 | 7 | 3 | 0 | 2 | 29 | 47 |
+| dash-to-panel | 22 | 8 | 2 | 1 | 3 | 36 | 65 |
+| media-controls | 14 | 5 | 2 | 0 | 1 | 22 | 38 |
+| just-perfection | 2 | 0 | 0 | 0 | 1 | 3 | 26 |
+| **Totals** | **130** | **66** | **20** | **2** | **9** | **227** | **479** |
 
 ## Directory Structure
 
