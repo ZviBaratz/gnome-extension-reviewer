@@ -90,7 +90,8 @@ REGISTER_CLASS = re.compile(r'\bGObject\.registerClass\s*\(')
 
 # Value types / data containers that don't hold system resources
 VALUE_TYPES = re.compile(
-    r'\bnew\s+GLib\.(Bytes|Variant|DateTime|TimeZone|Regex|Uri)\b'
+    r'\bnew\s+(?:GLib\.(?:Bytes|Variant|DateTime|TimeZone|Regex|Uri)'
+    r'|Cogl\.Color|Clutter\.Color)\b'
 )
 
 

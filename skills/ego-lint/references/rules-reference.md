@@ -1094,10 +1094,10 @@ Rules for security-sensitive patterns that will cause EGO rejection.
 ### R-QUAL-08: No resource allocation in constructors
 - **Severity**: advisory
 - **Checked by**: check-quality.py
-- **Rule**: Constructors should not call `this.getSettings()`, `.connect()`, `.connectObject()`, `timeout_add`, or `new Gio.DBusProxy()`. Skips classes with `destroy()` method or `connectSmart`/`disconnectSmart` (lifecycle-aware).
+- **Rule**: Constructors should not call `this.getSettings()`, `.connect()`, `.connectObject()`, `timeout_add`, or `new Gio.DBusProxy()`. Skips widget base classes (St.Widget, Clutter.Actor, Clutter.Effect, Clutter.ShaderEffect, Shell.BlurEffect, etc.), classes with `destroy()`/`_destroy()`/`onDestroy()`/`disable()` methods, and classes using `connectSmart`/`connectObject` (lifecycle-aware).
 - **Rationale**: GNOME Shell extensions should perform resource allocation in `enable()` and cleanup in `disable()`. Allocating resources in constructors means they persist across enable/disable cycles, leading to resource leaks and zombie signal handlers.
 - **Fix**: Move resource allocation from `constructor()`/`_init()` to `enable()`. Move cleanup to `disable()`.
-- **Tested by**: `tests/fixtures/constructor-smart-cleanup@test/`
+- **Tested by**: `tests/fixtures/constructor-smart-cleanup@test/`, `tests/fixtures/constructor-lifecycle-expanded@test/`
 
 ---
 
@@ -1317,10 +1317,10 @@ Rules for code that runs at module load or constructor time, before `enable()` i
 
 - **Severity**: blocking
 - **Checked by**: check-init.py
-- **Rule**: Must not create GObjects from any GI namespace (St, Clutter, Gio, GLib, GObject, Meta, Shell, Pango, Soup, Cogl, Atk, GdkPixbuf) at module scope or in `extension.js` constructors. GObject constructors in helper file constructors are not flagged (runtime-only, instantiated from `enable()`). Shell globals are flagged everywhere.
+- **Rule**: Must not create GObjects from any GI namespace (St, Clutter, Gio, GLib, GObject, Meta, Shell, Pango, Soup, Cogl, Atk, GdkPixbuf) at module scope or in `extension.js` constructors. GObject constructors in helper file constructors are not flagged (runtime-only, instantiated from `enable()`). Shell globals are flagged everywhere. **Exemptions**: `GObject.registerClass()` (class registration, not instantiation), arrow function definitions (lazy evaluation), value types (`GLib.Bytes`, `GLib.Variant`, `GLib.DateTime`, `GLib.TimeZone`, `GLib.Regex`, `GLib.Uri`, `Cogl.Color`, `Clutter.Color`).
 - **Rationale**: GObjects created before enable() cannot be properly cleaned up; #1 rejection cause
 - **Fix**: Move all GObject creation to enable()
-- **Tested by**: `tests/fixtures/init-modification@test/`, `tests/fixtures/init-helper-constructor@test/`
+- **Tested by**: `tests/fixtures/init-modification@test/`, `tests/fixtures/init-helper-constructor@test/`, `tests/fixtures/constructor-lifecycle-expanded@test/`
 
 #### Example
 
@@ -2019,6 +2019,7 @@ Rules for APIs removed or changed in specific GNOME Shell versions. These rules 
 - **Checked by**: check-resources.py → build-resource-graph.py
 - **Rule**: Module creates resources but has no cleanup method (`destroy()`, `disable()`, or `onDestroy()`) for cleanup.
 - **Fix**: Add a `destroy()` method that cleans up all resources, or use `onDestroy()` connected via `this.connect('destroy', this.onDestroy.bind(this))`.
+- **Note**: Suppressed when the parent calls any method on the child ref (e.g., `this._helper.disconnect_all()`) or nulls it inside a cleanup method body. This covers utility classes with custom cleanup methods managed by their parent.
 
 ### resource-tracking/destroy-not-called
 - **Severity**: advisory
@@ -2094,6 +2095,15 @@ Rules for APIs removed or changed in specific GNOME Shell versions. These rules 
 - **Known limitations**: Only detects direct `const/let/var x = new Map()` at module scope (brace depth 0). Destructured or factory-created collections not detected. Multi-file module-scope state (imported from another module) not tracked.
 - **Tested by**: `tests/fixtures/module-scope-state@test/`, `tests/fixtures/module-scope-state-cleared@test/`
 
+### R-LIFE-27: Module-scope prototype mutation
+- **Severity**: advisory
+- **Checked by**: check-lifecycle.py
+- **Rule**: `.prototype.` assignments and `Object.assign(...prototype, ...)` at module scope (brace depth 0) are flagged.
+- **Rationale**: Module-scope prototype mutations execute at import time, before `enable()` is called. They persist after `disable()` because they were never part of the enable/disable lifecycle. This permanently mutates shared global objects, affecting all code that uses those prototypes.
+- **Fix**: Move prototype mutations into `enable()` and restore the original methods in `disable()`.
+- **Scope exclusions**: prefs.js (manages own lifecycle), `service/` directory (daemon lifecycle).
+- **Tested by**: `tests/fixtures/prototype-mutation@test/`
+
 ### R-LIFE-20: Bus name ownership without release
 - **Severity**: advisory
 - **Checked by**: check-lifecycle.py
@@ -2105,12 +2115,13 @@ Rules for APIs removed or changed in specific GNOME Shell versions. These rules 
 ### R-LIFE-21: GSettings signal leak (bare connect without disconnect)
 - **Severity**: blocking
 - **Checked by**: check-lifecycle.py
-- **Rule**: `settings.connect('changed::...')` calls where the return value is not stored (no `=` or `.push()` before `.connect` on the line) and no auto-cleanup mechanism (`disconnectObject`, `connectObject`, `SignalTracker`, `connectSmart`) is present in the extension.
+- **Rule**: `settings.connect('changed::...')` calls where the return value is not stored (no `=` or `.push()` before `.connect` on the line) and no auto-cleanup mechanism (`disconnectObject`, `connectObject`, `SignalTracker`, `connectSmart`) is present in the **same file**.
 - **Rationale**: Without a stored signal ID, there is no way to call `.disconnect(id)` later. These handlers accumulate across enable/disable cycles, causing duplicate callbacks, memory leaks, and potential crashes. This is the highest-impact gap found in field testing — 4 of 10 extensions had this issue.
 - **Fix**: Use `connectObject()` (recommended — auto-disconnects via `disconnectObject(this)` in disable) or store the return value and call `disconnect(id)` in `disable()`.
 - **Scope exclusions**: prefs.js (manages own lifecycle), `service/` directory (daemon lifecycle).
+- **Auto-cleanup detection**: Per-file (not extension-wide). `connectObject`/`disconnectObject` in a helper file does not suppress bare `.connect()` findings in other files, because signal ownership is per-object-per-owner.
 - **Known limitations**: Multi-line `.connect(\n'changed::...'` calls are not detected (per-line scanning).
-- **Tested by**: `tests/fixtures/gsettings-bare-connect@test/`, `tests/fixtures/gsettings-auto-cleanup@test/`, `tests/fixtures/gsettings-array-storage@test/`
+- **Tested by**: `tests/fixtures/gsettings-bare-connect@test/`, `tests/fixtures/gsettings-auto-cleanup@test/`, `tests/fixtures/gsettings-array-storage@test/`, `tests/fixtures/gsettings-cross-file-leak@test/`
 
 ### R-LIFE-23: .destroy without parentheses
 - **Severity**: advisory

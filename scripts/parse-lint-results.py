@@ -70,7 +70,7 @@ def parse_lint_output(lines):
 
             # Extract provenance score
             if check == 'quality/code-provenance':
-                score_m = re.search(r'score\s+(\d+)', detail)
+                score_m = re.search(r'provenance-score=(\d+)', detail)
                 if score_m:
                     provenance_score = int(score_m.group(1))
 
