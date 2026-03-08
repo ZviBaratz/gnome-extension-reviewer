@@ -1,0 +1,8 @@
+{
+    "uuid": "src-schema-layout@test",
+    "name": "Src Schema Layout Test",
+    "description": "Test src/schemas/ layout fallback",
+    "shell-version": ["48"],
+    "settings-schema": "org.gnome.shell.extensions.src-schema-layout",
+    "url": "https://example.com"
+}

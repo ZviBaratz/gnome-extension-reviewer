@@ -12,6 +12,9 @@ METADATA="$EXT_DIR/metadata.json"
 # src/ layout fallback
 [[ ! -f "$METADATA" && -f "$EXT_DIR/src/metadata.json" ]] && METADATA="$EXT_DIR/src/metadata.json"
 
+SCHEMA_DIR="$EXT_DIR/schemas"
+[[ ! -d "$SCHEMA_DIR" && -d "$EXT_DIR/src/schemas" ]] && SCHEMA_DIR="$EXT_DIR/src/schemas"
+
 # Check if metadata.json has settings-schema
 has_settings_schema=false
 settings_schema=""
@@ -27,10 +30,10 @@ fi
 
 # Find schema files
 schema_files=()
-if [[ -d "$EXT_DIR/schemas" ]]; then
+if [[ -d "$SCHEMA_DIR" ]]; then
     while IFS= read -r -d '' f; do
         schema_files+=("$f")
-    done < <(find "$EXT_DIR/schemas" -name '*.gschema.xml' -print0 2>/dev/null)
+    done < <(find "$SCHEMA_DIR" -name '*.gschema.xml' -print0 2>/dev/null)
 fi
 
 # No schemas at all
@@ -109,7 +112,7 @@ done
 if command -v glib-compile-schemas > /dev/null 2>&1; then
     compile_output=""
     compile_exit=0
-    compile_output="$(glib-compile-schemas --strict --dry-run "$EXT_DIR/schemas" 2>&1)" || compile_exit=$?
+    compile_output="$(glib-compile-schemas --strict --dry-run "$SCHEMA_DIR" 2>&1)" || compile_exit=$?
     if [[ $compile_exit -eq 0 ]]; then
         echo "PASS|schema/compile|glib-compile-schemas --strict --dry-run passed"
     else

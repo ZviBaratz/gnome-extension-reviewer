@@ -601,13 +601,13 @@
   guard-pattern: "\\b(const|export\\s+const)\\s+\\w+\\s*=\\s*Object\\.freeze"
 
 - id: R-SLOP-38
-  pattern: "\\(\\s*[a-z]\\w{25,}\\s*[,)]"
+  pattern: "\\(\\s*[a-z][a-zA-Z0-9]{25,}\\s*[,)]"
   scope: ["*.js"]
   severity: advisory
   message: "Over-long identifier (>25 chars) is an AI verbosity indicator"
   category: ai-slop
   fix: "Shorten parameter names to be concise but clear (e.g., currentBatteryThresholdValue → threshold)"
-  guard-pattern: "\\w{25,}\\s*="
+  guard-pattern: "[a-zA-Z0-9]{26,}\\s*=|\\w{15,}(?:Function|Callback|Handler|Listener)\\b|\\w{20,}Id\\b"
   skip-if-compiled: true
 
 - id: R-SLOP-40
@@ -812,6 +812,7 @@
   category: version-compat
   fix: "Use global.compositor.get_laters().addLater(Meta.LaterType.BEFORE_REDRAW, callback)"
   min-version: 44
+  replacement-pattern: "get_laters"
 
 - id: R-VER44-02
   pattern: "\\bMeta\\.later_remove\\b"
@@ -823,6 +824,7 @@
   min-version: 44
   guard-pattern: "if\\s*\\(\\s*global\\.compositor\\s*\\)"
   guard-window: 7
+  replacement-pattern: "get_laters"
 
 - id: R-VER46-01
   pattern: "\\.add_actor\\s*\\("
@@ -862,6 +864,7 @@
   fix: "Import GioUnix from 'gi://GioUnix' and use GioUnix.InputStream"
   min-version: 46
   guard-pattern: "\\bGioUnix\\b"
+  replacement-pattern: "GioUnix"
 
 - id: R-VER46-05
   pattern: "\\bExtensionState\\.(ENABLED|DISABLED|INITIALIZED|DEACTIVATING|ACTIVATING)\\b"
@@ -1065,6 +1068,7 @@
   min-version: 49
   guard-pattern: "get_maximized\\s*\\?"
   guard-window: 1
+  replacement-pattern: "set_maximize_flags"
 
 - id: R-VER49-09
   pattern: "\\bAppMenuButton\\b"
@@ -1094,6 +1098,7 @@
   fix: "Call unmaximize() without the MaximizeFlags parameter"
   guard-pattern: "get_maximized\\s*\\?"
   guard-window: 1
+  replacement-pattern: "set_maximize_flags"
 
 # --- GNOME 50 migration (version-gated) ---
 # GNOME 50 removed X11 support and associated APIs.
