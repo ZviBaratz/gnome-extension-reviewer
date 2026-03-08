@@ -54,11 +54,7 @@ def find_js_files(ext_dir, exclude_prefs=False):
     for root, dirs, filenames in os.walk(ext_dir):
         dirs[:] = [d for d in dirs if d not in skip_dirs]
         if exclude_prefs:
-            # Skip directories dedicated to preferences UI
-            rel = os.path.relpath(root, ext_dir)
-            parts = rel.replace(os.sep, '/').split('/')
-            if any(p in prefs_dirs for p in parts):
-                continue
+            dirs[:] = [d for d in dirs if d not in prefs_dirs]
         for name in filenames:
             if name.endswith('.js'):
                 if exclude_prefs and name == 'prefs.js':
