@@ -1,0 +1,7 @@
+{
+    "uuid": "prototype-mutation@test",
+    "name": "Prototype Mutation Test",
+    "description": "Tests module-scope prototype mutation detection",
+    "shell-version": ["45"],
+    "url": "https://example.com"
+}
