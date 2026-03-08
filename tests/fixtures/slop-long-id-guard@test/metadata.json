@@ -1,0 +1,7 @@
+{
+  "uuid": "slop-long-id-guard@test",
+  "name": "Slop Long ID Guard Test",
+  "description": "Test R-SLOP-38 guard for domain-specific identifier suffixes",
+  "shell-version": ["45", "46"],
+  "url": ""
+}

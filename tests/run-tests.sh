@@ -645,6 +645,14 @@ assert_output_contains "metadata.json found in src/" "\[PASS\].*file-structure/m
 assert_output_not_contains "no metadata/exists FAIL" "\[FAIL\].*metadata/exists"
 echo ""
 
+# --- src-schema-layout (schemas in src/schemas/) ---
+echo "=== src-schema-layout ==="
+run_lint "src-schema-layout@test"
+assert_exit_code "exits with 0 (no blocking issues)" 0
+assert_output_contains "schema found in src/schemas/" "\[PASS\].*schema/exists"
+assert_output_contains "schema ID matches metadata" "\[PASS\].*schema/id-matches"
+echo ""
+
 # --- on-destroy-cleanup (onDestroy recognized as cleanup) ---
 echo "=== on-destroy-cleanup ==="
 run_lint "on-destroy-cleanup@test"
@@ -659,6 +667,20 @@ run_lint "destroy-no-call@test"
 assert_exit_code "exits with 0 (advisory only)" 0
 assert_output_contains "detects .destroy without parens" "\[WARN\].*lifecycle/destroy-no-call.*without \(\)"
 assert_output_count "exactly 2 destroy-no-call warnings" "\[WARN\].*lifecycle/destroy-no-call" 2
+echo ""
+
+# --- repeated-settings ---
+echo "=== repeated-settings ==="
+run_lint "repeated-settings@test"
+assert_exit_code "exits with 0 (warnings only)" 0
+assert_output_contains "warns on repeated same-schema getSettings" "\[WARN\].*quality/repeated-settings"
+echo ""
+
+# --- distinct-settings ---
+echo "=== distinct-settings ==="
+run_lint "distinct-settings@test"
+assert_exit_code "exits with 0 (no failures)" 0
+assert_output_contains "passes when schemas are distinct" "\[PASS\].*quality/repeated-settings"
 echo ""
 
 # Extended assertion files (auto-sourced from assertions/ directory)
