@@ -2019,6 +2019,7 @@ Rules for APIs removed or changed in specific GNOME Shell versions. These rules 
 - **Checked by**: check-resources.py → build-resource-graph.py
 - **Rule**: Module creates resources but has no cleanup method (`destroy()`, `disable()`, or `onDestroy()`) for cleanup.
 - **Fix**: Add a `destroy()` method that cleans up all resources, or use `onDestroy()` connected via `this.connect('destroy', this.onDestroy.bind(this))`.
+- **Note**: Suppressed when the parent calls any method on the child ref (e.g., `this._helper.disconnect_all()`) or nulls it inside a cleanup method body. This covers utility classes with custom cleanup methods managed by their parent.
 
 ### resource-tracking/destroy-not-called
 - **Severity**: advisory
@@ -2092,6 +2093,15 @@ Rules for APIs removed or changed in specific GNOME Shell versions. These rules 
 - **Known limitations**: Only detects direct `const/let/var x = new Map()` at module scope (brace depth 0). Destructured or factory-created collections not detected. Multi-file module-scope state (imported from another module) not tracked.
 - **Tested by**: `tests/fixtures/module-scope-state@test/`, `tests/fixtures/module-scope-state-cleared@test/`
 
+### R-LIFE-27: Module-scope prototype mutation
+- **Severity**: advisory
+- **Checked by**: check-lifecycle.py
+- **Rule**: `.prototype.` assignments and `Object.assign(...prototype, ...)` at module scope (brace depth 0) are flagged.
+- **Rationale**: Module-scope prototype mutations execute at import time, before `enable()` is called. They persist after `disable()` because they were never part of the enable/disable lifecycle. This permanently mutates shared global objects, affecting all code that uses those prototypes.
+- **Fix**: Move prototype mutations into `enable()` and restore the original methods in `disable()`.
+- **Scope exclusions**: prefs.js (manages own lifecycle), `service/` directory (daemon lifecycle).
+- **Tested by**: `tests/fixtures/prototype-mutation@test/`
+
 ### R-LIFE-20: Bus name ownership without release
 - **Severity**: advisory
 - **Checked by**: check-lifecycle.py
@@ -2103,12 +2113,13 @@ Rules for APIs removed or changed in specific GNOME Shell versions. These rules 
 ### R-LIFE-21: GSettings signal leak (bare connect without disconnect)
 - **Severity**: blocking
 - **Checked by**: check-lifecycle.py
-- **Rule**: `settings.connect('changed::...')` calls where the return value is not stored (no `=` or `.push()` before `.connect` on the line) and no auto-cleanup mechanism (`disconnectObject`, `connectObject`, `SignalTracker`, `connectSmart`) is present in the extension.
+- **Rule**: `settings.connect('changed::...')` calls where the return value is not stored (no `=` or `.push()` before `.connect` on the line) and no auto-cleanup mechanism (`disconnectObject`, `connectObject`, `SignalTracker`, `connectSmart`) is present in the **same file**.
 - **Rationale**: Without a stored signal ID, there is no way to call `.disconnect(id)` later. These handlers accumulate across enable/disable cycles, causing duplicate callbacks, memory leaks, and potential crashes. This is the highest-impact gap found in field testing — 4 of 10 extensions had this issue.
 - **Fix**: Use `connectObject()` (recommended — auto-disconnects via `disconnectObject(this)` in disable) or store the return value and call `disconnect(id)` in `disable()`.
 - **Scope exclusions**: prefs.js (manages own lifecycle), `service/` directory (daemon lifecycle).
+- **Auto-cleanup detection**: Per-file (not extension-wide). `connectObject`/`disconnectObject` in a helper file does not suppress bare `.connect()` findings in other files, because signal ownership is per-object-per-owner.
 - **Known limitations**: Multi-line `.connect(\n'changed::...'` calls are not detected (per-line scanning).
-- **Tested by**: `tests/fixtures/gsettings-bare-connect@test/`, `tests/fixtures/gsettings-auto-cleanup@test/`, `tests/fixtures/gsettings-array-storage@test/`
+- **Tested by**: `tests/fixtures/gsettings-bare-connect@test/`, `tests/fixtures/gsettings-auto-cleanup@test/`, `tests/fixtures/gsettings-array-storage@test/`, `tests/fixtures/gsettings-cross-file-leak@test/`
 
 ### R-LIFE-23: .destroy without parentheses
 - **Severity**: advisory

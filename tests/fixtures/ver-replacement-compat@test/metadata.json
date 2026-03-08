@@ -1,0 +1,7 @@
+{
+  "uuid": "ver-replacement-compat@test",
+  "name": "Version Replacement Compat Test",
+  "description": "Tests replacement-pattern suppression for version-compat code",
+  "shell-version": ["49"],
+  "url": ""
+}
