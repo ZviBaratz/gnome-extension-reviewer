@@ -385,24 +385,33 @@ def check_injection_manager(ext_dir):
                "InjectionManager with .clear() cleanup detected")
 
     # WS1-D: Detect direct prototype overrides
+    # Skip module-scope matches (depth 0) — R-LIFE-27 handles those
     prototype_overrides = []
     seen_overrides = set()
     for filepath in js_files:
         content = strip_comments(read_file(filepath))
         rel = os.path.relpath(filepath, ext_dir)
-        # SomeClass.prototype.methodName = ...
-        for m in re.finditer(r'(\w+\.prototype\.\w+)\s*=', content):
-            key = (rel, m.group(1))
-            if key not in seen_overrides:
-                seen_overrides.add(key)
-                prototype_overrides.append(key)
-        # Object.assign(SomeClass.prototype, ...)
-        for m in re.finditer(r'Object\.assign\s*\(\s*(\w+\.prototype)', content):
-            label = f"Object.assign({m.group(1)}, ...)"
-            key = (rel, label)
-            if key not in seen_overrides:
-                seen_overrides.add(key)
-                prototype_overrides.append(key)
+        lines = content.split('\n')
+        depth = 0
+        for line in lines:
+            if depth > 0:
+                # SomeClass.prototype.methodName = ...
+                for m in re.finditer(r'(\w+\.prototype\.\w+)\s*=(?!=)', line):
+                    key = (rel, m.group(1))
+                    if key not in seen_overrides:
+                        seen_overrides.add(key)
+                        prototype_overrides.append(key)
+                # Object.assign(SomeClass.prototype, ...)
+                for m in re.finditer(
+                        r'Object\.assign\s*\(\s*(\w+\.prototype)', line):
+                    label = f"Object.assign({m.group(1)}, ...)"
+                    key = (rel, label)
+                    if key not in seen_overrides:
+                        seen_overrides.add(key)
+                        prototype_overrides.append(key)
+            depth += line.count('{') - line.count('}')
+            if depth < 0:
+                depth = 0
 
     if prototype_overrides:
         # Check if disable() restores prototypes
@@ -423,7 +432,7 @@ def check_injection_manager(ext_dir):
                     pos += 1
                 disable_body = ext_content[start:pos]
                 # Check for prototype restoration in disable
-                if re.search(r'\w+\.prototype\.\w+\s*=', disable_body):
+                if re.search(r'\w+\.prototype\.\w+\s*=(?!=)', disable_body):
                     disable_restores = True
 
         if not disable_restores:
@@ -1445,7 +1454,7 @@ def check_module_scope_prototype(ext_dir):
     # Skip service/ directory (different lifecycle model)
     files = [f for f in files if '/service/' not in f.replace(os.sep, '/')]
 
-    PROTO_ASSIGN = re.compile(r'([\w.]+\.prototype\.\w+)\s*=')
+    PROTO_ASSIGN = re.compile(r'([\w.]+\.prototype\.\w+)\s*=(?!=)')
     PROTO_OBJ_ASSIGN = re.compile(
         r'Object\.assign\s*\(\s*([\w.]+\.prototype)')
 

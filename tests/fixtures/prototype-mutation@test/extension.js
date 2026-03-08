@@ -11,6 +11,9 @@ Object.assign(PanelMenu.Button.prototype, {
     anotherMethod() { return false; }
 });
 
+// Equality comparison — should NOT trigger any warning
+const isOriginal = PanelMenu.Button.prototype.customMethod === originalFn;
+
 export default class TestExtension extends Extension {
     enable() {
         // Inside enable() — should NOT trigger R-LIFE-27
