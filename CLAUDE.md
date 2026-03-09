@@ -9,9 +9,10 @@ Claude Code plugin for GNOME Shell extension EGO (extensions.gnome.org) review c
 ## Running ego-lint
 
 ```bash
-./ego-lint /path/to/extension@username        # top-level wrapper
+./ego-lint /path/to/extension@username        # FAIL + WARN + report (default)
+./ego-lint --show all /path/to/extension      # show all severity levels
+./ego-lint --no-report /path/to/extension     # suppress grouped report
 ./ego-lint --help                              # check categories, exit codes
-./ego-lint --verbose /path/to/extension        # grouped report + verdict
 ```
 
 ## Testing
@@ -116,7 +117,7 @@ Then for Tier 1 and 2:
 
 - Directory name must exactly match the `uuid` in `metadata.json`
 - UUID/name must not contain "gnome" (trademark check will FAIL)
-- Include a `LICENSE` file (single line `SPDX-License-Identifier: GPL-2.0-or-later`) or the license check will FAIL
+- Include a `LICENSE` file (single line `SPDX-License-Identifier: GPL-2.0-or-later`) or the license check will WARN
 - Avoid `.sh` files in fixtures (non-GJS script check flags them)
 - See `rules/README.md` for required files, metadata template, and troubleshooting
 

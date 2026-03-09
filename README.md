@@ -24,12 +24,12 @@ Run `./ego-lint --help` for the full check list and options.
 
 ```bash
 unzip extension.zip -d /tmp/some-extension@author
-./ego-lint /tmp/some-extension@author --verbose
+./ego-lint /tmp/some-extension@author --show all
 ```
 
 Try it on a bundled test fixture:
 
-    ./ego-lint tests/fixtures/lifecycle-imbalance@test --verbose
+    ./ego-lint tests/fixtures/lifecycle-imbalance@test --show all
 
 > Runs in ~2 seconds on typical extensions, ~4 seconds on large ones (11 modules). No network access.
 

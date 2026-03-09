@@ -94,14 +94,14 @@ All existing tests must still pass alongside your new assertion.
 To test just your fixture in isolation (without running the full suite):
 
 ```bash
-./ego-lint tests/fixtures/your-rule@test --verbose
+./ego-lint tests/fixtures/your-rule@test --show all
 ```
 
 ### Debugging tips
 
 - **Pattern doesn't match?** Test your rule in isolation: `bash scripts/validate-rule.sh R-XXXX-NN tests/fixtures/your-fixture@test`
 - **Fixture fails validation?** Run `bash scripts/validate-fixture.sh` to identify structural issues
-- **Not sure which check fires?** Run `./ego-lint tests/fixtures/your-fixture@test --verbose` and look for your rule ID in the output
+- **Not sure which check fires?** Run `./ego-lint tests/fixtures/your-fixture@test --show all` and look for your rule ID in the output
 
 ## First Contribution Workflow
 

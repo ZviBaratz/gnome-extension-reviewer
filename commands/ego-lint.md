@@ -19,4 +19,4 @@ bash <plugin-path>/skills/ego-lint/scripts/ego-lint.sh <extension-directory>
 
 2. Present the results grouped by severity (FAIL first, then WARN, then SKIP, then PASS).
 3. If any FAILs exist, summarize the blocking issues and suggest fixes using the table in `skills/ego-lint/SKILL.md` under "Common Fixes".
-4. For `--verbose` output, add the flag to the command.
+4. For full output with all severity levels, add `--show all` to the command. The grouped report with fix suggestions and verdict is shown by default; use `--no-report` to suppress it.

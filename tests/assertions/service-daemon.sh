@@ -7,4 +7,6 @@ assert_exit_code "exits with 0 (service dir checks suppressed)" 0
 assert_output_not_contains "no FAIL for init/shell-modification in service/" "\[FAIL\].*init/shell-modification"
 assert_output_not_contains "no WARN for R-SLOP-24 in service/" "\[WARN\].*R-SLOP-24"
 assert_output_not_contains "no WARN for constructor-resources in service/" "\[WARN\].*constructor-resources"
+assert_output_not_contains "no FAIL for R-DEPR-06 in service/" "\[FAIL\].*R-DEPR-06"
+assert_output_not_contains "no FAIL for R-DEPR-10 in service/" "\[FAIL\].*R-DEPR-10"
 echo ""

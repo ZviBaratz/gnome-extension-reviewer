@@ -1,0 +1,7 @@
+{
+    "uuid": "compiled-typescript-layout@test",
+    "name": "Compiled TS Layout Test",
+    "description": "Tests that compiled TypeScript with resources/ layout skips file-structure checks",
+    "shell-version": ["48"],
+    "url": "https://example.com"
+}

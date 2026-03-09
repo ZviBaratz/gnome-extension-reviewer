@@ -62,7 +62,7 @@ run_lint() {
     local fixture="$1"
     output=""
     exit_code=0
-    output="$(bash "$LINT" "$FIXTURES/$fixture" 2>&1)" || exit_code=$?
+    output="$(bash "$LINT" --show all --no-report "$FIXTURES/$fixture" 2>&1)" || exit_code=$?
 }
 
 echo "============================================"
@@ -655,6 +655,14 @@ echo "=== license-rst ==="
 run_lint "license-rst@test"
 assert_exit_code "exits with 0 (LICENSE.rst recognized)" 0
 assert_output_contains "LICENSE.rst detected" "\[PASS\].*license"
+echo ""
+
+# --- no-license (missing LICENSE file → WARN, not FAIL) ---
+echo "=== no-license ==="
+run_lint "no-license@test"
+assert_exit_code "exits with 0 (advisory only, no blocking issues)" 0
+assert_output_contains "missing LICENSE is WARN" "\[WARN\].*license.*No LICENSE"
+assert_output_not_contains "missing LICENSE is not FAIL" "\[FAIL\].*license"
 echo ""
 
 # --- src-metadata (metadata.json in src/ only) ---
