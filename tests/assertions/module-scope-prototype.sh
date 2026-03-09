@@ -10,5 +10,7 @@ assert_output_count "exactly 3 module-scope-prototype warnings" "\[WARN\].*lifec
 assert_output_not_contains "=== comparison does not trigger warning" "\[WARN\].*lifecycle/module-scope-prototype.*isOriginal"
 assert_output_not_contains "instanceof does not trigger warning" "\[WARN\].*lifecycle/module-scope-prototype.*instanceof"
 assert_output_not_contains "getPrototypeOf does not trigger warning" "\[WARN\].*lifecycle/module-scope-prototype.*getPrototypeOf"
+assert_output_not_contains "Object.create does not trigger warning" "\[WARN\].*lifecycle/module-scope-prototype.*Object\.create"
+assert_output_not_contains "Gio._promisify does not trigger R-LIFE-27" "\[WARN\].*lifecycle/module-scope-prototype.*Gio\._promisify"
 assert_output_not_contains "module-scope findings not in prototype-override" "\[WARN\].*lifecycle/prototype-override.*customMethod"
 echo ""

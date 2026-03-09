@@ -1503,9 +1503,11 @@ def check_module_scope_prototype(ext_dir):
     PROTO_OBJ_ASSIGN = re.compile(
         r'Object\.assign\s*\(\s*([\w.]+\.prototype)')
     # Indirect mutation: .prototype passed as function argument
-    PROTO_ARG = re.compile(r'(\w+)\s*\(\s*([\w.]+\.prototype)\b')
+    PROTO_ARG = re.compile(r'([\w.]+\w)\s*\(\s*([\w.]+\.prototype)\b')
     # Safe patterns that mention .prototype but aren't mutations
-    PROTO_SAFE = re.compile(r'===|!==|instanceof|Object\.create|Object\.getPrototypeOf')
+    PROTO_SAFE = re.compile(
+        r'===|!==|\binstanceof\b|\bObject\.create\b'
+        r'|\bObject\.getPrototypeOf\b|Gio\._promisify')
 
     found = []
     seen = set()
@@ -1531,15 +1533,13 @@ def check_module_scope_prototype(ext_dir):
                     if key not in seen:
                         seen.add(key)
                         found.append((rel, lineno, m.group(1)))
-                elif PROTO_OBJ_ASSIGN.search(line):
-                    m = PROTO_OBJ_ASSIGN.search(line)
+                elif (m := PROTO_OBJ_ASSIGN.search(line)):
                     label = f"Object.assign({m.group(1)}, ...)"
                     key = (rel, label)
                     if key not in seen:
                         seen.add(key)
                         found.append((rel, lineno, label))
-                elif PROTO_ARG.search(line) and not PROTO_SAFE.search(line):
-                    m = PROTO_ARG.search(line)
+                elif (m := PROTO_ARG.search(line)) and not PROTO_SAFE.search(line):
                     label = f"{m.group(1)}({m.group(2)})"
                     key = (rel, label)
                     if key not in seen:

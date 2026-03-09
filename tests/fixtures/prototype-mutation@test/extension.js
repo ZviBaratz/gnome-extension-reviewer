@@ -23,8 +23,14 @@ const isOriginal = PanelMenu.Button.prototype.customMethod === originalFn;
 // instanceof check — should NOT trigger
 if (obj instanceof PanelMenu.Button.prototype.constructor) {}
 
-// Object.getPrototypeOf — should NOT trigger
+// Object.getPrototypeOf — should NOT trigger (exercises PROTO_SAFE filter)
 const proto = Object.getPrototypeOf(PanelMenu.Button.prototype);
+
+// Object.create — should NOT trigger (exercises PROTO_SAFE filter)
+const child = Object.create(PanelMenu.Button.prototype);
+
+// Gio._promisify — should NOT trigger (handled by R-QUAL-33 instead)
+Gio._promisify(Gio.File.prototype, 'load_contents_async', 'load_contents_finish');
 
 export default class TestExtension extends Extension {
     enable() {
