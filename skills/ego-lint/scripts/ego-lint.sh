@@ -176,23 +176,65 @@ echo "Extension: $EXT_DIR"
 echo ""
 
 # ---------------------------------------------------------------------------
+# Compiled TypeScript detection (must run before file-structure checks)
+# ---------------------------------------------------------------------------
+# esbuild emits helper functions (var __defProp, __decorateClass, etc.)
+# that are definitive markers of transpiled output. When detected, noisy rules
+# that flag transpiler artifacts (var declarations, verbose identifiers) are
+# suppressed, resource-tracking/no-destroy-method is skipped, and
+# file-structure checks are relaxed (bundled output has non-standard layout).
+
+COMPILED_TS=false
+while IFS= read -r -d '' f; do
+    if grep -qE 'var __defProp|__decorateClass|__publicField' "$f" 2>/dev/null; then
+        COMPILED_TS=true
+        break
+    fi
+done < <(find "$EXT_DIR" -name '*.js' -not -path '*/node_modules/*' -not -path '*/.git/*' -print0 2>/dev/null)
+
+if [[ "$COMPILED_TS" == true ]]; then
+    export EGO_LINT_COMPILED_TS=1
+    print_result "WARN" "compiled-typescript" "Extension appears compiled from TypeScript — some lint checks adjusted"
+else
+    print_result "PASS" "compiled-typescript" "No transpiler artifacts detected"
+fi
+
+# ---------------------------------------------------------------------------
 # File structure checks
 # ---------------------------------------------------------------------------
 
-if [[ -f "$EXT_DIR/extension.js" ]]; then
+# Skip file-structure checks for compiled TypeScript (bundled output has
+# non-standard layout; the compiled-typescript WARN already flags this)
+if [[ "$COMPILED_TS" == true ]]; then
+    print_result "SKIP" "file-structure/extension.js" "Skipped for compiled TypeScript"
+    print_result "SKIP" "file-structure/metadata.json" "Skipped for compiled TypeScript"
+elif [[ -f "$EXT_DIR/extension.js" ]]; then
     print_result "PASS" "file-structure/extension.js" "extension.js exists"
+    if [[ -f "$EXT_DIR/metadata.json" ]]; then
+        print_result "PASS" "file-structure/metadata.json" "metadata.json exists"
+    elif [[ -f "$EXT_DIR/src/metadata.json" ]]; then
+        print_result "PASS" "file-structure/metadata.json" "metadata.json exists (in src/)"
+    else
+        print_result "FAIL" "file-structure/metadata.json" "metadata.json is missing"
+    fi
 elif [[ -f "$EXT_DIR/src/extension.js" ]]; then
     print_result "PASS" "file-structure/extension.js" "extension.js exists (in src/)"
+    if [[ -f "$EXT_DIR/metadata.json" ]]; then
+        print_result "PASS" "file-structure/metadata.json" "metadata.json exists"
+    elif [[ -f "$EXT_DIR/src/metadata.json" ]]; then
+        print_result "PASS" "file-structure/metadata.json" "metadata.json exists (in src/)"
+    else
+        print_result "FAIL" "file-structure/metadata.json" "metadata.json is missing"
+    fi
 else
     print_result "FAIL" "file-structure/extension.js" "extension.js is missing"
-fi
-
-if [[ -f "$EXT_DIR/metadata.json" ]]; then
-    print_result "PASS" "file-structure/metadata.json" "metadata.json exists"
-elif [[ -f "$EXT_DIR/src/metadata.json" ]]; then
-    print_result "PASS" "file-structure/metadata.json" "metadata.json exists (in src/)"
-else
-    print_result "FAIL" "file-structure/metadata.json" "metadata.json is missing"
+    if [[ -f "$EXT_DIR/metadata.json" ]]; then
+        print_result "PASS" "file-structure/metadata.json" "metadata.json exists"
+    elif [[ -f "$EXT_DIR/src/metadata.json" ]]; then
+        print_result "PASS" "file-structure/metadata.json" "metadata.json exists (in src/)"
+    else
+        print_result "FAIL" "file-structure/metadata.json" "metadata.json is missing"
+    fi
 fi
 
 # ---------------------------------------------------------------------------
@@ -461,31 +503,6 @@ if [[ -n "$minified_files" ]]; then
     print_result "FAIL" "minified-js" "Found $hit_count minified/bundled JS file(s) — reviewers cannot review minified code"
 else
     print_result "PASS" "minified-js" "No minified or bundled JavaScript detected"
-fi
-
-# ---------------------------------------------------------------------------
-# Compiled TypeScript detection
-# ---------------------------------------------------------------------------
-# esbuild emits helper functions (var __defProp, __decorateClass, etc.)
-# that are definitive markers of transpiled output. When detected, noisy rules
-# that flag transpiler artifacts (var declarations, verbose identifiers) are
-# suppressed, and resource-tracking/no-destroy-method is skipped.
-# Note: these markers are esbuild-specific. Plain tsc emits different helpers
-# (__decorate, __metadata, __awaiter) — add those if tsc-only extensions appear.
-
-COMPILED_TS=false
-while IFS= read -r -d '' f; do
-    if grep -qE 'var __defProp|__decorateClass|__publicField' "$f" 2>/dev/null; then
-        COMPILED_TS=true
-        break
-    fi
-done < <(find "$EXT_DIR" -name '*.js' -not -path '*/node_modules/*' -not -path '*/.git/*' -print0 2>/dev/null)
-
-if [[ "$COMPILED_TS" == true ]]; then
-    export EGO_LINT_COMPILED_TS=1
-    print_result "WARN" "compiled-typescript" "Extension appears compiled from TypeScript — some lint checks adjusted"
-else
-    print_result "PASS" "compiled-typescript" "No transpiler artifacts detected"
 fi
 
 # ---------------------------------------------------------------------------
