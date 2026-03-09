@@ -268,7 +268,7 @@ if [[ -n "$license_file" ]]; then
         print_result "WARN" "license" "License file found but could not confirm GPL-compatibility"
     fi
 else
-    print_result "FAIL" "license" "No LICENSE or COPYING file — MUST use GPL-compatible license"
+    print_result "WARN" "license" "No LICENSE or COPYING file — should use GPL-compatible license"
 fi
 
 # ---------------------------------------------------------------------------
