@@ -28,7 +28,7 @@ working directory).
 Run the automated linter first to establish a baseline:
 
 ```bash
-bash skills/ego-lint/scripts/ego-lint.sh --verbose EXTENSION_DIR
+bash skills/ego-lint/scripts/ego-lint.sh --show all EXTENSION_DIR
 ```
 
 Capture the results: FAIL count, WARN count, and specific findings with

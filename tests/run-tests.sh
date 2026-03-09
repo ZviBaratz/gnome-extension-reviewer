@@ -62,7 +62,7 @@ run_lint() {
     local fixture="$1"
     output=""
     exit_code=0
-    output="$(bash "$LINT" "$FIXTURES/$fixture" 2>&1)" || exit_code=$?
+    output="$(bash "$LINT" --show all --no-report "$FIXTURES/$fixture" 2>&1)" || exit_code=$?
 }
 
 echo "============================================"

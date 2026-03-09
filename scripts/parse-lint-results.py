@@ -3,7 +3,7 @@
 
 Usage: parse-lint-results.py [OPTIONS]
 
-Reads ego-lint --verbose stdout from stdin, outputs JSON to stdout.
+Reads ego-lint --show all stdout from stdin, outputs JSON to stdout.
 Expects the extension name, uuid, and metadata via CLI flags.
 
 Options:
