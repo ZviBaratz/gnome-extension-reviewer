@@ -1245,8 +1245,16 @@ def check_gsettings_signal_leak(ext_dir):
 
         file_bare_connects = []
         prev_stripped = ''
+        in_array_literal = False
         for lineno, line in enumerate(content.splitlines(), 1):
             stripped = line.strip()
+            # Track array literal assignment context: ids = [ ... ]
+            if not in_array_literal and re.search(r'=\s*\[', stripped):
+                idx = stripped.rindex('[')
+                if ']' not in stripped[idx + 1:]:
+                    in_array_literal = True
+            elif in_array_literal and ']' in stripped:
+                in_array_literal = False
             # Match settings.connect('changed...') without assignment
             if not re.search(r"\.connect\s*\(\s*['\"]changed", stripped):
                 if stripped:
@@ -1262,6 +1270,10 @@ def check_gsettings_signal_leak(ext_dir):
                 continue
             # Skip if this line is inside a .push() call (multi-line pattern)
             if re.search(r'\.push\s*\(\s*$', prev_stripped):
+                prev_stripped = stripped
+                continue
+            # Skip if inside array literal (IDs collected into array)
+            if in_array_literal:
                 prev_stripped = stripped
                 continue
             # Skip connectObject/connectSmart variants

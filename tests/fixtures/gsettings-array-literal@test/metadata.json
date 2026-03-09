@@ -1,0 +1,7 @@
+{
+  "uuid": "gsettings-array-literal@test",
+  "name": "GSettings Array Literal Test",
+  "shell-version": ["45"],
+  "description": "Fixture for R-LIFE-21: array-literal signal ID collection",
+  "url": "https://example.com"
+}
