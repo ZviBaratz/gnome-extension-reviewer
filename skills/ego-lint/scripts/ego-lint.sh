@@ -26,7 +26,7 @@ Options:
   -h, --help       Show this help message and exit
   -v, --verbose    Show verbose report with grouped results and verdict
   -q, --quiet      Show only FAIL and WARN results (hides PASS, SKIP, header, metrics)
-  --show LEVELS    Comma-separated severity filter: fail,warn,pass,skip
+  --show LEVELS    Comma-separated severity filter: fail,warn,pass,skip (overrides --quiet)
 
 Checks (124 pattern rules + 13 structural scripts):
   metadata         UUID, required fields, shell-version, session-modes, GNOME trademark
@@ -121,9 +121,7 @@ DEFERRED_SLOP_JSDOC=()  # R-SLOP-01/02 WARNs deferred until provenance score is 
 should_show() {
     local status="$1"
     [[ -z "$SHOW_LEVELS" ]] && return 0
-    local lower_status
-    lower_status="$(echo "$status" | tr '[:upper:]' '[:lower:]')"
-    [[ ",$SHOW_LEVELS," == *",$lower_status,"* ]]
+    [[ ",$SHOW_LEVELS," == *",${status,,},"* ]]
 }
 
 print_result() {

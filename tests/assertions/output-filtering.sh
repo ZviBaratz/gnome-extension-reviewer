@@ -67,3 +67,32 @@ assert_output_contains "show=FAIL (uppercase) shows FAIL lines" "\[FAIL\]"
 assert_output_not_contains "show=FAIL (uppercase) hides PASS lines" "\[PASS\]"
 assert_exit_code "show=FAIL preserves exit code" 1
 echo ""
+
+# --- --show=LEVELS equals syntax ---
+echo "=== output-filtering: --show=fail (equals syntax) ==="
+output=""
+exit_code=0
+output="$(bash "$LINT" --show=fail "$FIXTURES/console-log" 2>&1)" || exit_code=$?
+assert_output_contains "show=fail (equals) shows FAIL lines" "\[FAIL\]"
+assert_output_not_contains "show=fail (equals) hides PASS lines" "\[PASS\]"
+assert_output_not_contains "show=fail (equals) hides WARN lines" "\[WARN\]"
+echo ""
+
+# --- --quiet + --show interaction (--show overrides --quiet) ---
+echo "=== output-filtering: --quiet --show pass ==="
+output=""
+exit_code=0
+output="$(bash "$LINT" --quiet --show pass "$FIXTURES/valid-extension@test" 2>&1)" || exit_code=$?
+assert_output_contains "quiet+show: --show overrides --quiet (PASS shown)" "\[PASS\]"
+assert_output_not_contains "quiet+show: --show overrides --quiet (FAIL hidden)" "\[FAIL\]"
+assert_output_not_contains "quiet+show: --show overrides --quiet (WARN hidden)" "\[WARN\]"
+echo ""
+
+# --- --show + --verbose interaction ---
+echo "=== output-filtering: --show pass --verbose ==="
+output=""
+exit_code=0
+output="$(bash "$LINT" --show pass --verbose "$FIXTURES/valid-extension@test" 2>&1)" || exit_code=$?
+assert_output_contains "show+verbose: real-time PASS shown" "\[PASS\]"
+assert_output_contains "show+verbose: verbose report still shown" "VERBOSE REPORT"
+echo ""
