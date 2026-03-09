@@ -25,6 +25,8 @@ network access.
 Options:
   -h, --help       Show this help message and exit
   -v, --verbose    Show verbose report with grouped results and verdict
+  -q, --quiet      Show only FAIL and WARN results (hides PASS, SKIP, header, metrics)
+  --show LEVELS    Comma-separated severity filter: fail,warn,pass,skip
 
 Checks (124 pattern rules + 13 structural scripts):
   metadata         UUID, required fields, shell-version, session-modes, GNOME trademark
@@ -50,6 +52,8 @@ HELPEOF
 }
 
 VERBOSE=false
+QUIET=false
+SHOW_LEVELS=""   # comma-separated: fail,warn,pass,skip (empty = all)
 EXT_DIR=""
 while [[ $# -gt 0 ]]; do
     case "$1" in
@@ -60,6 +64,22 @@ while [[ $# -gt 0 ]]; do
             VERBOSE=true
             shift
             ;;
+        --quiet|-q)
+            QUIET=true
+            shift
+            ;;
+        --show)
+            if [[ $# -lt 2 ]]; then
+                echo "ego-lint: --show requires an argument" >&2
+                exit 2
+            fi
+            SHOW_LEVELS="$2"
+            shift 2
+            ;;
+        --show=*)
+            SHOW_LEVELS="${1#--show=}"
+            shift
+            ;;
         *)
             EXT_DIR="$1"
             shift
@@ -68,6 +88,22 @@ while [[ $# -gt 0 ]]; do
 done
 EXT_DIR="${EXT_DIR:-.}"
 EXT_DIR="$(cd "$EXT_DIR" && pwd)"
+
+if [[ "$QUIET" == true && -z "$SHOW_LEVELS" ]]; then
+    SHOW_LEVELS="fail,warn"
+fi
+
+SHOW_LEVELS="$(echo "$SHOW_LEVELS" | tr '[:upper:]' '[:lower:]')"
+
+if [[ -n "$SHOW_LEVELS" ]]; then
+    IFS=',' read -ra _levels <<< "$SHOW_LEVELS"
+    for _level in "${_levels[@]}"; do
+        case "$_level" in
+            fail|warn|pass|skip) ;;
+            *) echo "ego-lint: unknown severity level '$_level' (valid: fail,warn,pass,skip)" >&2; exit 2 ;;
+        esac
+    done
+fi
 
 RESULTS_FILE="$(mktemp)"
 trap 'rm -f "$RESULTS_FILE"' EXIT
@@ -82,6 +118,14 @@ DEFERRED_SLOP_JSDOC=()  # R-SLOP-01/02 WARNs deferred until provenance score is 
 # Output helpers
 # ---------------------------------------------------------------------------
 
+should_show() {
+    local status="$1"
+    [[ -z "$SHOW_LEVELS" ]] && return 0
+    local lower_status
+    lower_status="$(echo "$status" | tr '[:upper:]' '[:lower:]')"
+    [[ ",$SHOW_LEVELS," == *",$lower_status,"* ]]
+}
+
 print_result() {
     local status="$1"
     local check="$2"
@@ -89,7 +133,9 @@ print_result() {
     local display_detail="${detail%%|fix:*}"
 
     # Fixed-width formatting: [STATUS] check-name  detail (fix text stripped)
-    printf "[%-4s] %-38s %s\n" "$status" "$check" "$display_detail"
+    if should_show "$status"; then
+        printf "[%-4s] %-38s %s\n" "$status" "$check" "$display_detail"
+    fi
     # Results file preserves fix text for verbose report
     echo "${status}|${check}|${detail}" >> "$RESULTS_FILE"
 
@@ -168,12 +214,14 @@ run_pattern_rules() {
 # Header
 # ---------------------------------------------------------------------------
 
-echo "================================================================"
-echo "  ego-lint — GNOME Shell Extension Compliance Checker"
-echo "================================================================"
-echo ""
-echo "Extension: $EXT_DIR"
-echo ""
+if [[ -z "$SHOW_LEVELS" ]]; then
+    echo "================================================================"
+    echo "  ego-lint — GNOME Shell Extension Compliance Checker"
+    echo "================================================================"
+    echo ""
+    echo "Extension: $EXT_DIR"
+    echo ""
+fi
 
 # ---------------------------------------------------------------------------
 # Compiled TypeScript detection (must run before file-structure checks)
@@ -559,7 +607,9 @@ fi
 # Delegate to sub-scripts
 # ---------------------------------------------------------------------------
 
-echo ""
+if [[ -z "$SHOW_LEVELS" ]]; then
+    echo ""
+fi
 
 # check-metadata.py
 if [[ -x "$SCRIPT_DIR/check-metadata.py" ]]; then
@@ -652,7 +702,9 @@ else
         _df_check="${_df_rest%%|*}"
         _df_detail="${_df_rest#*|}"
         _df_display="${_df_detail%%|fix:*}"
-        printf "[%-4s] %-38s %s\n" "$_df_status" "$_df_check" "$_df_display"
+        if should_show "$_df_status"; then
+            printf "[%-4s] %-38s %s\n" "$_df_status" "$_df_check" "$_df_display"
+        fi
         echo "${entry}" >> "$RESULTS_FILE"
     done
 fi
@@ -705,18 +757,22 @@ compute_metrics() {
     echo "[METRIC] schema-keys: $schema_keys"
 }
 
-compute_metrics
+if [[ -z "$SHOW_LEVELS" ]]; then
+    compute_metrics
+fi
 
 # ---------------------------------------------------------------------------
 # Summary
 # ---------------------------------------------------------------------------
 
-echo ""
+if [[ -z "$SHOW_LEVELS" ]]; then
+    echo ""
+fi
 echo "----------------------------------------------------------------"
 TOTAL=$((PASS_COUNT + FAIL_COUNT + WARN_COUNT + SKIP_COUNT))
 echo "  Results: $TOTAL checks — $PASS_COUNT passed, $FAIL_COUNT failed, $WARN_COUNT warnings, $SKIP_COUNT skipped"
 echo "----------------------------------------------------------------"
-if [[ "$VERBOSE" != true ]]; then
+if [[ "$VERBOSE" != true && -z "$SHOW_LEVELS" ]]; then
     echo "  (run with --verbose for grouped report and fix suggestions)"
 fi
 
