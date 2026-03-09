@@ -295,6 +295,15 @@ def main():
             scopes = [scopes]
 
         status = 'FAIL' if severity == 'blocking' else 'WARN'
+
+        # Version-compat downgrade: if extension targets GNOME versions where
+        # this API was still valid, the deprecated code is backward-compat — WARN
+        if (status == 'FAIL' and rule.get('compat-downgrade') == 'true'
+                and min_shell is not None):
+            rule_min = rule.get('min-version')
+            if rule_min is not None and min_shell < int(rule_min):
+                status = 'WARN'
+
         found = False
         dedup_files = set()  # For deduplicate mode
         exclude_dirs = set(rule.get('exclude-dirs', []))

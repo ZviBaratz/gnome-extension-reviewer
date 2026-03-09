@@ -1,0 +1,7 @@
+{
+    "uuid": "compat-downgrade-wide@test",
+    "name": "Compat Downgrade Wide Test",
+    "description": "Extension targeting old+new GNOME — deprecated APIs should WARN not FAIL",
+    "shell-version": ["42", "48"],
+    "url": "https://example.com"
+}
