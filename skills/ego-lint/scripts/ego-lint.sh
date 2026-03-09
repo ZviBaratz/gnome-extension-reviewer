@@ -24,9 +24,8 @@ network access.
 
 Options:
   -h, --help       Show this help message and exit
-  -v, --verbose    Show verbose report with grouped results and verdict
-  -q, --quiet      Show only FAIL and WARN results (hides PASS, SKIP, header, metrics)
-  --show LEVELS    Comma-separated severity filter: fail,warn,pass,skip (overrides --quiet)
+  --show LEVELS    Comma-separated severity filter: fail,warn,pass,skip,all (default: fail,warn)
+  --report         Show grouped report with fix suggestions and verdict
 
 Checks (124 pattern rules + 13 structural scripts):
   metadata         UUID, required fields, shell-version, session-modes, GNOME trademark
@@ -47,25 +46,21 @@ Checks (124 pattern rules + 13 structural scripts):
 Exit codes:
   0  No blocking issues found
   1  Blocking issues found (likely rejection)
+  2  Invalid arguments
 HELPEOF
     exit 0
 }
 
-VERBOSE=false
-QUIET=false
-SHOW_LEVELS=""   # comma-separated: fail,warn,pass,skip (empty = all)
+REPORT=false
+SHOW_LEVELS="fail,warn"   # comma-separated: fail,warn,pass,skip,all
 EXT_DIR=""
 while [[ $# -gt 0 ]]; do
     case "$1" in
         --help|-h)
             show_help
             ;;
-        --verbose|-v)
-            VERBOSE=true
-            shift
-            ;;
-        --quiet|-q)
-            QUIET=true
+        --report)
+            REPORT=true
             shift
             ;;
         --show)
@@ -89,20 +84,26 @@ done
 EXT_DIR="${EXT_DIR:-.}"
 EXT_DIR="$(cd "$EXT_DIR" && pwd)"
 
-if [[ "$QUIET" == true && -z "$SHOW_LEVELS" ]]; then
-    SHOW_LEVELS="fail,warn"
-fi
-
 SHOW_LEVELS="$(echo "$SHOW_LEVELS" | tr '[:upper:]' '[:lower:]')"
 
-if [[ -n "$SHOW_LEVELS" ]]; then
-    IFS=',' read -ra _levels <<< "$SHOW_LEVELS"
-    for _level in "${_levels[@]}"; do
-        case "$_level" in
-            fail|warn|pass|skip) ;;
-            *) echo "ego-lint: unknown severity level '$_level' (valid: fail,warn,pass,skip)" >&2; exit 2 ;;
-        esac
-    done
+# Expand "all" to all four levels
+if [[ ",$SHOW_LEVELS," == *",all,"* ]]; then
+    SHOW_LEVELS="fail,warn,pass,skip"
+fi
+
+IFS=',' read -ra _levels <<< "$SHOW_LEVELS"
+for _level in "${_levels[@]}"; do
+    case "$_level" in
+        fail|warn|pass|skip) ;;
+        *) echo "ego-lint: unknown severity level '$_level' (valid: fail,warn,pass,skip,all)" >&2; exit 2 ;;
+    esac
+done
+
+# Show header/metrics/chrome when all four levels are present
+SHOW_ALL=false
+if [[ ",$SHOW_LEVELS," == *",fail,"* && ",$SHOW_LEVELS," == *",warn,"* && \
+      ",$SHOW_LEVELS," == *",pass,"* && ",$SHOW_LEVELS," == *",skip,"* ]]; then
+    SHOW_ALL=true
 fi
 
 RESULTS_FILE="$(mktemp)"
@@ -120,7 +121,6 @@ DEFERRED_SLOP_JSDOC=()  # R-SLOP-01/02 WARNs deferred until provenance score is 
 
 should_show() {
     local status="$1"
-    [[ -z "$SHOW_LEVELS" ]] && return 0
     [[ ",$SHOW_LEVELS," == *",${status,,},"* ]]
 }
 
@@ -134,7 +134,7 @@ print_result() {
     if should_show "$status"; then
         printf "[%-4s] %-38s %s\n" "$status" "$check" "$display_detail"
     fi
-    # Results file preserves fix text for verbose report
+    # Results file preserves fix text for --report
     echo "${status}|${check}|${detail}" >> "$RESULTS_FILE"
 
     case "$status" in
@@ -212,7 +212,7 @@ run_pattern_rules() {
 # Header
 # ---------------------------------------------------------------------------
 
-if [[ -z "$SHOW_LEVELS" ]]; then
+if [[ "$SHOW_ALL" == true ]]; then
     echo "================================================================"
     echo "  ego-lint — GNOME Shell Extension Compliance Checker"
     echo "================================================================"
@@ -605,7 +605,7 @@ fi
 # Delegate to sub-scripts
 # ---------------------------------------------------------------------------
 
-if [[ -z "$SHOW_LEVELS" ]]; then
+if [[ "$SHOW_ALL" == true ]]; then
     echo ""
 fi
 
@@ -755,7 +755,7 @@ compute_metrics() {
     echo "[METRIC] schema-keys: $schema_keys"
 }
 
-if [[ -z "$SHOW_LEVELS" ]]; then
+if [[ "$SHOW_ALL" == true ]]; then
     compute_metrics
 fi
 
@@ -763,21 +763,21 @@ fi
 # Summary
 # ---------------------------------------------------------------------------
 
-if [[ -z "$SHOW_LEVELS" ]]; then
+if [[ "$SHOW_ALL" == true ]]; then
     echo ""
 fi
 echo "----------------------------------------------------------------"
 TOTAL=$((PASS_COUNT + FAIL_COUNT + WARN_COUNT + SKIP_COUNT))
 echo "  Results: $TOTAL checks — $PASS_COUNT passed, $FAIL_COUNT failed, $WARN_COUNT warnings, $SKIP_COUNT skipped"
 echo "----------------------------------------------------------------"
-if [[ "$VERBOSE" != true && -z "$SHOW_LEVELS" ]]; then
-    echo "  (run with --verbose for grouped report and fix suggestions)"
+if [[ "$REPORT" != true && "$SHOW_ALL" == true ]]; then
+    echo "  (run with --report for grouped report and fix suggestions)"
 fi
 
-if [[ "$VERBOSE" == true ]]; then
+if [[ "$REPORT" == true ]]; then
     echo ""
     echo "================================================================"
-    echo "  VERBOSE REPORT"
+    echo "  REPORT"
     echo "================================================================"
 
     # Group by severity

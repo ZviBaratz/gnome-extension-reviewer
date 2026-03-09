@@ -9,9 +9,10 @@ Claude Code plugin for GNOME Shell extension EGO (extensions.gnome.org) review c
 ## Running ego-lint
 
 ```bash
-./ego-lint /path/to/extension@username        # top-level wrapper
+./ego-lint /path/to/extension@username        # top-level wrapper (FAIL + WARN only)
+./ego-lint --show all /path/to/extension      # show all severity levels
+./ego-lint --report /path/to/extension        # grouped report + verdict
 ./ego-lint --help                              # check categories, exit codes
-./ego-lint --verbose /path/to/extension        # grouped report + verdict
 ```
 
 ## Testing

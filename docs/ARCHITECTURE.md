@@ -33,7 +33,7 @@ Every sub-script outputs pipe-delimited lines in the format
 `STATUS|check-name|detail`, where STATUS is one of PASS, FAIL, WARN, or SKIP.
 `ego-lint.sh` parses these lines, counts results by status, and reformats them
 into a fixed-width report. Exit code 0 means no blocking issues (no FAILs);
-exit code 1 means at least one FAIL was found. The `--verbose` flag adds
+exit code 1 means at least one FAIL was found. The `--report` flag adds
 grouped output and a verdict summary.
 
 ## When to Use Each Tier

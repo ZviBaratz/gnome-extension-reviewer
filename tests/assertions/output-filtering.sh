@@ -1,21 +1,31 @@
-# Output filtering: --quiet and --show flags
+# Output filtering: --show and --report flags
 # Sourced by run-tests.sh — uses run_lint, assert_output_contains, assert_output_not_contains, etc.
 
-# --- quiet mode ---
-echo "=== output-filtering: --quiet ==="
+# --- default (no flags) shows only FAIL + WARN ---
+echo "=== output-filtering: default (problems only) ==="
 output=""
 exit_code=0
-output="$(bash "$LINT" --quiet "$FIXTURES/valid-extension@test" 2>&1)" || exit_code=$?
-assert_output_not_contains "quiet hides PASS lines" "\[PASS\]"
-assert_output_not_contains "quiet hides SKIP lines" "\[SKIP\]"
-assert_output_not_contains "quiet hides header" "ego-lint — GNOME Shell Extension"
-assert_output_not_contains "quiet hides metrics" "\[METRIC\]"
-assert_output_not_contains "quiet hides verbose hint" "run with --verbose"
-assert_output_contains "quiet keeps summary" "Results:"
+output="$(bash "$LINT" "$FIXTURES/valid-extension@test" 2>&1)" || exit_code=$?
+assert_output_not_contains "default hides PASS lines" "\[PASS\]"
+assert_output_not_contains "default hides SKIP lines" "\[SKIP\]"
+assert_output_not_contains "default hides header" "ego-lint — GNOME Shell Extension"
+assert_output_not_contains "default hides metrics" "\[METRIC\]"
+assert_output_contains "default keeps summary" "Results:"
 echo ""
 
-# --- show=fail only ---
-echo "=== output-filtering: --show=fail ==="
+# --- --show all shows everything ---
+echo "=== output-filtering: --show all ==="
+output=""
+exit_code=0
+output="$(bash "$LINT" --show all "$FIXTURES/valid-extension@test" 2>&1)" || exit_code=$?
+assert_output_contains "show=all shows PASS lines" "\[PASS\]"
+assert_output_contains "show=all shows header" "ego-lint — GNOME Shell Extension"
+assert_output_contains "show=all shows report hint" "run with --report"
+assert_output_contains "show=all keeps summary" "Results:"
+echo ""
+
+# --- --show fail only ---
+echo "=== output-filtering: --show fail ==="
 output=""
 exit_code=0
 output="$(bash "$LINT" --show fail "$FIXTURES/console-log" 2>&1)" || exit_code=$?
@@ -29,8 +39,8 @@ assert_output_contains "show=fail keeps summary" "Results:"
 assert_exit_code "show=fail preserves exit code" 1
 echo ""
 
-# --- show=pass,skip ---
-echo "=== output-filtering: --show=pass,skip ==="
+# --- --show pass,skip ---
+echo "=== output-filtering: --show pass,skip ==="
 output=""
 exit_code=0
 output="$(bash "$LINT" --show pass,skip "$FIXTURES/valid-extension@test" 2>&1)" || exit_code=$?
@@ -40,13 +50,24 @@ assert_output_not_contains "show=pass,skip hides header" "ego-lint — GNOME She
 assert_output_contains "show=pass,skip keeps summary" "Results:"
 echo ""
 
-# --- quiet + verbose ---
-echo "=== output-filtering: --quiet --verbose ==="
+# --- --report shows grouped report ---
+echo "=== output-filtering: --report ==="
 output=""
 exit_code=0
-output="$(bash "$LINT" --quiet --verbose "$FIXTURES/valid-extension@test" 2>&1)" || exit_code=$?
-assert_output_not_contains "quiet+verbose hides PASS lines" "\[PASS\]"
-assert_output_contains "quiet+verbose still shows verbose report" "VERBOSE REPORT"
+output="$(bash "$LINT" --report "$FIXTURES/valid-extension@test" 2>&1)" || exit_code=$?
+assert_output_not_contains "report hides PASS lines" "\[PASS\]"
+assert_output_contains "report shows grouped report" "REPORT"
+assert_output_contains "report shows verdict" "VERDICT"
+echo ""
+
+# --- --show all --report ---
+echo "=== output-filtering: --show all --report ==="
+output=""
+exit_code=0
+output="$(bash "$LINT" --show all --report "$FIXTURES/valid-extension@test" 2>&1)" || exit_code=$?
+assert_output_contains "show=all+report shows PASS lines" "\[PASS\]"
+assert_output_contains "show=all+report shows grouped report" "REPORT"
+assert_output_not_contains "show=all+report hides report hint" "run with --report"
 echo ""
 
 # --- invalid --show value ---
@@ -76,23 +97,4 @@ output="$(bash "$LINT" --show=fail "$FIXTURES/console-log" 2>&1)" || exit_code=$
 assert_output_contains "show=fail (equals) shows FAIL lines" "\[FAIL\]"
 assert_output_not_contains "show=fail (equals) hides PASS lines" "\[PASS\]"
 assert_output_not_contains "show=fail (equals) hides WARN lines" "\[WARN\]"
-echo ""
-
-# --- --quiet + --show interaction (--show overrides --quiet) ---
-echo "=== output-filtering: --quiet --show pass ==="
-output=""
-exit_code=0
-output="$(bash "$LINT" --quiet --show pass "$FIXTURES/valid-extension@test" 2>&1)" || exit_code=$?
-assert_output_contains "quiet+show: --show overrides --quiet (PASS shown)" "\[PASS\]"
-assert_output_not_contains "quiet+show: --show overrides --quiet (FAIL hidden)" "\[FAIL\]"
-assert_output_not_contains "quiet+show: --show overrides --quiet (WARN hidden)" "\[WARN\]"
-echo ""
-
-# --- --show + --verbose interaction ---
-echo "=== output-filtering: --show pass --verbose ==="
-output=""
-exit_code=0
-output="$(bash "$LINT" --show pass --verbose "$FIXTURES/valid-extension@test" 2>&1)" || exit_code=$?
-assert_output_contains "show+verbose: real-time PASS shown" "\[PASS\]"
-assert_output_contains "show+verbose: verbose report still shown" "VERBOSE REPORT"
 echo ""
