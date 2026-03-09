@@ -168,7 +168,7 @@ def check_shell_class_override(ext_dir):
             if cls not in seen:
                 seen.append(cls)
         for cls in seen:
-            result("FAIL", "css/shell-class-override",
+            result("WARN", "css/shell-class-override",
                    f".{cls}: overrides GNOME Shell theme class "
                    f"— use a scoped selector (.my-extension .{cls})")
     else:
