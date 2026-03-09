@@ -1,0 +1,7 @@
+{
+    "uuid": "prefs-gsettings-leak@test",
+    "name": "Prefs GSettings Leak Test",
+    "description": "Tests that gsettings-signal-leak in preferences dir is excluded",
+    "shell-version": ["48"],
+    "url": "https://example.com"
+}

@@ -252,6 +252,28 @@ For an extension with `shell-version: ["46", "47", "48"]` (min_shell=46), the fi
 - Only use when the fix would break older versions in the extension's declared range
 - The warning message should include the compat note inline (e.g., "keep vertical for GNOME <=46 compat")
 
+### Version-Compat Downgrade (`compat-downgrade`)
+
+When a rule has `min-version` set and `compat-downgrade: true`, the severity is automatically downgraded from FAIL to WARN when the extension's minimum supported GNOME version is below the rule's `min-version`. This handles backward-compatible code: extensions targeting a wide GNOME range (e.g., 42--48) need deprecated code for older versions.
+
+```yaml
+- id: R-VER44-01
+  pattern: "\\bMeta\\.later_add\\b"
+  severity: blocking
+  message: "Meta.later_add() removed in GNOME 44"
+  min-version: 44
+  compat-downgrade: true
+```
+
+**Logic**: "This API was removed in version X (`min-version`). If the extension's minimum shell-version is < X, the deprecated code exists for backward compatibility -> WARN. If the extension only targets X or newer, there's no excuse -> FAIL."
+
+For an extension with `shell-version: ["42", "48"]` (min_shell=42), the `Meta.later_add` call is downgraded to WARN because 42 < 44 -- the code is needed for GNOME 42-43 compat. For `shell-version: ["45", "48"]` (min_shell=45), it stays FAIL because 45 >= 44 -- no reason to use the removed API.
+
+**Guidelines:**
+- Only use on rules with `min-version` -- the downgrade needs a version threshold to compare against
+- NOT appropriate for APIs removed before GNOME 40 (e.g., Tweener, Shell.KeyBindingMode) -- no reasonable backward-compat excuse
+- All R-VER44 through R-VER50 blocking rules, plus R-DEPR-04/05/10, have this field set
+
 ## Inline Suppression
 
 Add `ego-lint-ignore` comments to suppress specific findings on a per-line basis.

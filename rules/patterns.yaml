@@ -11,6 +11,7 @@
 #     min-version: 46         # Optional: only check if extension targets this GNOME version or newer
 #     max-version: 45         # Optional: only check if extension targets this version or older
 #     guard-window: 7         # Optional: number of preceding lines to check for guard-pattern (default: 1)
+#     compat-downgrade: true  # Optional: downgrade FAIL→WARN when extension min shell-version < min-version (backward-compat code)
 #
 # Add new rules by appending to this file. See CONTRIBUTING.md for details.
 
@@ -130,6 +131,7 @@
   category: deprecated
   fix: "Replace 'const X = imports.ui.main' with 'import * as Main from \"resource:///org/gnome/shell/ui/main.js\"'."
   min-version: 45
+  compat-downgrade: true
 
 - id: R-DEPR-04-legacy
   pattern: "\\bimports\\.(ui|gi|misc)\\."
@@ -148,6 +150,8 @@
   category: deprecated
   fix: "Use this.getSettings(), this.gettext(), this.path, etc. from the Extension base class"
   skip-comments: true
+  min-version: 45
+  compat-downgrade: true
 
 - id: R-DEPR-06
   pattern: "\\bTweener\\b"
@@ -157,6 +161,7 @@
   category: deprecated
   fix: "Use actor.ease({property: value, duration: ms, mode: Clutter.AnimationMode.EASE_OUT_QUAD})."
   skip-comments: true
+  exclude-dirs: ["service"]
 
 - id: R-DEPR-07
   pattern: "imports\\.misc\\.convenience"
@@ -190,6 +195,9 @@
   message: "imports.format is deprecated; use ES6 template literals"
   category: deprecated
   fix: "Replace format() calls with template literals: `my ${variable} string`."
+  exclude-dirs: ["service"]
+  min-version: 45
+  compat-downgrade: true
 
 - id: R-DEPR-11
   pattern: "\\bShell\\.KeyBindingMode\\b"
@@ -813,6 +821,7 @@
   fix: "Use global.compositor.get_laters().addLater(Meta.LaterType.BEFORE_REDRAW, callback)"
   min-version: 44
   replacement-pattern: "get_laters"
+  compat-downgrade: true
 
 - id: R-VER44-02
   pattern: "\\bMeta\\.later_remove\\b"
@@ -825,6 +834,7 @@
   guard-pattern: "if\\s*\\(\\s*global\\.compositor\\s*\\)"
   guard-window: 7
   replacement-pattern: "get_laters"
+  compat-downgrade: true
 
 - id: R-VER46-01
   pattern: "\\.add_actor\\s*\\("
@@ -835,6 +845,7 @@
   fix: "Replace .add_actor(child) with .add_child(child)"
   min-version: 46
   guard-pattern: "\\bif\\s*\\(.*\\.add_actor\\b"
+  compat-downgrade: true
 
 - id: R-VER46-02
   pattern: "\\.remove_actor\\s*\\("
@@ -845,6 +856,7 @@
   fix: "Replace .remove_actor(child) with .remove_child(child)"
   min-version: 46
   guard-pattern: "\\bif\\s*\\(.*\\.remove_actor\\b"
+  compat-downgrade: true
 
 - id: R-VER46-03
   pattern: "\\bClutter\\.cairo_set_source_color\\b"
@@ -854,6 +866,7 @@
   category: version-compat
   fix: "Use cr.setSourceColor(color) instead"
   min-version: 46
+  compat-downgrade: true
 
 - id: R-VER46-04
   pattern: "\\bGio\\.UnixInputStream\\b"
@@ -865,6 +878,7 @@
   min-version: 46
   guard-pattern: "\\bGioUnix\\b"
   replacement-pattern: "GioUnix"
+  compat-downgrade: true
 
 - id: R-VER46-05
   pattern: "\\bExtensionState\\.(ENABLED|DISABLED|INITIALIZED|DEACTIVATING|ACTIVATING)\\b"
@@ -875,6 +889,7 @@
   fix: "Use ACTIVE, INACTIVE, ENABLING, DISABLING instead"
   min-version: 46
   replacement-pattern: "ExtensionState.ACTIVE"
+  compat-downgrade: true
 
 - id: R-VER46-06
   pattern: "\\bBlurEffect[^;]*\\.sigma\\b|\\bBlurEffect\\s*\\(\\s*\\{[^}]*sigma"
@@ -884,6 +899,7 @@
   category: version-compat
   fix: "Use .radius instead of .sigma (radius = sigma * 2.0)"
   min-version: 46
+  compat-downgrade: true
 
 - id: R-VER46-07
   pattern: "\\bClutter\\.Container\\b"
@@ -894,6 +910,7 @@
   fix: "Use Clutter.Actor add_child/remove_child instead of Container interface methods"
   min-version: 46
   guard-pattern: "!\\s*Clutter\\.Container"
+  compat-downgrade: true
 
 # --- GNOME 47 migration (version-gated) ---
 # Clutter.Color removed in GNOME 47; use Cogl.Color.
@@ -907,6 +924,7 @@
   fix: "Import Cogl from 'gi://Cogl' and use new Cogl.Color() instead"
   min-version: 47
   guard-pattern: "Clutter\\.Color\\s*\\?"
+  compat-downgrade: true
 
 # --- GNOME 48 migration (version-gated) ---
 # Clutter.Image, Meta display functions, CSS class renames.
@@ -919,6 +937,7 @@
   category: version-compat
   fix: "Use St.ImageContent instead of Clutter.Image"
   min-version: 48
+  compat-downgrade: true
 
 - id: R-VER48-02
   pattern: "\\bMeta\\.(disable_unredirect_for_display|enable_unredirect_for_display|get_window_actors|get_window_group_for_display|get_top_window_group_for_display)\\b"
@@ -931,6 +950,7 @@
   guard-pattern: "if\\s*\\(\\s*Meta\\.disable_unredirect|PACKAGE_VERSION.*['\"]4[89]|PACKAGE_VERSION.*['\"][5-9]"
   guard-window: 10
   replacement-pattern: "global.compositor"
+  compat-downgrade: true
 
 - id: R-VER48-03
   pattern: "\\bCursorTracker\\.get_for_display\\b"
@@ -940,6 +960,7 @@
   category: version-compat
   fix: "Use global.backend.get_cursor_tracker() instead"
   min-version: 48
+  compat-downgrade: true
 
 - id: R-VER48-04
   pattern: "\\.vertical\\s*="
@@ -970,6 +991,7 @@
   category: version-compat
   fix: "Shell.SnippetHook was removed without replacement in GNOME 48"
   min-version: 48
+  compat-downgrade: true
 
 - id: R-VER48-06
   pattern: "\\.get_key_focus\\s*\\("
@@ -1001,6 +1023,7 @@
   category: version-compat
   fix: "Import Mtk from 'gi://Mtk' and use Mtk.Rectangle instead"
   min-version: 49
+  compat-downgrade: true
 
 - id: R-VER49-02
   pattern: "\\bClutter\\.ClickAction\\b"
@@ -1012,6 +1035,7 @@
   min-version: 49
   guard-pattern: "\\|\\|\\s*Clutter\\.Click(Gesture|Action)|if\\s*\\(\\s*Clutter\\.ClickAction"
   replacement-pattern: "Clutter.ClickGesture"
+  compat-downgrade: true
 
 - id: R-VER49-03
   pattern: "\\bClutter\\.TapAction\\b"
@@ -1021,6 +1045,7 @@
   category: version-compat
   fix: "Use new Clutter.LongPressGesture() instead"
   min-version: 49
+  compat-downgrade: true
 
 - id: R-VER49-04
   pattern: "\\bMeta\\.Window\\.get_maximized\\b"
@@ -1030,6 +1055,7 @@
   category: version-compat
   fix: "Use window.is_maximized() instead of window.get_maximized()"
   min-version: 49
+  compat-downgrade: true
 
 - id: R-VER49-05
   pattern: "\\bCursorTracker\\.set_pointer_visible\\b"
@@ -1039,6 +1065,7 @@
   category: version-compat
   fix: "Use tracker.inhibit_cursor_visibility() / uninhibit_cursor_visibility()"
   min-version: 49
+  compat-downgrade: true
 
 - id: R-VER49-06
   pattern: "\\bClutter\\.DragAction\\b"
@@ -1048,6 +1075,7 @@
   category: version-compat
   fix: "Use new Clutter.DragGesture() instead"
   min-version: 49
+  compat-downgrade: true
 
 - id: R-VER49-07
   pattern: "\\bClutter\\.SwipeAction\\b"
@@ -1057,6 +1085,7 @@
   category: version-compat
   fix: "Use new Clutter.SwipeGesture() instead"
   min-version: 49
+  compat-downgrade: true
 
 - id: R-VER49-08
   pattern: "\\bmaximize\\s*\\(\\s*(Meta\\.)?MaximizeFlags"
@@ -1069,6 +1098,7 @@
   guard-pattern: "get_maximized\\s*\\?"
   guard-window: 1
   replacement-pattern: "set_maximize_flags"
+  compat-downgrade: true
 
 - id: R-VER49-09
   pattern: "\\bAppMenuButton\\b"
@@ -1078,6 +1108,7 @@
   category: version-compat
   fix: "AppMenuButton was removed without replacement in GNOME 49"
   min-version: 49
+  compat-downgrade: true
 
 - id: R-VER49-10
   pattern: "\\bDoNotDisturbSwitch\\b"
@@ -1087,6 +1118,7 @@
   category: version-compat
   min-version: 49
   fix: "Replace DoNotDisturbSwitch with DoNotDisturbToggle"
+  compat-downgrade: true
 
 - id: R-VER49-11
   pattern: "\\bunmaximize\\s*\\([^)]*MaximizeFlags"
@@ -1099,6 +1131,7 @@
   guard-pattern: "get_maximized\\s*\\?"
   guard-window: 1
   replacement-pattern: "set_maximize_flags"
+  compat-downgrade: true
 
 # --- GNOME 50 migration (version-gated) ---
 # GNOME 50 removed X11 support and associated APIs.
@@ -1111,6 +1144,7 @@
   category: version-compat
   fix: "Remove calls to releaseKeyboard(); this function no longer exists in GNOME 50"
   min-version: 50
+  compat-downgrade: true
 
 - id: R-VER50-02
   pattern: "\\bholdKeyboard\\s*\\("
@@ -1120,6 +1154,7 @@
   category: version-compat
   fix: "Remove calls to holdKeyboard(); this function no longer exists in GNOME 50"
   min-version: 50
+  compat-downgrade: true
 
 - id: R-VER50-03
   pattern: "connect\\s*\\(\\s*['\"]show-restart-message['\"]"
@@ -1129,6 +1164,7 @@
   category: version-compat
   fix: "Remove the signal connection; restart is no longer available in GNOME 50 (Wayland only)"
   min-version: 50
+  compat-downgrade: true
 
 - id: R-VER50-04
   pattern: "connect\\s*\\(\\s*['\"]restart['\"]"
@@ -1138,6 +1174,7 @@
   category: version-compat
   fix: "Remove the signal connection; restart is no longer available in GNOME 50 (Wayland only)"
   min-version: 50
+  compat-downgrade: true
 
 - id: R-VER50-05
   pattern: "timeout_add_once|idle_add_once|timeout_add_seconds_once"
