@@ -145,6 +145,11 @@ def main():
         src_path = os.path.join(ext_dir, "src", "metadata.json")
         if os.path.isfile(src_path):
             metadata_path = src_path
+    # resources/ layout fallback (TypeScript compiled extensions via esbuild)
+    if not os.path.isfile(metadata_path):
+        res_path = os.path.join(ext_dir, "resources", "metadata.json")
+        if os.path.isfile(res_path):
+            metadata_path = res_path
     dir_name = os.path.basename(ext_dir)
 
     # --- Existence and valid JSON ---

@@ -35,4 +35,4 @@ ego-lint:
 
 - Both examples assume the extension source is at the repo root. Adjust the path if your extension is in a subdirectory.
 - `glib-compile-schemas` is optional — the schema dry-run check will be skipped if it's not installed. Install `libglib2.0-dev-bin` (Debian/Ubuntu) or `glib2-devel` (Fedora) if you want schema validation in CI.
-- The `--verbose` flag adds a grouped report and verdict summary, useful for CI logs.
+- The `--report` flag adds a grouped report and verdict summary, useful for CI logs. Add `--show all` to include PASS and SKIP lines.

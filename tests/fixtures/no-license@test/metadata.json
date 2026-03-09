@@ -1,0 +1,7 @@
+{
+    "uuid": "no-license@test",
+    "name": "No License Test",
+    "description": "Test fixture for missing LICENSE file",
+    "shell-version": ["45"],
+    "url": "https://github.com/test/no-license"
+}

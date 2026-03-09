@@ -318,7 +318,7 @@ print(d['name'], d['uuid'], 'true' if d.get('ego_approved', False) else 'false',
 
     # Run ego-lint
     local lint_output exit_code
-    lint_output="$("$EGO_LINT" --verbose "$ext_path" 2>&1)" || exit_code=$?
+    lint_output="$("$EGO_LINT" --show all "$ext_path" 2>&1)" || exit_code=$?
     exit_code="${exit_code:-0}"
 
     # Parse results to JSON
