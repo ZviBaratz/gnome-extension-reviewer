@@ -1502,6 +1502,10 @@ def check_module_scope_prototype(ext_dir):
     PROTO_ASSIGN = re.compile(r'([\w.]+\.prototype\.\w+)\s*=(?!=)')
     PROTO_OBJ_ASSIGN = re.compile(
         r'Object\.assign\s*\(\s*([\w.]+\.prototype)')
+    # Indirect mutation: .prototype passed as function argument
+    PROTO_ARG = re.compile(r'(\w+)\s*\(\s*([\w.]+\.prototype)\b')
+    # Safe patterns that mention .prototype but aren't mutations
+    PROTO_SAFE = re.compile(r'===|!==|instanceof|Object\.create|Object\.getPrototypeOf')
 
     found = []
     seen = set()
@@ -1527,14 +1531,20 @@ def check_module_scope_prototype(ext_dir):
                     if key not in seen:
                         seen.add(key)
                         found.append((rel, lineno, m.group(1)))
-                else:
+                elif PROTO_OBJ_ASSIGN.search(line):
                     m = PROTO_OBJ_ASSIGN.search(line)
-                    if m:
-                        label = f"Object.assign({m.group(1)}, ...)"
-                        key = (rel, label)
-                        if key not in seen:
-                            seen.add(key)
-                            found.append((rel, lineno, label))
+                    label = f"Object.assign({m.group(1)}, ...)"
+                    key = (rel, label)
+                    if key not in seen:
+                        seen.add(key)
+                        found.append((rel, lineno, label))
+                elif PROTO_ARG.search(line) and not PROTO_SAFE.search(line):
+                    m = PROTO_ARG.search(line)
+                    label = f"{m.group(1)}({m.group(2)})"
+                    key = (rel, label)
+                    if key not in seen:
+                        seen.add(key)
+                        found.append((rel, lineno, label))
 
             depth += line.count('{') - line.count('}')
             if depth < 0:

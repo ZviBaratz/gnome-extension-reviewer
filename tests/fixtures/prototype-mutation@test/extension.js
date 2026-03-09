@@ -11,8 +11,20 @@ Object.assign(PanelMenu.Button.prototype, {
     anotherMethod() { return false; }
 });
 
+// Indirect prototype mutation via function call — should trigger R-LIFE-27
+function _promisifySignals(proto) {
+    proto.connect_once = function(signal) { return signal; };
+}
+_promisifySignals(GObject.Object.prototype);
+
 // Equality comparison — should NOT trigger any warning
 const isOriginal = PanelMenu.Button.prototype.customMethod === originalFn;
+
+// instanceof check — should NOT trigger
+if (obj instanceof PanelMenu.Button.prototype.constructor) {}
+
+// Object.getPrototypeOf — should NOT trigger
+const proto = Object.getPrototypeOf(PanelMenu.Button.prototype);
 
 export default class TestExtension extends Extension {
     enable() {
