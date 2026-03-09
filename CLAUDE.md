@@ -116,7 +116,7 @@ Then for Tier 1 and 2:
 
 - Directory name must exactly match the `uuid` in `metadata.json`
 - UUID/name must not contain "gnome" (trademark check will FAIL)
-- Include a `LICENSE` file (single line `SPDX-License-Identifier: GPL-2.0-or-later`) or the license check will FAIL
+- Include a `LICENSE` file (single line `SPDX-License-Identifier: GPL-2.0-or-later`) or the license check will WARN
 - Avoid `.sh` files in fixtures (non-GJS script check flags them)
 - See `rules/README.md` for required files, metadata template, and troubleshooting
 
