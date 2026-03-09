@@ -25,7 +25,7 @@ network access.
 Options:
   -h, --help       Show this help message and exit
   --show LEVELS    Comma-separated severity filter: fail,warn,pass,skip,all (default: fail,warn)
-  --report         Show grouped report with fix suggestions and verdict
+  --no-report      Hide grouped report, fix suggestions, and verdict
 
 Checks (124 pattern rules + 13 structural scripts):
   metadata         UUID, required fields, shell-version, session-modes, GNOME trademark
@@ -51,7 +51,7 @@ HELPEOF
     exit 0
 }
 
-REPORT=false
+REPORT=true
 SHOW_LEVELS="fail,warn"   # comma-separated: fail,warn,pass,skip,all
 EXT_DIR=""
 while [[ $# -gt 0 ]]; do
@@ -59,8 +59,8 @@ while [[ $# -gt 0 ]]; do
         --help|-h)
             show_help
             ;;
-        --report)
-            REPORT=true
+        --no-report)
+            REPORT=false
             shift
             ;;
         --show)
@@ -770,8 +770,8 @@ echo "----------------------------------------------------------------"
 TOTAL=$((PASS_COUNT + FAIL_COUNT + WARN_COUNT + SKIP_COUNT))
 echo "  Results: $TOTAL checks — $PASS_COUNT passed, $FAIL_COUNT failed, $WARN_COUNT warnings, $SKIP_COUNT skipped"
 echo "----------------------------------------------------------------"
-if [[ "$REPORT" != true && "$SHOW_ALL" == true ]]; then
-    echo "  (run with --report for grouped report and fix suggestions)"
+if [[ "$SHOW_ALL" != true ]]; then
+    echo "  (run with --show all for full output)"
 fi
 
 if [[ "$REPORT" == true ]]; then
