@@ -23,9 +23,6 @@ findings:
     classification: fp
     notes: "45 hits — PanelButton.js and MenuSlider.js use onDestroy() cleanup pattern not recognized. Fixed: onDestroy() added to cleanup detection."
   # WARNs — True Positives
-  - id: "R-SLOP-44::GLib.source_remove"
-    classification: tp
-    notes: "10 instances — should use GLib.Source.remove()"
   - id: "lifecycle/prototype-override::MprisSource._addPlayer"
     classification: tp
     notes: "2 instances — monkey-patched but original not saved/restored in disable()"
