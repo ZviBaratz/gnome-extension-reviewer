@@ -1,0 +1,7 @@
+{
+    "uuid": "init-constructor-signal@test",
+    "name": "Init Constructor Signal Test",
+    "description": "Tests that signal callbacks in constructors are not flagged",
+    "shell-version": ["48"],
+    "url": "https://github.com/test/init-constructor-signal"
+}
