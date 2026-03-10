@@ -1,0 +1,7 @@
+{
+    "uuid": "instanceof-dispatch@test",
+    "name": "Instanceof Dispatch Test",
+    "description": "Tests R-SLOP-13 guard for polymorphic dispatch pattern",
+    "shell-version": ["48"],
+    "url": "https://example.com"
+}

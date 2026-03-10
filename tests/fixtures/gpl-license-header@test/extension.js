@@ -12,6 +12,10 @@
 // You should have received a copy of the GNU General Public License
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 
+/*
+ * Based on code from http://frippery.org/extensions/
+ */
+
 import {Extension} from 'resource:///org/gnome/shell/extensions/extension.js';
 
 // This URL should still fire R-SEC-03 (not a license URL)
