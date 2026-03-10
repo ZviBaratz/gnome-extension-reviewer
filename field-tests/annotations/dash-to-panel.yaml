@@ -40,9 +40,6 @@ findings:
   - id: "lifecycle/prototype-override::extensive prototype patching"
     classification: tp
     notes: "14 instances in panelManager.js — LookingGlass, AppIcon, Workspace overrides"
-  - id: "R-SLOP-11::GLib.source_remove"
-    classification: tp
-    notes: "6 instances — should use GLib.Source.remove()"
   - id: "lifecycle/destroy-no-null::missing null assignment"
     classification: tp
     notes: "5 instances"
@@ -210,7 +207,7 @@ findings:
   - id: "R-SLOP-40::new Promise(resolve, reject) wrapper — consider Gio._promisify() for GIO async methods"
     classification: tp
     notes: "D-Bus proxy GetCurrentStateRemote callback wrapped in Promise — correct advisory"
-  - id: "R-SLOP-11::Non-existent GLib method — use GLib.timeout_add_seconds() and GLib.Source.remove()"
+  - id: "R-SLOP-44::Non-idiomatic GLib C-binding — use GLib.Source.remove()"
     classification: tp
     notes: "6 instances of GLib.source_remove — should use GLib.Source.remove()"
   - id: "R-QUAL-27::String comparison on PACKAGE_VERSION is unreliable — use parseInt() for numeric comparison"

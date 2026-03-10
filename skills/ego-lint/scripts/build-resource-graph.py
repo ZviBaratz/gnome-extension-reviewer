@@ -97,6 +97,7 @@ DESTROY_PATTERNS = {
     'timeout': [
         re.compile(r'Source\.remove\s*\('),
         re.compile(r'GLib\.Source\.remove\s*\('),
+        re.compile(r'GLib\.source_remove\s*\('),  # Non-idiomatic but valid
     ],
     'widget': [
         re.compile(r'\.destroy\s*\('),

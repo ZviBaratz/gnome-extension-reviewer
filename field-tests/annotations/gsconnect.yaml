@@ -147,12 +147,10 @@ findings:
     classification: expected
     notes: "Directory name differs from UUID in dev/cache layout"
 
-  # WARN findings — False Positives
-  - id: "R-SLOP-11::Non-existent GLib method — use GLib.timeout_add_seconds() and GLib.Source.remove()"
-    classification: fp
-    notes: "GLib.source_remove() IS a valid GJS function (binding for g_source_remove()) — rule incorrectly flags it as non-existent"
-
   # WARN findings — Borderline
+  - id: "R-SLOP-44::Non-idiomatic GLib C-binding — use GLib.Source.remove()"
+    classification: borderline
+    notes: "GLib.source_remove() IS a valid GJS function (binding for g_source_remove()) — technically non-idiomatic but widely used in real extensions"
   - id: "R-SEC-03::Use HTTPS instead of HTTP for network requests"
     classification: borderline
     notes: "3 of 4 hits are HTTP URLs in comments (reference links); 1 is legitimate protocol scheme fallback in code"

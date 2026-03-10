@@ -10,6 +10,7 @@ export default class HallucinatedExtension extends Extension {
         St.Label.set_text(this._label, 'hello');
         Clutter.Actor.show_all();
         GLib.source_remove(this._id);
+        GLib.timeout_add_seconds_full(GLib.PRIORITY_DEFAULT, 1, () => true);
         if (typeof super.destroy === 'function') super.destroy();
         if (this instanceof HallucinatedExtension) {}
     }

@@ -23,9 +23,6 @@ findings:
     classification: fp
     notes: "45 hits — PanelButton.js and MenuSlider.js use onDestroy() cleanup pattern not recognized. Fixed: onDestroy() added to cleanup detection."
   # WARNs — True Positives
-  - id: "R-SLOP-11::GLib.source_remove"
-    classification: tp
-    notes: "10 instances — should use GLib.Source.remove()"
   - id: "lifecycle/prototype-override::MprisSource._addPlayer"
     classification: tp
     notes: "2 instances — monkey-patched but original not saved/restored in disable()"
@@ -141,7 +138,7 @@ findings:
     classification: tp
     notes: "D-Bus proxy signals connected without stored ID for cleanup"
   # WARN findings — True Positives
-  - id: "R-SLOP-11::Non-existent GLib method — use GLib.timeout_add_seconds() and GLib.Source.remove()"
+  - id: "R-SLOP-44::Non-idiomatic GLib C-binding — use GLib.Source.remove()"
     classification: tp
     notes: "10 instances of GLib.source_remove — should use GLib.Source.remove()"
   - id: "R-QUAL-33::Gio._promisify() permanently mutates shared GJS prototypes — document module-scope placement"
