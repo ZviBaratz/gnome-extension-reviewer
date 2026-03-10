@@ -255,4 +255,4 @@ findings:
     notes: "indicator-test-tool/ksni.py is a developer test tool, not part of extension proper"
   - id: "license::License file found but could not confirm GPL-compatibility"
     classification: fp
-    notes: "Full GPL-2.0 license text present in LICENSE file — regex did not match"
+    notes: "Full GPL-2.0 license text present in LICENSE file — regex did not match. Fixed: head -20 + GNU GENERAL PUBLIC LICENSE pattern."

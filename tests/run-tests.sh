@@ -654,7 +654,14 @@ echo ""
 echo "=== license-rst ==="
 run_lint "license-rst@test"
 assert_exit_code "exits with 0 (LICENSE.rst recognized)" 0
-assert_output_contains "LICENSE.rst detected" "\[PASS\].*license"
+assert_output_contains "LICENSE.rst detected" "\[PASS\] license "
+echo ""
+
+# --- gpl-license-header (full GPL-2.0 text without "GPL" substring in first lines) ---
+echo "=== gpl-license-header ==="
+run_lint "gpl-license-header@test"
+assert_exit_code "exits with 0 (full GPL text recognized)" 0
+assert_output_contains "full GPL text detected" "\[PASS\] license "
 echo ""
 
 # --- no-license (missing LICENSE file → WARN, not FAIL) ---
