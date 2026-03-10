@@ -1,16 +1,16 @@
 {
   "name": "appindicator",
   "uuid": "appindicatorsupport@rgcjonas.gmail.com",
-  "timestamp": "2026-03-08T14:19:44.492431+00:00",
-  "ego_lint_version": "05523f9",
+  "timestamp": "2026-03-10T18:37:51.133291+00:00",
+  "ego_lint_version": "91181bf",
   "ego_approved": true,
   "exit_code": 1,
   "counts": {
     "pass": 187,
-    "fail": 10,
-    "warn": 59,
+    "fail": 6,
+    "warn": 61,
     "skip": 14,
-    "total": 270
+    "total": 268
   },
   "metrics": {
     "js_files": 17,
@@ -361,24 +361,6 @@
       "detail": "Dynamic key access detected \u2014 cannot verify statically"
     },
     {
-      "id": "imports/no-gtk-in-extension::20:import GdkPixbuf from 'gi://GdkPixbuf';",
-      "status": "FAIL",
-      "check": "imports/no-gtk-in-extension",
-      "detail": "appIndicator.js: 20:import GdkPixbuf from 'gi://GdkPixbuf';"
-    },
-    {
-      "id": "imports/no-gtk-in-extension::6:import Meta from 'gi://GdkPixbuf';",
-      "status": "FAIL",
-      "check": "imports/no-gtk-in-extension",
-      "detail": "promiseUtils.js: 6:import Meta from 'gi://GdkPixbuf';"
-    },
-    {
-      "id": "imports/no-gtk-in-extension::20:import GdkPixbuf from 'gi://GdkPixbuf';",
-      "status": "FAIL",
-      "check": "imports/no-gtk-in-extension",
-      "detail": "dbusMenu.js: 20:import GdkPixbuf from 'gi://GdkPixbuf';"
-    },
-    {
       "id": "quality/destroy-try-catch::try-catch around .destroy() \u2014 usually unnecessary",
       "status": "WARN",
       "check": "quality/destroy-try-catch",
@@ -493,10 +475,18 @@
       "detail": "appIndicator.js:729: .destroy() without null assignment \u2014 set reference to null after destroy to prevent stale access"
     },
     {
-      "id": "lifecycle/gsettings-signal-leak::3 bare settings.connect('changed::...') without stored ID and no disconnectObject/connectObject cleanup: preferences/customIconPage.js, preferences/customIconPage.js, preferences/customIconPage.js",
-      "status": "FAIL",
-      "check": "lifecycle/gsettings-signal-leak",
-      "detail": "3 bare settings.connect('changed::...') without stored ID and no disconnectObject/connectObject cleanup: preferences/customIconPage.js:158, preferences/customIconPage.js:171, preferences/customIconPage.js:184"
+      "id": "lifecycle/module-scope-prototype::_promisifySignals(GObject.Object.prototype) \u2014 prototype mutation at module scope persists after disable()",
+      "status": "WARN",
+      "check": "lifecycle/module-scope-prototype",
+      "detail": "promiseUtils.js:323: _promisifySignals(GObject.Object.prototype) \u2014 prototype mutation at module scope persists after disable()",
+      "fix": "Move into enable() and restore original in disable()"
+    },
+    {
+      "id": "lifecycle/module-scope-prototype::_promisifySignals(Signals.EventEmitter.prototype) \u2014 prototype mutation at module scope persists after disable()",
+      "status": "WARN",
+      "check": "lifecycle/module-scope-prototype",
+      "detail": "promiseUtils.js:324: _promisifySignals(Signals.EventEmitter.prototype) \u2014 prototype mutation at module scope persists after disable()",
+      "fix": "Move into enable() and restore original in disable()"
     },
     {
       "id": "gobject/missing-gtypename::GObject.registerClass without GTypeName \u2014 add GTypeName to avoid conflicts between extensions",
