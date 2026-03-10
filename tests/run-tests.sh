@@ -705,6 +705,30 @@ assert_output_not_contains "no no-destroy-method for widget with onDestroy" "\[W
 assert_output_contains "resource tracking ran" "(PASS|WARN|FAIL).*resource-tracking"
 echo ""
 
+# --- custom-cleanup-method (disconnect_all recognized as cleanup) ---
+echo "=== custom-cleanup-method ==="
+run_lint "custom-cleanup-method@test"
+assert_exit_code "exits with 0 (no blocking issues)" 0
+assert_output_not_contains "no no-destroy-method for class with disconnect_all" "\[WARN\].*resource-tracking/no-destroy-method.*tracker"
+assert_output_contains "resource tracking ran" "(PASS|WARN|FAIL).*resource-tracking"
+echo ""
+
+# --- effect-auto-cleanup (add_effect auto-cleanup by parent actor) ---
+echo "=== effect-auto-cleanup ==="
+run_lint "effect-auto-cleanup@test"
+assert_exit_code "exits with 0 (no blocking issues)" 0
+assert_output_not_contains "no no-destroy-method for effect with add_effect" "\[WARN\].*resource-tracking/no-destroy-method.*effect"
+assert_output_contains "resource tracking ran" "(PASS|WARN|FAIL).*resource-tracking"
+echo ""
+
+# --- parent-managed-cleanup (custom cleanup via disconnect_all) ---
+echo "=== parent-managed-cleanup ==="
+run_lint "parent-managed-cleanup@test"
+assert_exit_code "exits with 0 (no blocking issues)" 0
+assert_output_not_contains "no no-destroy-method for parent-managed child" "\[WARN\].*resource-tracking/no-destroy-method"
+assert_output_contains "resource tracking ran" "(PASS|WARN|FAIL).*resource-tracking"
+echo ""
+
 # --- destroy-no-call ---
 echo "=== destroy-no-call ==="
 run_lint "destroy-no-call@test"

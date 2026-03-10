@@ -2017,9 +2017,10 @@ Rules for APIs removed or changed in specific GNOME Shell versions. These rules 
 ### resource-tracking/no-destroy-method
 - **Severity**: advisory
 - **Checked by**: check-resources.py → build-resource-graph.py
-- **Rule**: Module creates resources but has no cleanup method (`destroy()`, `disable()`, or `onDestroy()`) for cleanup.
+- **Rule**: Module creates resources but has no recognized cleanup method.
+- **Recognized cleanup methods**: `destroy()`, `disable()`, `_destroy*()`, `onDestroy()`, `disconnect_all()`, `cleanup()`, `_cleanup*()`, `close()`, `shutdown()`, `dispose()`, `release()`.
 - **Fix**: Add a `destroy()` method that cleans up all resources, or use `onDestroy()` connected via `this.connect('destroy', this.onDestroy.bind(this))`.
-- **Note**: Suppressed when the parent calls any method on the child ref (e.g., `this._helper.disconnect_all()`) or nulls it inside a cleanup method body. This covers utility classes with custom cleanup methods managed by their parent.
+- **Note**: Also suppressed when the parent calls any method on the child ref (e.g., `this._helper.disconnect_all()`) or nulls it inside a cleanup method body, or when the parent adds the child as an actor child/effect via `add_child()` / `add_effect()` (auto-cleanup by actor lifecycle).
 
 ### resource-tracking/destroy-not-called
 - **Severity**: advisory
