@@ -6,7 +6,7 @@ echo "=== slop-object-freeze ==="
 run_lint "slop-object-freeze@test"
 assert_exit_code "exits with 0 (advisory only)" 0
 assert_output_contains "warns on Object.freeze with inline object" "\[WARN\].*R-SLOP-35"
-assert_output_not_contains "R-SLOP-35 suppressed for Object.freeze(identifier)" "\[WARN\].*R-SLOP-35.*extension\.js:11"
+assert_output_not_contains "R-SLOP-35 suppressed for Object.freeze(identifier)" "\[WARN\].*R-SLOP-35.*extension\.js:13"
 echo ""
 
 # --- slop-long-params (R-SLOP-38) ---
