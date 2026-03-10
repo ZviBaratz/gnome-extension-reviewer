@@ -74,3 +74,123 @@ findings:
   - id: "review/dbus-signal-leak::proxy NameOwnerChanged+PropertiesChanged+Seeked"
     classification: tp
     notes: "D-Bus proxy signals connected but never disconnected in disable(). NOW caught by lint: lifecycle/dbus-signal-leak FAIL (PR #91)"
+  # New annotations (2026-03-10) — baseline 03-08 IDs
+  # SKIP findings
+  - id: "polkit/action-id-match::No polkit files found"
+    classification: expected
+    notes: "No polkit files in extension"
+  - id: "polkit/action-id-prefix::No polkit files found"
+    classification: expected
+    notes: "No polkit files in extension"
+  - id: "polkit/helper-exists::No polkit files found"
+    classification: expected
+    notes: "No polkit files in extension"
+  - id: "R-WEB-01::Not applicable for declared shell-version(s)"
+    classification: expected
+    notes: "Version-gated skip for GNOME 45+"
+  - id: "R-WEB-02::Not applicable for declared shell-version(s)"
+    classification: expected
+    notes: "Version-gated skip for GNOME 45+"
+  - id: "R-WEB-10::Not applicable for declared shell-version(s)"
+    classification: expected
+    notes: "Version-gated skip for GNOME 45+"
+  - id: "R-WEB-11::Not applicable for declared shell-version(s)"
+    classification: expected
+    notes: "Version-gated skip for GNOME 45+"
+  - id: "R-DEPR-04-legacy::Not applicable for declared shell-version(s)"
+    classification: expected
+    notes: "Version-gated skip for GNOME 45+"
+  - id: "R-VER50-01::Not applicable for declared shell-version(s)"
+    classification: expected
+    notes: "Version-gated skip — extension does not target GNOME 50"
+  - id: "R-VER50-02::Not applicable for declared shell-version(s)"
+    classification: expected
+    notes: "Version-gated skip — extension does not target GNOME 50"
+  - id: "R-VER50-03::Not applicable for declared shell-version(s)"
+    classification: expected
+    notes: "Version-gated skip — extension does not target GNOME 50"
+  - id: "R-VER50-04::Not applicable for declared shell-version(s)"
+    classification: expected
+    notes: "Version-gated skip — extension does not target GNOME 50"
+  - id: "R-VER50-05::Not applicable for declared shell-version(s)"
+    classification: expected
+    notes: "Version-gated skip — extension does not target GNOME 50"
+  - id: "eslint::No eslint.config.mjs or node_modules/.bin/eslint found"
+    classification: expected
+    notes: "Optional tooling not present"
+  - id: "schema-usage/unused-key::Dynamic key access detected — cannot verify statically"
+    classification: expected
+    notes: "Static analysis limitation — dynamic key access"
+  - id: "schema-usage/undefined-key::Dynamic key access detected — cannot verify statically"
+    classification: expected
+    notes: "Static analysis limitation — dynamic key access"
+  - id: "package/exists::No zip package found in extension directory"
+    classification: expected
+    notes: "Source checkout, not packaged"
+  # FAIL findings
+  - id: "css/shell-class-override::.panel-button: overrides GNOME Shell theme class — use a scoped selector (.my-extension .panel-button)"
+    classification: tp
+    notes: "Overrides GNOME Shell .panel-button class globally"
+  - id: "schema/exists::settings-schema 'org.gnome.shell.extensions.mediacontrols' in metadata.json but no .gschema.xml files found"
+    classification: borderline
+    notes: "Schema exists in assets/ dir but not standard schemas/ location — build step copies it"
+  - id: "lifecycle/gsettings-signal-leak::28 bare settings.connect('changed::...') without stored ID and no disconnectObject/connectObject cleanup: src/extension.js, src/extension.js, src/extension.js, src/extension.js, src/extension.js (and 23 more)"
+    classification: tp
+    notes: "28 GSettings signal handlers never disconnected in disable()"
+  - id: "lifecycle/dbus-signal-leak::2 bare proxy.connectSignal() without stored ID: src/extension.js, src/helpers/shell/PlayerProxy.js"
+    classification: tp
+    notes: "D-Bus proxy signals connected without stored ID for cleanup"
+  # WARN findings — True Positives
+  - id: "R-SLOP-11::Non-existent GLib method — use GLib.timeout_add_seconds() and GLib.Source.remove()"
+    classification: tp
+    notes: "10 instances of GLib.source_remove — should use GLib.Source.remove()"
+  - id: "R-QUAL-33::Gio._promisify() permanently mutates shared GJS prototypes — document module-scope placement"
+    classification: tp
+    notes: "4 files with module-scope promisify — valid advisory"
+  - id: "R-VER48-04b::vertical property in constructor config deprecated in GNOME 48; use orientation: Clutter.Orientation.VERTICAL (available since GNOME 47; keep vertical for GNOME <=46 compat)"
+    classification: tp
+    notes: "Deprecated vertical property in 2 files — valid migration advisory"
+  - id: "quality/constructor-resources::.connect() in constructor — move to enable()"
+    classification: tp
+    notes: "Prefs widget constructor — limited impact but valid advisory"
+  - id: "quality/private-api::Main.panel private API access — requires reviewer justification and version pinning"
+    classification: tp
+    notes: "Private API access for panel button placement"
+  - id: "quality/excessive-null-checks::117 null/undefined checks across 4740 lines (ratio: 0.025) — prefer optional chaining (?.) or nullish coalescing (??)"
+    classification: tp
+    notes: "Advisory — ratio 0.025 is moderate"
+  - id: "lifecycle/async-destroyed-guard::async/await used without _destroyed or _isDestroyed guard — extension may act on stale state after disable()"
+    classification: tp
+    notes: "Multiple async/await chains without destroyed guard"
+  - id: "lifecycle/prototype-override::MprisSource.prototype._addPlayer — direct prototype modification should be restored in disable()"
+    classification: tp
+    notes: "Monkey-patched but original not saved/restored in disable()"
+  - id: "lifecycle/soup-session-abort::Soup.Session created but no .abort() found — pending requests will continue after disable()"
+    classification: tp
+    notes: "Soup.Session for album art with no abort() in cleanup"
+  - id: "async/no-cancellable::Gio async calls at src/extension.js, src/extension.js, src/utils/shell_only.js without Gio.Cancellable — async operations should be cancellable via disable()"
+    classification: tp
+    notes: "D-Bus proxy creation and file operations without cancellable"
+  - id: "async/missing-cancellable::_async() calls without Gio.Cancellable at src/extension.js, src/extension.js, src/utils/shell_only.js (+6 more) — async operations may run after disable()"
+    classification: tp
+    notes: "Async operations may continue after disable()"
+  - id: "disclosure/network::network capability detected in code but metadata description does not disclose it — reviewers expect disclosure"
+    classification: tp
+    notes: "Album art fetching uses network — should be disclosed"
+  - id: "disclosure/file-io::file-io capability detected in code but metadata description does not disclose it — reviewers expect disclosure"
+    classification: tp
+    notes: "File I/O for caching — should be disclosed"
+  # WARN findings — Borderline
+  - id: "R-SLOP-17::typeof method guard — verify this check is necessary; GObject and well-typed objects have known methods"
+    classification: borderline
+    notes: "Defensive typeof checks for optional API methods in MenuSlider"
+  - id: "quality/comment-density::215/216 lines are comments (99%) — may indicate AI-generated verbose comments"
+    classification: borderline
+    notes: "types/dbus.js is JSDoc type definitions — high density is intentional, not AI slop"
+  - id: "lifecycle/signal-balance::41 manual .connect() calls but only 10 .disconnect() calls — verify all signals are disconnected in disable()"
+    classification: borderline
+    notes: "Some connects are on child widgets destroyed with parent — needs deeper analysis"
+  # WARN findings — Expected
+  - id: "metadata/uuid-matches-dir::UUID 'mediacontrols@cliffniff.github.com' does not match directory 'media-controls' — must match when installed"
+    classification: expected
+    notes: "Directory name differs from UUID in dev/cache layout"

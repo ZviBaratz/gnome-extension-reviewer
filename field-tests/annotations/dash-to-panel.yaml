@@ -117,3 +117,207 @@ findings:
   - id: "review/async-destroyed-guard::async enable() race after await"
     classification: tp
     notes: "Async enable() continues after await without guard — race condition if disable() called during await"
+  # New annotations with exact baseline IDs (2026-03-10)
+  # SKIP findings — polkit not applicable
+  - id: "polkit/action-id-match::No polkit files found"
+    classification: expected
+    notes: "No polkit files in extension — check not applicable"
+  - id: "polkit/action-id-prefix::No polkit files found"
+    classification: expected
+    notes: "No polkit files in extension — check not applicable"
+  - id: "polkit/helper-exists::No polkit files found"
+    classification: expected
+    notes: "No polkit files in extension — check not applicable"
+  # SKIP findings — version-gated
+  - id: "R-WEB-01::Not applicable for declared shell-version(s)"
+    classification: expected
+    notes: "Version-gated skip — GJS native timers in GNOME 45+"
+  - id: "R-WEB-02::Not applicable for declared shell-version(s)"
+    classification: expected
+    notes: "Version-gated skip — GJS native timers in GNOME 45+"
+  - id: "R-WEB-10::Not applicable for declared shell-version(s)"
+    classification: expected
+    notes: "Version-gated skip — GJS native timers in GNOME 45+"
+  - id: "R-WEB-11::Not applicable for declared shell-version(s)"
+    classification: expected
+    notes: "Version-gated skip — GJS native timers in GNOME 45+"
+  - id: "R-DEPR-04-legacy::Not applicable for declared shell-version(s)"
+    classification: expected
+    notes: "Version-gated skip — not applicable for declared shell-version"
+  - id: "R-VER50-01::Not applicable for declared shell-version(s)"
+    classification: expected
+    notes: "Version-gated skip — extension does not target GNOME 50"
+  - id: "R-VER50-02::Not applicable for declared shell-version(s)"
+    classification: expected
+    notes: "Version-gated skip — extension does not target GNOME 50"
+  - id: "R-VER50-03::Not applicable for declared shell-version(s)"
+    classification: expected
+    notes: "Version-gated skip — extension does not target GNOME 50"
+  - id: "R-VER50-04::Not applicable for declared shell-version(s)"
+    classification: expected
+    notes: "Version-gated skip — extension does not target GNOME 50"
+  - id: "R-VER50-05::Not applicable for declared shell-version(s)"
+    classification: expected
+    notes: "Version-gated skip — extension does not target GNOME 50"
+  # SKIP findings — optional tooling / static analysis limitations
+  - id: "eslint::No eslint.config.mjs or node_modules/.bin/eslint found"
+    classification: expected
+    notes: "Optional tooling — no ESLint configured"
+  - id: "schema-usage/unused-key::Dynamic key access detected — cannot verify statically"
+    classification: expected
+    notes: "Static analysis limitation — dynamic key access prevents verification"
+  - id: "schema-usage/undefined-key::Dynamic key access detected — cannot verify statically"
+    classification: expected
+    notes: "Static analysis limitation — dynamic key access prevents verification"
+  - id: "package/exists::No zip package found in extension directory"
+    classification: expected
+    notes: "Source checkout — not a packaged extension"
+  # FAIL findings — True Positives
+  - id: "css/shell-class-override::.popup-menu: overrides GNOME Shell theme class — use a scoped selector (.my-extension .popup-menu)"
+    classification: tp
+    notes: "Overrides Shell theme class .popup-menu without scoping"
+  - id: "R-DEPR-05::ExtensionUtils removed in GNOME 45+; use Extension/ExtensionPreferences class methods"
+    classification: tp
+    notes: "desktopIconsIntegration.js uses deprecated ExtensionUtils — 3 instances"
+  - id: "R-DEPR-08::GLib.spawn_command_line_sync is deprecated; use Gio.Subprocess"
+    classification: tp
+    notes: "prefs.js — dconf dump via deprecated spawn API"
+  - id: "R-SEC-22::Spawning gsettings/dconf CLI is forbidden — use Gio.Settings API directly"
+    classification: tp
+    notes: "prefs.js — dconf dump and dconf load via subprocess. 2 instances."
+  - id: "init/shell-modification::Shell modification outside enable()"
+    classification: tp
+    notes: "taskbar.js:46 and extension.js:55 — Shell access at module scope and in constructor"
+  # WARN findings — True Positives
+  - id: "css/important::Found 15 !important usage(s) in stylesheet.css — !important overrides Shell theme; prefer higher specificity"
+    classification: tp
+    notes: "Valid advisory — !important overrides should be minimized even for panel extensions"
+  - id: "accessibility/widget-role::6 custom St.Widget subclass(es) without accessible_role: src/windowPreview.js (PreviewMenu), src/windowPreview.js (Preview), src/panel.js (Panel), src/panel.js (SecondaryPanel), src/taskbar.js (TaskbarActor)"
+    classification: tp
+    notes: "6 custom St.Widget subclasses without accessible_role"
+  - id: "R-SEC-09::Extension system interference is discouraged; modifying other extensions requires justification"
+    classification: tp
+    notes: "extensionManager access in desktopIconsIntegration.js and extension.js"
+  - id: "R-PREFS-04b::GTK widget in prefs.js — Adwaita replacement available for GNOME 45+"
+    classification: tp
+    notes: "Correct advisory — GTK widgets with Adwaita equivalents in prefs"
+  - id: "R-PREFS-04c::GTK layout widget in prefs.js — verify no Adw equivalent for this specific use case"
+    classification: tp
+    notes: "Correct advisory — GTK layout widgets in prefs"
+  - id: "R-SLOP-03::version field is deprecated; EGO manages versions for GNOME 45+"
+    classification: tp
+    notes: "metadata.json has version: 9999 — deprecated for GNOME 45+"
+  - id: "R-SLOP-40::new Promise(resolve, reject) wrapper — consider Gio._promisify() for GIO async methods"
+    classification: tp
+    notes: "D-Bus proxy GetCurrentStateRemote callback wrapped in Promise — correct advisory"
+  - id: "R-SLOP-11::Non-existent GLib method — use GLib.timeout_add_seconds() and GLib.Source.remove()"
+    classification: tp
+    notes: "6 instances of GLib.source_remove — should use GLib.Source.remove()"
+  - id: "R-QUAL-27::String comparison on PACKAGE_VERSION is unreliable — use parseInt() for numeric comparison"
+    classification: tp
+    notes: "4 instances — string comparison on version numbers is unreliable"
+  - id: "R-QUAL-30::lookupByURL() is discouraged — use this.getSettings() and this.path from the entry point class"
+    classification: tp
+    notes: "2 instances — should use Extension base class methods"
+  - id: "R-QUAL-31::_onDestroy() should be renamed to destroy() with super.destroy() at the end"
+    classification: tp
+    notes: "2 instances — _onDestroy naming convention"
+  - id: "R-VER48-04::St.Widget.vertical property deprecated in GNOME 48; use orientation: Clutter.Orientation.VERTICAL (available since GNOME 47; keep vertical for GNOME <=46 compat)"
+    classification: tp
+    notes: "utils.js:203 — vertical property deprecated in GNOME 48"
+  - id: "metadata/non-standard-field::'extension-id' is not a standard metadata field"
+    classification: tp
+    notes: "Custom 'extension-id' field in metadata.json — valid advisory"
+  - id: "metadata/deprecated-version::version field is ignored by EGO for GNOME 45+; consider removing"
+    classification: tp
+    notes: "version: 9999 in metadata.json — deprecated for GNOME 45+"
+  - id: "quality/module-state::Module-level mutable state at src/utils.js, src/utils.js, src/appIcons.js, src/appIcons.js, src/windowPreview.js — ensure reset in both enable() and disable()"
+    classification: tp
+    notes: "5 module-level mutable variables — should be reset in disable()"
+  - id: "quality/code-volume::14146 non-blank JS lines — large codebase; ensure all code is necessary and manually reviewed"
+    classification: tp
+    notes: "Large codebase — valid advisory for reviewer attention"
+  - id: "quality/file-complexity::3564 non-blank lines — consider splitting into modules"
+    classification: tp
+    notes: "prefs.js is genuinely large — valid advisory"
+  - id: "quality/private-api::src/utils.js, src/utils.js, src/utils.js, src/utils.js, src/utils.js (+99 more): Main.overview private API access — requires reviewer justification and version pinning"
+    classification: tp
+    notes: "Extensive private API usage (104 instances) — valid advisory"
+  - id: "quality/repeated-settings::6 getSettings()/Gio.Settings instances across extension files (src/overview.js, src/taskbar.js, src/extension.js, src/extension.js, src/extension.js) — store a single instance and pass via dependency injection"
+    classification: tp
+    notes: "6 separate getSettings() calls — should consolidate"
+  - id: "lifecycle/connectObject-migration::15 manual signal connections found — consider using connectObject() for automatic cleanup"
+    classification: tp
+    notes: "15 manual .connect() calls — connectObject() provides automatic cleanup"
+  - id: "lifecycle/async-destroyed-guard::async/await used without _destroyed or _isDestroyed guard — extension may act on stale state after disable()"
+    classification: tp
+    notes: "Async/await without destroyed guard — race condition risk after disable()"
+  - id: "lifecycle/timeout-return-value::src/appIcons.js, src/extension.js"
+    classification: tp
+    notes: "timeout callbacks missing SOURCE_REMOVE/SOURCE_CONTINUE return value"
+  - id: "lifecycle/prototype-override::AppIcon.prototype._setPopupTimeout — direct prototype modification should be restored in disable()"
+    classification: tp
+    notes: "Direct prototype modification — should be restored in disable()"
+  - id: "lifecycle/prototype-override::AppIcon.prototype._removeMenuTimeout — direct prototype modification should be restored in disable()"
+    classification: tp
+    notes: "Direct prototype modification — should be restored in disable()"
+  - id: "lifecycle/prototype-override::LookingGlass.prototype._oldResize — direct prototype modification should be restored in disable()"
+    classification: tp
+    notes: "Direct prototype modification — should be restored in disable()"
+  - id: "lifecycle/prototype-override::LookingGlass.prototype._resize — direct prototype modification should be restored in disable()"
+    classification: tp
+    notes: "Direct prototype modification — should be restored in disable()"
+  - id: "lifecycle/prototype-override::LookingGlass.prototype._oldOpen — direct prototype modification should be restored in disable()"
+    classification: tp
+    notes: "Direct prototype modification — should be restored in disable()"
+  - id: "lifecycle/prototype-override::LookingGlass.prototype.open — direct prototype modification should be restored in disable()"
+    classification: tp
+    notes: "Direct prototype modification — should be restored in disable()"
+  - id: "lifecycle/prototype-override::Workspace.prototype._oldIsMyWindow — direct prototype modification should be restored in disable()"
+    classification: tp
+    notes: "Direct prototype modification — should be restored in disable()"
+  - id: "lifecycle/prototype-override::Workspace.prototype._isMyWindow — direct prototype modification should be restored in disable()"
+    classification: tp
+    notes: "Direct prototype modification — should be restored in disable()"
+  - id: "lifecycle/destroy-no-null::.destroy() without null assignment — set reference to null after destroy to prevent stale access"
+    classification: tp
+    notes: "5 instances — .destroy() without null assignment risks stale access"
+  - id: "lifecycle/module-scope-state::module-scope Map 'iconCacheMap' not cleared in disable()"
+    classification: tp
+    notes: "R-LIFE-26: module-scope Map not cleared in disable()"
+  - id: "lifecycle/module-scope-prototype::TaskbarAppIcon.prototype.scaleAndFade — prototype mutation at module scope persists after disable()"
+    classification: tp
+    notes: "R-LIFE-27: module-scope prototype mutation persists after disable()"
+  - id: "lifecycle/module-scope-prototype::TaskbarAppIcon.prototype.undoScaleAndFade — prototype mutation at module scope persists after disable()"
+    classification: tp
+    notes: "R-LIFE-27: module-scope prototype mutation persists after disable()"
+  - id: "gobject/missing-gtypename::GObject.registerClass without GTypeName — add GTypeName to avoid conflicts between extensions"
+    classification: tp
+    notes: "5 instances — collision risk between extensions"
+  - id: "disclosure/private-api::private-api capability detected in code but metadata description does not disclose it — reviewers expect disclosure"
+    classification: tp
+    notes: "Private API usage not disclosed in metadata description"
+  - id: "disclosure/file-io::file-io capability detected in code but metadata description does not disclose it — reviewers expect disclosure"
+    classification: tp
+    notes: "File I/O capability not disclosed in metadata description"
+  # WARN findings — False Positives
+  - id: "R-SEC-03::Use HTTPS instead of HTTP for network requests"
+    classification: fp
+    notes: "http://frippery.org/extensions/ in comment credit headers — not a network request"
+  - id: "R-SLOP-35::Object.freeze() on config objects is an AI code smell — GNOME extensions rarely need frozen objects"
+    classification: fp
+    notes: "Object.freeze(monitorInfos) prevents accidental mutation of shared state — intentional, not AI pattern"
+  # WARN findings — Borderline
+  - id: "css/unscoped-class::Found 2 potentially unscoped CSS class(es): .dashtopanelMainPanel, .dashtopanelSecondaryMenu — add a namespace prefix to avoid conflicts"
+    classification: borderline
+    notes: "Classes have 'dashtopanel' prefix via camelCase but check expects hyphen-separated namespace"
+  - id: "R-SLOP-29b::Empty destroy() override — GObject chains automatically; remove the no-op"
+    classification: borderline
+    notes: "ProximityRectWatch destroy() {} is a class hierarchy placeholder"
+  - id: "lifecycle/untracked-timeout::timer/idle return value not stored — cannot be removed in disable()"
+    classification: borderline
+    notes: "One-shot GLib.idle_add inside signal handlers — low risk but technically untracked"
+  # WARN findings — Expected
+  - id: "metadata/uuid-matches-dir::UUID 'dash-to-panel@jderose9.github.com' does not match directory 'dash-to-panel' — must match when installed"
+    classification: expected
+    notes: "Directory name differs from UUID in dev/cache layout"

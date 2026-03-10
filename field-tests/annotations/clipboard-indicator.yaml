@@ -83,3 +83,134 @@ findings:
   - id: "lifecycle/messagetray-source-leak::this._notifSource"
     classification: tp
     notes: "B2: Notification source persists — now detected by R-LIFE-24"
+  # New annotations (2026-03-10) — exact baseline IDs
+  # SKIP findings
+  - id: "polkit/action-id-match::No polkit files found"
+    classification: expected
+    notes: "No polkit files in extension"
+  - id: "polkit/action-id-prefix::No polkit files found"
+    classification: expected
+    notes: "No polkit files in extension"
+  - id: "polkit/helper-exists::No polkit files found"
+    classification: expected
+    notes: "No polkit files in extension"
+  - id: "R-WEB-01::Not applicable for declared shell-version(s)"
+    classification: expected
+    notes: "Version-gated skip (GNOME 45+)"
+  - id: "R-WEB-02::Not applicable for declared shell-version(s)"
+    classification: expected
+    notes: "Version-gated skip (GNOME 45+)"
+  - id: "R-WEB-10::Not applicable for declared shell-version(s)"
+    classification: expected
+    notes: "Version-gated skip (GNOME 45+)"
+  - id: "R-WEB-11::Not applicable for declared shell-version(s)"
+    classification: expected
+    notes: "Version-gated skip (GNOME 45+)"
+  - id: "R-DEPR-04-legacy::Not applicable for declared shell-version(s)"
+    classification: expected
+    notes: "Version-gated skip"
+  - id: "R-VER50-01::Not applicable for declared shell-version(s)"
+    classification: expected
+    notes: "Version-gated skip (GNOME 50 not in shell-version)"
+  - id: "R-VER50-02::Not applicable for declared shell-version(s)"
+    classification: expected
+    notes: "Version-gated skip (GNOME 50 not in shell-version)"
+  - id: "R-VER50-03::Not applicable for declared shell-version(s)"
+    classification: expected
+    notes: "Version-gated skip (GNOME 50 not in shell-version)"
+  - id: "R-VER50-04::Not applicable for declared shell-version(s)"
+    classification: expected
+    notes: "Version-gated skip (GNOME 50 not in shell-version)"
+  - id: "R-VER50-05::Not applicable for declared shell-version(s)"
+    classification: expected
+    notes: "Version-gated skip (GNOME 50 not in shell-version)"
+  - id: "eslint::No eslint.config.mjs or node_modules/.bin/eslint found"
+    classification: expected
+    notes: "Optional tooling not present"
+  - id: "schema-usage/unused-key::Dynamic key access detected — cannot verify statically"
+    classification: expected
+    notes: "Static analysis limitation — dynamic key access"
+  - id: "schema-usage/undefined-key::Dynamic key access detected — cannot verify statically"
+    classification: expected
+    notes: "Static analysis limitation — dynamic key access"
+  - id: "package/exists::No zip package found in extension directory"
+    classification: expected
+    notes: "Source checkout, not packaged"
+  # WARN findings — expected
+  - id: "metadata/uuid-matches-dir::UUID 'clipboard-indicator@tudmotu.com' does not match directory 'clipboard-indicator' — must match when installed"
+    classification: expected
+    notes: "Directory name differs from UUID in dev/cache layout"
+  # FAIL findings — True Positives
+  - id: "css/shell-class-override::.popup-menu-item: overrides GNOME Shell theme class — use a scoped selector (.my-extension .popup-menu-item)"
+    classification: tp
+    notes: "Overrides Shell theme class without scoping — genuine issue"
+  - id: "R-DEPR-11::Shell.KeyBindingMode was removed before GNOME 40; use Shell.ActionMode"
+    classification: tp
+    notes: "Dead code — Shell.KeyBindingMode removed before GNOME 40"
+  - id: "lifecycle/stage-actor-leak::Actor(s) added to stage/chrome but not removed in disable()/destroy(): this._historyLabel (extension.js)"
+    classification: tp
+    notes: "Actor leak on every enable/disable cycle"
+  # WARN findings — True Positives
+  - id: "css/important::Found 1 !important usage(s) in stylesheet.css — !important overrides Shell theme; prefer higher specificity"
+    classification: tp
+    notes: "Correct advisory — !important overrides Shell theme"
+  - id: "accessibility/accessible-name::2 icon-only St.Button(s) without accessible_name: extension.js, extension.js"
+    classification: tp
+    notes: "Icon-only buttons at lines 292 and 562 lack accessible_name for screen readers"
+  - id: "R-DEPR-09::Use const/let instead of var; var has function scope and causes bugs in closures"
+    classification: tp
+    notes: "3 instances of var — should use const/let"
+  - id: "R-SEC-06::GObject.run_dispose() should not be used unless absolutely necessary"
+    classification: tp
+    notes: "run_dispose() on virtual keyboard device in keyboard.js"
+  - id: "R-PREFS-04c::GTK layout widget in prefs.js — verify no Adw equivalent for this specific use case"
+    classification: tp
+    notes: "Correct advisory — verify GTK widget has no Adw equivalent"
+  - id: "R-SLOP-40::new Promise(resolve, reject) wrapper — consider Gio._promisify() for GIO async methods"
+    classification: tp
+    notes: "Manual Promise wrapper around load_contents_async — could use Gio._promisify()"
+  - id: "R-QUAL-34::enumerate_children() is synchronous — use enumerate_children_async() to avoid blocking the Shell main loop"
+    classification: tp
+    notes: "Synchronous enumerate_children() in clearCacheFolder blocks main loop"
+  - id: "R-VER48-04b::vertical property in constructor config deprecated in GNOME 48; use orientation: Clutter.Orientation.VERTICAL (available since GNOME 47; keep vertical for GNOME <=46 compat)"
+    classification: tp
+    notes: "Correct advisory — vertical property deprecated in GNOME 48"
+  - id: "quality/module-state::Module-level mutable state at extension.js, extension.js, extension.js, extension.js, extension.js — ensure reset in both enable() and disable()"
+    classification: tp
+    notes: "5 module-level mutable variables — enable/disable lifecycle concern"
+  - id: "quality/private-api::Main.panel private API access — requires reviewer justification and version pinning"
+    classification: tp
+    notes: "Private API access — correct advisory"
+  - id: "quality/run-dispose-no-comment::run_dispose() without explanatory comment — reviewers require justification"
+    classification: tp
+    notes: "run_dispose() in keyboard.js without explanatory comment"
+  - id: "lifecycle/async-destroyed-guard::async/await used without _destroyed or _isDestroyed guard — extension may act on stale state after disable()"
+    classification: tp
+    notes: "No destroyed guard on async code — stale state risk"
+  - id: "lifecycle/clipboard-keybinding::St.Clipboard and addKeybinding() in same file — review whether keybinding-triggered clipboard access is intended and not a keylogger pattern"
+    classification: tp
+    notes: "Clipboard manager — keybinding+clipboard access is intended functionality"
+  - id: "lifecycle/timeout-reassignment::timeout/idle ID reassigned without prior GLib.Source.remove() — may leak GLib sources"
+    classification: tp
+    notes: "_historyClearTimeoutId reassigned at line 890 without clearing previous timeout"
+  - id: "lifecycle/messagetray-source-leak::MessageTray source(s) added but not destroyed in disable()/destroy(): this._notifSource (extension.js)"
+    classification: tp
+    notes: "Notification source persists after disable — leak"
+  - id: "gobject/missing-gtypename::GObject.registerClass without GTypeName — add GTypeName to avoid conflicts between extensions"
+    classification: tp
+    notes: "ConfirmDialog missing GTypeName — collision risk"
+  - id: "async/no-cancellable::Gio async calls at registry.js, registry.js, registry.js without Gio.Cancellable — async operations should be cancellable via disable()"
+    classification: tp
+    notes: "3 Gio async calls without cancellable in registry.js"
+  - id: "async/missing-cancellable::_async() calls without Gio.Cancellable at registry.js, registry.js, registry.js (+6 more) — async operations may run after disable()"
+    classification: tp
+    notes: "9 _async() calls without cancellable — may run after disable()"
+  - id: "async/disable-no-cancel::Extension uses async but disable() has no .cancel(), .abort(), or _destroyed flag — async operations may outlive disable()"
+    classification: tp
+    notes: "No cancellation mechanism in disable() — async ops may outlive extension"
+  - id: "resource-tracking/no-destroy-method::registry.js — no cleanup method (destroy/disable/onDestroy) in registry.js"
+    classification: tp
+    notes: "Registry class has no cleanup method"
+  - id: "resource-tracking/ownership::5 files scanned, depth 2, 1 orphan detected"
+    classification: tp
+    notes: "1 orphan resource detected — correct"

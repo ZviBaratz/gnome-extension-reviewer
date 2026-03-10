@@ -12,3 +12,93 @@ findings:
   - id: "review/notification-urgency::CRITICAL for donation prompt"
     classification: tp
     notes: "MessageTray.Urgency.CRITICAL used for donation/support notification — abuses urgency level intended for system alerts. NOW caught by lint: R-QUAL-36 WARN"
+
+  # New annotations (2026-03-10)
+
+  # SKIP findings
+  - id: "polkit/action-id-match::No polkit files found"
+    classification: expected
+    notes: "No polkit files in extension — check not applicable"
+  - id: "polkit/action-id-prefix::No polkit files found"
+    classification: expected
+    notes: "No polkit files in extension — check not applicable"
+  - id: "polkit/helper-exists::No polkit files found"
+    classification: expected
+    notes: "No polkit files in extension — check not applicable"
+  - id: "R-WEB-01::Not applicable for declared shell-version(s)"
+    classification: expected
+    notes: "Min shell-version 45 — GJS native timers available, web timer check skipped"
+  - id: "R-WEB-02::Not applicable for declared shell-version(s)"
+    classification: expected
+    notes: "Min shell-version 45 — GJS native timers available, web timer check skipped"
+  - id: "R-WEB-10::Not applicable for declared shell-version(s)"
+    classification: expected
+    notes: "Min shell-version 45 — GJS native timers available, web timer check skipped"
+  - id: "R-WEB-11::Not applicable for declared shell-version(s)"
+    classification: expected
+    notes: "Min shell-version 45 — GJS native timers available, web timer check skipped"
+  - id: "R-DEPR-04-legacy::Not applicable for declared shell-version(s)"
+    classification: expected
+    notes: "Version-gated skip — not applicable for declared shell-version(s)"
+  - id: "eslint::No eslint.config.mjs or node_modules/.bin/eslint found"
+    classification: expected
+    notes: "ESLint not configured — optional tooling"
+  - id: "schema-usage/unused-key::Dynamic key access detected — cannot verify statically"
+    classification: expected
+    notes: "Dynamic key access prevents static analysis of schema key usage"
+  - id: "schema-usage/undefined-key::Dynamic key access detected — cannot verify statically"
+    classification: expected
+    notes: "Dynamic key access prevents static analysis of schema key usage"
+  - id: "package/exists::No zip package found in extension directory"
+    classification: expected
+    notes: "Source checkout, not a packaged zip"
+
+  # WARN findings — Expected (dev layout)
+  - id: "metadata/uuid-matches-dir::UUID 'just-perfection-desktop@just-perfection' does not match directory 'just-perfection' — must match when installed"
+    classification: expected
+    notes: "Directory name differs from UUID in dev/cache layout"
+
+  # WARN findings — Borderline
+  - id: "non-gjs-scripts::Found 2 non-GJS script(s) — scripts MUST be written in GJS; no pkexec/privileged helper justification found"
+    classification: borderline
+    notes: "Scripts are build/dev tools (build.sh, update-pot.sh) — not shipped with installed extension"
+
+  # WARN findings — True Positives
+  - id: "R-SLOP-03::version field is deprecated; EGO manages versions for GNOME 45+"
+    classification: tp
+    notes: "metadata.json contains version:36 — deprecated for GNOME 45+"
+  - id: "R-QUAL-36::CRITICAL notification urgency bypasses Do Not Disturb — reserved for system alerts, not extension notifications"
+    classification: tp
+    notes: "SupportNotifier uses CRITICAL urgency for donation prompt — valid advisory"
+  - id: "R-VER48-07::CSS class .quick-menu-toggle renamed to .quick-toggle-has-menu in GNOME 48"
+    classification: tp
+    notes: "Extension supports GNOME 48+ and uses renamed CSS class — valid advisory"
+  - id: "metadata/deprecated-version::version field is ignored by EGO for GNOME 45+; consider removing"
+    classification: tp
+    notes: "version:36 in metadata.json — deprecated for GNOME 45+ extensions"
+  - id: "metadata/future-shell-version::shell-version '50' is newer than current stable (49)"
+    classification: tp
+    notes: "Lists GNOME 50 in shell-version — newer than current stable"
+  - id: "quality/file-complexity::1636 non-blank lines — consider splitting into modules"
+    classification: tp
+    notes: "Manager.js has 1636 non-blank lines — genuinely large file, valid advisory"
+  - id: "quality/private-api::src/lib/API.js, src/lib/API.js, src/lib/API.js, src/lib/API.js, src/lib/API.js (+3 more): statusArea private API access — requires reviewer justification and version pinning"
+    classification: tp
+    notes: "Multiple statusArea private API accesses in API.js — real concern, valid advisory"
+  - id: "lifecycle/prototype-override::BackgroundMenu.prototype.open — direct prototype modification should be restored in disable()"
+    classification: tp
+    notes: "Direct prototype modification of BackgroundMenu.prototype.open — valid concern"
+  - id: "lifecycle/prototype-override::SearchController.prototype.startSearch — direct prototype modification should be restored in disable()"
+    classification: tp
+    notes: "Direct prototype modification of SearchController.prototype.startSearch — valid concern"
+  - id: "lifecycle/prototype-override::WorkspaceSwitcherPopup.prototype.display — direct prototype modification should be restored in disable()"
+    classification: tp
+    notes: "Direct prototype modification of WorkspaceSwitcherPopup.prototype.display — valid concern"
+  - id: "disclosure/private-api::private-api capability detected in code but metadata description does not disclose it — reviewers expect disclosure"
+    classification: tp
+    notes: "Private API usage not disclosed in metadata description — valid advisory"
+
+  # FAIL findings — True Positives
+  - id: "lifecycle/gsettings-signal-leak::1 bare settings.connect('changed::...') without stored ID and no disconnectObject/connectObject cleanup: src/lib/SupportNotifier.js"
+    classification: tp
+    notes: "Bare settings.connect('changed') in SupportNotifier.js:81 without disconnect — real signal leak"

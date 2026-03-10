@@ -70,3 +70,188 @@ findings:
   - id: "review/async-destroyed-guard::_computeBorderRadius after await"
     classification: tp
     notes: "Async method continues after await without checking if extension was disabled"
+  # New annotations (2026-03-10) — baseline 03-08 IDs
+  # FAIL findings
+  - id: "file-structure/extension.js::extension.js is missing"
+    classification: expected
+    notes: "TypeScript source checkout — extension.js is compiled from TS, not present in source"
+  - id: "file-structure/metadata.json::metadata.json is missing"
+    classification: expected
+    notes: "metadata.json is in resources/ — TS source layout differs from installed layout"
+  - id: "metadata/exists::metadata.json not found"
+    classification: expected
+    notes: "metadata.json in resources/ — root-level check doesn't find it in TS source layout"
+  # WARN findings
+  - id: "non-gjs-scripts::Found 1 non-GJS script(s) — scripts MUST be written in GJS; no pkexec/privileged helper justification found"
+    classification: borderline
+    notes: "manage_pr.sh is a dev/build tool, not shipped in extension package"
+  - id: "script-permissions::Found 1 shell script(s) without execute permission — packaging tools may strip permissions"
+    classification: borderline
+    notes: "manage_pr.sh is a dev tool, not part of extension runtime"
+  - id: "R-LOG-03::print()/printerr() should not be used in production; use console.debug()"
+    classification: fp
+    notes: "monitorDescription.js is a standalone GJS script — print() is correct for stdout output"
+  - id: "R-SLOP-03::version field is deprecated; EGO manages versions for GNOME 45+"
+    classification: tp
+    notes: "Version field in resources/metadata.json — standard advisory"
+  - id: "schema-usage/unused-key::61 schema key(s) defined but not referenced in code: active-screen-edges, cycle-layouts, cycle-layouts-backward, edge-tiling-mode, edge-tiling-offset, enable-autotiling, enable-blur-selected-tilepreview, enable-blur-snap-assistant, enable-directional-focus-tiled-only, enable-move-keybindings, enable-screen-edges-windows-suggestions, enable-smart-window-border-radius, enable-snap-assist, enable-snap-assistant-windows-suggestions, enable-span-multiple-tiles, enable-tiling-system, enable-tiling-system-windows-suggestions, enable-window-border, enable-wraparound-focus, focus-window-down, focus-window-left, focus-window-next, focus-window-prev, focus-window-right, focus-window-up, highlight-current-window, inner-gaps, last-version-name-installed, layouts-json, move-window-center, move-window-down, move-window-left, move-window-right, move-window-up, outer-gaps, overridden-settings, override-alt-tab, override-window-menu, quarter-tiling-threshold, raise-together, resize-complementing-windows, restore-window-original-size, selected-layouts, show-indicator, snap-assist-sync-layout, snap-assistant-animation-time, snap-assistant-threshold, span-multiple-tiles-activation-key, span-window-all-tiles, span-window-down, span-window-left, span-window-right, span-window-up, tile-preview-animation-time, tiling-system-activation-key, tiling-system-deactivation-key, top-edge-maximize, untile-window, window-border-color, window-border-width, window-use-custom-border-color"
+    classification: expected
+    notes: "Only 1 JS file analyzed (14 lines) — TS source not parsed, all keys appear unused"
+  # SKIP findings — polkit
+  - id: "polkit/action-id-match::No polkit files found"
+    classification: expected
+    notes: "No polkit files in extension"
+  - id: "polkit/action-id-prefix::No polkit files found"
+    classification: expected
+    notes: "No polkit files in extension"
+  - id: "polkit/helper-exists::No polkit files found"
+    classification: expected
+    notes: "No polkit files in extension"
+  # SKIP findings — CSS
+  - id: "css/scoping::No stylesheet.css found"
+    classification: expected
+    notes: "CSS in TS source, not compiled to stylesheet.css"
+  - id: "css/shell-class-override::No stylesheet.css found"
+    classification: expected
+    notes: "CSS in TS source, not compiled to stylesheet.css"
+  # SKIP findings — accessibility
+  - id: "accessibility/accessible-name::No UI-related imports found"
+    classification: expected
+    notes: "Only 1 JS file found — UI imports are in TS source"
+  - id: "accessibility/widget-role::No UI-related imports found"
+    classification: expected
+    notes: "Only 1 JS file found — UI imports are in TS source"
+  # SKIP findings — version-gated rules
+  - id: "R-WEB-01::Not applicable for declared shell-version(s)"
+    classification: expected
+    notes: "Version-gated skip for GNOME 45+"
+  - id: "R-WEB-02::Not applicable for declared shell-version(s)"
+    classification: expected
+    notes: "Version-gated skip for GNOME 45+"
+  - id: "R-WEB-10::Not applicable for declared shell-version(s)"
+    classification: expected
+    notes: "Version-gated skip for GNOME 45+"
+  - id: "R-WEB-11::Not applicable for declared shell-version(s)"
+    classification: expected
+    notes: "Version-gated skip for GNOME 45+"
+  - id: "R-DEPR-04::Not applicable for declared shell-version(s)"
+    classification: expected
+    notes: "Version-gated skip"
+  - id: "R-DEPR-04-legacy::Not applicable for declared shell-version(s)"
+    classification: expected
+    notes: "Version-gated skip"
+  - id: "R-VER44-01::Not applicable for declared shell-version(s)"
+    classification: expected
+    notes: "Version-gated skip"
+  - id: "R-VER44-02::Not applicable for declared shell-version(s)"
+    classification: expected
+    notes: "Version-gated skip"
+  - id: "R-VER46-01::Not applicable for declared shell-version(s)"
+    classification: expected
+    notes: "Version-gated skip"
+  - id: "R-VER46-02::Not applicable for declared shell-version(s)"
+    classification: expected
+    notes: "Version-gated skip"
+  - id: "R-VER46-03::Not applicable for declared shell-version(s)"
+    classification: expected
+    notes: "Version-gated skip"
+  - id: "R-VER46-04::Not applicable for declared shell-version(s)"
+    classification: expected
+    notes: "Version-gated skip"
+  - id: "R-VER46-05::Not applicable for declared shell-version(s)"
+    classification: expected
+    notes: "Version-gated skip"
+  - id: "R-VER46-06::Not applicable for declared shell-version(s)"
+    classification: expected
+    notes: "Version-gated skip"
+  - id: "R-VER46-07::Not applicable for declared shell-version(s)"
+    classification: expected
+    notes: "Version-gated skip"
+  - id: "R-VER47-01::Not applicable for declared shell-version(s)"
+    classification: expected
+    notes: "Version-gated skip"
+  - id: "R-VER48-01::Not applicable for declared shell-version(s)"
+    classification: expected
+    notes: "Version-gated skip"
+  - id: "R-VER48-02::Not applicable for declared shell-version(s)"
+    classification: expected
+    notes: "Version-gated skip"
+  - id: "R-VER48-03::Not applicable for declared shell-version(s)"
+    classification: expected
+    notes: "Version-gated skip"
+  - id: "R-VER48-04::Not applicable for declared shell-version(s)"
+    classification: expected
+    notes: "Version-gated skip"
+  - id: "R-VER48-04b::Not applicable for declared shell-version(s)"
+    classification: expected
+    notes: "Version-gated skip"
+  - id: "R-VER48-05::Not applicable for declared shell-version(s)"
+    classification: expected
+    notes: "Version-gated skip"
+  - id: "R-VER48-06::Not applicable for declared shell-version(s)"
+    classification: expected
+    notes: "Version-gated skip"
+  - id: "R-VER48-07::Not applicable for declared shell-version(s)"
+    classification: expected
+    notes: "Version-gated skip"
+  - id: "R-VER49-01::Not applicable for declared shell-version(s)"
+    classification: expected
+    notes: "Version-gated skip"
+  - id: "R-VER49-02::Not applicable for declared shell-version(s)"
+    classification: expected
+    notes: "Version-gated skip"
+  - id: "R-VER49-03::Not applicable for declared shell-version(s)"
+    classification: expected
+    notes: "Version-gated skip"
+  - id: "R-VER49-04::Not applicable for declared shell-version(s)"
+    classification: expected
+    notes: "Version-gated skip"
+  - id: "R-VER49-05::Not applicable for declared shell-version(s)"
+    classification: expected
+    notes: "Version-gated skip"
+  - id: "R-VER49-06::Not applicable for declared shell-version(s)"
+    classification: expected
+    notes: "Version-gated skip"
+  - id: "R-VER49-07::Not applicable for declared shell-version(s)"
+    classification: expected
+    notes: "Version-gated skip"
+  - id: "R-VER49-08::Not applicable for declared shell-version(s)"
+    classification: expected
+    notes: "Version-gated skip"
+  - id: "R-VER49-09::Not applicable for declared shell-version(s)"
+    classification: expected
+    notes: "Version-gated skip"
+  - id: "R-VER49-10::Not applicable for declared shell-version(s)"
+    classification: expected
+    notes: "Version-gated skip"
+  - id: "R-VER49-11::Not applicable for declared shell-version(s)"
+    classification: expected
+    notes: "Version-gated skip"
+  - id: "R-VER50-01::Not applicable for declared shell-version(s)"
+    classification: expected
+    notes: "Version-gated skip"
+  - id: "R-VER50-02::Not applicable for declared shell-version(s)"
+    classification: expected
+    notes: "Version-gated skip"
+  - id: "R-VER50-03::Not applicable for declared shell-version(s)"
+    classification: expected
+    notes: "Version-gated skip"
+  - id: "R-VER50-04::Not applicable for declared shell-version(s)"
+    classification: expected
+    notes: "Version-gated skip"
+  - id: "R-VER50-05::Not applicable for declared shell-version(s)"
+    classification: expected
+    notes: "Version-gated skip"
+  # SKIP findings — tooling and structure
+  - id: "eslint::No eslint.config.mjs or node_modules/.bin/eslint found"
+    classification: expected
+    notes: "Optional tooling not present in cache checkout"
+  - id: "schema/exists::No schemas defined (not all extensions use schemas)"
+    classification: expected
+    notes: "Schemas in resources/schemas/ — root metadata not parsed for settings-schema"
+  - id: "prefs/exists::No prefs.js found"
+    classification: expected
+    notes: "Prefs in TypeScript source — no compiled prefs.js in source checkout"
+  - id: "package/exists::No zip package found in extension directory"
+    classification: expected
+    notes: "Source checkout, not packaged"

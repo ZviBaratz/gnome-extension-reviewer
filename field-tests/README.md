@@ -58,19 +58,45 @@ ego-lint version: `05523f9`
 
 Each extension has a classification file in `annotations/` where findings are labeled as true positive (tp), false positive (fp), borderline, expected, or resolved (finding no longer emitted).
 
-| Extension | TP | FP | Borderline | Expected | Resolved | Classified | Unannotated |
-|---|---|---|---|---|---|---|---|
-| hara-hachi-bu | 7 | 9 | 0 | 1 | 0 | 17 | 32 |
-| tiling-shell | 10 | 9 | 2 | 0 | 0 | 21 | 59 |
-| v-shell | 10 | 6 | 0 | 0 | 0 | 16 | 49 |
-| gsconnect | 11 | 6 | 7 | 0 | 2 | 26 | 69 |
-| appindicator | 17 | 10 | 4 | 0 | 0 | 31 | 52 |
-| clipboard-indicator | 20 | 6 | 0 | 0 | 0 | 26 | 42 |
-| blur-my-shell | 17 | 7 | 3 | 0 | 2 | 29 | 47 |
-| dash-to-panel | 22 | 8 | 2 | 1 | 3 | 36 | 65 |
-| media-controls | 14 | 5 | 2 | 0 | 1 | 22 | 38 |
-| just-perfection | 2 | 0 | 0 | 0 | 1 | 3 | 26 |
-| **Totals** | **130** | **66** | **20** | **2** | **9** | **227** | **479** |
+| Extension | TP | FP | Borderline | Expected | Resolved | Total |
+|---|---|---|---|---|---|---|
+| hara-hachi-bu | 14 | 9 | 0 | 26 | 0 | 49 |
+| tiling-shell | 11 | 10 | 4 | 55 | 0 | 80 |
+| v-shell | 40 | 7 | 1 | 17 | 0 | 65 |
+| gsconnect | 52 | 8 | 15 | 18 | 2 | 95 |
+| appindicator | 45 | 13 | 10 | 15 | 0 | 83 |
+| clipboard-indicator | 44 | 6 | 0 | 18 | 0 | 68 |
+| blur-my-shell | 38 | 12 | 6 | 18 | 2 | 76 |
+| dash-to-panel | 64 | 10 | 5 | 19 | 3 | 101 |
+| media-controls | 30 | 5 | 6 | 18 | 1 | 60 |
+| just-perfection | 14 | 0 | 1 | 13 | 1 | 29 |
+| **Totals** | **352** | **80** | **48** | **217** | **9** | **706** |
+
+**100% annotation coverage** — all 706 findings across 10 extensions are classified.
+
+## Precision Metrics
+
+| Metric | Value |
+|---|---|
+| Strict precision (TP / (TP + FP)) | **81.5%** (352 / 432) |
+| Lenient precision ((TP + BL) / (TP + FP + BL)) | **83.3%** (400 / 480) |
+| False positive rate | 11.3% (80 / 706) |
+| Expected / not-applicable | 30.7% (217 / 706) |
+
+### Top FP-generating rules
+
+| Rule | FP | TP | Precision |
+|---|---|---|---|
+| init/shell-modification | 8 | 5 | 38.5% |
+| resource-tracking/no-destroy-method | 7 | 3 | 30.0% |
+| R-SLOP-38 | 4 | 0 | 0.0% |
+| R-SLOP-35 | 3 | 0 | 0.0% |
+| imports/no-gtk-in-extension | 3 | 1 | 25.0% |
+| R-SLOP-24 | 3 | 0 | 0.0% |
+| R-SLOP-13 | 2 | 0 | 0.0% |
+| license | 2 | 3 | 60.0% |
+| R-VER48-02 | 2 | 0 | 0.0% |
+| R-SEC-03 | 2 | 0 | 0.0% |
 
 ## Directory Structure
 

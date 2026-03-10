@@ -96,3 +96,151 @@ findings:
   - id: "lifecycle::GLib.idle_add source ID not stored"
     classification: tp
     notes: "L-2: panel.js:91 — can fire after disable"
+
+  # New annotations — exact baseline IDs (2026-03-10)
+  # SKIP findings — expected (not applicable)
+  - id: "polkit/action-id-match::No polkit files found"
+    classification: expected
+    notes: "No polkit files in extension"
+  - id: "polkit/action-id-prefix::No polkit files found"
+    classification: expected
+    notes: "No polkit files in extension"
+  - id: "polkit/helper-exists::No polkit files found"
+    classification: expected
+    notes: "No polkit files in extension"
+  - id: "R-WEB-01::Not applicable for declared shell-version(s)"
+    classification: expected
+    notes: "Version-gated skip — extension targets GNOME 45+"
+  - id: "R-WEB-02::Not applicable for declared shell-version(s)"
+    classification: expected
+    notes: "Version-gated skip — extension targets GNOME 45+"
+  - id: "R-WEB-10::Not applicable for declared shell-version(s)"
+    classification: expected
+    notes: "Version-gated skip — extension targets GNOME 45+"
+  - id: "R-WEB-11::Not applicable for declared shell-version(s)"
+    classification: expected
+    notes: "Version-gated skip — extension targets GNOME 45+"
+  - id: "R-DEPR-04-legacy::Not applicable for declared shell-version(s)"
+    classification: expected
+    notes: "Version-gated skip — extension targets GNOME 45+"
+  - id: "R-VER50-01::Not applicable for declared shell-version(s)"
+    classification: expected
+    notes: "Extension does not declare GNOME 50 support"
+  - id: "R-VER50-02::Not applicable for declared shell-version(s)"
+    classification: expected
+    notes: "Extension does not declare GNOME 50 support"
+  - id: "R-VER50-03::Not applicable for declared shell-version(s)"
+    classification: expected
+    notes: "Extension does not declare GNOME 50 support"
+  - id: "R-VER50-04::Not applicable for declared shell-version(s)"
+    classification: expected
+    notes: "Extension does not declare GNOME 50 support"
+  - id: "R-VER50-05::Not applicable for declared shell-version(s)"
+    classification: expected
+    notes: "Extension does not declare GNOME 50 support"
+  - id: "eslint::No eslint.config.mjs or node_modules/.bin/eslint found"
+    classification: expected
+    notes: "Optional tooling not present"
+  - id: "schema-usage/unused-key::Dynamic key access detected — cannot verify statically"
+    classification: expected
+    notes: "Static analysis limitation — extension uses dynamic key access"
+  - id: "schema-usage/undefined-key::Dynamic key access detected — cannot verify statically"
+    classification: expected
+    notes: "Static analysis limitation — extension uses dynamic key access"
+  - id: "package/exists::No zip package found in extension directory"
+    classification: expected
+    notes: "Source checkout, not packaged"
+  - id: "metadata/uuid-matches-dir::UUID 'blur-my-shell@aunetx' does not match directory 'blur-my-shell' — must match when installed"
+    classification: expected
+    notes: "Dev/cache directory name differs from UUID"
+  # FAIL findings — True Positives
+  - id: "R-DEPR-06::Tweener is removed; use Clutter animation framework"
+    classification: tp
+    notes: "appfolders.js uses Tweener — crashes on GNOME 46+"
+  - id: "lifecycle/gsettings-signal-leak::1 bare settings.connect('changed::...') without stored ID and no disconnectObject/connectObject cleanup: src/preferences/applications_management/application_row.js"
+    classification: tp
+    notes: "Bare settings.connect() in preferences without disconnectObject cleanup"
+  # WARN findings — True Positives
+  - id: "css/important::Found 9 !important usage(s) in stylesheet.css — !important overrides Shell theme; prefer higher specificity"
+    classification: tp
+    notes: "Valid advisory — !important overrides Shell theme styling"
+  - id: "R-DEPR-09::Use const/let instead of var; var has function scope and causes bugs in closures"
+    classification: tp
+    notes: "var usage should use const/let"
+  - id: "R-SEC-09::Extension system interference is discouraged; modifying other extensions requires justification"
+    classification: tp
+    notes: "Accesses Main.extensionManager for Dash to Panel compat"
+  - id: "R-I18N-01::Template literal inside gettext _() breaks xgettext string extraction"
+    classification: tp
+    notes: "4 instances — template literals break xgettext extraction"
+  - id: "R-SLOP-03::version field is deprecated; EGO manages versions for GNOME 45+"
+    classification: tp
+    notes: "Version field deprecated for GNOME 45+"
+  - id: "R-SLOP-16::GLib.file_get_contents() is synchronous and blocks the main loop; prefer Gio.File.load_contents() or load_contents_async()"
+    classification: tp
+    notes: "Synchronous file read blocks main loop"
+  - id: "metadata/non-standard-field::'original-authors' is not a standard metadata field"
+    classification: tp
+    notes: "Non-standard metadata field advisory"
+  - id: "metadata/deprecated-version::version field is ignored by EGO for GNOME 45+; consider removing"
+    classification: tp
+    notes: "Version field deprecated for GNOME 45+"
+  - id: "quality/module-state::Module-level mutable state at src/components/appfolders.js, src/components/appfolders.js — ensure reset in both enable() and disable()"
+    classification: tp
+    notes: "Module-level sigma/brightness vars not reset in disable()"
+  - id: "quality/empty-catch::empty catch block — at minimum log with console.debug()"
+    classification: tp
+    notes: "paint_signals.js:28 — empty catch swallows errors"
+  - id: "quality/private-api::src/extension.js, src/components/panel.js, src/components/panel.js, src/components/appfolders.js, src/components/appfolders.js (+1 more): Main.layoutManager private API access — requires reviewer justification and version pinning"
+    classification: tp
+    notes: "Private API access — valid advisory for version-sensitive code"
+  - id: "lifecycle/signal-balance::30 manual .connect() calls but only 28 .disconnect() calls — verify all signals are disconnected in disable()"
+    classification: tp
+    notes: "Connections class auto-cleans but heuristic can't verify"
+  - id: "lifecycle/async-destroyed-guard::async/await used without _destroyed or _isDestroyed guard — extension may act on stale state after disable()"
+    classification: tp
+    notes: "Low risk — await import() without destroyed guard"
+  - id: "lifecycle/prototype-override::UnlockDialog.prototype._createBackground — direct prototype modification should be restored in disable()"
+    classification: tp
+    notes: "Lockscreen prototype override — must be restored in disable()"
+  - id: "lifecycle/prototype-override::UnlockDialog.prototype._updateBackgroundEffects — direct prototype modification should be restored in disable()"
+    classification: tp
+    notes: "Lockscreen prototype override — must be restored in disable()"
+  - id: "lifecycle/prototype-override::UnlockDialog.prototype._updateBackgrounds — direct prototype modification should be restored in disable()"
+    classification: tp
+    notes: "Lockscreen prototype override — must be restored in disable()"
+  - id: "lifecycle/destroy-no-call::.destroy without () — property access, not method call"
+    classification: tp
+    notes: "coverflow_alt_tab.js:69 — .destroy property access, not method call"
+  - id: "resource-tracking/orphan-signal::src/components/appfolders.js — this._sourceMappedId created but not cleaned up in destroy()"
+    classification: tp
+    notes: "Signal ID stored but never disconnected in cleanup"
+  - id: "resource-tracking/orphan-gsettings::src/components/applications.js — this.mutter_gsettings created but not cleaned up in destroy()"
+    classification: tp
+    notes: "GSettings instance created in enable() but not cleaned up"
+  # WARN findings — False Positives
+  - id: "resource-tracking/no-destroy-method::src/conveniences/paint_signals.js — no cleanup method (destroy/disable/onDestroy) in src/conveniences/paint_signals.js"
+    classification: fp
+    notes: "Class uses disconnect_all() for cleanup — unrecognized method name"
+  - id: "resource-tracking/no-destroy-method::src/conveniences/effects_manager.js — no cleanup method (destroy/disable/onDestroy) in src/conveniences/effects_manager.js"
+    classification: fp
+    notes: "Utility class — cleanup managed via parent lifecycle"
+  - id: "resource-tracking/no-destroy-method::src/effects/upscale.js — no cleanup method (destroy/disable/onDestroy) in src/effects/upscale.js"
+    classification: fp
+    notes: "GObject effect — cleanup managed by parent actor lifecycle"
+  - id: "resource-tracking/no-destroy-method::src/effects/downscale.js — no cleanup method (destroy/disable/onDestroy) in src/effects/downscale.js"
+    classification: fp
+    notes: "GObject effect — cleanup managed by parent actor lifecycle"
+  - id: "resource-tracking/no-destroy-method::src/effects/gaussian_blur.js — no cleanup method (destroy/disable/onDestroy) in src/effects/gaussian_blur.js"
+    classification: fp
+    notes: "GObject effect — cleanup managed by parent actor lifecycle"
+  # WARN findings — Borderline
+  - id: "quality/constructor-resources::.connect() in constructor — move to enable()"
+    classification: borderline
+    notes: "3 hits — settings.js uses dynamic accessor pattern with cleanup; effects_dialog.js is prefs GTK widget (auto-cleanup)"
+  - id: "lifecycle/untracked-timeout::timer/idle return value not stored — cannot be removed in disable()"
+    classification: borderline
+    notes: "4 hits — 2 in panel.js (TP), 2 in prefs code (auto-cleanup on window close)"
+  - id: "resource-tracking/ownership::48 files scanned, depth 3, 11 orphans detected"
+    classification: borderline
+    notes: "Summary orphan count includes FP no-destroy-method findings"
