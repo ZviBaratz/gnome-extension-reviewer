@@ -1,0 +1,7 @@
+{
+    "uuid": "custom-cleanup-method@test",
+    "name": "Custom Cleanup Method Test",
+    "description": "Tests alternative cleanup method recognition",
+    "shell-version": ["48"],
+    "url": "https://example.com"
+}

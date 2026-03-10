@@ -329,7 +329,9 @@ def scan_file(file_path, ext_dir):
         any_cleanup_pat = re.compile(
             re.escape(ref) + r'(?:\??\.\w+\s*\(|\s*=\s*null\b)'
         )
-        for method_name in ('destroy', 'disable', '_destroy', 'onDestroy'):
+        for method_name in ('destroy', 'disable', '_destroy', 'onDestroy',
+                             'disconnect_all', 'cleanup', '_cleanup',
+                             'close', 'shutdown', 'dispose', 'release'):
             mb = find_method_body(content, method_name)
             if mb:
                 _, _, body = mb
@@ -342,7 +344,8 @@ def scan_file(file_path, ext_dir):
     child_refs = set()
     child_add_pat = re.compile(
         r'\.(?:add_child|insert_child_below|insert_child_above|'
-        r'insert_child_at_index|set_child|add_actor)\s*\(\s*(this[._]\w+)'
+        r'insert_child_at_index|set_child|add_actor|'
+        r'add_effect|add_effect_with_name)\s*\(\s*(this[._]\w+)'
     )
     for line in lines:
         m = child_add_pat.search(line.strip())
@@ -360,6 +363,13 @@ def scan_file(file_path, ext_dir):
     has_on_destroy = bool(re.search(
         r'(?:^|\s)onDestroy\s*\([^)]*\)\s*\{', content, re.MULTILINE
     ))
+    # Detect alternative cleanup methods: disconnect_all, cleanup, _cleanup*,
+    # close, shutdown, dispose, release
+    has_custom_cleanup = bool(re.search(
+        r'(?:^|\s)(?:disconnect_all|_?cleanup\w*|close|shutdown|dispose|release)'
+        r'\s*\([^)]*\)\s*\{',
+        content, re.MULTILINE
+    ))
 
     return {
         'rel': rel,
@@ -371,6 +381,7 @@ def scan_file(file_path, ext_dir):
         'has_disable': has_disable,
         'has_private_destroy': has_private_destroy,
         'has_on_destroy': has_on_destroy,
+        'has_custom_cleanup': has_custom_cleanup,
         'child_refs': child_refs,
         'content': content,
     }
@@ -496,7 +507,9 @@ def detect_orphans(file_scans, ownership):
         has_disable = scan['has_disable']
         has_private_destroy = scan['has_private_destroy']
         has_on_destroy = scan['has_on_destroy']
-        has_cleanup_method = has_destroy or has_disable or has_private_destroy or has_on_destroy
+        has_custom_cleanup = scan.get('has_custom_cleanup', False)
+        has_cleanup_method = (has_destroy or has_disable or has_private_destroy
+                              or has_on_destroy or has_custom_cleanup)
 
         if not creates:
             continue
@@ -519,10 +532,22 @@ def detect_orphans(file_scans, ownership):
                         parent_calls_destroy = True
                         break
 
+        # Check if parent added this child as a widget child or effect
+        # (auto-cleanup by actor lifecycle)
+        parent_manages_as_child = False
+        if parent_rel and parent_rel in file_scans:
+            parent_child_refs = file_scans[parent_rel].get('child_refs', set())
+            if parent_rel in ownership:
+                for ref, ref_info in ownership[parent_rel].items():
+                    if ref_info.get('source_file') == rel:
+                        if ref in parent_child_refs:
+                            parent_manages_as_child = True
+                            break
+
         # Case 1: Module creates resources but has no cleanup method
         if not has_cleanup_method:
-            if parent_calls_destroy:
-                continue  # Parent manages this child via custom cleanup method
+            if parent_calls_destroy or parent_manages_as_child:
+                continue  # Parent manages this child's lifecycle
             for c in creates:
                 orphans.append({
                     'file': rel,
@@ -552,7 +577,9 @@ def detect_orphans(file_scans, ownership):
         # releasing references even when the resource auto-cleans itself
         nulled_refs = set()
         content = scan['content']
-        for method_name in ('destroy', 'disable', '_destroy', 'onDestroy'):
+        for method_name in ('destroy', 'disable', '_destroy', 'onDestroy',
+                             'disconnect_all', 'cleanup', '_cleanup',
+                             'close', 'shutdown', 'dispose', 'release'):
             mb = find_method_body(content, method_name)
             if mb:
                 _, _, body = mb

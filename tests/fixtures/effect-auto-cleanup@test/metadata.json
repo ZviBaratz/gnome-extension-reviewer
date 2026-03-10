@@ -1,0 +1,7 @@
+{
+    "uuid": "effect-auto-cleanup@test",
+    "name": "Effect Auto Cleanup Test",
+    "description": "Tests GObject effect auto-cleanup via add_effect",
+    "shell-version": ["48"],
+    "url": "https://example.com"
+}
