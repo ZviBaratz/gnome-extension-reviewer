@@ -307,8 +307,8 @@ if [[ -z "$license_file" && "$(basename "$EXT_DIR")" == "src" ]]; then
 fi
 
 if [[ -n "$license_file" ]]; then
-    head_content=$(head -5 "$license_file" 2>/dev/null || true)
-    if echo "$head_content" | grep -qiE '(GPL|LGPL|MIT|BSD|Apache|MPL|ISC|Artistic)'; then
+    head_content=$(head -20 "$license_file" 2>/dev/null || true)
+    if echo "$head_content" | grep -qiE '(GNU GENERAL PUBLIC LICENSE|\bGPL\b|\bLGPL\b|\bMIT\b|\bBSD\b|\bApache\b|\bMPL\b|\bISC\b|\bArtistic\b|SPDX-License-Identifier)'; then
         print_result "PASS" "license" "License file found (appears GPL-compatible)"
     else
         print_result "WARN" "license" "License file found but could not confirm GPL-compatibility"
