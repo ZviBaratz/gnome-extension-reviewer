@@ -187,7 +187,7 @@ findings:
   - id: "R-SLOP-43::Underscore-prefixed export — private convention conflicts with public export"
     classification: tp
     notes: "promiseUtils.js:314 _promisifySignals — exported but underscore-prefixed"
-  - id: "R-SLOP-11::indicator-test-tool/testTool.js: Non-existent GLib method — use GLib.timeout_add_seconds() and GLib.Source.remove()"
+  - id: "R-SLOP-11::indicator-test-tool/testTool.js: Non-idiomatic GLib C-binding — use GLib.timeout_add_seconds()"
     classification: tp
     notes: "testTool.js:236 — uses GLib.timeout_add_seconds_full which is correct GI binding name but non-idiomatic GJS"
   - id: "R-SLOP-16::GLib.file_get_contents() is synchronous and blocks the main loop; prefer Gio.File.load_contents() or load_contents_async()"

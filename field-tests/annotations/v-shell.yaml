@@ -127,7 +127,7 @@ findings:
   - id: "R-SLOP-03::version field is deprecated; EGO manages versions for GNOME 45+"
     classification: tp
     notes: "Version field deprecated for GNOME 45+"
-  - id: "R-SLOP-11::Non-existent GLib method — use GLib.timeout_add_seconds() and GLib.Source.remove()"
+  - id: "R-SLOP-44::Non-idiomatic GLib C-binding — use GLib.Source.remove()"
     classification: tp
     notes: "21 hits — uses GLib.source_remove instead of GLib.Source.remove()"
   - id: "R-QUAL-31::_onDestroy() should be renamed to destroy() with super.destroy() at the end"

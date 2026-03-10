@@ -663,12 +663,20 @@
   fix: "Use actor.show()/hide() for visibility. Use actor.set({x, y, width, height}) for geometry."
 
 - id: R-SLOP-11
-  pattern: "\\bGLib\\.(timeout_add_seconds_full|source_remove)\\b"
+  pattern: "\\bGLib\\.timeout_add_seconds_full\\b"
   scope: ["*.js"]
   severity: advisory
-  message: "Non-existent GLib method — use GLib.timeout_add_seconds() and GLib.Source.remove()"
+  message: "Non-idiomatic GLib C-binding — use GLib.timeout_add_seconds()"
   category: ai-slop
-  fix: "GLib.timeout_add_seconds_full → GLib.timeout_add_seconds. GLib.source_remove → GLib.Source.remove."
+  fix: "GLib.timeout_add_seconds_full() → GLib.timeout_add_seconds(). The _full variant is the C API name."
+
+- id: R-SLOP-44
+  pattern: "\\bGLib\\.source_remove\\b"
+  scope: ["*.js"]
+  severity: advisory
+  message: "Non-idiomatic GLib C-binding — use GLib.Source.remove()"
+  category: ai-slop
+  fix: "GLib.source_remove(id) → GLib.Source.remove(id). The function works but GLib.Source.remove() is the idiomatic GJS form."
 
 - id: R-SLOP-16
   pattern: "\\bGLib\\.file_get_contents\\b"

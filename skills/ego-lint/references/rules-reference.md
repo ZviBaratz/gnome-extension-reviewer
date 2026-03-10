@@ -1386,12 +1386,20 @@ export default class MyExtension extends Extension {
 - **Fix**: Use `actor.show()`/`hide()` for visibility. Use `actor.set({x, y, width, height})` for geometry.
 - **Tested by**: `tests/fixtures/hallucinated-apis@test/`
 
-### R-SLOP-11: Non-existent GLib Methods
+### R-SLOP-11: Non-idiomatic GLib.timeout_add_seconds_full
 - **Severity**: advisory
 - **Checked by**: apply-patterns.py
-- **Rule**: `GLib.timeout_add_seconds_full` and `GLib.source_remove` don't exist in GJS bindings.
-- **Rationale**: LLMs confuse C API names with GJS binding names.
-- **Fix**: Use `GLib.timeout_add_seconds()` and `GLib.Source.remove()`.
+- **Rule**: `GLib.timeout_add_seconds_full` is a C API name; GJS uses `GLib.timeout_add_seconds()`.
+- **Rationale**: LLMs confuse C API names with GJS binding names. The `_full` variant doesn't exist in GJS.
+- **Fix**: Use `GLib.timeout_add_seconds()`.
+- **Tested by**: `tests/fixtures/hallucinated-apis@test/`
+
+### R-SLOP-44: Non-idiomatic GLib.source_remove
+- **Severity**: advisory
+- **Checked by**: apply-patterns.py
+- **Rule**: `GLib.source_remove()` is a valid GI binding for C's `g_source_remove()`, but `GLib.Source.remove()` is the idiomatic GJS form.
+- **Rationale**: While `GLib.source_remove()` works, `GLib.Source.remove()` is what GNOME documentation and reviewers expect. LLMs often use the C-style name.
+- **Fix**: Use `GLib.Source.remove(id)`.
 - **Tested by**: `tests/fixtures/hallucinated-apis@test/`
 
 ### R-SLOP-12: typeof super.destroy Guard

@@ -1,14 +1,14 @@
 {
   "name": "v-shell",
   "uuid": "vertical-workspaces@G-dH.github.com",
-  "timestamp": "2026-03-08T14:19:40.558640+00:00",
-  "ego_lint_version": "05523f9",
+  "timestamp": "2026-03-10T15:45:01.988154+00:00",
+  "ego_lint_version": "a0ea7e4",
   "ego_approved": true,
   "exit_code": 1,
   "counts": {
-    "pass": 188,
-    "fail": 2,
-    "warn": 91,
+    "pass": 190,
+    "fail": 1,
+    "warn": 90,
     "skip": 17,
     "total": 298
   },
@@ -41,7 +41,7 @@
     },
     {
       "id": "css/shell-class-override::.osd-window: overrides GNOME Shell theme class \u2014 use a scoped selector (.my-extension .osd-window)",
-      "status": "FAIL",
+      "status": "WARN",
       "check": "css/shell-class-override",
       "detail": ".osd-window: overrides GNOME Shell theme class \u2014 use a scoped selector (.my-extension .osd-window)"
     },
@@ -144,20 +144,6 @@
       "fix": "Remove the version field from metadata.json; EGO manages versions automatically."
     },
     {
-      "id": "R-SLOP-13::this instanceof check inside a class method is always true",
-      "status": "WARN",
-      "check": "R-SLOP-13",
-      "detail": "lib/appDisplay.js:736: this instanceof check inside a class method is always true",
-      "fix": "Remove the redundant instanceof check."
-    },
-    {
-      "id": "R-SLOP-13::this instanceof check inside a class method is always true",
-      "status": "WARN",
-      "check": "R-SLOP-13",
-      "detail": "lib/appDisplay.js:928: this instanceof check inside a class method is always true",
-      "fix": "Remove the redundant instanceof check."
-    },
-    {
       "id": "R-SLOP-38::Over-long identifier (>25 chars) is an AI verbosity indicator",
       "status": "WARN",
       "check": "R-SLOP-38",
@@ -214,165 +200,165 @@
       "fix": "Shorten parameter names to be concise but clear (e.g., currentBatteryThresholdValue \u2192 threshold)"
     },
     {
-      "id": "R-SLOP-11::Non-existent GLib method \u2014 use GLib.timeout_add_seconds() and GLib.Source.remove()",
+      "id": "R-SLOP-44::Non-idiomatic GLib C-binding \u2014 use GLib.Source.remove()",
       "status": "WARN",
-      "check": "R-SLOP-11",
-      "detail": "extension.js:285: Non-existent GLib method \u2014 use GLib.timeout_add_seconds() and GLib.Source.remove()",
-      "fix": "GLib.timeout_add_seconds_full \u2192 GLib.timeout_add_seconds. GLib.source_remove \u2192 GLib.Source.remove."
+      "check": "R-SLOP-44",
+      "detail": "extension.js:285: Non-idiomatic GLib C-binding \u2014 use GLib.Source.remove()",
+      "fix": "GLib.source_remove(id) \u2192 GLib.Source.remove(id). The function works but GLib.Source.remove() is the idiomatic GJS form."
     },
     {
-      "id": "R-SLOP-11::Non-existent GLib method \u2014 use GLib.timeout_add_seconds() and GLib.Source.remove()",
+      "id": "R-SLOP-44::Non-idiomatic GLib C-binding \u2014 use GLib.Source.remove()",
       "status": "WARN",
-      "check": "R-SLOP-11",
-      "detail": "extension.js:491: Non-existent GLib method \u2014 use GLib.timeout_add_seconds() and GLib.Source.remove()",
-      "fix": "GLib.timeout_add_seconds_full \u2192 GLib.timeout_add_seconds. GLib.source_remove \u2192 GLib.Source.remove."
+      "check": "R-SLOP-44",
+      "detail": "extension.js:491: Non-idiomatic GLib C-binding \u2014 use GLib.Source.remove()",
+      "fix": "GLib.source_remove(id) \u2192 GLib.Source.remove(id). The function works but GLib.Source.remove() is the idiomatic GJS form."
     },
     {
-      "id": "R-SLOP-11::Non-existent GLib method \u2014 use GLib.timeout_add_seconds() and GLib.Source.remove()",
+      "id": "R-SLOP-44::Non-idiomatic GLib C-binding \u2014 use GLib.Source.remove()",
       "status": "WARN",
-      "check": "R-SLOP-11",
-      "detail": "extension.js:545: Non-existent GLib method \u2014 use GLib.timeout_add_seconds() and GLib.Source.remove()",
-      "fix": "GLib.timeout_add_seconds_full \u2192 GLib.timeout_add_seconds. GLib.source_remove \u2192 GLib.Source.remove."
+      "check": "R-SLOP-44",
+      "detail": "extension.js:545: Non-idiomatic GLib C-binding \u2014 use GLib.Source.remove()",
+      "fix": "GLib.source_remove(id) \u2192 GLib.Source.remove(id). The function works but GLib.Source.remove() is the idiomatic GJS form."
     },
     {
-      "id": "R-SLOP-11::Non-existent GLib method \u2014 use GLib.timeout_add_seconds() and GLib.Source.remove()",
+      "id": "R-SLOP-44::Non-idiomatic GLib C-binding \u2014 use GLib.Source.remove()",
       "status": "WARN",
-      "check": "R-SLOP-11",
-      "detail": "lib/workspaceThumbnail.js:229: Non-existent GLib method \u2014 use GLib.timeout_add_seconds() and GLib.Source.remove()",
-      "fix": "GLib.timeout_add_seconds_full \u2192 GLib.timeout_add_seconds. GLib.source_remove \u2192 GLib.Source.remove."
+      "check": "R-SLOP-44",
+      "detail": "lib/workspaceThumbnail.js:229: Non-idiomatic GLib C-binding \u2014 use GLib.Source.remove()",
+      "fix": "GLib.source_remove(id) \u2192 GLib.Source.remove(id). The function works but GLib.Source.remove() is the idiomatic GJS form."
     },
     {
-      "id": "R-SLOP-11::Non-existent GLib method \u2014 use GLib.timeout_add_seconds() and GLib.Source.remove()",
+      "id": "R-SLOP-44::Non-idiomatic GLib C-binding \u2014 use GLib.Source.remove()",
       "status": "WARN",
-      "check": "R-SLOP-11",
-      "detail": "lib/workspaceThumbnail.js:299: Non-existent GLib method \u2014 use GLib.timeout_add_seconds() and GLib.Source.remove()",
-      "fix": "GLib.timeout_add_seconds_full \u2192 GLib.timeout_add_seconds. GLib.source_remove \u2192 GLib.Source.remove."
+      "check": "R-SLOP-44",
+      "detail": "lib/workspaceThumbnail.js:299: Non-idiomatic GLib C-binding \u2014 use GLib.Source.remove()",
+      "fix": "GLib.source_remove(id) \u2192 GLib.Source.remove(id). The function works but GLib.Source.remove() is the idiomatic GJS form."
     },
     {
-      "id": "R-SLOP-11::Non-existent GLib method \u2014 use GLib.timeout_add_seconds() and GLib.Source.remove()",
+      "id": "R-SLOP-44::Non-idiomatic GLib C-binding \u2014 use GLib.Source.remove()",
       "status": "WARN",
-      "check": "R-SLOP-11",
-      "detail": "lib/util.js:272: Non-existent GLib method \u2014 use GLib.timeout_add_seconds() and GLib.Source.remove()",
-      "fix": "GLib.timeout_add_seconds_full \u2192 GLib.timeout_add_seconds. GLib.source_remove \u2192 GLib.Source.remove."
+      "check": "R-SLOP-44",
+      "detail": "lib/util.js:272: Non-idiomatic GLib C-binding \u2014 use GLib.Source.remove()",
+      "fix": "GLib.source_remove(id) \u2192 GLib.Source.remove(id). The function works but GLib.Source.remove() is the idiomatic GJS form."
     },
     {
-      "id": "R-SLOP-11::Non-existent GLib method \u2014 use GLib.timeout_add_seconds() and GLib.Source.remove()",
+      "id": "R-SLOP-44::Non-idiomatic GLib C-binding \u2014 use GLib.Source.remove()",
       "status": "WARN",
-      "check": "R-SLOP-11",
-      "detail": "lib/util.js:278: Non-existent GLib method \u2014 use GLib.timeout_add_seconds() and GLib.Source.remove()",
-      "fix": "GLib.timeout_add_seconds_full \u2192 GLib.timeout_add_seconds. GLib.source_remove \u2192 GLib.Source.remove."
+      "check": "R-SLOP-44",
+      "detail": "lib/util.js:278: Non-idiomatic GLib C-binding \u2014 use GLib.Source.remove()",
+      "fix": "GLib.source_remove(id) \u2192 GLib.Source.remove(id). The function works but GLib.Source.remove() is the idiomatic GJS form."
     },
     {
-      "id": "R-SLOP-11::Non-existent GLib method \u2014 use GLib.timeout_add_seconds() and GLib.Source.remove()",
+      "id": "R-SLOP-44::Non-idiomatic GLib C-binding \u2014 use GLib.Source.remove()",
       "status": "WARN",
-      "check": "R-SLOP-11",
-      "detail": "lib/util.js:487: Non-existent GLib method \u2014 use GLib.timeout_add_seconds() and GLib.Source.remove()",
-      "fix": "GLib.timeout_add_seconds_full \u2192 GLib.timeout_add_seconds. GLib.source_remove \u2192 GLib.Source.remove."
+      "check": "R-SLOP-44",
+      "detail": "lib/util.js:487: Non-idiomatic GLib C-binding \u2014 use GLib.Source.remove()",
+      "fix": "GLib.source_remove(id) \u2192 GLib.Source.remove(id). The function works but GLib.Source.remove() is the idiomatic GJS form."
     },
     {
-      "id": "R-SLOP-11::Non-existent GLib method \u2014 use GLib.timeout_add_seconds() and GLib.Source.remove()",
+      "id": "R-SLOP-44::Non-idiomatic GLib C-binding \u2014 use GLib.Source.remove()",
       "status": "WARN",
-      "check": "R-SLOP-11",
-      "detail": "lib/util.js:839: Non-existent GLib method \u2014 use GLib.timeout_add_seconds() and GLib.Source.remove()",
-      "fix": "GLib.timeout_add_seconds_full \u2192 GLib.timeout_add_seconds. GLib.source_remove \u2192 GLib.Source.remove."
+      "check": "R-SLOP-44",
+      "detail": "lib/util.js:839: Non-idiomatic GLib C-binding \u2014 use GLib.Source.remove()",
+      "fix": "GLib.source_remove(id) \u2192 GLib.Source.remove(id). The function works but GLib.Source.remove() is the idiomatic GJS form."
     },
     {
-      "id": "R-SLOP-11::Non-existent GLib method \u2014 use GLib.timeout_add_seconds() and GLib.Source.remove()",
+      "id": "R-SLOP-44::Non-idiomatic GLib C-binding \u2014 use GLib.Source.remove()",
       "status": "WARN",
-      "check": "R-SLOP-11",
-      "detail": "lib/layout.js:120: Non-existent GLib method \u2014 use GLib.timeout_add_seconds() and GLib.Source.remove()",
-      "fix": "GLib.timeout_add_seconds_full \u2192 GLib.timeout_add_seconds. GLib.source_remove \u2192 GLib.Source.remove."
+      "check": "R-SLOP-44",
+      "detail": "lib/layout.js:120: Non-idiomatic GLib C-binding \u2014 use GLib.Source.remove()",
+      "fix": "GLib.source_remove(id) \u2192 GLib.Source.remove(id). The function works but GLib.Source.remove() is the idiomatic GJS form."
     },
     {
-      "id": "R-SLOP-11::Non-existent GLib method \u2014 use GLib.timeout_add_seconds() and GLib.Source.remove()",
+      "id": "R-SLOP-44::Non-idiomatic GLib C-binding \u2014 use GLib.Source.remove()",
       "status": "WARN",
-      "check": "R-SLOP-11",
-      "detail": "lib/search.js:97: Non-existent GLib method \u2014 use GLib.timeout_add_seconds() and GLib.Source.remove()",
-      "fix": "GLib.timeout_add_seconds_full \u2192 GLib.timeout_add_seconds. GLib.source_remove \u2192 GLib.Source.remove."
+      "check": "R-SLOP-44",
+      "detail": "lib/search.js:97: Non-idiomatic GLib C-binding \u2014 use GLib.Source.remove()",
+      "fix": "GLib.source_remove(id) \u2192 GLib.Source.remove(id). The function works but GLib.Source.remove() is the idiomatic GJS form."
     },
     {
-      "id": "R-SLOP-11::Non-existent GLib method \u2014 use GLib.timeout_add_seconds() and GLib.Source.remove()",
+      "id": "R-SLOP-44::Non-idiomatic GLib C-binding \u2014 use GLib.Source.remove()",
       "status": "WARN",
-      "check": "R-SLOP-11",
-      "detail": "lib/windowPreview.js:876: Non-existent GLib method \u2014 use GLib.timeout_add_seconds() and GLib.Source.remove()",
-      "fix": "GLib.timeout_add_seconds_full \u2192 GLib.timeout_add_seconds. GLib.source_remove \u2192 GLib.Source.remove."
+      "check": "R-SLOP-44",
+      "detail": "lib/windowPreview.js:876: Non-idiomatic GLib C-binding \u2014 use GLib.Source.remove()",
+      "fix": "GLib.source_remove(id) \u2192 GLib.Source.remove(id). The function works but GLib.Source.remove() is the idiomatic GJS form."
     },
     {
-      "id": "R-SLOP-11::Non-existent GLib method \u2014 use GLib.timeout_add_seconds() and GLib.Source.remove()",
+      "id": "R-SLOP-44::Non-idiomatic GLib C-binding \u2014 use GLib.Source.remove()",
       "status": "WARN",
-      "check": "R-SLOP-11",
-      "detail": "lib/windowPreview.js:899: Non-existent GLib method \u2014 use GLib.timeout_add_seconds() and GLib.Source.remove()",
-      "fix": "GLib.timeout_add_seconds_full \u2192 GLib.timeout_add_seconds. GLib.source_remove \u2192 GLib.Source.remove."
+      "check": "R-SLOP-44",
+      "detail": "lib/windowPreview.js:899: Non-idiomatic GLib C-binding \u2014 use GLib.Source.remove()",
+      "fix": "GLib.source_remove(id) \u2192 GLib.Source.remove(id). The function works but GLib.Source.remove() is the idiomatic GJS form."
     },
     {
-      "id": "R-SLOP-11::Non-existent GLib method \u2014 use GLib.timeout_add_seconds() and GLib.Source.remove()",
+      "id": "R-SLOP-44::Non-idiomatic GLib C-binding \u2014 use GLib.Source.remove()",
       "status": "WARN",
-      "check": "R-SLOP-11",
-      "detail": "lib/workspaceSwitcherPopup.js:202: Non-existent GLib method \u2014 use GLib.timeout_add_seconds() and GLib.Source.remove()",
-      "fix": "GLib.timeout_add_seconds_full \u2192 GLib.timeout_add_seconds. GLib.source_remove \u2192 GLib.Source.remove."
+      "check": "R-SLOP-44",
+      "detail": "lib/workspaceSwitcherPopup.js:202: Non-idiomatic GLib C-binding \u2014 use GLib.Source.remove()",
+      "fix": "GLib.source_remove(id) \u2192 GLib.Source.remove(id). The function works but GLib.Source.remove() is the idiomatic GJS form."
     },
     {
-      "id": "R-SLOP-11::Non-existent GLib method \u2014 use GLib.timeout_add_seconds() and GLib.Source.remove()",
+      "id": "R-SLOP-44::Non-idiomatic GLib C-binding \u2014 use GLib.Source.remove()",
       "status": "WARN",
-      "check": "R-SLOP-11",
-      "detail": "lib/workspaceSwitcherPopup.js:221: Non-existent GLib method \u2014 use GLib.timeout_add_seconds() and GLib.Source.remove()",
-      "fix": "GLib.timeout_add_seconds_full \u2192 GLib.timeout_add_seconds. GLib.source_remove \u2192 GLib.Source.remove."
+      "check": "R-SLOP-44",
+      "detail": "lib/workspaceSwitcherPopup.js:221: Non-idiomatic GLib C-binding \u2014 use GLib.Source.remove()",
+      "fix": "GLib.source_remove(id) \u2192 GLib.Source.remove(id). The function works but GLib.Source.remove() is the idiomatic GJS form."
     },
     {
-      "id": "R-SLOP-11::Non-existent GLib method \u2014 use GLib.timeout_add_seconds() and GLib.Source.remove()",
+      "id": "R-SLOP-44::Non-idiomatic GLib C-binding \u2014 use GLib.Source.remove()",
       "status": "WARN",
-      "check": "R-SLOP-11",
-      "detail": "lib/workspaceSwitcherPopup.js:234: Non-existent GLib method \u2014 use GLib.timeout_add_seconds() and GLib.Source.remove()",
-      "fix": "GLib.timeout_add_seconds_full \u2192 GLib.timeout_add_seconds. GLib.source_remove \u2192 GLib.Source.remove."
+      "check": "R-SLOP-44",
+      "detail": "lib/workspaceSwitcherPopup.js:234: Non-idiomatic GLib C-binding \u2014 use GLib.Source.remove()",
+      "fix": "GLib.source_remove(id) \u2192 GLib.Source.remove(id). The function works but GLib.Source.remove() is the idiomatic GJS form."
     },
     {
-      "id": "R-SLOP-11::Non-existent GLib method \u2014 use GLib.timeout_add_seconds() and GLib.Source.remove()",
+      "id": "R-SLOP-44::Non-idiomatic GLib C-binding \u2014 use GLib.Source.remove()",
       "status": "WARN",
-      "check": "R-SLOP-11",
-      "detail": "lib/dash.js:222: Non-existent GLib method \u2014 use GLib.timeout_add_seconds() and GLib.Source.remove()",
-      "fix": "GLib.timeout_add_seconds_full \u2192 GLib.timeout_add_seconds. GLib.source_remove \u2192 GLib.Source.remove."
+      "check": "R-SLOP-44",
+      "detail": "lib/dash.js:222: Non-idiomatic GLib C-binding \u2014 use GLib.Source.remove()",
+      "fix": "GLib.source_remove(id) \u2192 GLib.Source.remove(id). The function works but GLib.Source.remove() is the idiomatic GJS form."
     },
     {
-      "id": "R-SLOP-11::Non-existent GLib method \u2014 use GLib.timeout_add_seconds() and GLib.Source.remove()",
+      "id": "R-SLOP-44::Non-idiomatic GLib C-binding \u2014 use GLib.Source.remove()",
       "status": "WARN",
-      "check": "R-SLOP-11",
-      "detail": "lib/dash.js:1258: Non-existent GLib method \u2014 use GLib.timeout_add_seconds() and GLib.Source.remove()",
-      "fix": "GLib.timeout_add_seconds_full \u2192 GLib.timeout_add_seconds. GLib.source_remove \u2192 GLib.Source.remove."
+      "check": "R-SLOP-44",
+      "detail": "lib/dash.js:1258: Non-idiomatic GLib C-binding \u2014 use GLib.Source.remove()",
+      "fix": "GLib.source_remove(id) \u2192 GLib.Source.remove(id). The function works but GLib.Source.remove() is the idiomatic GJS form."
     },
     {
-      "id": "R-SLOP-11::Non-existent GLib method \u2014 use GLib.timeout_add_seconds() and GLib.Source.remove()",
+      "id": "R-SLOP-44::Non-idiomatic GLib C-binding \u2014 use GLib.Source.remove()",
       "status": "WARN",
-      "check": "R-SLOP-11",
-      "detail": "lib/settings.js:215: Non-existent GLib method \u2014 use GLib.timeout_add_seconds() and GLib.Source.remove()",
-      "fix": "GLib.timeout_add_seconds_full \u2192 GLib.timeout_add_seconds. GLib.source_remove \u2192 GLib.Source.remove."
+      "check": "R-SLOP-44",
+      "detail": "lib/settings.js:215: Non-idiomatic GLib C-binding \u2014 use GLib.Source.remove()",
+      "fix": "GLib.source_remove(id) \u2192 GLib.Source.remove(id). The function works but GLib.Source.remove() is the idiomatic GJS form."
     },
     {
-      "id": "R-SLOP-11::Non-existent GLib method \u2014 use GLib.timeout_add_seconds() and GLib.Source.remove()",
+      "id": "R-SLOP-44::Non-idiomatic GLib C-binding \u2014 use GLib.Source.remove()",
       "status": "WARN",
-      "check": "R-SLOP-11",
-      "detail": "lib/overviewControls.js:128: Non-existent GLib method \u2014 use GLib.timeout_add_seconds() and GLib.Source.remove()",
-      "fix": "GLib.timeout_add_seconds_full \u2192 GLib.timeout_add_seconds. GLib.source_remove \u2192 GLib.Source.remove."
+      "check": "R-SLOP-44",
+      "detail": "lib/overviewControls.js:128: Non-idiomatic GLib C-binding \u2014 use GLib.Source.remove()",
+      "fix": "GLib.source_remove(id) \u2192 GLib.Source.remove(id). The function works but GLib.Source.remove() is the idiomatic GJS form."
     },
     {
-      "id": "R-SLOP-11::Non-existent GLib method \u2014 use GLib.timeout_add_seconds() and GLib.Source.remove()",
+      "id": "R-SLOP-44::Non-idiomatic GLib C-binding \u2014 use GLib.Source.remove()",
       "status": "WARN",
-      "check": "R-SLOP-11",
-      "detail": "lib/overviewControls.js:170: Non-existent GLib method \u2014 use GLib.timeout_add_seconds() and GLib.Source.remove()",
-      "fix": "GLib.timeout_add_seconds_full \u2192 GLib.timeout_add_seconds. GLib.source_remove \u2192 GLib.Source.remove."
+      "check": "R-SLOP-44",
+      "detail": "lib/overviewControls.js:170: Non-idiomatic GLib C-binding \u2014 use GLib.Source.remove()",
+      "fix": "GLib.source_remove(id) \u2192 GLib.Source.remove(id). The function works but GLib.Source.remove() is the idiomatic GJS form."
     },
     {
-      "id": "R-SLOP-11::Non-existent GLib method \u2014 use GLib.timeout_add_seconds() and GLib.Source.remove()",
+      "id": "R-SLOP-44::Non-idiomatic GLib C-binding \u2014 use GLib.Source.remove()",
       "status": "WARN",
-      "check": "R-SLOP-11",
-      "detail": "lib/appDisplay.js:151: Non-existent GLib method \u2014 use GLib.timeout_add_seconds() and GLib.Source.remove()",
-      "fix": "GLib.timeout_add_seconds_full \u2192 GLib.timeout_add_seconds. GLib.source_remove \u2192 GLib.Source.remove."
+      "check": "R-SLOP-44",
+      "detail": "lib/appDisplay.js:151: Non-idiomatic GLib C-binding \u2014 use GLib.Source.remove()",
+      "fix": "GLib.source_remove(id) \u2192 GLib.Source.remove(id). The function works but GLib.Source.remove() is the idiomatic GJS form."
     },
     {
-      "id": "R-SLOP-11::Non-existent GLib method \u2014 use GLib.timeout_add_seconds() and GLib.Source.remove()",
+      "id": "R-SLOP-44::Non-idiomatic GLib C-binding \u2014 use GLib.Source.remove()",
       "status": "WARN",
-      "check": "R-SLOP-11",
-      "detail": "lib/appDisplay.js:1636: Non-existent GLib method \u2014 use GLib.timeout_add_seconds() and GLib.Source.remove()",
-      "fix": "GLib.timeout_add_seconds_full \u2192 GLib.timeout_add_seconds. GLib.source_remove \u2192 GLib.Source.remove."
+      "check": "R-SLOP-44",
+      "detail": "lib/appDisplay.js:1636: Non-idiomatic GLib C-binding \u2014 use GLib.Source.remove()",
+      "fix": "GLib.source_remove(id) \u2192 GLib.Source.remove(id). The function works but GLib.Source.remove() is the idiomatic GJS form."
     },
     {
       "id": "R-QUAL-31::_onDestroy() should be renamed to destroy() with super.destroy() at the end",

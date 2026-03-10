@@ -1,16 +1,16 @@
 {
   "name": "gsconnect",
   "uuid": "gsconnect@andyholmes.github.io",
-  "timestamp": "2026-03-08T14:19:43.093314+00:00",
-  "ego_lint_version": "05523f9",
+  "timestamp": "2026-03-10T15:45:04.263520+00:00",
+  "ego_lint_version": "a0ea7e4",
   "ego_approved": true,
   "exit_code": 1,
   "counts": {
-    "pass": 172,
-    "fail": 11,
-    "warn": 134,
+    "pass": 174,
+    "fail": 4,
+    "warn": 131,
     "skip": 17,
-    "total": 334
+    "total": 326
   },
   "metrics": {
     "js_files": 65,
@@ -22,10 +22,10 @@
   "provenance_score": 4,
   "findings": [
     {
-      "id": "license::No LICENSE or COPYING file \u2014 MUST use GPL-compatible license",
-      "status": "FAIL",
+      "id": "license::No LICENSE or COPYING file \u2014 should use GPL-compatible license",
+      "status": "WARN",
       "check": "license",
-      "detail": "No LICENSE or COPYING file \u2014 MUST use GPL-compatible license"
+      "detail": "No LICENSE or COPYING file \u2014 should use GPL-compatible license"
     },
     {
       "id": "non-gjs-scripts::Found 1 non-GJS script(s) \u2014 scripts MUST be written in GJS; no pkexec/privileged helper justification found",
@@ -82,48 +82,6 @@
       "detail": "Not applicable for declared shell-version(s)"
     },
     {
-      "id": "R-DEPR-06::Tweener is removed; use Clutter animation framework",
-      "status": "FAIL",
-      "check": "R-DEPR-06",
-      "detail": "service/ui/messaging.js:18: Tweener is removed; use Clutter animation framework",
-      "fix": "Use actor.ease({property: value, duration: ms, mode: Clutter.AnimationMode.EASE_OUT_QUAD})."
-    },
-    {
-      "id": "R-DEPR-06::Tweener is removed; use Clutter animation framework",
-      "status": "FAIL",
-      "check": "R-DEPR-06",
-      "detail": "service/ui/messaging.js:643: Tweener is removed; use Clutter animation framework",
-      "fix": "Use actor.ease({property: value, duration: ms, mode: Clutter.AnimationMode.EASE_OUT_QUAD})."
-    },
-    {
-      "id": "R-DEPR-06::Tweener is removed; use Clutter animation framework",
-      "status": "FAIL",
-      "check": "R-DEPR-06",
-      "detail": "service/components/pulseaudio.js:11: Tweener is removed; use Clutter animation framework",
-      "fix": "Use actor.ease({property: value, duration: ms, mode: Clutter.AnimationMode.EASE_OUT_QUAD})."
-    },
-    {
-      "id": "R-DEPR-06::Tweener is removed; use Clutter animation framework",
-      "status": "FAIL",
-      "check": "R-DEPR-06",
-      "detail": "service/components/pulseaudio.js:89: Tweener is removed; use Clutter animation framework",
-      "fix": "Use actor.ease({property: value, duration: ms, mode: Clutter.AnimationMode.EASE_OUT_QUAD})."
-    },
-    {
-      "id": "R-DEPR-06::Tweener is removed; use Clutter animation framework",
-      "status": "FAIL",
-      "check": "R-DEPR-06",
-      "detail": "service/components/pulseaudio.js:94: Tweener is removed; use Clutter animation framework",
-      "fix": "Use actor.ease({property: value, duration: ms, mode: Clutter.AnimationMode.EASE_OUT_QUAD})."
-    },
-    {
-      "id": "R-DEPR-06::Tweener is removed; use Clutter animation framework",
-      "status": "FAIL",
-      "check": "R-DEPR-06",
-      "detail": "service/components/pulseaudio.js:105: Tweener is removed; use Clutter animation framework",
-      "fix": "Use actor.ease({property: value, duration: ms, mode: Clutter.AnimationMode.EASE_OUT_QUAD})."
-    },
-    {
       "id": "R-DEPR-10::imports.format is deprecated; use ES6 template literals",
       "status": "FAIL",
       "check": "R-DEPR-10",
@@ -134,28 +92,7 @@
       "id": "R-SEC-03::Use HTTPS instead of HTTP for network requests",
       "status": "WARN",
       "check": "R-SEC-03",
-      "detail": "service/utils/uri.js:11: Use HTTPS instead of HTTP for network requests",
-      "fix": "Change http:// to https://."
-    },
-    {
-      "id": "R-SEC-03::Use HTTPS instead of HTTP for network requests",
-      "status": "WARN",
-      "check": "R-SEC-03",
       "detail": "service/utils/uri.js:92: Use HTTPS instead of HTTP for network requests",
-      "fix": "Change http:// to https://."
-    },
-    {
-      "id": "R-SEC-03::Use HTTPS instead of HTTP for network requests",
-      "status": "WARN",
-      "check": "R-SEC-03",
-      "detail": "service/ui/contacts.js:135: Use HTTPS instead of HTTP for network requests",
-      "fix": "Change http:// to https://."
-    },
-    {
-      "id": "R-SEC-03::Use HTTPS instead of HTTP for network requests",
-      "status": "WARN",
-      "check": "R-SEC-03",
-      "detail": "service/plugins/contacts.js:234: Use HTTPS instead of HTTP for network requests",
       "fix": "Change http:// to https://."
     },
     {
@@ -432,67 +369,67 @@
       "fix": "Check the GJS API docs: https://gjs-docs.gnome.org. Use Meta.Display, global.display, etc."
     },
     {
-      "id": "R-SLOP-11::Non-existent GLib method \u2014 use GLib.timeout_add_seconds() and GLib.Source.remove()",
+      "id": "R-SLOP-44::Non-idiomatic GLib C-binding \u2014 use GLib.Source.remove()",
       "status": "WARN",
-      "check": "R-SLOP-11",
-      "detail": "shell/tooltip.js:228: Non-existent GLib method \u2014 use GLib.timeout_add_seconds() and GLib.Source.remove()",
-      "fix": "GLib.timeout_add_seconds_full \u2192 GLib.timeout_add_seconds. GLib.source_remove \u2192 GLib.Source.remove."
+      "check": "R-SLOP-44",
+      "detail": "shell/tooltip.js:228: Non-idiomatic GLib C-binding \u2014 use GLib.Source.remove()",
+      "fix": "GLib.source_remove(id) \u2192 GLib.Source.remove(id). The function works but GLib.Source.remove() is the idiomatic GJS form."
     },
     {
-      "id": "R-SLOP-11::Non-existent GLib method \u2014 use GLib.timeout_add_seconds() and GLib.Source.remove()",
+      "id": "R-SLOP-44::Non-idiomatic GLib C-binding \u2014 use GLib.Source.remove()",
       "status": "WARN",
-      "check": "R-SLOP-11",
-      "detail": "shell/tooltip.js:233: Non-existent GLib method \u2014 use GLib.timeout_add_seconds() and GLib.Source.remove()",
-      "fix": "GLib.timeout_add_seconds_full \u2192 GLib.timeout_add_seconds. GLib.source_remove \u2192 GLib.Source.remove."
+      "check": "R-SLOP-44",
+      "detail": "shell/tooltip.js:233: Non-idiomatic GLib C-binding \u2014 use GLib.Source.remove()",
+      "fix": "GLib.source_remove(id) \u2192 GLib.Source.remove(id). The function works but GLib.Source.remove() is the idiomatic GJS form."
     },
     {
-      "id": "R-SLOP-11::Non-existent GLib method \u2014 use GLib.timeout_add_seconds() and GLib.Source.remove()",
+      "id": "R-SLOP-44::Non-idiomatic GLib C-binding \u2014 use GLib.Source.remove()",
       "status": "WARN",
-      "check": "R-SLOP-11",
-      "detail": "shell/tooltip.js:263: Non-existent GLib method \u2014 use GLib.timeout_add_seconds() and GLib.Source.remove()",
-      "fix": "GLib.timeout_add_seconds_full \u2192 GLib.timeout_add_seconds. GLib.source_remove \u2192 GLib.Source.remove."
+      "check": "R-SLOP-44",
+      "detail": "shell/tooltip.js:263: Non-idiomatic GLib C-binding \u2014 use GLib.Source.remove()",
+      "fix": "GLib.source_remove(id) \u2192 GLib.Source.remove(id). The function works but GLib.Source.remove() is the idiomatic GJS form."
     },
     {
-      "id": "R-SLOP-11::Non-existent GLib method \u2014 use GLib.timeout_add_seconds() and GLib.Source.remove()",
+      "id": "R-SLOP-44::Non-idiomatic GLib C-binding \u2014 use GLib.Source.remove()",
       "status": "WARN",
-      "check": "R-SLOP-11",
-      "detail": "shell/tooltip.js:307: Non-existent GLib method \u2014 use GLib.timeout_add_seconds() and GLib.Source.remove()",
-      "fix": "GLib.timeout_add_seconds_full \u2192 GLib.timeout_add_seconds. GLib.source_remove \u2192 GLib.Source.remove."
+      "check": "R-SLOP-44",
+      "detail": "shell/tooltip.js:307: Non-idiomatic GLib C-binding \u2014 use GLib.Source.remove()",
+      "fix": "GLib.source_remove(id) \u2192 GLib.Source.remove(id). The function works but GLib.Source.remove() is the idiomatic GJS form."
     },
     {
-      "id": "R-SLOP-11::Non-existent GLib method \u2014 use GLib.timeout_add_seconds() and GLib.Source.remove()",
+      "id": "R-SLOP-44::Non-idiomatic GLib C-binding \u2014 use GLib.Source.remove()",
       "status": "WARN",
-      "check": "R-SLOP-11",
-      "detail": "shell/tooltip.js:312: Non-existent GLib method \u2014 use GLib.timeout_add_seconds() and GLib.Source.remove()",
-      "fix": "GLib.timeout_add_seconds_full \u2192 GLib.timeout_add_seconds. GLib.source_remove \u2192 GLib.Source.remove."
+      "check": "R-SLOP-44",
+      "detail": "shell/tooltip.js:312: Non-idiomatic GLib C-binding \u2014 use GLib.Source.remove()",
+      "fix": "GLib.source_remove(id) \u2192 GLib.Source.remove(id). The function works but GLib.Source.remove() is the idiomatic GJS form."
     },
     {
-      "id": "R-SLOP-11::Non-existent GLib method \u2014 use GLib.timeout_add_seconds() and GLib.Source.remove()",
+      "id": "R-SLOP-44::Non-idiomatic GLib C-binding \u2014 use GLib.Source.remove()",
       "status": "WARN",
-      "check": "R-SLOP-11",
-      "detail": "service/device.js:895: Non-existent GLib method \u2014 use GLib.timeout_add_seconds() and GLib.Source.remove()",
-      "fix": "GLib.timeout_add_seconds_full \u2192 GLib.timeout_add_seconds. GLib.source_remove \u2192 GLib.Source.remove."
+      "check": "R-SLOP-44",
+      "detail": "service/device.js:895: Non-idiomatic GLib C-binding \u2014 use GLib.Source.remove()",
+      "fix": "GLib.source_remove(id) \u2192 GLib.Source.remove(id). The function works but GLib.Source.remove() is the idiomatic GJS form."
     },
     {
-      "id": "R-SLOP-11::Non-existent GLib method \u2014 use GLib.timeout_add_seconds() and GLib.Source.remove()",
+      "id": "R-SLOP-44::Non-idiomatic GLib C-binding \u2014 use GLib.Source.remove()",
       "status": "WARN",
-      "check": "R-SLOP-11",
-      "detail": "service/device.js:900: Non-existent GLib method \u2014 use GLib.timeout_add_seconds() and GLib.Source.remove()",
-      "fix": "GLib.timeout_add_seconds_full \u2192 GLib.timeout_add_seconds. GLib.source_remove \u2192 GLib.Source.remove."
+      "check": "R-SLOP-44",
+      "detail": "service/device.js:900: Non-idiomatic GLib C-binding \u2014 use GLib.Source.remove()",
+      "fix": "GLib.source_remove(id) \u2192 GLib.Source.remove(id). The function works but GLib.Source.remove() is the idiomatic GJS form."
     },
     {
-      "id": "R-SLOP-11::Non-existent GLib method \u2014 use GLib.timeout_add_seconds() and GLib.Source.remove()",
+      "id": "R-SLOP-44::Non-idiomatic GLib C-binding \u2014 use GLib.Source.remove()",
       "status": "WARN",
-      "check": "R-SLOP-11",
-      "detail": "service/ui/messaging.js:888: Non-existent GLib method \u2014 use GLib.timeout_add_seconds() and GLib.Source.remove()",
-      "fix": "GLib.timeout_add_seconds_full \u2192 GLib.timeout_add_seconds. GLib.source_remove \u2192 GLib.Source.remove."
+      "check": "R-SLOP-44",
+      "detail": "service/ui/messaging.js:888: Non-idiomatic GLib C-binding \u2014 use GLib.Source.remove()",
+      "fix": "GLib.source_remove(id) \u2192 GLib.Source.remove(id). The function works but GLib.Source.remove() is the idiomatic GJS form."
     },
     {
-      "id": "R-SLOP-11::Non-existent GLib method \u2014 use GLib.timeout_add_seconds() and GLib.Source.remove()",
+      "id": "R-SLOP-44::Non-idiomatic GLib C-binding \u2014 use GLib.Source.remove()",
       "status": "WARN",
-      "check": "R-SLOP-11",
-      "detail": "preferences/service.js:263: Non-existent GLib method \u2014 use GLib.timeout_add_seconds() and GLib.Source.remove()",
-      "fix": "GLib.timeout_add_seconds_full \u2192 GLib.timeout_add_seconds. GLib.source_remove \u2192 GLib.Source.remove."
+      "check": "R-SLOP-44",
+      "detail": "preferences/service.js:263: Non-idiomatic GLib C-binding \u2014 use GLib.Source.remove()",
+      "fix": "GLib.source_remove(id) \u2192 GLib.Source.remove(id). The function works but GLib.Source.remove() is the idiomatic GJS form."
     },
     {
       "id": "R-SLOP-16::GLib.file_get_contents() is synchronous and blocks the main loop; prefer Gio.File.load_contents() or load_contents_async()",
@@ -876,12 +813,6 @@
       "status": "WARN",
       "check": "lifecycle/untracked-timeout",
       "detail": "service/components/sound.js:100: timer/idle return value not stored \u2014 cannot be removed in disable()"
-    },
-    {
-      "id": "lifecycle/untracked-timeout::timer/idle return value not stored \u2014 cannot be removed in disable()",
-      "status": "WARN",
-      "check": "lifecycle/untracked-timeout",
-      "detail": "preferences/keybindings.js:194: timer/idle return value not stored \u2014 cannot be removed in disable()"
     },
     {
       "id": "lifecycle/async-destroyed-guard::async/await used without _destroyed or _isDestroyed guard \u2014 extension may act on stale state after disable()",
