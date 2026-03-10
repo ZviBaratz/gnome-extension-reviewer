@@ -1,0 +1,7 @@
+{
+  "uuid": "gdkpixbuf-transitive@test",
+  "name": "GdkPixbuf Transitive Test",
+  "description": "Tests that gi://GdkPixbuf in transitive deps is not flagged as GTK",
+  "shell-version": ["48"],
+  "url": "https://example.com"
+}

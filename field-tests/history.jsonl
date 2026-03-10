@@ -68,3 +68,4 @@
 {"date": "2026-03-08T14:19:34Z", "name": "dash-to-panel", "ego_lint_version": "05523f9", "exit_code": 1, "counts": {"pass": 173, "fail": 9, "warn": 64, "skip": 17}, "changed": true}
 {"date": "2026-03-08T14:19:34Z", "name": "media-controls", "ego_lint_version": "05523f9", "exit_code": 1, "counts": {"pass": 188, "fail": 4, "warn": 28, "skip": 17}, "changed": true}
 {"date": "2026-03-08T14:19:34Z", "name": "just-perfection", "ego_lint_version": "05523f9", "exit_code": 1, "counts": {"pass": 204, "fail": 1, "warn": 13, "skip": 12}, "changed": true}
+{"date": "2026-03-10T18:37:49Z", "name": "appindicator", "ego_lint_version": "91181bf", "exit_code": 1, "counts": {"pass": 187, "fail": 6, "warn": 61, "skip": 14}, "changed": true}
