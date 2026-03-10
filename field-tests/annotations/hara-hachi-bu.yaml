@@ -55,3 +55,103 @@ findings:
   - id: "quality/private-api::private API with justification"
     classification: tp
     notes: "Disclosed in metadata — correct advisory"
+  # New annotations with exact baseline IDs (2026-03-10)
+  # SKIP findings — version-gated
+  - id: "R-WEB-01::Not applicable for declared shell-version(s)"
+    classification: expected
+    notes: "Version-gated skip — GJS native timers in GNOME 45+"
+  - id: "R-WEB-02::Not applicable for declared shell-version(s)"
+    classification: expected
+    notes: "Version-gated skip — GJS native timers in GNOME 45+"
+  - id: "R-WEB-10::Not applicable for declared shell-version(s)"
+    classification: expected
+    notes: "Version-gated skip — GJS native timers in GNOME 45+"
+  - id: "R-WEB-11::Not applicable for declared shell-version(s)"
+    classification: expected
+    notes: "Version-gated skip — GJS native timers in GNOME 45+"
+  - id: "R-DEPR-04-legacy::Not applicable for declared shell-version(s)"
+    classification: expected
+    notes: "Version-gated skip — not applicable for declared shell-version"
+  - id: "R-VER49-01::Not applicable for declared shell-version(s)"
+    classification: expected
+    notes: "Version-gated skip — extension does not target GNOME 49"
+  - id: "R-VER49-02::Not applicable for declared shell-version(s)"
+    classification: expected
+    notes: "Version-gated skip — extension does not target GNOME 49"
+  - id: "R-VER49-03::Not applicable for declared shell-version(s)"
+    classification: expected
+    notes: "Version-gated skip — extension does not target GNOME 49"
+  - id: "R-VER49-04::Not applicable for declared shell-version(s)"
+    classification: expected
+    notes: "Version-gated skip — extension does not target GNOME 49"
+  - id: "R-VER49-05::Not applicable for declared shell-version(s)"
+    classification: expected
+    notes: "Version-gated skip — extension does not target GNOME 49"
+  - id: "R-VER49-06::Not applicable for declared shell-version(s)"
+    classification: expected
+    notes: "Version-gated skip — extension does not target GNOME 49"
+  - id: "R-VER49-07::Not applicable for declared shell-version(s)"
+    classification: expected
+    notes: "Version-gated skip — extension does not target GNOME 49"
+  - id: "R-VER49-08::Not applicable for declared shell-version(s)"
+    classification: expected
+    notes: "Version-gated skip — extension does not target GNOME 49"
+  - id: "R-VER49-09::Not applicable for declared shell-version(s)"
+    classification: expected
+    notes: "Version-gated skip — extension does not target GNOME 49"
+  - id: "R-VER49-10::Not applicable for declared shell-version(s)"
+    classification: expected
+    notes: "Version-gated skip — extension does not target GNOME 49"
+  - id: "R-VER49-11::Not applicable for declared shell-version(s)"
+    classification: expected
+    notes: "Version-gated skip — extension does not target GNOME 49"
+  - id: "R-VER50-01::Not applicable for declared shell-version(s)"
+    classification: expected
+    notes: "Version-gated skip — extension does not target GNOME 50"
+  - id: "R-VER50-02::Not applicable for declared shell-version(s)"
+    classification: expected
+    notes: "Version-gated skip — extension does not target GNOME 50"
+  - id: "R-VER50-03::Not applicable for declared shell-version(s)"
+    classification: expected
+    notes: "Version-gated skip — extension does not target GNOME 50"
+  - id: "R-VER50-04::Not applicable for declared shell-version(s)"
+    classification: expected
+    notes: "Version-gated skip — extension does not target GNOME 50"
+  - id: "R-VER50-05::Not applicable for declared shell-version(s)"
+    classification: expected
+    notes: "Version-gated skip — extension does not target GNOME 50"
+  # SKIP findings — static analysis limitations
+  - id: "schema-usage/unused-key::Dynamic key access detected — cannot verify statically"
+    classification: expected
+    notes: "Static analysis limitation — dynamic key access prevents verification"
+  - id: "schema-usage/undefined-key::Dynamic key access detected — cannot verify statically"
+    classification: expected
+    notes: "Static analysis limitation — dynamic key access prevents verification"
+  # WARN findings — exact baseline IDs
+  - id: "polkit-files::Found 2 polkit policy/rules file(s) — requires security review"
+    classification: tp
+    notes: "Informational — expected for extension with pkexec"
+  - id: "R-SEC-20::pkexec usage will receive extra reviewer scrutiny; ensure a valid polkit policy is included"
+    classification: tp
+    notes: "Correct advisory — pkexec disclosed in metadata"
+  - id: "R-PREFS-04c::GTK layout widget in prefs.js — verify no Adw equivalent for this specific use case"
+    classification: tp
+    notes: "ListBox, SpinButton in prefs — correct advisory"
+  - id: "R-SLOP-40::new Promise(resolve, reject) wrapper — consider Gio._promisify() for GIO async methods"
+    classification: tp
+    notes: "D-Bus proxy constructor — correct advisory"
+  - id: "R-QUAL-33::Gio._promisify() permanently mutates shared GJS prototypes — document module-scope placement"
+    classification: tp
+    notes: "Standard GJS pattern — correct advisory"
+  - id: "R-VER48-04b::vertical property in constructor config deprecated in GNOME 48; use orientation: Clutter.Orientation.VERTICAL (available since GNOME 47; keep vertical for GNOME <=46 compat)"
+    classification: tp
+    notes: "Correct advisory — deduplicated to 1 per file"
+  - id: "eslint::ESLint configuration error (exit code 2)"
+    classification: expected
+    notes: "Optional tooling — ESLint config error is an environment issue"
+  - id: "metadata/shell-version-current::shell-version does not include GNOME 49"
+    classification: expected
+    notes: "Intentional — GNOME 49 not yet tested"
+  - id: "quality/private-api::lib/quickSettingsPanel.js, lib/quickSettingsPanel.js, lib/quickSettingsPanel.js, lib/quickSettingsPanel.js, lib/quickSettingsPanel.js (+6 more): quickSettings private API access — requires reviewer justification and version pinning"
+    classification: tp
+    notes: "Private API access is real — disclosed in metadata"

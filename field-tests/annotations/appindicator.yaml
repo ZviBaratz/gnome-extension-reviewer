@@ -100,3 +100,167 @@ findings:
   - id: "quality/redundant-cleanup::verbose destroy guards"
     classification: borderline
     notes: "4 instances — if (x) x.destroy() vs x?.destroy() is style preference"
+
+  # New annotations — exact baseline IDs (2026-03-10)
+
+  # SKIP findings
+  - id: "R-WEB-01::Not applicable for declared shell-version(s)"
+    classification: expected
+    notes: "Version-gated skip — GJS native timers in GNOME 45+"
+  - id: "R-WEB-02::Not applicable for declared shell-version(s)"
+    classification: expected
+    notes: "Version-gated skip — GJS native timers in GNOME 45+"
+  - id: "R-WEB-10::Not applicable for declared shell-version(s)"
+    classification: expected
+    notes: "Version-gated skip — GJS native timers in GNOME 45+"
+  - id: "R-WEB-11::Not applicable for declared shell-version(s)"
+    classification: expected
+    notes: "Version-gated skip — GJS native timers in GNOME 45+"
+  - id: "R-DEPR-04-legacy::Not applicable for declared shell-version(s)"
+    classification: expected
+    notes: "Version-gated skip — not applicable for declared shell-version"
+  - id: "polkit/action-id-match::No polkit files found"
+    classification: expected
+    notes: "No polkit files in extension"
+  - id: "polkit/action-id-prefix::No polkit files found"
+    classification: expected
+    notes: "No polkit files in extension"
+  - id: "polkit/helper-exists::No polkit files found"
+    classification: expected
+    notes: "No polkit files in extension"
+  - id: "css/scoping::No stylesheet.css found"
+    classification: expected
+    notes: "Extension has no stylesheet"
+  - id: "css/shell-class-override::No stylesheet.css found"
+    classification: expected
+    notes: "Extension has no stylesheet"
+  - id: "eslint::No eslint.config.mjs or node_modules/.bin/eslint found"
+    classification: expected
+    notes: "Optional tooling — ESLint not configured"
+  - id: "schema-usage/unused-key::Dynamic key access detected — cannot verify statically"
+    classification: expected
+    notes: "Static analysis limitation — dynamic key access prevents verification"
+  - id: "schema-usage/undefined-key::Dynamic key access detected — cannot verify statically"
+    classification: expected
+    notes: "Static analysis limitation — dynamic key access prevents verification"
+  - id: "package/exists::No zip package found in extension directory"
+    classification: expected
+    notes: "Source checkout, not packaged"
+
+  # FAIL findings
+  - id: "R-DEPR-04::Legacy imports.* syntax; use ESM imports for GNOME 45+"
+    classification: tp
+    notes: "3 instances in indicatorStatusIcon.js, interfaces.js, appIndicator.js — GNOME 45+ should use ESM"
+  - id: "R-VER44-01::Meta.later_add() removed in GNOME 44; use global.compositor.get_laters().addLater()"
+    classification: tp
+    notes: "promiseUtils.js:295 — API removed in GNOME 44, extension targets 45+"
+  - id: "R-VER44-02::Meta.later_remove() removed in GNOME 44; use global.compositor.get_laters().removeLater()"
+    classification: tp
+    notes: "promiseUtils.js:307 — same dead code issue"
+  - id: "no-deprecated-modules::Found 1 deprecated module import(s)"
+    classification: tp
+    notes: "interfaces.js uses deprecated imports.byteArray"
+  - id: "imports/no-gtk-in-extension::20:import GdkPixbuf from 'gi://GdkPixbuf';"
+    classification: fp
+    notes: "GdkPixbuf is not GTK — used for pixmap icon rendering in system tray"
+  - id: "imports/no-gtk-in-extension::6:import Meta from 'gi://GdkPixbuf';"
+    classification: fp
+    notes: "promiseUtils.js imports GdkPixbuf as Meta (aliased) — GdkPixbuf is not GTK"
+  - id: "lifecycle/gsettings-signal-leak::3 bare settings.connect('changed::...') without stored ID and no disconnectObject/connectObject cleanup: preferences/customIconPage.js, preferences/customIconPage.js, preferences/customIconPage.js"
+    classification: tp
+    notes: "3 bare settings.connect() in preferences/customIconPage.js — prefs-only, lower severity but real leak"
+
+  # WARN findings — True Positives
+  - id: "R-SEC-06::GObject.run_dispose() should not be used unless absolutely necessary"
+    classification: tp
+    notes: "statusNotifierWatcher.js:281 — needs justification comment"
+  - id: "R-LOG-03::print()/printerr() should not be used in production; use console.debug()"
+    classification: tp
+    notes: "appIndicator.js:1231 — should use console.debug()"
+  - id: "R-LOG-03::indicator-test-tool/testTool.js: print()/printerr() should not be used in production; use console.debug()"
+    classification: tp
+    notes: "10 instances in indicator-test-tool/testTool.js — test tool uses print()"
+  - id: "R-QUAL-26::Custom Logger class is unnecessary — use console.debug/warn/error"
+    classification: tp
+    notes: "util.js:274 — Logger wraps GLib.log_structured; console.debug preferred"
+  - id: "R-QUAL-33::Gio._promisify() permanently mutates shared GJS prototypes — document module-scope placement"
+    classification: tp
+    notes: "4 files — correct advisory"
+  - id: "R-QUAL-31::_onDestroy() should be renamed to destroy() with super.destroy() at the end"
+    classification: borderline
+    notes: "3 instances in indicatorStatusIcon.js — _onDestroy is PanelMenu.Button signal handler convention, but naming is debatable"
+  - id: "R-WEB-12::Promise.race() is risky without _destroyed guards; verify async safety"
+    classification: tp
+    notes: "appIndicator.js:1218 — async safety concern"
+  - id: "R-DEPR-09::indicator-test-tool/testTool.js: Use const/let instead of var; var has function scope and causes bugs in closures"
+    classification: tp
+    notes: "6 instances in indicator-test-tool/testTool.js — var usage is legacy"
+  - id: "R-SLOP-40::new Promise(resolve, reject) wrapper — consider Gio._promisify() for GIO async methods"
+    classification: tp
+    notes: "dbusProxy.js:74 — manual Promise wrapping, correct advisory"
+  - id: "R-SLOP-43::Underscore-prefixed export — private convention conflicts with public export"
+    classification: tp
+    notes: "promiseUtils.js:314 _promisifySignals — exported but underscore-prefixed"
+  - id: "R-SLOP-11::indicator-test-tool/testTool.js: Non-existent GLib method — use GLib.timeout_add_seconds() and GLib.Source.remove()"
+    classification: tp
+    notes: "testTool.js:236 — uses GLib.timeout_add_seconds_full which is correct GI binding name but non-idiomatic GJS"
+  - id: "R-SLOP-16::GLib.file_get_contents() is synchronous and blocks the main loop; prefer Gio.File.load_contents() or load_contents_async()"
+    classification: tp
+    notes: "interfaces.js:25 — synchronous file read blocks main loop; valid advisory even though API exists"
+  - id: "quality/destroy-try-catch::try-catch around .destroy() — usually unnecessary"
+    classification: tp
+    notes: "trayIconsManager.js:89 — defensive try-catch around destroy"
+  - id: "quality/module-state::Module-level mutable state at settingsManager.js — ensure reset in both enable() and disable()"
+    classification: tp
+    notes: "settingsManager.js:17 — intentional singleton but valid concern"
+  - id: "quality/mock-in-production::indicator-test-tool/testTool.js: mock/test file should not ship in production extension"
+    classification: tp
+    notes: "indicator-test-tool/testTool.js should not ship in production"
+  - id: "quality/constructor-resources::.connect() in constructor — move to enable()"
+    classification: borderline
+    notes: "promiseUtils.js:53,148 — .connect() in CancellablePromise constructor is FP (runtime-only, cleaned via _cleanup)"
+  - id: "quality/private-api::Main.layoutManager private API access — requires reviewer justification and version pinning"
+    classification: tp
+    notes: "3 instances in util.js and indicatorStatusIcon.js — private API access is real"
+  - id: "quality/redundant-cleanup::4 verbose destroy guards vs 0 idiomatic '?.destroy()' — prefer optional chaining for cleanup"
+    classification: borderline
+    notes: "4 instances — if (x) x.destroy() vs x?.destroy() is style preference"
+  - id: "quality/run-dispose-no-comment::run_dispose() without explanatory comment — reviewers require justification"
+    classification: tp
+    notes: "statusNotifierWatcher.js:281 — run_dispose without comment"
+  - id: "gobject/missing-gtypename::GObject.registerClass without GTypeName — add GTypeName to avoid conflicts between extensions"
+    classification: tp
+    notes: "5 instances across util.js, indicatorStatusIcon.js, dbusMenu.js"
+  - id: "async/missing-cancellable::_async() calls without Gio.Cancellable at dbusMenu.js, appIndicator.js — async operations may run after disable()"
+    classification: tp
+    notes: "dbusMenu.js:761, appIndicator.js:1350 — async without cancellable"
+  - id: "disclosure/private-api::private-api capability detected in code but metadata description does not disclose it — reviewers expect disclosure"
+    classification: tp
+    notes: "Main.layoutManager access not disclosed in metadata"
+  - id: "disclosure/file-io::file-io capability detected in code but metadata description does not disclose it — reviewers expect disclosure"
+    classification: tp
+    notes: "File I/O (GLib.file_get_contents) not disclosed in metadata"
+  - id: "lifecycle/untracked-timeout::timer/idle return value not stored — cannot be removed in disable()"
+    classification: borderline
+    notes: "promiseUtils.js:55 — GSource-based promise with _cleanup, not a real leak"
+  - id: "lifecycle/untracked-timeout::indicator-test-tool/testTool.js: timer/idle return value not stored — cannot be removed in disable()"
+    classification: tp
+    notes: "4 instances in testTool.js — test tool timers without cleanup"
+  - id: "lifecycle/timeout-return-value::promiseUtils.js, indicator-test-tool/testTool.js, indicator-test-tool/testTool.js"
+    classification: borderline
+    notes: "promiseUtils.js callback returns GLib.SOURCE_REMOVE; testTool.js callbacks may not"
+  - id: "lifecycle/destroy-no-null::.destroy() without null assignment — set reference to null after destroy to prevent stale access"
+    classification: tp
+    notes: "5 instances across promiseUtils.js, indicatorStatusIcon.js, appIndicator.js — valid advisory"
+  - id: "metadata/future-shell-version::shell-version '50' is newer than current stable (49)"
+    classification: tp
+    notes: "shell-version includes 50 which is newer than current stable"
+  - id: "metadata/uuid-matches-dir::UUID 'appindicatorsupport@rgcjonas.gmail.com' does not match directory 'appindicator' — must match when installed"
+    classification: expected
+    notes: "Cached under short name, not UUID — expected for field test setup"
+  - id: "non-gjs-scripts::Found 1 non-GJS script(s) — scripts MUST be written in GJS; no pkexec/privileged helper justification found"
+    classification: borderline
+    notes: "indicator-test-tool/ksni.py is a developer test tool, not part of extension proper"
+  - id: "license::License file found but could not confirm GPL-compatibility"
+    classification: fp
+    notes: "Full GPL-2.0 license text present in LICENSE file — regex did not match"

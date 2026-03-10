@@ -86,3 +86,224 @@ findings:
   - id: "review/module-scope-state::SubprocessLauncher+Shell state at module scope"
     classification: borderline
     notes: "Gio.SubprocessLauncher and Shell state access at module scope in daemon context — less relevant for service/ files"
+
+  # New annotations (2026-03-10) — exact baseline IDs
+
+  # SKIP findings
+  - id: "polkit/action-id-match::No polkit files found"
+    classification: expected
+    notes: "No polkit files in extension — check not applicable"
+  - id: "polkit/action-id-prefix::No polkit files found"
+    classification: expected
+    notes: "No polkit files in extension — check not applicable"
+  - id: "polkit/helper-exists::No polkit files found"
+    classification: expected
+    notes: "No polkit files in extension — check not applicable"
+  - id: "R-WEB-01::Not applicable for declared shell-version(s)"
+    classification: expected
+    notes: "Min shell-version 46 — GJS native timers available, web timer check skipped"
+  - id: "R-WEB-02::Not applicable for declared shell-version(s)"
+    classification: expected
+    notes: "Min shell-version 46 — GJS native timers available, web timer check skipped"
+  - id: "R-WEB-10::Not applicable for declared shell-version(s)"
+    classification: expected
+    notes: "Min shell-version 46 — GJS native timers available, web timer check skipped"
+  - id: "R-WEB-11::Not applicable for declared shell-version(s)"
+    classification: expected
+    notes: "Min shell-version 46 — GJS native timers available, web timer check skipped"
+  - id: "R-DEPR-04-legacy::Not applicable for declared shell-version(s)"
+    classification: expected
+    notes: "Version-gated skip — not applicable for declared shell-version(s)"
+  - id: "R-VER50-01::Not applicable for declared shell-version(s)"
+    classification: expected
+    notes: "Max shell-version 49 — GNOME 50 check not applicable"
+  - id: "R-VER50-02::Not applicable for declared shell-version(s)"
+    classification: expected
+    notes: "Max shell-version 49 — GNOME 50 check not applicable"
+  - id: "R-VER50-03::Not applicable for declared shell-version(s)"
+    classification: expected
+    notes: "Max shell-version 49 — GNOME 50 check not applicable"
+  - id: "R-VER50-04::Not applicable for declared shell-version(s)"
+    classification: expected
+    notes: "Max shell-version 49 — GNOME 50 check not applicable"
+  - id: "R-VER50-05::Not applicable for declared shell-version(s)"
+    classification: expected
+    notes: "Max shell-version 49 — GNOME 50 check not applicable"
+  - id: "eslint::No eslint.config.mjs or node_modules/.bin/eslint found"
+    classification: expected
+    notes: "ESLint not configured — optional tooling"
+  - id: "schema-usage/unused-key::Dynamic key access detected — cannot verify statically"
+    classification: expected
+    notes: "Dynamic key access prevents static analysis of schema key usage"
+  - id: "schema-usage/undefined-key::Dynamic key access detected — cannot verify statically"
+    classification: expected
+    notes: "Dynamic key access prevents static analysis of schema key usage"
+  - id: "package/exists::No zip package found in extension directory"
+    classification: expected
+    notes: "Source checkout, not a packaged zip"
+
+  # WARN findings — Expected (dev layout)
+  - id: "metadata/uuid-matches-dir::UUID 'gsconnect@andyholmes.github.io' does not match directory 'gsconnect' — must match when installed"
+    classification: expected
+    notes: "Directory name differs from UUID in dev/cache layout"
+
+  # WARN findings — False Positives
+  - id: "R-SLOP-11::Non-existent GLib method — use GLib.timeout_add_seconds() and GLib.Source.remove()"
+    classification: fp
+    notes: "GLib.source_remove() IS a valid GJS function (binding for g_source_remove()) — rule incorrectly flags it as non-existent"
+
+  # WARN findings — Borderline
+  - id: "R-SEC-03::Use HTTPS instead of HTTP for network requests"
+    classification: borderline
+    notes: "3 of 4 hits are HTTP URLs in comments (reference links); 1 is legitimate protocol scheme fallback in code"
+  - id: "R-SLOP-24::new Gio.Settings() is incorrect in GNOME 45+; use this.getSettings() from Extension base class"
+    classification: borderline
+    notes: "Many in service/ daemon where Extension base class is unavailable"
+  - id: "R-SLOP-43::Underscore-prefixed export — private convention conflicts with public export"
+    classification: borderline
+    notes: "Exports in service/ code (_getDeviceType, _configureSocket) — internal API naming convention for daemon"
+  - id: "R-QUAL-32::Unnecessary ?version= in gi:// import — this library does not require a version specifier"
+    classification: borderline
+    notes: "Version specifiers correct for standalone daemon scripts that need explicit versioning"
+  - id: "quality/module-state::Module-level mutable state at service/nativeMessagingHost.js, service/backends/lan.js — ensure reset in both enable() and disable()"
+    classification: borderline
+    notes: "Both files in service/ daemon context — module state less relevant outside shell extension lifecycle"
+  - id: "quality/repeated-settings::20 getSettings()/Gio.Settings instances across extension files (extension.js, extension.js, shell/input.js, utils/setup.js, service/daemon.js) — store a single instance and pass via dependency injection"
+    classification: borderline
+    notes: "Includes service/ daemon files where Extension.getSettings() is unavailable — count inflated by daemon context"
+  - id: "resource-tracking/orphan-gsettings::service/manager.js — this._settings created but not cleaned up in destroy()"
+    classification: borderline
+    notes: "service/manager.js is daemon code — GSettings cleanup less critical in standalone process"
+  - id: "resource-tracking/ownership::64 files scanned, depth 2, 13 orphans detected"
+    classification: borderline
+    notes: "Orphan count includes service/ daemon files — reduced from 19 to 13 after service/ exemption"
+
+  # FAIL findings — True Positives
+  - id: "license::No LICENSE or COPYING file — MUST use GPL-compatible license"
+    classification: tp
+    notes: "No LICENSE/COPYING file — SPDX headers in files but no dedicated license file"
+  - id: "R-DEPR-06::Tweener is removed; use Clutter animation framework"
+    classification: tp
+    notes: "imports.tweener.tweener in messaging.js — deprecated API (6 instances)"
+  - id: "R-DEPR-10::imports.format is deprecated; use ES6 template literals"
+    classification: tp
+    notes: "setup.js uses deprecated format import"
+  - id: "imports/no-gtk-in-extension::6:import Gtk from 'gi://Gtk';"
+    classification: tp
+    notes: "shell/utils.js imports GTK, reachable from extension.js via BFS — GTK should not be loaded in shell process"
+  - id: "init/shell-modification::Shell modification outside enable()"
+    classification: tp
+    notes: "extension.js:28 Main.panel.statusArea.quickSettings at module scope; wl_clipboard.js:11 new Gio.SubprocessLauncher at module scope"
+
+  # WARN findings — True Positives
+  - id: "non-gjs-scripts::Found 1 non-GJS script(s) — scripts MUST be written in GJS; no pkexec/privileged helper justification found"
+    classification: tp
+    notes: "nautilus-gsconnect.py — Python Nautilus integration plugin shipped with extension"
+  - id: "R-SEC-06::GObject.run_dispose() should not be used unless absolutely necessary"
+    classification: tp
+    notes: "6 instances across extension and service code — needs justification comments"
+  - id: "R-SEC-15::GLib.spawn_command_line_async provides no error handling; prefer Gio.Subprocess"
+    classification: tp
+    notes: "2 instances — spawn_command_line_async lacks error handling, valid advisory"
+  - id: "R-I18N-02::String concatenation inside gettext _() breaks xgettext extraction"
+    classification: tp
+    notes: "Concatenation inside _() prevents xgettext from extracting translatable strings"
+  - id: "R-LOG-02::Legacy log() function; use console.debug() instead"
+    classification: tp
+    notes: "Legacy log() function — valid advisory to use console.debug()"
+  - id: "R-LOG-03::print()/printerr() should not be used in production; use console.debug()"
+    classification: tp
+    notes: "3 instances of print()/printerr() — valid advisory for production code"
+  - id: "R-SLOP-03::version field is deprecated; EGO manages versions for GNOME 45+"
+    classification: tp
+    notes: "metadata.json contains version:71 — deprecated for GNOME 45+"
+  - id: "R-SLOP-40::new Promise(resolve, reject) wrapper — consider Gio._promisify() for GIO async methods"
+    classification: tp
+    notes: "22 instances — GSConnect wraps many GIO async operations in Promise wrappers"
+  - id: "R-SLOP-08::Likely hallucinated API — Meta.Screen, Meta.Cursor, Shell.ActionMode.ALL do not exist"
+    classification: tp
+    notes: "Shell.ActionMode.ALL used in shell/keybindings.js:62 — this constant does not exist in GNOME Shell"
+  - id: "R-SLOP-16::GLib.file_get_contents() is synchronous and blocks the main loop; prefer Gio.File.load_contents() or load_contents_async()"
+    classification: tp
+    notes: "2 synchronous file reads — valid advisory to use async alternatives"
+  - id: "R-SLOP-26::Shell.ActionMode.ALL does not exist; use Shell.ActionMode.NORMAL or combine specific modes"
+    classification: tp
+    notes: "Shell.ActionMode.ALL in shell/keybindings.js:62 — non-existent constant"
+  - id: "R-QUAL-31::_onDestroy() should be renamed to destroy() with super.destroy() at the end"
+    classification: tp
+    notes: "6 instances of _onDestroy() pattern — valid advisory to use proper destroy() override"
+  - id: "R-QUAL-33::Gio._promisify() permanently mutates shared GJS prototypes — document module-scope placement"
+    classification: tp
+    notes: "Module-scope Gio._promisify() usage — valid advisory about shared prototype mutation"
+  - id: "R-QUAL-34::enumerate_children() is synchronous — use enumerate_children_async() to avoid blocking the Shell main loop"
+    classification: tp
+    notes: "Synchronous directory enumeration blocks the main loop — valid advisory"
+  - id: "R-QUAL-35::Synchronous D-Bus call blocks the compositor main loop — use async variant"
+    classification: tp
+    notes: "3 synchronous D-Bus calls — valid advisory to use async variants"
+  - id: "R-VER48-04::St.Widget.vertical property deprecated in GNOME 48; use orientation: Clutter.Orientation.VERTICAL (available since GNOME 47; keep vertical for GNOME <=46 compat)"
+    classification: tp
+    notes: "Extension supports GNOME 46-49 — vertical property deprecated in 48, valid advisory"
+  - id: "R-VER48-04b::vertical property in constructor config deprecated in GNOME 48; use orientation: Clutter.Orientation.VERTICAL (available since GNOME 47; keep vertical for GNOME <=46 compat)"
+    classification: tp
+    notes: "Extension supports GNOME 46-49 — vertical in constructor config deprecated in 48"
+  - id: "metadata/deprecated-version::version field is ignored by EGO for GNOME 45+; consider removing"
+    classification: tp
+    notes: "version:71 in metadata.json — deprecated for GNOME 45+ extensions"
+  - id: "metadata/missing-gettext-domain::locale/ directory exists but gettext-domain not set in metadata.json"
+    classification: tp
+    notes: "locale/ directory exists but gettext-domain missing from metadata.json"
+  - id: "quality/code-volume::20475 non-blank JS lines — large codebase; ensure all code is necessary and manually reviewed"
+    classification: tp
+    notes: "20475 non-blank lines across 65 JS files — genuinely large codebase, valid advisory"
+  - id: "quality/private-api::Main.layoutManager private API access — requires reviewer justification and version pinning"
+    classification: tp
+    notes: "Private API access to Main.layoutManager — valid concern requiring justification"
+  - id: "quality/redundant-cleanup::5 verbose destroy guards vs 0 idiomatic '?.destroy()' — prefer optional chaining for cleanup"
+    classification: tp
+    notes: "5 verbose destroy guards could use optional chaining — valid code quality advisory"
+  - id: "quality/run-dispose-no-comment::run_dispose() without explanatory comment — reviewers require justification"
+    classification: tp
+    notes: "6 run_dispose() calls without explanatory comments — reviewers require justification"
+  - id: "lifecycle/untracked-timeout::timer/idle return value not stored — cannot be removed in disable()"
+    classification: tp
+    notes: "6 untracked timer/idle sources — return values not stored for cleanup in disable()"
+  - id: "lifecycle/async-destroyed-guard::async/await used without _destroyed or _isDestroyed guard — extension may act on stale state after disable()"
+    classification: tp
+    notes: "Async operations without destroyed guard — may act on stale state after disable()"
+  - id: "lifecycle/timeout-return-value::shell/tooltip.js, shell/tooltip.js, service/ui/messaging.js"
+    classification: tp
+    notes: "Timer return values not consistently tracked for cleanup"
+  - id: "lifecycle/prototype-override::GtkNotificationDaemon.prototype._ensureAppSource — direct prototype modification should be restored in disable()"
+    classification: tp
+    notes: "Prototype modification of GtkNotificationDaemon — must be restored in disable()"
+  - id: "lifecycle/prototype-override::GtkNotificationDaemonAppSource.prototype._withdrawGSConnectNotification — direct prototype modification should be restored in disable()"
+    classification: tp
+    notes: "Prototype modification of notification source — must be restored in disable()"
+  - id: "lifecycle/prototype-override::GtkNotificationDaemonAppSource.prototype.addNotification — direct prototype modification should be restored in disable()"
+    classification: tp
+    notes: "Prototype modification of notification source — must be restored in disable()"
+  - id: "lifecycle/prototype-override::String.prototype.format — direct prototype modification should be restored in disable()"
+    classification: tp
+    notes: "String.prototype.format modification — global prototype mutation, must be restored"
+  - id: "lifecycle/destroy-no-null::.destroy() without null assignment — set reference to null after destroy to prevent stale access"
+    classification: tp
+    notes: "5 instances of .destroy() without nulling — valid advisory to prevent stale reference access"
+  - id: "gobject/missing-gtypename::GObject.registerClass without GTypeName — add GTypeName to avoid conflicts between extensions"
+    classification: tp
+    notes: "Missing GTypeName — collision risk with other extensions is real"
+  - id: "async/missing-cancellable::_async() calls without Gio.Cancellable at wl_clipboard.js, wl_clipboard.js, shell/clipboard.js (+47 more) — async operations may run after disable()"
+    classification: tp
+    notes: "50 async calls without Gio.Cancellable — operations may outlive disable()"
+  - id: "async/disable-no-cancel::Extension uses async but disable() has no .cancel(), .abort(), or _destroyed flag — async operations may outlive disable()"
+    classification: tp
+    notes: "No cancellation mechanism in disable() — async operations may outlive extension lifecycle"
+  - id: "async/catch-on-sync::.catch() on non-async GetMimetypes() — verify method returns a Promise"
+    classification: fp
+    notes: "GetMimetypes() returns a Promise via new Promise() wrapper — not async-declared but does return a Promise"
+  - id: "resource-tracking/destroy-not-called::shell/tooltip.js — parent does not call cleanup method on shell/tooltip.js"
+    classification: tp
+    notes: "11 tooltip instances created without parent calling cleanup — potential resource leak"
+  - id: "disclosure/private-api::private-api capability detected in code but metadata description does not disclose it — reviewers expect disclosure"
+    classification: tp
+    notes: "Private API usage (Main.layoutManager) not disclosed in metadata description"

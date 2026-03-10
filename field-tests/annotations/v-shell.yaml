@@ -53,3 +53,157 @@ findings:
   - id: "lifecycle/signal-disconnect::wrong object"
     classification: tp
     notes: "B1: dash.js:189 disconnects _newWindowConId on global.windowManager instead of global.display — only detectable by semantic analysis"
+
+  # New annotations — exact baseline IDs (2026-03-10)
+  # SKIP findings — expected (not applicable)
+  - id: "polkit/action-id-match::No polkit files found"
+    classification: expected
+    notes: "No polkit files in extension"
+  - id: "polkit/action-id-prefix::No polkit files found"
+    classification: expected
+    notes: "No polkit files in extension"
+  - id: "polkit/helper-exists::No polkit files found"
+    classification: expected
+    notes: "No polkit files in extension"
+  - id: "R-WEB-01::Not applicable for declared shell-version(s)"
+    classification: expected
+    notes: "Version-gated skip — extension targets GNOME 45+"
+  - id: "R-WEB-02::Not applicable for declared shell-version(s)"
+    classification: expected
+    notes: "Version-gated skip — extension targets GNOME 45+"
+  - id: "R-WEB-10::Not applicable for declared shell-version(s)"
+    classification: expected
+    notes: "Version-gated skip — extension targets GNOME 45+"
+  - id: "R-WEB-11::Not applicable for declared shell-version(s)"
+    classification: expected
+    notes: "Version-gated skip — extension targets GNOME 45+"
+  - id: "R-DEPR-04-legacy::Not applicable for declared shell-version(s)"
+    classification: expected
+    notes: "Version-gated skip — extension targets GNOME 45+"
+  - id: "R-VER50-01::Not applicable for declared shell-version(s)"
+    classification: expected
+    notes: "Extension does not declare GNOME 50 support"
+  - id: "R-VER50-02::Not applicable for declared shell-version(s)"
+    classification: expected
+    notes: "Extension does not declare GNOME 50 support"
+  - id: "R-VER50-03::Not applicable for declared shell-version(s)"
+    classification: expected
+    notes: "Extension does not declare GNOME 50 support"
+  - id: "R-VER50-04::Not applicable for declared shell-version(s)"
+    classification: expected
+    notes: "Extension does not declare GNOME 50 support"
+  - id: "R-VER50-05::Not applicable for declared shell-version(s)"
+    classification: expected
+    notes: "Extension does not declare GNOME 50 support"
+  - id: "eslint::No eslint.config.mjs or node_modules/.bin/eslint found"
+    classification: expected
+    notes: "Optional tooling not present"
+  - id: "schema-usage/unused-key::Dynamic key access detected — cannot verify statically"
+    classification: expected
+    notes: "Static analysis limitation — extension uses dynamic key access"
+  - id: "schema-usage/undefined-key::Dynamic key access detected — cannot verify statically"
+    classification: expected
+    notes: "Static analysis limitation — extension uses dynamic key access"
+  - id: "package/exists::No zip package found in extension directory"
+    classification: expected
+    notes: "Source checkout, not packaged"
+  # FAIL findings — True Positives
+  - id: "css/shell-class-override::.osd-window: overrides GNOME Shell theme class — use a scoped selector (.my-extension .osd-window)"
+    classification: tp
+    notes: "Overrides .osd-window Shell theme class without scoping"
+  - id: "lifecycle/gsettings-signal-leak::3 bare settings.connect('changed::...') without stored ID and no disconnectObject/connectObject cleanup: lib/optionsFactory.js, lib/optionsFactory.js, lib/settings.js"
+    classification: tp
+    notes: "3 bare settings.connect() without disconnectObject cleanup"
+  # WARN findings — True Positives
+  - id: "accessibility/accessible-name::3 icon-only St.Button(s) without accessible_name: lib/windowPreview.js, lib/appDisplay.js, lib/appDisplay.js"
+    classification: tp
+    notes: "Icon-only buttons lack accessible names for screen readers"
+  - id: "accessibility/widget-role::1 custom St.Widget subclass(es) without accessible_role: lib/workspace.js (WorkspaceWindowContainer)"
+    classification: tp
+    notes: "Custom widget lacks accessible_role for assistive technology"
+  - id: "R-SEC-09::Extension system interference is discouraged; modifying other extensions requires justification"
+    classification: tp
+    notes: "6 hits — core to V-Shell's purpose as Shell customizer"
+  - id: "R-LOG-02::Legacy log() function; use console.debug() instead"
+    classification: tp
+    notes: "Legacy log() should use console.debug()"
+  - id: "R-SLOP-03::version field is deprecated; EGO manages versions for GNOME 45+"
+    classification: tp
+    notes: "Version field deprecated for GNOME 45+"
+  - id: "R-SLOP-11::Non-existent GLib method — use GLib.timeout_add_seconds() and GLib.Source.remove()"
+    classification: tp
+    notes: "21 hits — uses GLib.source_remove instead of GLib.Source.remove()"
+  - id: "R-QUAL-31::_onDestroy() should be renamed to destroy() with super.destroy() at the end"
+    classification: tp
+    notes: "5 hits — _onDestroy() pattern should use destroy() override"
+  - id: "R-QUAL-34::enumerate_children() is synchronous — use enumerate_children_async() to avoid blocking the Shell main loop"
+    classification: tp
+    notes: "Synchronous directory enumeration blocks main loop"
+  - id: "R-VER48-04::St.Widget.vertical property deprecated in GNOME 48; use orientation: Clutter.Orientation.VERTICAL (available since GNOME 47; keep vertical for GNOME <=46 compat)"
+    classification: tp
+    notes: "3 hits — St.Widget.vertical deprecated in GNOME 48"
+  - id: "metadata/non-standard-field::'_generated' is not a standard metadata field"
+    classification: tp
+    notes: "Non-standard metadata field advisory"
+  - id: "metadata/deprecated-version::version field is ignored by EGO for GNOME 45+; consider removing"
+    classification: tp
+    notes: "Version field deprecated for GNOME 45+"
+  - id: "quality/module-state::Module-level mutable state at lib/optionsFactory.js, lib/optionsFactory.js, lib/workspace.js — ensure reset in both enable() and disable()"
+    classification: tp
+    notes: "Module-level mutable state should be reset in disable()"
+  - id: "quality/constructor-resources::.connect() in constructor — move to enable()"
+    classification: tp
+    notes: "3 hits — V-Shell widgets manage own lifecycle via constructors"
+  - id: "quality/code-volume::16293 non-blank JS lines — large codebase; ensure all code is necessary and manually reviewed"
+    classification: tp
+    notes: "Large codebase — valid advisory for manual review"
+  - id: "quality/file-complexity::2233 non-blank lines — consider splitting into modules"
+    classification: tp
+    notes: "prefs.js is genuinely large and could be split"
+  - id: "quality/debug-volume::68 console.debug() calls — excessive for production; remove or reduce debug logging before submission"
+    classification: tp
+    notes: "68 debug calls is excessive for production"
+  - id: "quality/private-api::extension.js, extension.js, extension.js, extension.js, extension.js (+175 more): Main.layoutManager private API access — requires reviewer justification and version pinning"
+    classification: tp
+    notes: "180+ private API accesses — expected for Shell customizer but valid advisory"
+  - id: "quality/redundant-cleanup::8 verbose destroy guards vs 3 idiomatic '?.destroy()' — prefer optional chaining for cleanup"
+    classification: tp
+    notes: "Verbose null-check-then-destroy pattern could use optional chaining"
+  - id: "quality/repeated-settings::5 getSettings()/Gio.Settings instances across extension files (extension.js, extension.js, lib/workspaceThumbnail.js, lib/layout.js, lib/appDisplay.js) — store a single instance and pass via dependency injection"
+    classification: tp
+    notes: "Multiple settings instances should use dependency injection"
+  - id: "lifecycle/signal-balance::56 manual .connect() calls but only 43 .disconnect() calls — verify all signals are disconnected in disable()"
+    classification: tp
+    notes: "Signal balance mismatch — verify all signals disconnected"
+  - id: "lifecycle/untracked-timeout::timer/idle return value not stored — cannot be removed in disable()"
+    classification: tp
+    notes: "15 hits — untracked timeouts cannot be removed in disable()"
+  - id: "lifecycle/timeout-return-value::extension.js, lib/util.js, lib/util.js"
+    classification: tp
+    notes: "Timeout callbacks should return GLib.SOURCE_REMOVE or SOURCE_CONTINUE"
+  - id: "lifecycle/prototype-override::Workspace.prototype.get_neighbor — direct prototype modification should be restored in disable()"
+    classification: tp
+    notes: "Prototype override must be restored in disable()"
+  - id: "lifecycle/unlock-dialog-comment::extension declares 'unlock-dialog' session mode but disable() has no comment explaining lock screen behavior — add a comment documenting which resources need special handling on the lock screen"
+    classification: tp
+    notes: "Extension uses unlock-dialog session mode but lacks documentation comment"
+  - id: "lifecycle/destroy-no-null::.destroy() without null assignment — set reference to null after destroy to prevent stale access"
+    classification: tp
+    notes: "5 hits — .destroy() without nulling reference risks stale access"
+  - id: "disclosure/clipboard::clipboard capability detected in code but metadata description does not disclose it — reviewers expect disclosure"
+    classification: tp
+    notes: "Clipboard capability not disclosed in metadata description"
+  - id: "disclosure/private-api::private-api capability detected in code but metadata description does not disclose it — reviewers expect disclosure"
+    classification: tp
+    notes: "Private API usage not disclosed in metadata description"
+  - id: "disclosure/file-io::file-io capability detected in code but metadata description does not disclose it — reviewers expect disclosure"
+    classification: tp
+    notes: "File I/O capability not disclosed in metadata description"
+  # WARN findings — False Positives
+  - id: "R-SLOP-13::this instanceof check inside a class method is always true"
+    classification: fp
+    notes: "2 hits — instanceof AppDisplay.FolderView in prototype-override method shared between subclasses; NOT always true"
+  # WARN findings — Borderline
+  - id: "R-SLOP-38::Over-long identifier (>25 chars) is an AI verbosity indicator"
+    classification: borderline
+    notes: "8 hits — hand-written code (provenance 4); identifiers are descriptive not AI-verbose"
