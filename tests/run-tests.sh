@@ -231,6 +231,15 @@ assert_output_not_contains "no FP on async arrow function" "init/shell-modificat
 assert_output_not_contains "no FP on arrow GObject constructor" "init/shell-modification.*extension.js:14"
 echo ""
 
+# --- init-constructor-signal ---
+echo "=== init-constructor-signal ==="
+run_lint "init-constructor-signal@test"
+assert_exit_code "exits with 1 (has constructor violation)" 1
+assert_output_contains "flags direct Shell global in constructor" "\[FAIL\].*init/shell-modification.*extension.js:10"
+assert_output_not_contains "no FP on .connect() callback body" "init/shell-modification.*extension.js:1[5-7]"
+assert_output_not_contains "no FP on .connectObject() callback body" "init/shell-modification.*extension.js:2[1-4]"
+echo ""
+
 # --- lifecycle-imbalance ---
 echo "=== lifecycle-imbalance ==="
 run_lint "lifecycle-imbalance@test"

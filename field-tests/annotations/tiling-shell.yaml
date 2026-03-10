@@ -23,7 +23,7 @@ findings:
     notes: "get_maximized ? .unmaximize(MaximizeFlags) : .unmaximize() — same fix as R-VER49-08."
   - id: "init/shell-modification::constructor signal callback"
     classification: fp
-    notes: "globalState.js — inside constructor signal callback, not module scope. 2 instances."
+    notes: "globalState.js — inside constructor signal callback, not module scope. 2 instances. Fixed: signal callback filter in constructor check."
   - id: "init/shell-modification::module-scope arrow fn definition"
     classification: fp
     notes: "ui.js — const fn = () => Main.layoutManager.monitors is lazy, not executed at load time. Fixed: arrow fn skip."
