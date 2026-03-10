@@ -160,12 +160,6 @@ findings:
   - id: "no-deprecated-modules::Found 1 deprecated module import(s)"
     classification: tp
     notes: "interfaces.js uses deprecated imports.byteArray"
-  - id: "imports/no-gtk-in-extension::20:import GdkPixbuf from 'gi://GdkPixbuf';"
-    classification: fp
-    notes: "GdkPixbuf is not GTK — used for pixmap icon rendering in system tray"
-  - id: "imports/no-gtk-in-extension::6:import Meta from 'gi://GdkPixbuf';"
-    classification: fp
-    notes: "promiseUtils.js imports GdkPixbuf as Meta (aliased) — GdkPixbuf is not GTK"
   - id: "lifecycle/gsettings-signal-leak::3 bare settings.connect('changed::...') without stored ID and no disconnectObject/connectObject cleanup: preferences/customIconPage.js, preferences/customIconPage.js, preferences/customIconPage.js"
     classification: tp
     notes: "3 bare settings.connect() in preferences/customIconPage.js — prefs-only, lower severity but real leak"

@@ -14,9 +14,6 @@ findings:
   - id: "R-VER49-02::Clutter.ClickAction runtime-guarded"
     classification: fp
     notes: "All 13 use Clutter.ClickAction || Clutter.ClickGesture fallback or if (Clutter.ClickAction) guards"
-  - id: "imports/no-gtk-in-extension::prefs-only module"
-    classification: fp
-    notes: "optionsFactory.js only imported by prefs.js, never by extension.js. 2 instances."
   - id: "init/shell-modification::constructor called from enable"
     classification: fp
     notes: "3 FPs in overviewBackground.js, appDisplay.js — constructors called from _initModules() inside enable()"
