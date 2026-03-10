@@ -2098,10 +2098,10 @@ Rules for APIs removed or changed in specific GNOME Shell versions. These rules 
 ### R-LIFE-27: Module-scope prototype mutation
 - **Severity**: advisory
 - **Checked by**: check-lifecycle.py
-- **Rule**: `.prototype.` assignments and `Object.assign(...prototype, ...)` at module scope (brace depth 0) are flagged.
-- **Rationale**: Module-scope prototype mutations execute at import time, before `enable()` is called. They persist after `disable()` because they were never part of the enable/disable lifecycle. This permanently mutates shared global objects, affecting all code that uses those prototypes.
+- **Rule**: `.prototype.` assignments, `Object.assign(...prototype, ...)`, and function calls passing `.prototype` as an argument at module scope (brace depth 0) are flagged.
+- **Rationale**: Module-scope prototype mutations execute at import time, before `enable()` is called. They persist after `disable()` because they were never part of the enable/disable lifecycle. This permanently mutates shared global objects, affecting all code that uses those prototypes. Indirect mutations via function calls (e.g., `_promisify(Gio.DBusConnection.prototype)`) are equally dangerous since the prototype is mutated inside the called function.
 - **Fix**: Move prototype mutations into `enable()` and restore the original methods in `disable()`.
-- **Scope exclusions**: prefs.js (manages own lifecycle), `service/` directory (daemon lifecycle).
+- **Scope exclusions**: prefs.js (manages own lifecycle), `service/` directory (daemon lifecycle). Safe patterns excluded: comparisons (`===`, `!==`), `instanceof`, `Object.create`, `Object.getPrototypeOf`, `Gio._promisify` (handled by R-QUAL-33).
 - **Tested by**: `tests/fixtures/prototype-mutation@test/`
 
 ### R-LIFE-20: Bus name ownership without release

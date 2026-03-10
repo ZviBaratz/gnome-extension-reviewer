@@ -34,6 +34,7 @@ echo "=== promisify-module-scope ==="
 run_lint "promisify-module-scope@test"
 assert_exit_code "exits with 0 (advisory only)" 0
 assert_output_contains "warns on Gio._promisify at module scope" "\[WARN\].*R-QUAL-33"
+assert_output_not_contains "Gio._promisify does not trigger R-LIFE-27" "\[WARN\].*lifecycle/module-scope-prototype"
 echo ""
 
 # --- prefs-constructor-clean (FP fix) ---
