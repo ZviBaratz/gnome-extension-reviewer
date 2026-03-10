@@ -5,7 +5,8 @@
 echo "=== slop-object-freeze ==="
 run_lint "slop-object-freeze@test"
 assert_exit_code "exits with 0 (advisory only)" 0
-assert_output_contains "warns on Object.freeze" "\[WARN\].*R-SLOP-35"
+assert_output_contains "warns on Object.freeze with inline object" "\[WARN\].*R-SLOP-35"
+assert_output_not_contains "R-SLOP-35 suppressed for Object.freeze(identifier)" "\[WARN\].*R-SLOP-35.*extension\.js:11"
 echo ""
 
 # --- slop-long-params (R-SLOP-38) ---
@@ -91,4 +92,12 @@ echo "=== native-timer-untracked ==="
 run_lint "native-timer-untracked@test"
 assert_exit_code "exits with 0 (advisory only)" 0
 assert_output_contains "warns on untracked setTimeout" "\[WARN\].*lifecycle/untracked-timeout"
+echo ""
+
+# --- instanceof-dispatch (R-SLOP-13 guard for polymorphic dispatch) ---
+echo "=== instanceof-dispatch ==="
+run_lint "instanceof-dispatch@test"
+assert_exit_code "exits with 0 (advisory only)" 0
+assert_output_contains "warns on always-true instanceof in class method" "\[WARN\].*R-SLOP-13"
+assert_output_not_contains "R-SLOP-13 suppressed for variable-assigned instanceof" "\[WARN\].*R-SLOP-13.*extension\.js:6"
 echo ""

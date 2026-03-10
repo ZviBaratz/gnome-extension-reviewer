@@ -245,6 +245,7 @@
   category: security
   fix: "Change http:// to https://."
   guard-pattern: "gnu\\.org/licenses|General Public License"
+  skip-comments: true
 
 - id: R-SEC-04
   pattern: "\\bsudo\\b"
@@ -517,7 +518,7 @@
   message: "this instanceof check inside a class method is always true"
   category: ai-slop
   fix: "Remove the redundant instanceof check."
-  guard-pattern: "!\\s*\\(\\s*this\\s+instanceof"
+  guard-pattern: "!\\s*\\(\\s*this\\s+instanceof|\\b(const|let|var)\\s+\\w+\\s*=\\s*this\\s+instanceof"
 
 - id: R-SLOP-17
   pattern: "typeof\\s+(?:super|this(?:\\.\\w+)+)\\.\\w+\\s*===?\\s*['\"]function['\"]"
@@ -606,7 +607,7 @@
   message: "Object.freeze() on config objects is an AI code smell — GNOME extensions rarely need frozen objects"
   category: ai-slop
   fix: "Remove Object.freeze(); use const declarations for immutability instead"
-  guard-pattern: "\\b(const|export\\s+const)\\s+\\w+\\s*=\\s*Object\\.freeze"
+  guard-pattern: "\\b(const|export\\s+const)\\s+\\w+\\s*=\\s*Object\\.freeze|Object\\.freeze\\(\\w+\\)"
 
 - id: R-SLOP-38
   pattern: "\\(\\s*[a-z][a-zA-Z0-9]{25,}\\s*[,)]"

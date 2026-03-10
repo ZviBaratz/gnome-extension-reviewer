@@ -6,7 +6,8 @@ echo "=== gpl-license-header ==="
 run_lint "gpl-license-header@test"
 assert_exit_code "exits with 0 (advisory only)" 0
 assert_output_not_contains "R-SEC-03 suppressed for GPL license URL" "\[WARN\].*R-SEC-03.*gnu\.org"
-assert_output_contains "R-SEC-03 still fires on real HTTP URL" "\[WARN\].*R-SEC-03"
+assert_output_not_contains "R-SEC-03 suppressed for HTTP URL in block comment" "\[WARN\].*R-SEC-03.*frippery"
+assert_output_contains "R-SEC-03 still fires on real HTTP URL in code" "\[WARN\].*R-SEC-03"
 echo ""
 
 # --- version-guard-pkgver (R-VER48-02 guard for PACKAGE_VERSION) ---
