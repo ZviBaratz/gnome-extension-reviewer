@@ -170,6 +170,44 @@ def extract_constructor_lines(content_lines):
     return constructor_lines
 
 
+# Signal connection patterns — callbacks are deferred, not executed during
+# construction.  Shell globals inside these callbacks are not init-time
+# violations.
+SIGNAL_CONNECT = re.compile(r'\.connect(?:Object)?\s*\(')
+
+
+def filter_signal_callbacks(ctor_lines):
+    """Remove lines inside signal callback bodies from constructor lines.
+
+    Signal callbacks (.connect(), .connectObject()) are deferred — they don't
+    execute during construction, so Shell globals inside them are not init-time
+    violations.  The .connect() line itself is kept (the receiver may be a Shell
+    global that IS accessed at construction time).
+    """
+    filtered = []
+    callback_depth = 0
+
+    for lineno, line in ctor_lines:
+        if callback_depth > 0:
+            # Inside a callback body — track depth and skip
+            callback_depth += line.count('{') - line.count('}')
+            if callback_depth < 0:
+                callback_depth = 0
+            continue
+
+        # Include this line (even .connect() lines — the receiver is
+        # accessed at construction time)
+        filtered.append((lineno, line))
+
+        # If this line starts a signal callback, begin tracking its body
+        if SIGNAL_CONNECT.search(line):
+            net = line.count('{') - line.count('}')
+            if net > 0:
+                callback_depth = net
+
+    return filtered
+
+
 def check_init_modifications(ext_dir):
     """R-INIT-01: Detect Shell modifications outside enable()/disable()."""
     js_files = find_js_files(ext_dir)
@@ -215,6 +253,7 @@ def check_init_modifications(ext_dir):
         is_extension_js = os.path.basename(filepath) == 'extension.js'
         if is_extension_js:
             ctor_lines = extract_constructor_lines(lines)
+            ctor_lines = filter_signal_callbacks(ctor_lines)
             for lineno, line in ctor_lines:
                 if is_skip_line(line):
                     continue
