@@ -75,7 +75,7 @@ findings:
     classification: fp
     notes: "3 FPs — standard JS enum pattern (SNICategory, SNIStatus, SNIconType). Fixed: guard-pattern."
   - id: "R-SLOP-38::domain-specific identifiers"
-    classification: fp
+    classification: resolved
     notes: "4 FPs — brightnessContrastEffect and similar are standard Clutter API names. Fixed: threshold raised."
   - id: "R-QUAL-31::_onDestroy signal handler"
     classification: fp

@@ -26,7 +26,7 @@ findings:
     classification: fp
     notes: "10 hits — utility classes use disconnect_all(), remove() instead"
   - id: "R-SLOP-38::descriptive identifier"
-    classification: fp
+    classification: resolved
     notes: "dash_not_already_destroyed is descriptive, not AI verbosity. Fixed: guard-pattern."
   - id: "R-SLOP-24::non-extension schema"
     classification: fp

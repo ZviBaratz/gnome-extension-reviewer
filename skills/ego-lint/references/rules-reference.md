@@ -2494,11 +2494,11 @@ Rules for APIs removed or changed in specific GNOME Shell versions. These rules 
 ### R-SLOP-38: Over-long identifier in function call
 - **Severity**: advisory
 - **Checked by**: apply-patterns.py
-- **Rule**: Alphanumeric identifiers 26+ characters (starting with lowercase, no underscores) inside function call parentheses.
-- **Rationale**: AI-generated code tends to use excessively descriptive camelCase names like `currentBatteryThresholdValue` or `updatedNotificationMessage`. Human-written GNOME code favors concise names (`threshold`, `message`). The lowercase-start filter avoids false positives on PascalCase class names and UPPER_SNAKE constants. Threshold raised from 20 to 25 to avoid FPs on standard Clutter API names (e.g., `brightnessContrastEffect` at 24 chars). Snake_case identifiers (GLib/C naming convention) are excluded from the pattern since AI never generates underscore-separated names in JavaScript.
+- **Rule**: Alphanumeric identifiers 28+ characters (starting with lowercase, no underscores) inside function call parentheses.
+- **Rationale**: AI-generated code tends to use excessively descriptive camelCase names like `currentBatteryThresholdValue` or `updatedNotificationMessage`. Human-written GNOME code favors concise names (`threshold`, `message`). The lowercase-start filter avoids false positives on PascalCase class names and UPPER_SNAKE constants. Threshold raised from 20 to 27 to avoid FPs on standard Clutter API names and domain-specific compound names (e.g., `distanceToCurrentWorkspace` at 26 chars). Snake_case identifiers (GLib/C naming convention) are excluded from the pattern since AI never generates underscore-separated names in JavaScript.
 - **Fix**: Shorten parameter/argument names to be concise but clear.
 - **Tested by**: `tests/fixtures/slop-long-params@test/`, `tests/fixtures/slop-long-id-guard@test/`
-- **Note**: Suppressed (`skip-if-compiled`) for extensions compiled from TypeScript via esbuild, where verbose parameter names from TypeScript signatures survive compilation. Also suppressed for identifiers ending in domain-specific suffixes (`Function`, `Callback`, `Handler`, `Listener`, long `Id`) which are common in GNOME/GLib naming conventions.
+- **Note**: Suppressed (`skip-if-compiled`) for extensions compiled from TypeScript via esbuild, where verbose parameter names from TypeScript signatures survive compilation. Also suppressed for identifiers ending in domain-specific suffixes (`Function`, `Callback`, `Handler`, `Listener`, `Adjustment`, long `Id`) which are common in GNOME/GLib naming conventions.
 
 ### R-SLOP-40: Manual Promise wrapper
 - **Severity**: advisory
