@@ -1,16 +1,16 @@
 {
   "name": "media-controls",
   "uuid": "mediacontrols@cliffniff.github.com",
-  "timestamp": "2026-03-08T14:19:49.415735+00:00",
-  "ego_lint_version": "05523f9",
+  "timestamp": "2026-03-10T22:11:06.495765+00:00",
+  "ego_lint_version": "a441201",
   "ego_approved": true,
   "exit_code": 1,
   "counts": {
-    "pass": 188,
-    "fail": 4,
-    "warn": 28,
+    "pass": 189,
+    "fail": 3,
+    "warn": 29,
     "skip": 17,
-    "total": 237
+    "total": 238
   },
   "metrics": {
     "js_files": 17,
@@ -41,7 +41,7 @@
     },
     {
       "id": "css/shell-class-override::.panel-button: overrides GNOME Shell theme class \u2014 use a scoped selector (.my-extension .panel-button)",
-      "status": "FAIL",
+      "status": "WARN",
       "check": "css/shell-class-override",
       "detail": ".panel-button: overrides GNOME Shell theme class \u2014 use a scoped selector (.my-extension .panel-button)"
     },
@@ -97,74 +97,74 @@
       "fix": "Remove the typeof check. Use a null/undefined guard on the object instead, or add a comment if duck-typing is intentional."
     },
     {
-      "id": "R-SLOP-11::Non-existent GLib method \u2014 use GLib.timeout_add_seconds() and GLib.Source.remove()",
+      "id": "R-SLOP-44::Non-idiomatic GLib C-binding \u2014 use GLib.Source.remove()",
       "status": "WARN",
-      "check": "R-SLOP-11",
-      "detail": "src/helpers/shell/ScrollingLabel.js:174: Non-existent GLib method \u2014 use GLib.timeout_add_seconds() and GLib.Source.remove()",
-      "fix": "GLib.timeout_add_seconds_full \u2192 GLib.timeout_add_seconds. GLib.source_remove \u2192 GLib.Source.remove."
+      "check": "R-SLOP-44",
+      "detail": "src/helpers/shell/ScrollingLabel.js:174: Non-idiomatic GLib C-binding \u2014 use GLib.Source.remove()",
+      "fix": "GLib.source_remove(id) \u2192 GLib.Source.remove(id). The function works but GLib.Source.remove() is the idiomatic GJS form."
     },
     {
-      "id": "R-SLOP-11::Non-existent GLib method \u2014 use GLib.timeout_add_seconds() and GLib.Source.remove()",
+      "id": "R-SLOP-44::Non-idiomatic GLib C-binding \u2014 use GLib.Source.remove()",
       "status": "WARN",
-      "check": "R-SLOP-11",
-      "detail": "src/helpers/shell/ScrollingLabel.js:179: Non-existent GLib method \u2014 use GLib.timeout_add_seconds() and GLib.Source.remove()",
-      "fix": "GLib.timeout_add_seconds_full \u2192 GLib.timeout_add_seconds. GLib.source_remove \u2192 GLib.Source.remove."
+      "check": "R-SLOP-44",
+      "detail": "src/helpers/shell/ScrollingLabel.js:179: Non-idiomatic GLib C-binding \u2014 use GLib.Source.remove()",
+      "fix": "GLib.source_remove(id) \u2192 GLib.Source.remove(id). The function works but GLib.Source.remove() is the idiomatic GJS form."
     },
     {
-      "id": "R-SLOP-11::Non-existent GLib method \u2014 use GLib.timeout_add_seconds() and GLib.Source.remove()",
+      "id": "R-SLOP-44::Non-idiomatic GLib C-binding \u2014 use GLib.Source.remove()",
       "status": "WARN",
-      "check": "R-SLOP-11",
-      "detail": "src/helpers/shell/ScrollingLabel.js:247: Non-existent GLib method \u2014 use GLib.timeout_add_seconds() and GLib.Source.remove()",
-      "fix": "GLib.timeout_add_seconds_full \u2192 GLib.timeout_add_seconds. GLib.source_remove \u2192 GLib.Source.remove."
+      "check": "R-SLOP-44",
+      "detail": "src/helpers/shell/ScrollingLabel.js:247: Non-idiomatic GLib C-binding \u2014 use GLib.Source.remove()",
+      "fix": "GLib.source_remove(id) \u2192 GLib.Source.remove(id). The function works but GLib.Source.remove() is the idiomatic GJS form."
     },
     {
-      "id": "R-SLOP-11::Non-existent GLib method \u2014 use GLib.timeout_add_seconds() and GLib.Source.remove()",
+      "id": "R-SLOP-44::Non-idiomatic GLib C-binding \u2014 use GLib.Source.remove()",
       "status": "WARN",
-      "check": "R-SLOP-11",
-      "detail": "src/helpers/shell/ScrollingLabel.js:251: Non-existent GLib method \u2014 use GLib.timeout_add_seconds() and GLib.Source.remove()",
-      "fix": "GLib.timeout_add_seconds_full \u2192 GLib.timeout_add_seconds. GLib.source_remove \u2192 GLib.Source.remove."
+      "check": "R-SLOP-44",
+      "detail": "src/helpers/shell/ScrollingLabel.js:251: Non-idiomatic GLib C-binding \u2014 use GLib.Source.remove()",
+      "fix": "GLib.source_remove(id) \u2192 GLib.Source.remove(id). The function works but GLib.Source.remove() is the idiomatic GJS form."
     },
     {
-      "id": "R-SLOP-11::Non-existent GLib method \u2014 use GLib.timeout_add_seconds() and GLib.Source.remove()",
+      "id": "R-SLOP-44::Non-idiomatic GLib C-binding \u2014 use GLib.Source.remove()",
       "status": "WARN",
-      "check": "R-SLOP-11",
-      "detail": "src/helpers/shell/ScrollingLabel.js:289: Non-existent GLib method \u2014 use GLib.timeout_add_seconds() and GLib.Source.remove()",
-      "fix": "GLib.timeout_add_seconds_full \u2192 GLib.timeout_add_seconds. GLib.source_remove \u2192 GLib.Source.remove."
+      "check": "R-SLOP-44",
+      "detail": "src/helpers/shell/ScrollingLabel.js:289: Non-idiomatic GLib C-binding \u2014 use GLib.Source.remove()",
+      "fix": "GLib.source_remove(id) \u2192 GLib.Source.remove(id). The function works but GLib.Source.remove() is the idiomatic GJS form."
     },
     {
-      "id": "R-SLOP-11::Non-existent GLib method \u2014 use GLib.timeout_add_seconds() and GLib.Source.remove()",
+      "id": "R-SLOP-44::Non-idiomatic GLib C-binding \u2014 use GLib.Source.remove()",
       "status": "WARN",
-      "check": "R-SLOP-11",
-      "detail": "src/helpers/shell/PanelButton.js:1119: Non-existent GLib method \u2014 use GLib.timeout_add_seconds() and GLib.Source.remove()",
-      "fix": "GLib.timeout_add_seconds_full \u2192 GLib.timeout_add_seconds. GLib.source_remove \u2192 GLib.Source.remove."
+      "check": "R-SLOP-44",
+      "detail": "src/helpers/shell/PanelButton.js:1119: Non-idiomatic GLib C-binding \u2014 use GLib.Source.remove()",
+      "fix": "GLib.source_remove(id) \u2192 GLib.Source.remove(id). The function works but GLib.Source.remove() is the idiomatic GJS form."
     },
     {
-      "id": "R-SLOP-11::Non-existent GLib method \u2014 use GLib.timeout_add_seconds() and GLib.Source.remove()",
+      "id": "R-SLOP-44::Non-idiomatic GLib C-binding \u2014 use GLib.Source.remove()",
       "status": "WARN",
-      "check": "R-SLOP-11",
-      "detail": "src/helpers/shell/PanelButton.js:1222: Non-existent GLib method \u2014 use GLib.timeout_add_seconds() and GLib.Source.remove()",
-      "fix": "GLib.timeout_add_seconds_full \u2192 GLib.timeout_add_seconds. GLib.source_remove \u2192 GLib.Source.remove."
+      "check": "R-SLOP-44",
+      "detail": "src/helpers/shell/PanelButton.js:1222: Non-idiomatic GLib C-binding \u2014 use GLib.Source.remove()",
+      "fix": "GLib.source_remove(id) \u2192 GLib.Source.remove(id). The function works but GLib.Source.remove() is the idiomatic GJS form."
     },
     {
-      "id": "R-SLOP-11::Non-existent GLib method \u2014 use GLib.timeout_add_seconds() and GLib.Source.remove()",
+      "id": "R-SLOP-44::Non-idiomatic GLib C-binding \u2014 use GLib.Source.remove()",
       "status": "WARN",
-      "check": "R-SLOP-11",
-      "detail": "src/helpers/shell/PlayerProxy.js:168: Non-existent GLib method \u2014 use GLib.timeout_add_seconds() and GLib.Source.remove()",
-      "fix": "GLib.timeout_add_seconds_full \u2192 GLib.timeout_add_seconds. GLib.source_remove \u2192 GLib.Source.remove."
+      "check": "R-SLOP-44",
+      "detail": "src/helpers/shell/PlayerProxy.js:168: Non-idiomatic GLib C-binding \u2014 use GLib.Source.remove()",
+      "fix": "GLib.source_remove(id) \u2192 GLib.Source.remove(id). The function works but GLib.Source.remove() is the idiomatic GJS form."
     },
     {
-      "id": "R-SLOP-11::Non-existent GLib method \u2014 use GLib.timeout_add_seconds() and GLib.Source.remove()",
+      "id": "R-SLOP-44::Non-idiomatic GLib C-binding \u2014 use GLib.Source.remove()",
       "status": "WARN",
-      "check": "R-SLOP-11",
-      "detail": "src/helpers/shell/PlayerProxy.js:178: Non-existent GLib method \u2014 use GLib.timeout_add_seconds() and GLib.Source.remove()",
-      "fix": "GLib.timeout_add_seconds_full \u2192 GLib.timeout_add_seconds. GLib.source_remove \u2192 GLib.Source.remove."
+      "check": "R-SLOP-44",
+      "detail": "src/helpers/shell/PlayerProxy.js:178: Non-idiomatic GLib C-binding \u2014 use GLib.Source.remove()",
+      "fix": "GLib.source_remove(id) \u2192 GLib.Source.remove(id). The function works but GLib.Source.remove() is the idiomatic GJS form."
     },
     {
-      "id": "R-SLOP-11::Non-existent GLib method \u2014 use GLib.timeout_add_seconds() and GLib.Source.remove()",
+      "id": "R-SLOP-44::Non-idiomatic GLib C-binding \u2014 use GLib.Source.remove()",
       "status": "WARN",
-      "check": "R-SLOP-11",
-      "detail": "src/helpers/shell/PlayerProxy.js:606: Non-existent GLib method \u2014 use GLib.timeout_add_seconds() and GLib.Source.remove()",
-      "fix": "GLib.timeout_add_seconds_full \u2192 GLib.timeout_add_seconds. GLib.source_remove \u2192 GLib.Source.remove."
+      "check": "R-SLOP-44",
+      "detail": "src/helpers/shell/PlayerProxy.js:606: Non-idiomatic GLib C-binding \u2014 use GLib.Source.remove()",
+      "fix": "GLib.source_remove(id) \u2192 GLib.Source.remove(id). The function works but GLib.Source.remove() is the idiomatic GJS form."
     },
     {
       "id": "R-QUAL-33::Gio._promisify() permanently mutates shared GJS prototypes \u2014 document module-scope placement",
@@ -264,10 +264,10 @@
       "detail": "117 null/undefined checks across 4740 lines (ratio: 0.025) \u2014 prefer optional chaining (?.) or nullish coalescing (??)"
     },
     {
-      "id": "lifecycle/signal-balance::41 manual .connect() calls but only 10 .disconnect() calls \u2014 verify all signals are disconnected in disable()",
+      "id": "lifecycle/signal-balance::36 manual .connect() calls but only 9 .disconnect() calls \u2014 verify all signals are disconnected in disable()",
       "status": "WARN",
       "check": "lifecycle/signal-balance",
-      "detail": "41 manual .connect() calls but only 10 .disconnect() calls \u2014 verify all signals are disconnected in disable()"
+      "detail": "36 manual .connect() calls but only 9 .disconnect() calls \u2014 verify all signals are disconnected in disable()"
     },
     {
       "id": "lifecycle/async-destroyed-guard::async/await used without _destroyed or _isDestroyed guard \u2014 extension may act on stale state after disable()",
