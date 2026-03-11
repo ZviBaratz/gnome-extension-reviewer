@@ -1318,10 +1318,10 @@ Rules for code that runs at module load or constructor time, before `enable()` i
 
 - **Severity**: blocking
 - **Checked by**: check-init.py
-- **Rule**: Must not create GObjects from any GI namespace (St, Clutter, Gio, GLib, GObject, Meta, Shell, Pango, Soup, Cogl, Atk, GdkPixbuf) at module scope or in `extension.js` constructors. GObject constructors in helper file constructors are not flagged (runtime-only, instantiated from `enable()`). Shell globals are flagged everywhere. **Exemptions**: `GObject.registerClass()` (class registration, not instantiation), arrow function definitions (lazy evaluation), value types (`GLib.Bytes`, `GLib.Variant`, `GLib.DateTime`, `GLib.TimeZone`, `GLib.Regex`, `GLib.Uri`, `Cogl.Color`, `Clutter.Color`).
+- **Rule**: Must not create GObjects from any GI namespace (St, Clutter, Gio, GLib, GObject, Meta, Shell, Pango, Soup, Cogl, Atk, GdkPixbuf) at module scope or in `extension.js` constructors. GObject constructors in helper class constructors are not flagged — whether in separate files or in `extension.js` alongside the Extension class (runtime-only, instantiated from `enable()`). Constructor checks in `extension.js` only apply to the Extension class (identified by `extends Extension` or `export default class`). Shell globals are flagged everywhere. **Exemptions**: `GObject.registerClass()` (class registration, not instantiation), arrow function definitions (lazy evaluation), value types (`GLib.Bytes`, `GLib.Variant`, `GLib.DateTime`, `GLib.TimeZone`, `GLib.Regex`, `GLib.Uri`, `Cogl.Color`, `Clutter.Color`).
 - **Rationale**: GObjects created before enable() cannot be properly cleaned up; #1 rejection cause
 - **Fix**: Move all GObject creation to enable()
-- **Tested by**: `tests/fixtures/init-modification@test/`, `tests/fixtures/init-helper-constructor@test/`, `tests/fixtures/constructor-lifecycle-expanded@test/`
+- **Tested by**: `tests/fixtures/init-modification@test/`, `tests/fixtures/init-helper-constructor@test/`, `tests/fixtures/constructor-lifecycle-expanded@test/`, `tests/fixtures/init-helper-in-extension@test/`
 
 #### Example
 
