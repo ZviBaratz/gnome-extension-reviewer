@@ -54,5 +54,6 @@ echo ""
 # --- system-schema-bare (R-SLOP-24 guard for bare system schema identifiers) ---
 echo "=== system-schema-bare ==="
 run_lint "system-schema-bare@test"
-assert_output_not_contains "R-SLOP-24 suppressed for bare desktop. schema" "\[WARN\].*R-SLOP-24"
+assert_exit_code "exits with 0 (system schema guards suppress R-SLOP-24)" 0
+assert_output_not_contains "R-SLOP-24 suppressed for bare system schema identifiers" "\[WARN\].*R-SLOP-24"
 echo ""
