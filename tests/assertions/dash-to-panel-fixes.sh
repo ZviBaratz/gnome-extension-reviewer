@@ -37,3 +37,9 @@ echo "=== system-gsettings-multiline ==="
 run_lint "system-gsettings-multiline@test"
 assert_output_not_contains "R-SLOP-24 suppressed for multiline system schema" "\[WARN\].*R-SLOP-24"
 echo ""
+
+# --- system-gsettings-deep (R-SLOP-24 guard with deep forward window) ---
+echo "=== system-gsettings-deep ==="
+run_lint "system-gsettings-deep@test"
+assert_output_not_contains "R-SLOP-24 suppressed for deep multiline system schema" "\[WARN\].*R-SLOP-24"
+echo ""

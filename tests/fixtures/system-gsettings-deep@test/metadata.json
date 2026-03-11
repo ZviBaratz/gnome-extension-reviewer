@@ -1,0 +1,7 @@
+{
+    "uuid": "system-gsettings-deep@test",
+    "name": "System GSettings Deep Window Test",
+    "description": "Tests R-SLOP-24 guard-window-forward for deep multiline system schema",
+    "shell-version": ["48"],
+    "url": "https://example.com"
+}
