@@ -31,8 +31,8 @@ findings:
     classification: fp
     notes: "prefs.js:151 — commented-out line of old ExtensionUtils code"
   - id: "R-VER48-02::PACKAGE_VERSION guard not recognized"
-    classification: fp
-    notes: "utils.js — Config.PACKAGE_VERSION >= '48' ternary guard not recognized as version-compat. 2 instances."
+    classification: resolved
+    notes: "Guard pattern already matches Config.PACKAGE_VERSION — resolved by replacement-pattern (PR #84) + guard-window increase to 10. Reclassified #122."
   - id: "init/shell-modification::constructor in enable() chain"
     classification: fp
     notes: "4 FPs — taskbar.js signal handlers and desktopIconsIntegration.js constructor, all called from enable()"
