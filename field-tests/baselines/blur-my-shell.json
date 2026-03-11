@@ -1,16 +1,16 @@
 {
   "name": "blur-my-shell",
   "uuid": "blur-my-shell@aunetx",
-  "timestamp": "2026-03-08T14:19:46.844651+00:00",
-  "ego_lint_version": "05523f9",
+  "timestamp": "2026-03-10T22:11:02.679382+00:00",
+  "ego_lint_version": "a441201",
   "ego_approved": true,
   "exit_code": 1,
   "counts": {
-    "pass": 193,
-    "fail": 4,
-    "warn": 40,
+    "pass": 194,
+    "fail": 3,
+    "warn": 35,
     "skip": 17,
-    "total": 254
+    "total": 249
   },
   "metrics": {
     "js_files": 49,
@@ -255,24 +255,6 @@
       "detail": "src/extension.js:103, src/components/panel.js:288, src/components/panel.js:364, src/components/appfolders.js:148, src/components/appfolders.js:160 (+1 more): Main.layoutManager private API access \u2014 requires reviewer justification and version pinning"
     },
     {
-      "id": "lifecycle/signal-balance::30 manual .connect() calls but only 28 .disconnect() calls \u2014 verify all signals are disconnected in disable()",
-      "status": "WARN",
-      "check": "lifecycle/signal-balance",
-      "detail": "30 manual .connect() calls but only 28 .disconnect() calls \u2014 verify all signals are disconnected in disable()"
-    },
-    {
-      "id": "lifecycle/untracked-timeout::timer/idle return value not stored \u2014 cannot be removed in disable()",
-      "status": "WARN",
-      "check": "lifecycle/untracked-timeout",
-      "detail": "src/preferences/pipelines.js:71: timer/idle return value not stored \u2014 cannot be removed in disable()"
-    },
-    {
-      "id": "lifecycle/untracked-timeout::timer/idle return value not stored \u2014 cannot be removed in disable()",
-      "status": "WARN",
-      "check": "lifecycle/untracked-timeout",
-      "detail": "src/preferences/applications_management/application_row.js:77: timer/idle return value not stored \u2014 cannot be removed in disable()"
-    },
-    {
       "id": "lifecycle/untracked-timeout::timer/idle return value not stored \u2014 cannot be removed in disable()",
       "status": "WARN",
       "check": "lifecycle/untracked-timeout",
@@ -315,22 +297,30 @@
       "detail": "src/components/coverflow_alt_tab.js:69: .destroy without () \u2014 property access, not method call"
     },
     {
-      "id": "lifecycle/gsettings-signal-leak::1 bare settings.connect('changed::...') without stored ID and no disconnectObject/connectObject cleanup: src/preferences/applications_management/application_row.js",
-      "status": "FAIL",
-      "check": "lifecycle/gsettings-signal-leak",
-      "detail": "1 bare settings.connect('changed::...') without stored ID and no disconnectObject/connectObject cleanup: src/preferences/applications_management/application_row.js:60"
+      "id": "lifecycle/module-scope-prototype::Signals.addSignalMethods(PipelinesManager.prototype) \u2014 prototype mutation at module scope persists after disable()",
+      "status": "WARN",
+      "check": "lifecycle/module-scope-prototype",
+      "detail": "src/conveniences/pipelines_manager.js:168: Signals.addSignalMethods(PipelinesManager.prototype) \u2014 prototype mutation at module scope persists after disable()",
+      "fix": "Move into enable() and restore original in disable()"
     },
     {
-      "id": "resource-tracking/no-destroy-method::src/conveniences/paint_signals.js \u2014 no cleanup method (destroy/disable/onDestroy) in src/conveniences/paint_signals.js",
+      "id": "lifecycle/module-scope-prototype::Signals.addSignalMethods(Settings.prototype) \u2014 prototype mutation at module scope persists after disable()",
       "status": "WARN",
-      "check": "resource-tracking/no-destroy-method",
-      "detail": "src/conveniences/paint_signals.js:20 \u2014 no cleanup method (destroy/disable/onDestroy) in src/conveniences/paint_signals.js"
+      "check": "lifecycle/module-scope-prototype",
+      "detail": "src/conveniences/settings.js:363: Signals.addSignalMethods(Settings.prototype) \u2014 prototype mutation at module scope persists after disable()",
+      "fix": "Move into enable() and restore original in disable()"
     },
     {
-      "id": "resource-tracking/no-destroy-method::src/conveniences/paint_signals.js \u2014 no cleanup method (destroy/disable/onDestroy) in src/conveniences/paint_signals.js",
+      "id": "resource-tracking/destroy-not-called::src/conveniences/paint_signals.js \u2014 parent does not call cleanup method on src/conveniences/paint_signals.js",
       "status": "WARN",
-      "check": "resource-tracking/no-destroy-method",
-      "detail": "src/conveniences/paint_signals.js:39 \u2014 no cleanup method (destroy/disable/onDestroy) in src/conveniences/paint_signals.js"
+      "check": "resource-tracking/destroy-not-called",
+      "detail": "src/conveniences/paint_signals.js:20 \u2014 parent does not call cleanup method on src/conveniences/paint_signals.js"
+    },
+    {
+      "id": "resource-tracking/destroy-not-called::src/conveniences/paint_signals.js \u2014 parent does not call cleanup method on src/conveniences/paint_signals.js",
+      "status": "WARN",
+      "check": "resource-tracking/destroy-not-called",
+      "detail": "src/conveniences/paint_signals.js:39 \u2014 parent does not call cleanup method on src/conveniences/paint_signals.js"
     },
     {
       "id": "resource-tracking/no-destroy-method::src/conveniences/effects_manager.js \u2014 no cleanup method (destroy/disable/onDestroy) in src/conveniences/effects_manager.js",
@@ -351,30 +341,6 @@
       "detail": "src/conveniences/effects_manager.js:48 \u2014 no cleanup method (destroy/disable/onDestroy) in src/conveniences/effects_manager.js"
     },
     {
-      "id": "resource-tracking/no-destroy-method::src/effects/upscale.js \u2014 no cleanup method (destroy/disable/onDestroy) in src/effects/upscale.js",
-      "status": "WARN",
-      "check": "resource-tracking/no-destroy-method",
-      "detail": "src/effects/upscale.js:103 \u2014 no cleanup method (destroy/disable/onDestroy) in src/effects/upscale.js"
-    },
-    {
-      "id": "resource-tracking/no-destroy-method::src/effects/downscale.js \u2014 no cleanup method (destroy/disable/onDestroy) in src/effects/downscale.js",
-      "status": "WARN",
-      "check": "resource-tracking/no-destroy-method",
-      "detail": "src/effects/downscale.js:123 \u2014 no cleanup method (destroy/disable/onDestroy) in src/effects/downscale.js"
-    },
-    {
-      "id": "resource-tracking/no-destroy-method::src/effects/gaussian_blur.js \u2014 no cleanup method (destroy/disable/onDestroy) in src/effects/gaussian_blur.js",
-      "status": "WARN",
-      "check": "resource-tracking/no-destroy-method",
-      "detail": "src/effects/gaussian_blur.js:80 \u2014 no cleanup method (destroy/disable/onDestroy) in src/effects/gaussian_blur.js"
-    },
-    {
-      "id": "resource-tracking/no-destroy-method::src/effects/gaussian_blur.js \u2014 no cleanup method (destroy/disable/onDestroy) in src/effects/gaussian_blur.js",
-      "status": "WARN",
-      "check": "resource-tracking/no-destroy-method",
-      "detail": "src/effects/gaussian_blur.js:182 \u2014 no cleanup method (destroy/disable/onDestroy) in src/effects/gaussian_blur.js"
-    },
-    {
       "id": "resource-tracking/orphan-signal::src/components/appfolders.js \u2014 this._sourceMappedId created but not cleaned up in destroy()",
       "status": "WARN",
       "check": "resource-tracking/orphan-signal",
@@ -387,10 +353,10 @@
       "detail": "src/components/applications.js:27 \u2014 this.mutter_gsettings created but not cleaned up in destroy()"
     },
     {
-      "id": "resource-tracking/ownership::48 files scanned, depth 3, 11 orphans detected",
+      "id": "resource-tracking/ownership::48 files scanned, depth 3, 7 orphans detected",
       "status": "WARN",
       "check": "resource-tracking/ownership",
-      "detail": "48 files scanned, depth 3, 11 orphans detected"
+      "detail": "48 files scanned, depth 3, 7 orphans detected"
     },
     {
       "id": "package/exists::No zip package found in extension directory",
