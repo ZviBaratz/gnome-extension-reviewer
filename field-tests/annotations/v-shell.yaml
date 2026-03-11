@@ -202,5 +202,5 @@ findings:
     notes: "2 hits — instanceof AppDisplay.FolderView in prototype-override method shared between subclasses; NOT always true"
   # WARN findings — Borderline
   - id: "R-SLOP-38::Over-long identifier (>25 chars) is an AI verbosity indicator"
-    classification: borderline
-    notes: "8 hits — hand-written code (provenance 4); identifiers are descriptive not AI-verbose"
+    classification: resolved
+    notes: "8 hits — hand-written code (provenance 4); identifiers are descriptive not AI-verbose. Fixed: threshold raised to 28+ chars and Adjustment guard added."
