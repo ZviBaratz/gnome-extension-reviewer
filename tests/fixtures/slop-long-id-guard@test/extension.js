@@ -14,7 +14,7 @@ export default class TestExtension extends Extension {
         // Guarded: callback suffix — should NOT trigger
         this._windows.sort(sortWindowsCompareByPositionFunction);
 
-        // Guarded: handler suffix — should NOT trigger
+        // Below threshold: parameter `data` is 4 chars — should NOT trigger
         this._runPanelAnimationHandler(data);
 
         // Guarded: Adjustment suffix — should NOT trigger
