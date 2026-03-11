@@ -193,6 +193,13 @@ assert_output_contains "warns on log()" "\[WARN\].*R-LOG-02"
 assert_output_contains "warns on print()" "\[WARN\].*R-LOG-03"
 echo ""
 
+# --- log-comment-skip ---
+echo "=== log-comment-skip ==="
+run_lint "log-comment-skip@test"
+assert_exit_code "exits with 0 (no warnings)" 0
+assert_output_not_contains "no R-LOG-03 on block comment" "\[WARN\].*R-LOG-03"
+echo ""
+
 # --- destroyed-density ---
 echo "=== destroyed-density ==="
 run_lint "destroyed-density@test"
