@@ -71,9 +71,6 @@ findings:
     classification: tp
     notes: "File I/O not disclosed"
   # WARNs — False Positives
-  - id: "R-SEC-03::HTTP URLs in GPL headers"
-    classification: fp
-    notes: "18 hits — all in GPL license headers (http://www.gnu.org/licenses/). Pure noise."
   - id: "R-SLOP-24::new Gio.Settings for system schemas"
     classification: fp
     notes: "5 hits — desktop.interface, desktop.notifications, shell.app-switcher, KEYBINDINGS_SCHEMA. Correct API for system schemas."
@@ -83,9 +80,6 @@ findings:
   - id: "R-SLOP-38::descriptive identifiers"
     classification: fp
     notes: "2 hits — sortWindowsCompareFunction, taskbarBoxAllocationChangedId are descriptive"
-  - id: "R-SLOP-35::Object.freeze shared state"
-    classification: fp
-    notes: "Object.freeze(monitorInfos) prevents accidental mutation — not AI pattern"
   # New in 03-08 (lint gap closure — module-scope mutations)
   - id: "lifecycle/module-scope-prototype::TaskbarAppIcon scaleAndFade"
     classification: tp
@@ -94,6 +88,12 @@ findings:
     classification: tp
     notes: "R-LIFE-26: module-scope Map 'iconCacheMap' in src/utils.js not cleared in disable()"
   # Resolved in 03-08
+  - id: "R-SEC-03::HTTP URLs in GPL headers"
+    classification: resolved
+    notes: "18 hits — all in GPL license headers (http://www.gnu.org/licenses/). Pure noise. Resolved by PR #123."
+  - id: "R-SLOP-35::Object.freeze shared state"
+    classification: resolved
+    notes: "Object.freeze(monitorInfos) prevents accidental mutation — not AI pattern. Resolved by PR #123."
   - id: "R-VER46-05::version-compat suppressed"
     classification: resolved
     notes: "FAIL resolved — replacement-pattern version-compat suppression (PR #84)"
@@ -297,13 +297,13 @@ findings:
   - id: "disclosure/file-io::file-io capability detected in code but metadata description does not disclose it — reviewers expect disclosure"
     classification: tp
     notes: "File I/O capability not disclosed in metadata description"
-  # WARN findings — False Positives
+  # WARN findings — Resolved (were False Positives, resolved by PR #123)
   - id: "R-SEC-03::Use HTTPS instead of HTTP for network requests"
-    classification: fp
-    notes: "http://frippery.org/extensions/ in comment credit headers — not a network request"
+    classification: resolved
+    notes: "http://frippery.org/extensions/ in comment credit headers — not a network request. Resolved by PR #123."
   - id: "R-SLOP-35::Object.freeze() on config objects is an AI code smell — GNOME extensions rarely need frozen objects"
-    classification: fp
-    notes: "Object.freeze(monitorInfos) prevents accidental mutation of shared state — intentional, not AI pattern"
+    classification: resolved
+    notes: "Object.freeze(monitorInfos) prevents accidental mutation of shared state — intentional, not AI pattern. Resolved by PR #123."
   # WARN findings — Borderline
   - id: "css/unscoped-class::Found 2 potentially unscoped CSS class(es): .dashtopanelMainPanel, .dashtopanelSecondaryMenu — add a namespace prefix to avoid conflicts"
     classification: borderline
