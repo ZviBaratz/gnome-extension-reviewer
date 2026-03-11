@@ -2593,7 +2593,7 @@ Rules for APIs removed or changed in specific GNOME Shell versions. These rules 
 - **Rule**: `_onDestroy()` should be renamed to `destroy()`.
 - **Rationale**: The GNOME convention is to override `destroy()` with `super.destroy()` at the end, not to use a private `_onDestroy()` callback.
 - **Fix**: Rename to `destroy() { /* cleanup */; super.destroy(); }`.
-- **Suppression**: Skipped when `_onDestroy.bind(` is found in the same file (signal handler pattern, via `replacement-pattern`). Also suppressed by nearby `.connect(` or `super._onDestroy` (via `guard-pattern`).
+- **Suppression**: Skipped when `_onDestroy.bind(` is found in the same file (signal handler pattern, via `replacement-pattern`). Also suppressed by nearby `.connect(` or `super._onDestroy` (via `guard-pattern`). **Limitation**: `replacement-pattern` operates at file level — in multi-class files where one class uses `_onDestroy` as a signal handler and another as a lifecycle override, the latter will be incorrectly suppressed.
 
 ### R-QUAL-32: Unnecessary gi:// version specifier
 - **Severity**: advisory
