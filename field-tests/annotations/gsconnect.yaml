@@ -177,7 +177,7 @@ findings:
     notes: "Orphan count includes service/ daemon files — reduced from 19 to 13 after service/ exemption"
 
   # FAIL findings — True Positives
-  - id: "license::No LICENSE or COPYING file — MUST use GPL-compatible license"
+  - id: "license::No LICENSE or COPYING file — should use GPL-compatible license"
     classification: tp
     notes: "No LICENSE/COPYING file — SPDX headers in files but no dedicated license file"
   - id: "R-DEPR-06::Tweener is removed; use Clutter animation framework"

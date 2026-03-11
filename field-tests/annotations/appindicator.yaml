@@ -187,9 +187,12 @@ findings:
   - id: "R-SLOP-43::Underscore-prefixed export — private convention conflicts with public export"
     classification: tp
     notes: "promiseUtils.js:314 _promisifySignals — exported but underscore-prefixed"
-  - id: "R-SLOP-11::indicator-test-tool/testTool.js: Non-idiomatic GLib C-binding — use GLib.timeout_add_seconds()"
+  - id: "R-SLOP-44::indicator-test-tool/testTool.js: Non-idiomatic GLib C-binding — use GLib.Source.remove()"
     classification: tp
-    notes: "testTool.js:236 — uses GLib.timeout_add_seconds_full which is correct GI binding name but non-idiomatic GJS"
+    notes: "testTool.js:236 — GLib.source_remove() works but GLib.Source.remove() is the idiomatic GJS form"
+  - id: "R-SLOP-11::indicator-test-tool/testTool.js: Non-idiomatic GLib C-binding — use GLib.timeout_add_seconds()"
+    classification: resolved
+    notes: "testTool.js:236 — rule split: R-SLOP-11 no longer covers GLib.source_remove(); now R-SLOP-44"
   - id: "R-SLOP-16::GLib.file_get_contents() is synchronous and blocks the main loop; prefer Gio.File.load_contents() or load_contents_async()"
     classification: tp
     notes: "interfaces.js:25 — synchronous file read blocks main loop; valid advisory even though API exists"
@@ -254,5 +257,5 @@ findings:
     classification: borderline
     notes: "indicator-test-tool/ksni.py is a developer test tool, not part of extension proper"
   - id: "license::License file found but could not confirm GPL-compatibility"
-    classification: fp
-    notes: "Full GPL-2.0 license text present in LICENSE file — regex did not match. Fixed: head -20 + GNU GENERAL PUBLIC LICENSE pattern."
+    classification: resolved
+    notes: "Full GPL-2.0 license text present in LICENSE file — regex fixed: head -20 + GNU GENERAL PUBLIC LICENSE pattern. Finding no longer emitted."

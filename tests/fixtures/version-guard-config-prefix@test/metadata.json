@@ -1,0 +1,7 @@
+{
+    "uuid": "version-guard-config-prefix@test",
+    "name": "Config Prefix Guard Test",
+    "description": "Tests R-VER48-02 guard for Config.PACKAGE_VERSION (no global.compositor in file)",
+    "shell-version": ["48"],
+    "url": "https://example.com"
+}

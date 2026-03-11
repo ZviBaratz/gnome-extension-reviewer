@@ -17,6 +17,13 @@ assert_exit_code "exits with 0 (version guard suppresses R-VER48-02)" 0
 assert_output_not_contains "no FAIL for R-VER48-02 with PACKAGE_VERSION guard" "\[FAIL\].*R-VER48-02"
 echo ""
 
+# --- version-guard-config-prefix (R-VER48-02 guard with Config. prefix, no replacement-pattern) ---
+echo "=== version-guard-config-prefix ==="
+run_lint "version-guard-config-prefix@test"
+assert_exit_code "exits with 0 (Config.PACKAGE_VERSION guard suppresses R-VER48-02)" 0
+assert_output_not_contains "no FAIL for R-VER48-02 with Config.PACKAGE_VERSION guard" "\[FAIL\].*R-VER48-02"
+echo ""
+
 # --- version-guard-distant (R-VER48-02 guard-window with distant guard) ---
 echo "=== version-guard-distant ==="
 run_lint "version-guard-distant@test"

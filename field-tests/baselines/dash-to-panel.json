@@ -1,14 +1,14 @@
 {
   "name": "dash-to-panel",
   "uuid": "dash-to-panel@jderose9.github.com",
-  "timestamp": "2026-03-08T14:19:48.459493+00:00",
-  "ego_lint_version": "05523f9",
+  "timestamp": "2026-03-10T22:11:05.093467+00:00",
+  "ego_lint_version": "a441201",
   "ego_approved": true,
   "exit_code": 1,
   "counts": {
-    "pass": 173,
-    "fail": 9,
-    "warn": 64,
+    "pass": 176,
+    "fail": 8,
+    "warn": 62,
     "skip": 17,
     "total": 263
   },
@@ -53,7 +53,7 @@
     },
     {
       "id": "css/shell-class-override::.popup-menu: overrides GNOME Shell theme class \u2014 use a scoped selector (.my-extension .popup-menu)",
-      "status": "FAIL",
+      "status": "WARN",
       "check": "css/shell-class-override",
       "detail": ".popup-menu: overrides GNOME Shell theme class \u2014 use a scoped selector (.my-extension .popup-menu)"
     },
@@ -122,20 +122,6 @@
       "fix": "Use new Gio.Subprocess({argv: [...], flags: ...}) instead."
     },
     {
-      "id": "R-SEC-03::Use HTTPS instead of HTTP for network requests",
-      "status": "WARN",
-      "check": "R-SEC-03",
-      "detail": "src/panelManager.js:25: Use HTTPS instead of HTTP for network requests",
-      "fix": "Change http:// to https://."
-    },
-    {
-      "id": "R-SEC-03::Use HTTPS instead of HTTP for network requests",
-      "status": "WARN",
-      "check": "R-SEC-03",
-      "detail": "src/panel.js:25: Use HTTPS instead of HTTP for network requests",
-      "fix": "Change http:// to https://."
-    },
-    {
       "id": "R-SEC-09::Extension system interference is discouraged; modifying other extensions requires justification",
       "status": "WARN",
       "check": "R-SEC-09",
@@ -192,13 +178,6 @@
       "fix": "Remove the empty destroy() override; GObject handles cleanup chain automatically"
     },
     {
-      "id": "R-SLOP-35::Object.freeze() on config objects is an AI code smell \u2014 GNOME extensions rarely need frozen objects",
-      "status": "WARN",
-      "check": "R-SLOP-35",
-      "detail": "src/panelSettings.js:291: Object.freeze() on config objects is an AI code smell \u2014 GNOME extensions rarely need frozen objects",
-      "fix": "Remove Object.freeze(); use const declarations for immutability instead"
-    },
-    {
       "id": "R-SLOP-40::new Promise(resolve, reject) wrapper \u2014 consider Gio._promisify() for GIO async methods",
       "status": "WARN",
       "check": "R-SLOP-40",
@@ -206,46 +185,46 @@
       "fix": "Use Gio._promisify() to promisify GIO async methods instead of manual Promise wrapping"
     },
     {
-      "id": "R-SLOP-11::Non-existent GLib method \u2014 use GLib.timeout_add_seconds() and GLib.Source.remove()",
+      "id": "R-SLOP-44::Non-idiomatic GLib C-binding \u2014 use GLib.Source.remove()",
       "status": "WARN",
-      "check": "R-SLOP-11",
-      "detail": "src/appIcons.js:451: Non-existent GLib method \u2014 use GLib.timeout_add_seconds() and GLib.Source.remove()",
-      "fix": "GLib.timeout_add_seconds_full \u2192 GLib.timeout_add_seconds. GLib.source_remove \u2192 GLib.Source.remove."
+      "check": "R-SLOP-44",
+      "detail": "src/appIcons.js:451: Non-idiomatic GLib C-binding \u2014 use GLib.Source.remove()",
+      "fix": "GLib.source_remove(id) \u2192 GLib.Source.remove(id). The function works but GLib.Source.remove() is the idiomatic GJS form."
     },
     {
-      "id": "R-SLOP-11::Non-existent GLib method \u2014 use GLib.timeout_add_seconds() and GLib.Source.remove()",
+      "id": "R-SLOP-44::Non-idiomatic GLib C-binding \u2014 use GLib.Source.remove()",
       "status": "WARN",
-      "check": "R-SLOP-11",
-      "detail": "src/windowPreview.js:1067: Non-existent GLib method \u2014 use GLib.timeout_add_seconds() and GLib.Source.remove()",
-      "fix": "GLib.timeout_add_seconds_full \u2192 GLib.timeout_add_seconds. GLib.source_remove \u2192 GLib.Source.remove."
+      "check": "R-SLOP-44",
+      "detail": "src/windowPreview.js:1067: Non-idiomatic GLib C-binding \u2014 use GLib.Source.remove()",
+      "fix": "GLib.source_remove(id) \u2192 GLib.Source.remove(id). The function works but GLib.Source.remove() is the idiomatic GJS form."
     },
     {
-      "id": "R-SLOP-11::Non-existent GLib method \u2014 use GLib.timeout_add_seconds() and GLib.Source.remove()",
+      "id": "R-SLOP-44::Non-idiomatic GLib C-binding \u2014 use GLib.Source.remove()",
       "status": "WARN",
-      "check": "R-SLOP-11",
-      "detail": "src/panel.js:420: Non-existent GLib method \u2014 use GLib.timeout_add_seconds() and GLib.Source.remove()",
-      "fix": "GLib.timeout_add_seconds_full \u2192 GLib.timeout_add_seconds. GLib.source_remove \u2192 GLib.Source.remove."
+      "check": "R-SLOP-44",
+      "detail": "src/panel.js:420: Non-idiomatic GLib C-binding \u2014 use GLib.Source.remove()",
+      "fix": "GLib.source_remove(id) \u2192 GLib.Source.remove(id). The function works but GLib.Source.remove() is the idiomatic GJS form."
     },
     {
-      "id": "R-SLOP-11::Non-existent GLib method \u2014 use GLib.timeout_add_seconds() and GLib.Source.remove()",
+      "id": "R-SLOP-44::Non-idiomatic GLib C-binding \u2014 use GLib.Source.remove()",
       "status": "WARN",
-      "check": "R-SLOP-11",
-      "detail": "src/taskbar.js:446: Non-existent GLib method \u2014 use GLib.timeout_add_seconds() and GLib.Source.remove()",
-      "fix": "GLib.timeout_add_seconds_full \u2192 GLib.timeout_add_seconds. GLib.source_remove \u2192 GLib.Source.remove."
+      "check": "R-SLOP-44",
+      "detail": "src/taskbar.js:446: Non-idiomatic GLib C-binding \u2014 use GLib.Source.remove()",
+      "fix": "GLib.source_remove(id) \u2192 GLib.Source.remove(id). The function works but GLib.Source.remove() is the idiomatic GJS form."
     },
     {
-      "id": "R-SLOP-11::Non-existent GLib method \u2014 use GLib.timeout_add_seconds() and GLib.Source.remove()",
+      "id": "R-SLOP-44::Non-idiomatic GLib C-binding \u2014 use GLib.Source.remove()",
       "status": "WARN",
-      "check": "R-SLOP-11",
-      "detail": "src/desktopIconsIntegration.js:136: Non-existent GLib method \u2014 use GLib.timeout_add_seconds() and GLib.Source.remove()",
-      "fix": "GLib.timeout_add_seconds_full \u2192 GLib.timeout_add_seconds. GLib.source_remove \u2192 GLib.Source.remove."
+      "check": "R-SLOP-44",
+      "detail": "src/desktopIconsIntegration.js:136: Non-idiomatic GLib C-binding \u2014 use GLib.Source.remove()",
+      "fix": "GLib.source_remove(id) \u2192 GLib.Source.remove(id). The function works but GLib.Source.remove() is the idiomatic GJS form."
     },
     {
-      "id": "R-SLOP-11::Non-existent GLib method \u2014 use GLib.timeout_add_seconds() and GLib.Source.remove()",
+      "id": "R-SLOP-44::Non-idiomatic GLib C-binding \u2014 use GLib.Source.remove()",
       "status": "WARN",
-      "check": "R-SLOP-11",
-      "detail": "src/desktopIconsIntegration.js:145: Non-existent GLib method \u2014 use GLib.timeout_add_seconds() and GLib.Source.remove()",
-      "fix": "GLib.timeout_add_seconds_full \u2192 GLib.timeout_add_seconds. GLib.source_remove \u2192 GLib.Source.remove."
+      "check": "R-SLOP-44",
+      "detail": "src/desktopIconsIntegration.js:145: Non-idiomatic GLib C-binding \u2014 use GLib.Source.remove()",
+      "fix": "GLib.source_remove(id) \u2192 GLib.Source.remove(id). The function works but GLib.Source.remove() is the idiomatic GJS form."
     },
     {
       "id": "R-QUAL-27::String comparison on PACKAGE_VERSION is unreliable \u2014 use parseInt() for numeric comparison",

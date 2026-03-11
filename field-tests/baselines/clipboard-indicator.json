@@ -1,16 +1,16 @@
 {
   "name": "clipboard-indicator",
   "uuid": "clipboard-indicator@tudmotu.com",
-  "timestamp": "2026-03-08T14:19:45.441997+00:00",
-  "ego_lint_version": "05523f9",
+  "timestamp": "2026-03-10T22:11:00.787905+00:00",
+  "ego_lint_version": "a441201",
   "ego_approved": true,
   "exit_code": 1,
   "counts": {
-    "pass": 197,
-    "fail": 3,
-    "warn": 24,
+    "pass": 198,
+    "fail": 2,
+    "warn": 25,
     "skip": 17,
-    "total": 241
+    "total": 242
   },
   "metrics": {
     "js_files": 6,
@@ -47,7 +47,7 @@
     },
     {
       "id": "css/shell-class-override::.popup-menu-item: overrides GNOME Shell theme class \u2014 use a scoped selector (.my-extension .popup-menu-item)",
-      "status": "FAIL",
+      "status": "WARN",
       "check": "css/shell-class-override",
       "detail": ".popup-menu-item: overrides GNOME Shell theme class \u2014 use a scoped selector (.my-extension .popup-menu-item)"
     },

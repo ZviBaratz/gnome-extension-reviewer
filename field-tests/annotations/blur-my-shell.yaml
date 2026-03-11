@@ -158,8 +158,8 @@ findings:
     classification: tp
     notes: "appfolders.js uses Tweener — crashes on GNOME 46+"
   - id: "lifecycle/gsettings-signal-leak::1 bare settings.connect('changed::...') without stored ID and no disconnectObject/connectObject cleanup: src/preferences/applications_management/application_row.js"
-    classification: tp
-    notes: "Bare settings.connect() in preferences without disconnectObject cleanup"
+    classification: resolved
+    notes: "Bare settings.connect() in preferences without disconnectObject cleanup — no longer emitted"
   # WARN findings — True Positives
   - id: "css/important::Found 9 !important usage(s) in stylesheet.css — !important overrides Shell theme; prefer higher specificity"
     classification: tp
@@ -195,8 +195,8 @@ findings:
     classification: tp
     notes: "Private API access — valid advisory for version-sensitive code"
   - id: "lifecycle/signal-balance::30 manual .connect() calls but only 28 .disconnect() calls — verify all signals are disconnected in disable()"
-    classification: tp
-    notes: "Connections class auto-cleans but heuristic can't verify"
+    classification: resolved
+    notes: "Connections class auto-cleans but heuristic can't verify — no longer emitted"
   - id: "lifecycle/async-destroyed-guard::async/await used without _destroyed or _isDestroyed guard — extension may act on stale state after disable()"
     classification: tp
     notes: "Low risk — await import() without destroyed guard"
@@ -220,20 +220,20 @@ findings:
     notes: "GSettings instance created in enable() but not cleaned up"
   # WARN findings — False Positives
   - id: "resource-tracking/no-destroy-method::src/conveniences/paint_signals.js — no cleanup method (destroy/disable/onDestroy) in src/conveniences/paint_signals.js"
-    classification: fp
-    notes: "Class uses disconnect_all() for cleanup — unrecognized method name"
+    classification: resolved
+    notes: "Class uses disconnect_all() for cleanup — no longer emitted"
   - id: "resource-tracking/no-destroy-method::src/conveniences/effects_manager.js — no cleanup method (destroy/disable/onDestroy) in src/conveniences/effects_manager.js"
     classification: fp
     notes: "Utility class — cleanup managed via parent lifecycle"
   - id: "resource-tracking/no-destroy-method::src/effects/upscale.js — no cleanup method (destroy/disable/onDestroy) in src/effects/upscale.js"
-    classification: fp
-    notes: "GObject effect — cleanup managed by parent actor lifecycle"
+    classification: resolved
+    notes: "GObject effect — no longer emitted"
   - id: "resource-tracking/no-destroy-method::src/effects/downscale.js — no cleanup method (destroy/disable/onDestroy) in src/effects/downscale.js"
-    classification: fp
-    notes: "GObject effect — cleanup managed by parent actor lifecycle"
+    classification: resolved
+    notes: "GObject effect — no longer emitted"
   - id: "resource-tracking/no-destroy-method::src/effects/gaussian_blur.js — no cleanup method (destroy/disable/onDestroy) in src/effects/gaussian_blur.js"
-    classification: fp
-    notes: "GObject effect — cleanup managed by parent actor lifecycle"
+    classification: resolved
+    notes: "GObject effect — no longer emitted"
   # WARN findings — Borderline
   - id: "quality/constructor-resources::.connect() in constructor — move to enable()"
     classification: borderline
@@ -242,5 +242,18 @@ findings:
     classification: borderline
     notes: "4 hits — 2 in panel.js (TP), 2 in prefs code (auto-cleanup on window close)"
   - id: "resource-tracking/ownership::48 files scanned, depth 3, 11 orphans detected"
+    classification: resolved
+    notes: "Summary orphan count — superseded by updated 7-orphan finding"
+  # New annotations (2026-03-11) — R-SLOP-11 split / resource graph improvements
+  - id: "lifecycle/module-scope-prototype::Signals.addSignalMethods(PipelinesManager.prototype) — prototype mutation at module scope persists after disable()"
+    classification: tp
+    notes: "Signals.addSignalMethods() adds emit/connect/disconnect to prototype at module scope — persists after disable()"
+  - id: "lifecycle/module-scope-prototype::Signals.addSignalMethods(Settings.prototype) — prototype mutation at module scope persists after disable()"
+    classification: tp
+    notes: "Signals.addSignalMethods() adds emit/connect/disconnect to prototype at module scope — persists after disable()"
+  - id: "resource-tracking/destroy-not-called::src/conveniences/paint_signals.js — parent does not call cleanup method on src/conveniences/paint_signals.js"
+    classification: fp
+    notes: "PaintSignals uses disconnect_all() for cleanup, called by parent components — resource graph does not recognize this method name"
+  - id: "resource-tracking/ownership::48 files scanned, depth 3, 7 orphans detected"
     classification: borderline
-    notes: "Summary orphan count includes FP no-destroy-method findings"
+    notes: "Orphan count reduced from 11 to 7 after no-destroy-method improvements — remaining count includes some FP findings"
