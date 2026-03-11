@@ -136,6 +136,8 @@ def find_extension_class_range(content_lines):
                 DEFAULT_EXPORT_CLASS_DEF.search(line):
             depth = line.count('{') - line.count('}')
             if depth <= 0 and '{' in line:
+                # Single-line class body, e.g., `class Foo extends Extension { }` —
+                # unlikely but handled for completeness
                 return (lineno, lineno)
             start = lineno
             for end_lineno, end_line in enumerate(
@@ -144,6 +146,9 @@ def find_extension_class_range(content_lines):
                 if depth <= 0:
                     return (start, end_lineno)
             return (start, len(content_lines))
+    # No match found. This includes multiline class definitions where
+    # `class` and `{` are on different lines. Returning None causes all
+    # constructors to be checked (conservative — no false negatives).
     return None
 
 
