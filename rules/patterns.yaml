@@ -773,6 +773,7 @@
   category: code-quality
   fix: "Rename to destroy() { /* cleanup */; super.destroy(); }"
   guard-pattern: "(\\.connect\\s*\\(|super\\._onDestroy)"
+  replacement-pattern: "_onDestroy.bind("
 
 - id: R-QUAL-32
   pattern: "gi://(GLib|Gio|GObject|St|Clutter|Meta|Shell|Pango|Graphene|Mtk)\\?version="

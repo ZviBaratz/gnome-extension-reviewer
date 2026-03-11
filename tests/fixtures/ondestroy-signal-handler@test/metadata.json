@@ -1,0 +1,7 @@
+{
+    "uuid": "ondestroy-signal-handler@test",
+    "name": "OnDestroy Signal Handler Test",
+    "description": "Tests that _onDestroy used as signal handler does not trigger R-QUAL-31",
+    "shell-version": ["45"],
+    "url": "https://example.com"
+}
