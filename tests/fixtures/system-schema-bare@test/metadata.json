@@ -1,0 +1,7 @@
+{
+    "uuid": "system-schema-bare@test",
+    "name": "Bare System Schema Test",
+    "description": "Tests R-SLOP-24 guard for system schema identifiers without org.gnome prefix",
+    "shell-version": ["48"],
+    "url": "https://example.com"
+}

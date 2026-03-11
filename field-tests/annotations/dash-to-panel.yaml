@@ -72,8 +72,8 @@ findings:
     notes: "File I/O not disclosed"
   # WARNs — False Positives
   - id: "R-SLOP-24::new Gio.Settings for system schemas"
-    classification: fp
-    notes: "5 hits — desktop.interface, desktop.notifications, shell.app-switcher, KEYBINDINGS_SCHEMA. Correct API for system schemas."
+    classification: resolved
+    notes: "5 hits — desktop.interface, desktop.notifications, shell.app-switcher, KEYBINDINGS_SCHEMA. Resolved by PR #139 (guard expansion for bare system schema identifiers)."
   - id: "R-SLOP-01::JSDoc despite provenance score 4"
     classification: expected
     notes: "5 hits — suppressed by provenance post-filter (score 4 >= 3 threshold). Fixed in deferred approach."
