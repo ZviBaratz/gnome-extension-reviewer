@@ -73,7 +73,7 @@ findings:
   # WARNs — False Positives
   - id: "R-SLOP-24::new Gio.Settings for system schemas"
     classification: resolved
-    notes: "5 hits — desktop.interface, desktop.notifications, shell.app-switcher, KEYBINDINGS_SCHEMA. Resolved by PR #139 (guard expansion for bare system schema identifiers)."
+    notes: "5 hits — desktop.interface, desktop.notifications, shell.app-switcher, KEYBINDINGS_SCHEMA. Already suppressed by existing guard-window-forward: 5 mechanism. PR #139 adds additional coverage for edge cases (enumerated _SCHEMA constants, string-anchored desktop. guard)."
   - id: "R-SLOP-01::JSDoc despite provenance score 4"
     classification: expected
     notes: "5 hits — suppressed by provenance post-filter (score 4 >= 3 threshold). Fixed in deferred approach."
