@@ -94,6 +94,17 @@ VALUE_TYPES = re.compile(
     r'|Cogl\.Color|Clutter\.Color)\b'
 )
 
+# Extension class identification for scoping constructor checks.
+# Only the Extension class constructor runs at instantiation time —
+# helper class constructors only run when called from enable().
+EXTENSION_CLASS_DEF = re.compile(
+    r'class\s+\w+\s+extends\s+(?:\w+\.)*Extension\s*\{'
+)
+# Fallback: export default class without extends
+DEFAULT_EXPORT_CLASS_DEF = re.compile(
+    r'export\s+default\s+class\s+\w+\s*\{'
+)
+
 
 def extract_module_scope_lines(content_lines):
     """Extract lines that are at module scope (outside any class/function body).
@@ -114,12 +125,37 @@ def extract_module_scope_lines(content_lines):
     return module_lines
 
 
-def extract_constructor_lines(content_lines):
+def find_extension_class_range(content_lines):
+    """Find the line range of the Extension class body.
+
+    Returns (start_line, end_line) or None if not found.
+    Priority: extends Extension > export default class.
+    """
+    for lineno, line in enumerate(content_lines, 1):
+        if EXTENSION_CLASS_DEF.search(line) or \
+                DEFAULT_EXPORT_CLASS_DEF.search(line):
+            depth = line.count('{') - line.count('}')
+            if depth <= 0 and '{' in line:
+                return (lineno, lineno)
+            start = lineno
+            for end_lineno, end_line in enumerate(
+                    content_lines[lineno:], lineno + 1):
+                depth += end_line.count('{') - end_line.count('}')
+                if depth <= 0:
+                    return (start, end_lineno)
+            return (start, len(content_lines))
+    return None
+
+
+def extract_constructor_lines(content_lines, class_range=None):
     """Extract lines inside constructor() method bodies.
 
     Returns a list of (original_lineno, line_text) tuples.
     Skips constructors inside GObject.registerClass() class bodies, since those
     only run when explicitly instantiated (not at module init time).
+
+    If class_range is provided as (start, end), only returns constructors
+    whose definition line falls within that range.
     """
     constructor_lines = []
     in_constructor = False
@@ -146,6 +182,9 @@ def extract_constructor_lines(content_lines):
         # Detect constructor start (skip inside registerClass bodies)
         if not in_constructor and re.search(r'\bconstructor\s*\(', line):
             if in_register_class:
+                continue
+            # Only include constructors within the Extension class range
+            if class_range and not (class_range[0] <= lineno <= class_range[1]):
                 continue
             in_constructor = True
             open_braces = line.count('{')
@@ -248,11 +287,12 @@ def check_init_modifications(ext_dir):
                     violations.append(f"{rel}:{lineno}")
 
         # Check constructor() lines
-        # Helper file constructors are runtime-only (only run when
-        # instantiated from enable()), so only flag in extension.js
+        # Helper class constructors are runtime-only (only run when
+        # instantiated from enable()), so only flag the Extension class
         is_extension_js = os.path.basename(filepath) == 'extension.js'
         if is_extension_js:
-            ctor_lines = extract_constructor_lines(lines)
+            ext_range = find_extension_class_range(lines)
+            ctor_lines = extract_constructor_lines(lines, class_range=ext_range)
             ctor_lines = filter_signal_callbacks(ctor_lines)
             for lineno, line in ctor_lines:
                 if is_skip_line(line):
