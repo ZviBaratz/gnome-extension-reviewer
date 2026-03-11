@@ -301,6 +301,18 @@ assert_output_contains "fails on typeof super.method" "\[FAIL\].*R-SLOP-30"
 assert_output_contains "warns on this instanceof" "\[WARN\].*R-SLOP-13"
 echo ""
 
+# --- ondestroy-signal-handler ---
+echo "=== ondestroy-signal-handler ==="
+run_lint "ondestroy-signal-handler@test"
+assert_output_not_contains "R-QUAL-31 suppressed for signal handler" "\[WARN\].*R-QUAL-31"
+echo ""
+
+# --- ondestroy-lifecycle ---
+echo "=== ondestroy-lifecycle ==="
+run_lint "ondestroy-lifecycle@test"
+assert_output_contains "warns on _onDestroy lifecycle override" "\[WARN\].*R-QUAL-31"
+echo ""
+
 # --- metadata-polish ---
 echo "=== metadata-polish ==="
 run_lint "metadata-polish@test"

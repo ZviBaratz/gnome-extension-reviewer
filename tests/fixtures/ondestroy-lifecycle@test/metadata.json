@@ -1,0 +1,7 @@
+{
+    "uuid": "ondestroy-lifecycle@test",
+    "name": "OnDestroy Lifecycle Test",
+    "description": "Tests that _onDestroy as lifecycle override triggers R-QUAL-31",
+    "shell-version": ["45"],
+    "url": "https://example.com"
+}
