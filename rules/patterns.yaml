@@ -445,6 +445,7 @@
   pattern: "\\b(print|printerr)\\s*\\("
   scope: ["*.js"]
   severity: advisory
+  skip-comments: true
   message: "print()/printerr() should not be used in production; use console.debug()"
   category: logging
   fix: "Replace print()/printerr() with console.debug() or console.error()."

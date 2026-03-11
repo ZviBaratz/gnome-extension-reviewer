@@ -1,0 +1,7 @@
+{
+    "uuid": "log-comment-skip@test",
+    "name": "Log Comment Skip Test",
+    "description": "Tests that R-LOG-03 skips commented-out print calls",
+    "shell-version": ["48"],
+    "url": "https://example.com"
+}
