@@ -694,7 +694,7 @@
   category: ai-slop
   fix: "Use this.getSettings() in Extension subclass or this.getSettings() in ExtensionPreferences"
   guard-pattern: "schema.*org\\.gnome\\.(?!shell\\.extensions\\.)|KEYBINDINGS_SCHEMA"
-  guard-window-forward: 2
+  guard-window-forward: 5
   exclude-dirs: ["service"]
 
 - id: R-SLOP-25
