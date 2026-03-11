@@ -1,16 +1,16 @@
 {
   "name": "tiling-shell",
   "uuid": "tilingshell@ferrarodomenico.com",
-  "timestamp": "2026-03-08T14:19:38.052628+00:00",
-  "ego_lint_version": "05523f9",
+  "timestamp": "2026-03-10T22:10:50.367657+00:00",
+  "ego_lint_version": "a441201",
   "ego_approved": true,
   "exit_code": 1,
   "counts": {
-    "pass": 139,
-    "fail": 3,
-    "warn": 5,
-    "skip": 51,
-    "total": 198
+    "pass": 193,
+    "fail": 2,
+    "warn": 7,
+    "skip": 16,
+    "total": 218
   },
   "metrics": {
     "js_files": 1,
@@ -88,42 +88,6 @@
       "detail": "No UI-related imports found"
     },
     {
-      "id": "R-WEB-01::Not applicable for declared shell-version(s)",
-      "status": "SKIP",
-      "check": "R-WEB-01",
-      "detail": "Not applicable for declared shell-version(s)"
-    },
-    {
-      "id": "R-WEB-02::Not applicable for declared shell-version(s)",
-      "status": "SKIP",
-      "check": "R-WEB-02",
-      "detail": "Not applicable for declared shell-version(s)"
-    },
-    {
-      "id": "R-WEB-10::Not applicable for declared shell-version(s)",
-      "status": "SKIP",
-      "check": "R-WEB-10",
-      "detail": "Not applicable for declared shell-version(s)"
-    },
-    {
-      "id": "R-WEB-11::Not applicable for declared shell-version(s)",
-      "status": "SKIP",
-      "check": "R-WEB-11",
-      "detail": "Not applicable for declared shell-version(s)"
-    },
-    {
-      "id": "R-DEPR-04::Not applicable for declared shell-version(s)",
-      "status": "SKIP",
-      "check": "R-DEPR-04",
-      "detail": "Not applicable for declared shell-version(s)"
-    },
-    {
-      "id": "R-DEPR-04-legacy::Not applicable for declared shell-version(s)",
-      "status": "SKIP",
-      "check": "R-DEPR-04-legacy",
-      "detail": "Not applicable for declared shell-version(s)"
-    },
-    {
       "id": "R-LOG-03::print()/printerr() should not be used in production; use console.debug()",
       "status": "WARN",
       "check": "R-LOG-03",
@@ -136,180 +100,6 @@
       "check": "R-SLOP-03",
       "detail": "resources/metadata.json:15: version field is deprecated; EGO manages versions for GNOME 45+",
       "fix": "Remove the version field from metadata.json; EGO manages versions automatically."
-    },
-    {
-      "id": "R-VER44-01::Not applicable for declared shell-version(s)",
-      "status": "SKIP",
-      "check": "R-VER44-01",
-      "detail": "Not applicable for declared shell-version(s)"
-    },
-    {
-      "id": "R-VER44-02::Not applicable for declared shell-version(s)",
-      "status": "SKIP",
-      "check": "R-VER44-02",
-      "detail": "Not applicable for declared shell-version(s)"
-    },
-    {
-      "id": "R-VER46-01::Not applicable for declared shell-version(s)",
-      "status": "SKIP",
-      "check": "R-VER46-01",
-      "detail": "Not applicable for declared shell-version(s)"
-    },
-    {
-      "id": "R-VER46-02::Not applicable for declared shell-version(s)",
-      "status": "SKIP",
-      "check": "R-VER46-02",
-      "detail": "Not applicable for declared shell-version(s)"
-    },
-    {
-      "id": "R-VER46-03::Not applicable for declared shell-version(s)",
-      "status": "SKIP",
-      "check": "R-VER46-03",
-      "detail": "Not applicable for declared shell-version(s)"
-    },
-    {
-      "id": "R-VER46-04::Not applicable for declared shell-version(s)",
-      "status": "SKIP",
-      "check": "R-VER46-04",
-      "detail": "Not applicable for declared shell-version(s)"
-    },
-    {
-      "id": "R-VER46-05::Not applicable for declared shell-version(s)",
-      "status": "SKIP",
-      "check": "R-VER46-05",
-      "detail": "Not applicable for declared shell-version(s)"
-    },
-    {
-      "id": "R-VER46-06::Not applicable for declared shell-version(s)",
-      "status": "SKIP",
-      "check": "R-VER46-06",
-      "detail": "Not applicable for declared shell-version(s)"
-    },
-    {
-      "id": "R-VER46-07::Not applicable for declared shell-version(s)",
-      "status": "SKIP",
-      "check": "R-VER46-07",
-      "detail": "Not applicable for declared shell-version(s)"
-    },
-    {
-      "id": "R-VER47-01::Not applicable for declared shell-version(s)",
-      "status": "SKIP",
-      "check": "R-VER47-01",
-      "detail": "Not applicable for declared shell-version(s)"
-    },
-    {
-      "id": "R-VER48-01::Not applicable for declared shell-version(s)",
-      "status": "SKIP",
-      "check": "R-VER48-01",
-      "detail": "Not applicable for declared shell-version(s)"
-    },
-    {
-      "id": "R-VER48-02::Not applicable for declared shell-version(s)",
-      "status": "SKIP",
-      "check": "R-VER48-02",
-      "detail": "Not applicable for declared shell-version(s)"
-    },
-    {
-      "id": "R-VER48-03::Not applicable for declared shell-version(s)",
-      "status": "SKIP",
-      "check": "R-VER48-03",
-      "detail": "Not applicable for declared shell-version(s)"
-    },
-    {
-      "id": "R-VER48-04::Not applicable for declared shell-version(s)",
-      "status": "SKIP",
-      "check": "R-VER48-04",
-      "detail": "Not applicable for declared shell-version(s)"
-    },
-    {
-      "id": "R-VER48-04b::Not applicable for declared shell-version(s)",
-      "status": "SKIP",
-      "check": "R-VER48-04b",
-      "detail": "Not applicable for declared shell-version(s)"
-    },
-    {
-      "id": "R-VER48-05::Not applicable for declared shell-version(s)",
-      "status": "SKIP",
-      "check": "R-VER48-05",
-      "detail": "Not applicable for declared shell-version(s)"
-    },
-    {
-      "id": "R-VER48-06::Not applicable for declared shell-version(s)",
-      "status": "SKIP",
-      "check": "R-VER48-06",
-      "detail": "Not applicable for declared shell-version(s)"
-    },
-    {
-      "id": "R-VER48-07::Not applicable for declared shell-version(s)",
-      "status": "SKIP",
-      "check": "R-VER48-07",
-      "detail": "Not applicable for declared shell-version(s)"
-    },
-    {
-      "id": "R-VER49-01::Not applicable for declared shell-version(s)",
-      "status": "SKIP",
-      "check": "R-VER49-01",
-      "detail": "Not applicable for declared shell-version(s)"
-    },
-    {
-      "id": "R-VER49-02::Not applicable for declared shell-version(s)",
-      "status": "SKIP",
-      "check": "R-VER49-02",
-      "detail": "Not applicable for declared shell-version(s)"
-    },
-    {
-      "id": "R-VER49-03::Not applicable for declared shell-version(s)",
-      "status": "SKIP",
-      "check": "R-VER49-03",
-      "detail": "Not applicable for declared shell-version(s)"
-    },
-    {
-      "id": "R-VER49-04::Not applicable for declared shell-version(s)",
-      "status": "SKIP",
-      "check": "R-VER49-04",
-      "detail": "Not applicable for declared shell-version(s)"
-    },
-    {
-      "id": "R-VER49-05::Not applicable for declared shell-version(s)",
-      "status": "SKIP",
-      "check": "R-VER49-05",
-      "detail": "Not applicable for declared shell-version(s)"
-    },
-    {
-      "id": "R-VER49-06::Not applicable for declared shell-version(s)",
-      "status": "SKIP",
-      "check": "R-VER49-06",
-      "detail": "Not applicable for declared shell-version(s)"
-    },
-    {
-      "id": "R-VER49-07::Not applicable for declared shell-version(s)",
-      "status": "SKIP",
-      "check": "R-VER49-07",
-      "detail": "Not applicable for declared shell-version(s)"
-    },
-    {
-      "id": "R-VER49-08::Not applicable for declared shell-version(s)",
-      "status": "SKIP",
-      "check": "R-VER49-08",
-      "detail": "Not applicable for declared shell-version(s)"
-    },
-    {
-      "id": "R-VER49-09::Not applicable for declared shell-version(s)",
-      "status": "SKIP",
-      "check": "R-VER49-09",
-      "detail": "Not applicable for declared shell-version(s)"
-    },
-    {
-      "id": "R-VER49-10::Not applicable for declared shell-version(s)",
-      "status": "SKIP",
-      "check": "R-VER49-10",
-      "detail": "Not applicable for declared shell-version(s)"
-    },
-    {
-      "id": "R-VER49-11::Not applicable for declared shell-version(s)",
-      "status": "SKIP",
-      "check": "R-VER49-11",
-      "detail": "Not applicable for declared shell-version(s)"
     },
     {
       "id": "R-VER50-01::Not applicable for declared shell-version(s)",
@@ -348,10 +138,16 @@
       "detail": "No eslint.config.mjs or node_modules/.bin/eslint found"
     },
     {
-      "id": "metadata/exists::metadata.json not found",
-      "status": "FAIL",
-      "check": "metadata/exists",
-      "detail": "metadata.json not found"
+      "id": "metadata/uuid-matches-dir::UUID 'tilingshell@ferrarodomenico.com' does not match directory 'tiling-shell' \u2014 must match when installed",
+      "status": "WARN",
+      "check": "metadata/uuid-matches-dir",
+      "detail": "UUID 'tilingshell@ferrarodomenico.com' does not match directory 'tiling-shell' \u2014 must match when installed"
+    },
+    {
+      "id": "metadata/deprecated-version::version field is ignored by EGO for GNOME 45+; consider removing",
+      "status": "WARN",
+      "check": "metadata/deprecated-version",
+      "detail": "version field is ignored by EGO for GNOME 45+; consider removing"
     },
     {
       "id": "schema/exists::No schemas defined (not all extensions use schemas)",

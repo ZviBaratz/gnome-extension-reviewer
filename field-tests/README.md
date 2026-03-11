@@ -36,23 +36,23 @@ Batch ego-lint runner for regression testing across 10 real-world GNOME Shell ex
 
 > **Note**: tiling-shell metrics reflect the compiled release zip — the TypeScript source is much larger. The high SKIP count (51) is due to checks that don't apply to bundled output.
 
-## Latest Lint Results (2026-03-08)
+## Latest Lint Results (2026-03-10)
 
-ego-lint version: `05523f9`
+ego-lint version: `a441201`
 
 | Extension | Exit | PASS | FAIL | WARN | SKIP | Verdict |
 |---|---|---|---|---|---|---|
-| hara-hachi-bu | 0 | 208 | 0 | 9 | 23 | Pass |
-| tiling-shell | 1 | 139 | 3 | 5 | 51 | Fail |
-| v-shell | 1 | 188 | 2 | 91 | 17 | Fail |
-| gsconnect | 1 | 172 | 11 | 134 | 17 | Fail |
-| appindicator | 1 | 187 | 10 | 59 | 14 | Fail |
-| clipboard-indicator | 1 | 197 | 3 | 24 | 17 | Fail |
-| blur-my-shell | 1 | 193 | 4 | 40 | 17 | Fail |
-| dash-to-panel | 1 | 173 | 9 | 64 | 17 | Fail |
-| media-controls | 1 | 188 | 4 | 28 | 17 | Fail |
-| just-perfection | 1 | 204 | 1 | 13 | 12 | Fail |
-| **Totals** | — | **1,849** | **47** | **467** | **202** | — |
+| hara-hachi-bu | 0 | 209 | 0 | 9 | 23 | Pass |
+| tiling-shell | 1 | 193 | 2 | 7 | 16 | Fail |
+| v-shell | 1 | 190 | 1 | 90 | 17 | Fail |
+| gsconnect | 1 | 174 | 4 | 131 | 17 | Fail |
+| appindicator | 1 | 189 | 6 | 60 | 14 | Fail |
+| clipboard-indicator | 1 | 198 | 2 | 25 | 17 | Fail |
+| blur-my-shell | 1 | 194 | 3 | 35 | 17 | Fail |
+| dash-to-panel | 1 | 176 | 8 | 62 | 17 | Fail |
+| media-controls | 1 | 189 | 3 | 29 | 17 | Fail |
+| just-perfection | 1 | 205 | 1 | 13 | 12 | Fail |
+| **Totals** | — | **1,917** | **30** | **461** | **167** | — |
 
 ## Annotation Coverage
 
@@ -61,42 +61,43 @@ Each extension has a classification file in `annotations/` where findings are la
 | Extension | TP | FP | Borderline | Expected | Resolved | Total |
 |---|---|---|---|---|---|---|
 | hara-hachi-bu | 14 | 9 | 0 | 26 | 0 | 49 |
-| tiling-shell | 11 | 10 | 4 | 55 | 0 | 80 |
-| v-shell | 40 | 7 | 1 | 17 | 0 | 65 |
-| gsconnect | 52 | 8 | 15 | 18 | 2 | 95 |
-| appindicator | 45 | 13 | 10 | 15 | 0 | 83 |
+| tiling-shell | 4 | 1 | 2 | 20 | 55 | 82 |
+| v-shell | 40 | 6 | 1 | 17 | 0 | 64 |
+| gsconnect | 52 | 7 | 16 | 18 | 2 | 95 |
+| appindicator | 45 | 10 | 10 | 15 | 2 | 82 |
 | clipboard-indicator | 44 | 6 | 0 | 18 | 0 | 68 |
-| blur-my-shell | 38 | 12 | 6 | 18 | 2 | 76 |
-| dash-to-panel | 64 | 10 | 5 | 19 | 3 | 101 |
-| media-controls | 30 | 5 | 6 | 18 | 1 | 60 |
+| blur-my-shell | 38 | 9 | 6 | 18 | 9 | 80 |
+| dash-to-panel | 63 | 10 | 5 | 19 | 3 | 100 |
+| media-controls | 18 | 0 | 4 | 18 | 20 | 60 |
 | just-perfection | 14 | 0 | 1 | 13 | 1 | 29 |
-| **Totals** | **352** | **80** | **48** | **217** | **9** | **706** |
+| **Totals** | **332** | **58** | **45** | **182** | **92** | **709** |
 
-**100% annotation coverage** — all 706 findings across 10 extensions are classified.
+**100% annotation coverage** — all 709 annotations across 10 extensions are classified (617 active findings + 92 resolved).
 
 ## Precision Metrics
 
 | Metric | Value |
 |---|---|
-| Strict precision (TP / (TP + FP)) | **81.5%** (352 / 432) |
-| Lenient precision ((TP + BL) / (TP + FP + BL)) | **83.3%** (400 / 480) |
-| False positive rate | 11.3% (80 / 706) |
-| Expected / not-applicable | 30.7% (217 / 706) |
+| Strict precision (TP / (TP + FP)) | **85.1%** (332 / 390) |
+| Lenient precision ((TP + BL) / (TP + FP + BL)) | **86.7%** (377 / 435) |
+| False positive rate | 9.4% (58 / 617) |
+| Expected / not-applicable | 29.5% (182 / 617) |
+| Resolved (no longer emitted) | 92 findings across 6 PRs |
 
 ### Top FP-generating rules
 
 | Rule | FP | TP | Precision |
 |---|---|---|---|
-| init/shell-modification | 8 | 5 | 38.5% |
-| resource-tracking/no-destroy-method | 7 | 3 | 30.0% |
-| R-SLOP-38 | 4 | 0 | 0.0% |
+| init/shell-modification | 5 | 5 | 50.0% |
+| R-SLOP-38 | 3 | 0 | 0.0% |
 | R-SLOP-35 | 3 | 0 | 0.0% |
-| imports/no-gtk-in-extension | 3 | 1 | 25.0% |
-| R-SLOP-24 | 3 | 0 | 0.0% |
+| R-SLOP-24 | 2 | 0 | 0.0% |
 | R-SLOP-13 | 2 | 0 | 0.0% |
-| license | 2 | 3 | 60.0% |
-| R-VER48-02 | 2 | 0 | 0.0% |
 | R-SEC-03 | 2 | 0 | 0.0% |
+| resource-tracking/no-destroy-method | 2 | 2 | 50.0% |
+| resource-tracking/destroy-not-called | 2 | 2 | 50.0% |
+| quality/gettext-pattern | 2 | 0 | 0.0% |
+| R-VER48-02 | 2 | 0 | 0.0% |
 
 ## Directory Structure
 

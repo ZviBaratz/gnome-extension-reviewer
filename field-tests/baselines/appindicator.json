@@ -1,16 +1,16 @@
 {
   "name": "appindicator",
   "uuid": "appindicatorsupport@rgcjonas.gmail.com",
-  "timestamp": "2026-03-10T18:37:51.133291+00:00",
-  "ego_lint_version": "91181bf",
+  "timestamp": "2026-03-10T22:10:59.527492+00:00",
+  "ego_lint_version": "a441201",
   "ego_approved": true,
   "exit_code": 1,
   "counts": {
-    "pass": 187,
+    "pass": 189,
     "fail": 6,
-    "warn": 61,
+    "warn": 60,
     "skip": 14,
-    "total": 268
+    "total": 269
   },
   "metrics": {
     "js_files": 17,
@@ -21,12 +21,6 @@
   },
   "provenance_score": 4,
   "findings": [
-    {
-      "id": "license::License file found but could not confirm GPL-compatibility",
-      "status": "WARN",
-      "check": "license",
-      "detail": "License file found but could not confirm GPL-compatibility"
-    },
     {
       "id": "no-deprecated-modules::Found 1 deprecated module import(s)",
       "status": "FAIL",
@@ -268,11 +262,11 @@
       "fix": "Either remove the underscore (it's exported, so it's public) or don't export it"
     },
     {
-      "id": "R-SLOP-11::indicator-test-tool/testTool.js: Non-existent GLib method \u2014 use GLib.timeout_add_seconds() and GLib.Source.remove()",
+      "id": "R-SLOP-44::indicator-test-tool/testTool.js: Non-idiomatic GLib C-binding \u2014 use GLib.Source.remove()",
       "status": "WARN",
-      "check": "R-SLOP-11",
-      "detail": "indicator-test-tool/testTool.js:236: Non-existent GLib method \u2014 use GLib.timeout_add_seconds() and GLib.Source.remove()",
-      "fix": "GLib.timeout_add_seconds_full \u2192 GLib.timeout_add_seconds. GLib.source_remove \u2192 GLib.Source.remove."
+      "check": "R-SLOP-44",
+      "detail": "indicator-test-tool/testTool.js:236: Non-idiomatic GLib C-binding \u2014 use GLib.Source.remove()",
+      "fix": "GLib.source_remove(id) \u2192 GLib.Source.remove(id). The function works but GLib.Source.remove() is the idiomatic GJS form."
     },
     {
       "id": "R-SLOP-16::GLib.file_get_contents() is synchronous and blocks the main loop; prefer Gio.File.load_contents() or load_contents_async()",
