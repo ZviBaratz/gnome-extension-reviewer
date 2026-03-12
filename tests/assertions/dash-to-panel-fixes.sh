@@ -50,3 +50,12 @@ echo "=== system-gsettings-deep ==="
 run_lint "system-gsettings-deep@test"
 assert_output_not_contains "R-SLOP-24 suppressed for deep multiline system schema" "\[WARN\].*R-SLOP-24"
 echo ""
+
+# --- system-schema-bare (R-SLOP-24 guard for bare system schema identifiers) ---
+echo "=== system-schema-bare ==="
+run_lint "system-schema-bare@test"
+assert_output_not_contains "R-SLOP-24 suppressed for bare desktop schema" "\[WARN\].*R-SLOP-24.*desktop\.interface"
+assert_output_not_contains "R-SLOP-24 suppressed for NOTIFICATIONS_SCHEMA constant" "\[WARN\].*R-SLOP-24.*NOTIFICATIONS_SCHEMA"
+assert_output_not_contains "R-SLOP-24 suppressed for shell.app-switcher" "\[WARN\].*R-SLOP-24.*app-switcher"
+assert_output_contains "R-SLOP-24 still fires for extension-owned schema" "\[WARN\].*R-SLOP-24"
+echo ""

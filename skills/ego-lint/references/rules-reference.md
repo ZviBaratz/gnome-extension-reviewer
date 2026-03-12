@@ -2233,7 +2233,7 @@ Rules for APIs removed or changed in specific GNOME Shell versions. These rules 
 - **Rule**: `new Gio.Settings()` should not be used in GNOME 45+ extensions.
 - **Rationale**: The `Extension` base class provides `this.getSettings()` which uses the correct schema path automatically. Manually constructing `Gio.Settings` requires specifying the schema ID and may use the wrong compiled schema path.
 - **Fix**: Use `this.getSettings()` in the Extension subclass, or pass a schema ID: `this.getSettings('org.gnome.shell.extensions.my-ext')`.
-- **Guard**: Suppressed when `schema.*org.gnome.` (excluding `shell.extensions.`) or `KEYBINDINGS_SCHEMA` appears on the match line or within a 5-line forward window. Also skipped in `service/` directories.
+- **Guard**: Suppressed when `schema.*org.gnome.` (excluding `shell.extensions.`), string-literal-anchored system schema substrings (`'desktop.` or `"desktop.`), bare `shell.app-switcher`, or enumerated system-schema constants (`KEYBINDINGS_SCHEMA`, `NOTIFICATIONS_SCHEMA`, `DESKTOP_SCHEMA`, `INTERFACE_SCHEMA`, `WM_SCHEMA`, `MUTTER_SCHEMA`, `APP_SWITCHER_SCHEMA`) appear on the match line or within a 5-line forward window. The `desktop.` anchor requires a quote prefix to avoid matching property-access contexts like `this.desktop.theme`. Also skipped in `service/` directories.
 
 ### R-SLOP-25: Main.extensionManager.enable/disable
 - **Severity**: advisory
