@@ -58,43 +58,46 @@ Using [lifecycle-checklist.md](references/lifecycle-checklist.md):
 
 1. Read `extension.js` — verify enable/disable symmetry
 2. Check constructor constraints (no resource allocation in constructor)
-3. **Run the resource graph builder** to get deterministic cross-file data:
-   ```bash
-   python3 <plugin-dir>/skills/ego-lint/scripts/build-resource-graph.py <extension-dir>
-   ```
-4. **Review the graph summary**: files scanned, total creates/destroys, orphan count,
-   ownership depth. Present this to ground the review.
-5. **For each orphan in the graph**:
-   - Read the cited file:line to verify it's a true leak
-   - Classify as: TRUE LEAK (blocking) | JUSTIFIED (note why) | FALSE POSITIVE (skip)
-   - For true leaks, include the fix in the report
-6. **For each ownership chain** (from the `ownership` JSON field):
-   - Verify parent calls child's `destroy()` in its own `disable()`/`destroy()`
-   - Verify destroy order is reverse of creation
-   - Verify child's `destroy()` cleans up all its own resources
-7. **Build the resource tracking table**: run `build-resource-graph.py --format=table`
-   to generate the markdown table for the report (or build manually from JSON if needed)
+3. **Reference the resource-tracking findings from Phase 0 lint.** ego-lint
+   already ran `build-resource-graph.py` and `check-resources.py`. Use the
+   `resource-tracking/*` findings from the lint results as the starting point.
+   Do NOT re-run `build-resource-graph.py`.
+4. **For each resource-tracking FAIL/WARN from lint**: read the cited file:line
+   to verify it's a true leak. Classify as: TRUE LEAK (blocking) | JUSTIFIED
+   (note why) | FALSE POSITIVE (skip). For true leaks, include the fix in the
+   report.
+5. **For ownership chains**: if lint reports orphans, verify parent calls
+   child's `destroy()` in its own `disable()`/`destroy()` and that destroy
+   order is reverse of creation. If lint reports 0 orphans, do a brief
+   spot-check of 1-2 ownership chains to verify graph accuracy, but do not
+   perform a full ownership walk.
+6. **Resource tracking table**: if the report needs a resource tracking table,
+   build it from the lint JSON's `resource-tracking/*` findings rather than
+   re-running `build-resource-graph.py --format=table`.
 
-8. **If the graph reports 0 orphans and complete ownership chains**: abbreviate
+7. **If the graph reports 0 orphans and complete ownership chains**: abbreviate
    this phase — focus on async guards and cleanup ordering below
-9. **Async guard verification**: For every `await` in enable-path code, verify
+8. **Async guard verification**: For every `await` in enable-path code, verify
    a `_destroyed` check follows the resume point
-10. Verify cleanup ordering (reverse order of creation)
-11. Check for _destroyed flag pattern in async operations
-12. Verify session mode handling if applicable
+9. Verify cleanup ordering (reverse order of creation)
+10. Check for _destroyed flag pattern in async operations
+11. Verify session mode handling if applicable
 
 ### Phase 3: Signal & Resource Audit
 
-1. **Review the resource graph** from Phase 2 — if 0 orphans and complete
-   ownership chains, abbreviate this phase to spot-checks only
-2. **Spot-check**: pick 2-3 resource entries from the graph and verify by
-   reading the cited file:line that create/destroy are correctly paired
-3. **Check for resource types the graph may miss**:
-   - GSettings connections (`.connect('changed::...')` vs `.disconnectObject()`)
-   - Custom cleanup methods (`_cleanup()`, `_teardown()`, `_clear()`)
-   - Login manager / D-Bus signal connections via `connectSignal()` (not `connectObject()`)
-4. **Only do a full manual grep** if the graph reports orphans or incomplete
-   ownership
+1. **Abbreviate this phase** if Phase 2 found 0 orphans AND Phase 0 lint has
+   no `resource-tracking/*` or `lifecycle/*` FAILs/WARNs. In this case, do a
+   single spot-check: pick 1 resource entry from the graph and verify by
+   reading the cited file:line that create/destroy are correctly paired.
+2. **Otherwise**, for each resource-tracking or lifecycle FAIL/WARN from lint,
+   verify by reading the cited code — focus on issues ego-lint cannot judge
+   semantically (e.g., whether a cleanup pattern is architecturally correct).
+3. **Check for resource types lint still misses**: custom cleanup methods
+   (`_cleanup()`, `_teardown()`, `_clear()`) not recognized by the resource
+   graph. GSettings signal leaks and D-Bus connectSignal leaks are now
+   automated — do not re-check manually.
+4. **Only do a full manual grep** if lint reported orphans AND you suspect the
+   graph missed resources after the spot-checks above.
 
 ### Phase 4: Security Review
 
@@ -148,12 +151,18 @@ Using [code-quality-checklist.md](references/code-quality-checklist.md):
 
 Using [ai-slop-checklist.md](references/ai-slop-checklist.md) (46-item checklist):
 
-1. For each checklist item:
-   - If marked **Automated: Yes** → use ego-lint's result (from Phase 0)
-     instead of re-searching. Only verify if ego-lint reported a finding
-     for that check.
-   - If marked **Automated: No** or **Automated: Partial** → search the
-     extension source for the described pattern.
+1. Split the 46 items by automation status:
+   - **1a. Automated items (24 of 46):** Items 1-2, 4-5, 8, 11-12, 14-15,
+     18-26, 28, 34, 36, 41-42, 44. Pull the trigger count directly from
+     Phase 0 lint — do NOT re-read descriptions or re-search the code.
+   - **1b. Manual-only items (15 of 46):** Items 3, 7, 9, 13, 27, 31-32,
+     35, 37-40, 43, 45-46. Search extension source for each pattern —
+     these require semantic judgment ego-lint cannot provide.
+   - **1c. Partial items (7 of 46):** Items 6, 10, 16-17, 29-30, 33. Use
+     ego-lint's result as a starting point, then apply manual judgment for
+     aspects ego-lint cannot cover.
+   - **1d. Combine:** automated triggered count + manual triggered count +
+     partial triggered count = total score.
 2. Record whether it triggers, with file:line references
 3. Note whether the pattern is justified by context (check "NOT a signal" exceptions)
 4. Count JS files to determine threshold tier:

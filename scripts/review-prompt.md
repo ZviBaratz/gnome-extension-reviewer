@@ -27,6 +27,18 @@ Skip Phase 0 (ego-lint). It has already been run. Use these pre-computed results
 
 {{ANNOTATIONS_SECTION}}
 
+## Efficiency Notes
+
+- Phase 2: Do NOT re-run build-resource-graph.py — use resource-tracking
+  findings from the lint JSON above. Spot-check 1-2 ownership chains even
+  if lint reports 0 orphans.
+- Phase 3: Abbreviate if lint shows 0 resource-tracking/lifecycle FAILs.
+  Only manually check for custom cleanup methods lint cannot detect.
+- Phase 5a: Do NOT iterate all 46 AI checklist items. Count the 24
+  automated triggers from lint JSON, then manually check only the 22
+  non-automated items (15 manual + 7 partial). Combine counts for the
+  final score.
+
 ## Required Report Sections (write after completing EACH one)
 
 ### Section 1: Blocking Issues (Must Fix)
