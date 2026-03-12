@@ -54,6 +54,8 @@ echo ""
 # --- system-schema-bare (R-SLOP-24 guard for bare system schema identifiers) ---
 echo "=== system-schema-bare ==="
 run_lint "system-schema-bare@test"
-assert_exit_code "exits with 0 (system schema guards suppress R-SLOP-24)" 0
-assert_output_not_contains "R-SLOP-24 suppressed for bare system schema identifiers" "\[WARN\].*R-SLOP-24"
+assert_output_not_contains "R-SLOP-24 suppressed for bare desktop schema" "\[WARN\].*R-SLOP-24.*desktop\.interface"
+assert_output_not_contains "R-SLOP-24 suppressed for NOTIFICATIONS_SCHEMA constant" "\[WARN\].*R-SLOP-24.*NOTIFICATIONS_SCHEMA"
+assert_output_not_contains "R-SLOP-24 suppressed for shell.app-switcher" "\[WARN\].*R-SLOP-24.*app-switcher"
+assert_output_contains "R-SLOP-24 still fires for extension-owned schema" "\[WARN\].*R-SLOP-24"
 echo ""

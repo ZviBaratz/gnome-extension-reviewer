@@ -19,11 +19,17 @@ export default class BareSchemaExtension extends Extension {
         this._switcher = new Gio.Settings({
             schema_id: 'shell.app-switcher',
         });
+
+        // Extension-owned schema — SHOULD trigger R-SLOP-24
+        this._own = new Gio.Settings({
+            schema_id: 'org.gnome.shell.extensions.myext',
+        });
     }
 
     disable() {
         this._iface = null;
         this._notif = null;
         this._switcher = null;
+        this._own = null;
     }
 }
