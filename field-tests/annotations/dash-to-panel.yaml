@@ -78,8 +78,8 @@ findings:
     classification: expected
     notes: "5 hits — suppressed by provenance post-filter (score 4 >= 3 threshold). Fixed in deferred approach."
   - id: "R-SLOP-38::descriptive identifiers"
-    classification: fp
-    notes: "2 hits — sortWindowsCompareFunction, taskbarBoxAllocationChangedId are descriptive"
+    classification: resolved
+    notes: "2 hits — sortWindowsCompareFunction, taskbarBoxAllocationChangedId are descriptive. Fixed: guard-pattern."
   # New in 03-08 (lint gap closure — module-scope mutations)
   - id: "lifecycle/module-scope-prototype::TaskbarAppIcon scaleAndFade"
     classification: tp
