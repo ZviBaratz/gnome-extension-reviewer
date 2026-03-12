@@ -415,7 +415,7 @@ def check_constructor_resources(ext_dir, js_files):
             continue
         # Service daemon and preferences dirs run outside the extension lifecycle
         rel_parts = rel.replace(os.sep, '/').split('/')
-        if rel_parts[0] in non_lifecycle_dirs:
+        if any(part in non_lifecycle_dirs for part in rel_parts):
             continue
         with open(filepath, encoding='utf-8', errors='replace') as f:
             content = f.read()

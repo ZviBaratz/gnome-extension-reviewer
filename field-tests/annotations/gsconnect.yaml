@@ -26,24 +26,24 @@ findings:
     notes: "service/init.js and service/plugins/findmyphone.js — runs in separate process, not in shell. 2 instances."
   # FAILs — Fixed False Positives
   - id: "R-WEB-03::.fetch() method call"
-    classification: fp
-    notes: "Pattern matches .fetch() method calls and async fetch() definitions. Fixed: guard-pattern."
+    classification: resolved
+    notes: "Pattern matches .fetch() method calls and async fetch() definitions. Fixed: guard-pattern. Finding no longer emitted."
   - id: "schema/gnome-trademark::case-sensitive prefix"
-    classification: fp
-    notes: "org.gnome.Shell.Extensions. mixed case not stripped. Fixed: case-insensitive prefix stripping."
+    classification: resolved
+    notes: "org.gnome.Shell.Extensions. mixed case not stripped. Fixed: case-insensitive prefix stripping. Finding no longer emitted."
   - id: "R-VER46-04::GioUnix compat fallback"
-    classification: fp
-    notes: "Gio.UnixInputStream in catch fallback after import('gi://GioUnix'). Fixed: guard-pattern. 2 instances."
+    classification: resolved
+    notes: "Gio.UnixInputStream in catch fallback after import('gi://GioUnix'). Fixed: guard-pattern. 2 instances. Finding no longer emitted."
   - id: "init/shell-modification::GLib.Bytes data container"
-    classification: fp
-    notes: "new GLib.Bytes(...) is a data container, not a system resource. Fixed: VALUE_TYPES exemption."
+    classification: tp
+    notes: "GLib.Bytes FP was fixed (VALUE_TYPES exemption). Current init/shell-modification findings are DIFFERENT: wl_clipboard.js:11 Gio.SubprocessLauncher and extension.js:28 Main.panel.statusArea — real module-scope Shell accesses. Reclassified."
   # Key WARNs
   - id: "R-SLOP-01::JSDoc @param"
-    classification: fp
-    notes: "170 hits — GSConnect uses extensive typed JSDoc, legitimate for mature hand-written project"
+    classification: resolved
+    notes: "170 hits — GSConnect uses extensive typed JSDoc, legitimate for mature hand-written project. Fixed: provenance post-filter (score >= 3 suppresses). Finding no longer emitted."
   - id: "R-SLOP-02::JSDoc @returns"
-    classification: fp
-    notes: "52 hits — same as above"
+    classification: resolved
+    notes: "52 hits — same as above. Fixed: provenance post-filter. Finding no longer emitted."
   - id: "R-SLOP-24::new Gio.Settings in service/"
     classification: borderline
     notes: "20 hits — many in service/ daemon where Extension class is unavailable"
@@ -173,8 +173,11 @@ findings:
     classification: borderline
     notes: "service/manager.js is daemon code — GSettings cleanup less critical in standalone process"
   - id: "resource-tracking/ownership::64 files scanned, depth 2, 13 orphans detected"
+    classification: resolved
+    notes: "Orphan count reduced from 13 to 8 — superseded by updated 8-orphan finding"
+  - id: "resource-tracking/ownership::64 files scanned, depth 2, 8 orphans detected"
     classification: borderline
-    notes: "Orphan count includes service/ daemon files — reduced from 19 to 13 after service/ exemption"
+    notes: "Orphan count includes service/ daemon files — reduced from 13 to 8 after destroy_\\w+ recognition + multi-parent ownership + Case 2 stored_as filter"
 
   # FAIL findings — True Positives
   - id: "license::No LICENSE or COPYING file — should use GPL-compatible license"

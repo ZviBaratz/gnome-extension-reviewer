@@ -3,11 +3,11 @@
 findings:
   # FAILs — Fixed False Positives
   - id: "init/shell-modification::GObject.registerClass at module scope"
-    classification: fp
-    notes: "13 FPs — GObject.registerClass returns a class constructor, not an instance. Fixed: exemption in check-init.py."
+    classification: resolved
+    notes: "13 FPs — GObject.registerClass returns a class constructor, not an instance. Fixed: exemption in check-init.py. Finding no longer emitted."
   - id: "file-structure/extension.js::src/ layout"
-    classification: fp
-    notes: "Extension uses src/ subdirectory layout. Fixed: src/ fallback in ego-lint.sh."
+    classification: resolved
+    notes: "Extension uses src/ subdirectory layout. Fixed: src/ fallback in ego-lint.sh. Finding no longer emitted."
   # FAILs — True Positives
   - id: "R-DEPR-06::Tweener usage"
     classification: tp
@@ -29,8 +29,8 @@ findings:
     classification: resolved
     notes: "dash_not_already_destroyed is descriptive, not AI verbosity. Fixed: guard-pattern."
   - id: "R-SLOP-24::non-extension schema"
-    classification: fp
-    notes: "new Gio.Settings({schema: 'org.gnome.mutter'}) correctly accesses system schema. Fixed: guard-pattern."
+    classification: resolved
+    notes: "new Gio.Settings({schema: 'org.gnome.mutter'}) correctly accesses system schema. Fixed: guard-pattern. Finding no longer emitted."
   # WARNs — True Positives
   - id: "lifecycle/prototype-override::UnlockDialog overrides"
     classification: tp
@@ -223,8 +223,8 @@ findings:
     classification: resolved
     notes: "Class uses disconnect_all() for cleanup — no longer emitted"
   - id: "resource-tracking/no-destroy-method::src/conveniences/effects_manager.js — no cleanup method (destroy/disable/onDestroy) in src/conveniences/effects_manager.js"
-    classification: fp
-    notes: "Utility class — cleanup managed via parent lifecycle"
+    classification: resolved
+    notes: "Fixed: destroy_all() now recognized as cleanup method + Case 2 stored_as=None filter — no longer emitted"
   - id: "resource-tracking/no-destroy-method::src/effects/upscale.js — no cleanup method (destroy/disable/onDestroy) in src/effects/upscale.js"
     classification: resolved
     notes: "GObject effect — no longer emitted"
@@ -236,8 +236,8 @@ findings:
     notes: "GObject effect — no longer emitted"
   # WARN findings — Borderline
   - id: "quality/constructor-resources::.connect() in constructor — move to enable()"
-    classification: borderline
-    notes: "3 hits — settings.js uses dynamic accessor pattern with cleanup; effects_dialog.js is prefs GTK widget (auto-cleanup)"
+    classification: resolved
+    notes: "3→1 hits — effects_dialog.js excluded by src/preferences path fix; settings.js remains (TP)"
   - id: "lifecycle/untracked-timeout::timer/idle return value not stored — cannot be removed in disable()"
     classification: borderline
     notes: "4 hits — 2 in panel.js (TP), 2 in prefs code (auto-cleanup on window close)"
@@ -252,8 +252,12 @@ findings:
     classification: tp
     notes: "Signals.addSignalMethods() adds emit/connect/disconnect to prototype at module scope — persists after disable()"
   - id: "resource-tracking/destroy-not-called::src/conveniences/paint_signals.js — parent does not call cleanup method on src/conveniences/paint_signals.js"
-    classification: fp
-    notes: "PaintSignals uses disconnect_all() for cleanup, called by parent components — resource graph does not recognize this method name"
+    classification: resolved
+    notes: "Fixed: multi-parent ownership + Case 2 stored_as=None filter — no longer emitted"
   - id: "resource-tracking/ownership::48 files scanned, depth 3, 7 orphans detected"
-    classification: borderline
-    notes: "Orphan count reduced from 11 to 7 after no-destroy-method improvements — remaining count includes some FP findings"
+    classification: resolved
+    notes: "Orphan count reduced from 7 to 2 — superseded by updated 2-orphan finding"
+  # New annotations (2026-03-12) — resource-tracking FP reduction
+  - id: "resource-tracking/ownership::48 files scanned, depth 3, 2 orphans detected"
+    classification: tp
+    notes: "2 remaining orphans are true positives (appfolders.js:75, applications.js:27)"

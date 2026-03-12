@@ -1,16 +1,16 @@
 {
   "name": "blur-my-shell",
   "uuid": "blur-my-shell@aunetx",
-  "timestamp": "2026-03-10T22:11:02.679382+00:00",
-  "ego_lint_version": "a441201",
+  "timestamp": "2026-03-12T19:22:51.358363+00:00",
+  "ego_lint_version": "a7e0a2c",
   "ego_approved": true,
   "exit_code": 1,
   "counts": {
     "pass": 194,
     "fail": 3,
-    "warn": 35,
+    "warn": 28,
     "skip": 17,
-    "total": 249
+    "total": 242
   },
   "metrics": {
     "js_files": 49,
@@ -237,18 +237,6 @@
       "detail": "src/conveniences/settings.js:304: .connect() in constructor \u2014 move to enable()"
     },
     {
-      "id": "quality/constructor-resources::.connect() in constructor \u2014 move to enable()",
-      "status": "WARN",
-      "check": "quality/constructor-resources",
-      "detail": "src/preferences/pipelines_management/effects_dialog.js:49: .connect() in constructor \u2014 move to enable()"
-    },
-    {
-      "id": "quality/constructor-resources::.connect() in constructor \u2014 move to enable()",
-      "status": "WARN",
-      "check": "quality/constructor-resources",
-      "detail": "src/preferences/pipelines_management/effects_dialog.js:60: .connect() in constructor \u2014 move to enable()"
-    },
-    {
       "id": "quality/private-api::src/extension.js, src/components/panel.js, src/components/panel.js, src/components/appfolders.js, src/components/appfolders.js (+1 more): Main.layoutManager private API access \u2014 requires reviewer justification and version pinning",
       "status": "WARN",
       "check": "quality/private-api",
@@ -311,36 +299,6 @@
       "fix": "Move into enable() and restore original in disable()"
     },
     {
-      "id": "resource-tracking/destroy-not-called::src/conveniences/paint_signals.js \u2014 parent does not call cleanup method on src/conveniences/paint_signals.js",
-      "status": "WARN",
-      "check": "resource-tracking/destroy-not-called",
-      "detail": "src/conveniences/paint_signals.js:20 \u2014 parent does not call cleanup method on src/conveniences/paint_signals.js"
-    },
-    {
-      "id": "resource-tracking/destroy-not-called::src/conveniences/paint_signals.js \u2014 parent does not call cleanup method on src/conveniences/paint_signals.js",
-      "status": "WARN",
-      "check": "resource-tracking/destroy-not-called",
-      "detail": "src/conveniences/paint_signals.js:39 \u2014 parent does not call cleanup method on src/conveniences/paint_signals.js"
-    },
-    {
-      "id": "resource-tracking/no-destroy-method::src/conveniences/effects_manager.js \u2014 no cleanup method (destroy/disable/onDestroy) in src/conveniences/effects_manager.js",
-      "status": "WARN",
-      "check": "resource-tracking/no-destroy-method",
-      "detail": "src/conveniences/effects_manager.js:37 \u2014 no cleanup method (destroy/disable/onDestroy) in src/conveniences/effects_manager.js"
-    },
-    {
-      "id": "resource-tracking/no-destroy-method::src/conveniences/effects_manager.js \u2014 no cleanup method (destroy/disable/onDestroy) in src/conveniences/effects_manager.js",
-      "status": "WARN",
-      "check": "resource-tracking/no-destroy-method",
-      "detail": "src/conveniences/effects_manager.js:41 \u2014 no cleanup method (destroy/disable/onDestroy) in src/conveniences/effects_manager.js"
-    },
-    {
-      "id": "resource-tracking/no-destroy-method::src/conveniences/effects_manager.js \u2014 no cleanup method (destroy/disable/onDestroy) in src/conveniences/effects_manager.js",
-      "status": "WARN",
-      "check": "resource-tracking/no-destroy-method",
-      "detail": "src/conveniences/effects_manager.js:48 \u2014 no cleanup method (destroy/disable/onDestroy) in src/conveniences/effects_manager.js"
-    },
-    {
       "id": "resource-tracking/orphan-signal::src/components/appfolders.js \u2014 this._sourceMappedId created but not cleaned up in destroy()",
       "status": "WARN",
       "check": "resource-tracking/orphan-signal",
@@ -353,10 +311,10 @@
       "detail": "src/components/applications.js:27 \u2014 this.mutter_gsettings created but not cleaned up in destroy()"
     },
     {
-      "id": "resource-tracking/ownership::48 files scanned, depth 3, 7 orphans detected",
+      "id": "resource-tracking/ownership::48 files scanned, depth 3, 2 orphans detected",
       "status": "WARN",
       "check": "resource-tracking/ownership",
-      "detail": "48 files scanned, depth 3, 7 orphans detected"
+      "detail": "48 files scanned, depth 3, 2 orphans detected"
     },
     {
       "id": "package/exists::No zip package found in extension directory",

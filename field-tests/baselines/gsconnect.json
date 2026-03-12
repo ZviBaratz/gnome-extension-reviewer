@@ -1,16 +1,16 @@
 {
   "name": "gsconnect",
   "uuid": "gsconnect@andyholmes.github.io",
-  "timestamp": "2026-03-10T22:10:57.581449+00:00",
-  "ego_lint_version": "a441201",
+  "timestamp": "2026-03-12T19:23:00.470878+00:00",
+  "ego_lint_version": "a7e0a2c",
   "ego_approved": true,
   "exit_code": 1,
   "counts": {
     "pass": 174,
     "fail": 4,
-    "warn": 131,
+    "warn": 126,
     "skip": 17,
-    "total": 326
+    "total": 321
   },
   "metrics": {
     "js_files": 65,
@@ -944,37 +944,7 @@
       "id": "resource-tracking/destroy-not-called::shell/tooltip.js \u2014 parent does not call cleanup method on shell/tooltip.js",
       "status": "WARN",
       "check": "resource-tracking/destroy-not-called",
-      "detail": "shell/tooltip.js:157 \u2014 parent does not call cleanup method on shell/tooltip.js"
-    },
-    {
-      "id": "resource-tracking/destroy-not-called::shell/tooltip.js \u2014 parent does not call cleanup method on shell/tooltip.js",
-      "status": "WARN",
-      "check": "resource-tracking/destroy-not-called",
-      "detail": "shell/tooltip.js:162 \u2014 parent does not call cleanup method on shell/tooltip.js"
-    },
-    {
-      "id": "resource-tracking/destroy-not-called::shell/tooltip.js \u2014 parent does not call cleanup method on shell/tooltip.js",
-      "status": "WARN",
-      "check": "resource-tracking/destroy-not-called",
-      "detail": "shell/tooltip.js:166 \u2014 parent does not call cleanup method on shell/tooltip.js"
-    },
-    {
-      "id": "resource-tracking/destroy-not-called::shell/tooltip.js \u2014 parent does not call cleanup method on shell/tooltip.js",
-      "status": "WARN",
-      "check": "resource-tracking/destroy-not-called",
       "detail": "shell/tooltip.js:174 \u2014 parent does not call cleanup method on shell/tooltip.js"
-    },
-    {
-      "id": "resource-tracking/destroy-not-called::shell/tooltip.js \u2014 parent does not call cleanup method on shell/tooltip.js",
-      "status": "WARN",
-      "check": "resource-tracking/destroy-not-called",
-      "detail": "shell/tooltip.js:190 \u2014 parent does not call cleanup method on shell/tooltip.js"
-    },
-    {
-      "id": "resource-tracking/destroy-not-called::shell/tooltip.js \u2014 parent does not call cleanup method on shell/tooltip.js",
-      "status": "WARN",
-      "check": "resource-tracking/destroy-not-called",
-      "detail": "shell/tooltip.js:256 \u2014 parent does not call cleanup method on shell/tooltip.js"
     },
     {
       "id": "resource-tracking/destroy-not-called::shell/tooltip.js \u2014 parent does not call cleanup method on shell/tooltip.js",
@@ -995,10 +965,10 @@
       "detail": "service/manager.js:219 \u2014 this._settings created but not cleaned up in destroy()"
     },
     {
-      "id": "resource-tracking/ownership::64 files scanned, depth 2, 13 orphans detected",
+      "id": "resource-tracking/ownership::64 files scanned, depth 2, 8 orphans detected",
       "status": "WARN",
       "check": "resource-tracking/ownership",
-      "detail": "64 files scanned, depth 2, 13 orphans detected"
+      "detail": "64 files scanned, depth 2, 8 orphans detected"
     },
     {
       "id": "disclosure/private-api::private-api capability detected in code but metadata description does not disclose it \u2014 reviewers expect disclosure",

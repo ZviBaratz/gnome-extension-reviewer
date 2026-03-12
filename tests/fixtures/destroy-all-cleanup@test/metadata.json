@@ -1,0 +1,7 @@
+{
+    "uuid": "destroy-all-cleanup@test",
+    "name": "Test destroy_all Cleanup",
+    "description": "Test destroy_all() recognized as cleanup method",
+    "shell-version": ["48"],
+    "url": "https://example.com"
+}

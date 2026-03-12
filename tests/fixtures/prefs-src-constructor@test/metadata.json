@@ -1,0 +1,7 @@
+{
+    "uuid": "prefs-src-constructor@test",
+    "name": "Test Prefs Src Constructor",
+    "description": "Test src/preferences path excluded from constructor-resources",
+    "shell-version": ["48"],
+    "url": "https://example.com"
+}

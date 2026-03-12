@@ -317,6 +317,11 @@ def scan_file(file_path, ext_dir):
                 inst['destroy_line'] = lineno
                 break
 
+    # Extract destroy_\w+ method names for dynamic scan list extension
+    extra_destroy_methods = set(re.findall(
+        r'(?:^|\s)(destroy_\w+)\s*\(', content, re.MULTILINE
+    ))
+
     # Second pass: for instantiations still unresolved, check if ANY method
     # call or null assignment on the ref appears inside a cleanup method body.
     # This catches custom cleanup patterns like ref.disconnect_all(),
@@ -330,9 +335,10 @@ def scan_file(file_path, ext_dir):
         any_cleanup_pat = re.compile(
             re.escape(ref) + r'(?:\??\.\w+\s*\(|\s*=\s*null\b)'
         )
-        for method_name in ('destroy', 'disable', '_destroy', 'onDestroy',
-                             'disconnect_all', 'cleanup', '_cleanup',
-                             'close', 'shutdown', 'dispose', 'release'):
+        base_methods = ('destroy', 'disable', '_destroy', 'onDestroy',
+                        'disconnect_all', 'cleanup', '_cleanup',
+                        'close', 'shutdown', 'dispose', 'release')
+        for method_name in base_methods + tuple(extra_destroy_methods):
             mb = find_method_body(content, method_name)
             if mb:
                 _, _, body = mb
@@ -364,10 +370,10 @@ def scan_file(file_path, ext_dir):
     has_on_destroy = bool(re.search(
         r'(?:^|\s)onDestroy\s*\([^)]*\)\s*\{', content, re.MULTILINE
     ))
-    # Detect alternative cleanup methods: disconnect_all, cleanup, _cleanup*,
-    # close, shutdown, dispose, release
+    # Detect alternative cleanup methods: destroy_\w+, disconnect_all,
+    # cleanup, _cleanup*, close, shutdown, dispose, release
     has_custom_cleanup = bool(re.search(
-        r'(?:^|\s)(?:disconnect_all|_?cleanup\w*|close|shutdown|dispose|release)'
+        r'(?:^|\s)(?:destroy_\w+|disconnect_all|_?cleanup\w*|close|shutdown|dispose|release)'
         r'\s*\([^)]*\)\s*\{',
         content, re.MULTILINE
     ))
@@ -383,6 +389,7 @@ def scan_file(file_path, ext_dir):
         'has_private_destroy': has_private_destroy,
         'has_on_destroy': has_on_destroy,
         'has_custom_cleanup': has_custom_cleanup,
+        'extra_destroy_methods': extra_destroy_methods,
         'child_refs': child_refs,
         'content': content,
     }
@@ -490,13 +497,13 @@ def detect_orphans(file_scans, ownership):
 
     # Determine which files are owned (instantiated by a parent)
     owned_files = set()
-    parent_of = {}  # child_file -> parent_file
+    parent_of = {}  # child_file -> set of parent_files
     for rel, refs in ownership.items():
         for ref, ref_info in refs.items():
             child = ref_info.get('source_file')
             if child and child in file_scans:
                 owned_files.add(child)
-                parent_of[child] = rel
+                parent_of.setdefault(child, set()).add(rel)
 
     for rel, scan in file_scans.items():
         if rel not in owned_files:
@@ -523,27 +530,32 @@ def detect_orphans(file_scans, ownership):
                 destroy_refs.add(d['ref'])
             destroy_types.add(d['type'])
 
-        # Check if parent calls destroy on this object
-        parent_rel = parent_of.get(rel)
+        # Check if any parent calls destroy on this object
         parent_calls_destroy = False
-        if parent_rel and parent_rel in ownership:
-            for ref, ref_info in ownership[parent_rel].items():
-                if ref_info.get('source_file') == rel:
-                    if ref_info.get('destroyed_line') is not None:
-                        parent_calls_destroy = True
-                        break
-
-        # Check if parent added this child as a widget child or effect
-        # (auto-cleanup by actor lifecycle)
-        parent_manages_as_child = False
-        if parent_rel and parent_rel in file_scans:
-            parent_child_refs = file_scans[parent_rel].get('child_refs', set())
+        for parent_rel in parent_of.get(rel, set()):
             if parent_rel in ownership:
                 for ref, ref_info in ownership[parent_rel].items():
                     if ref_info.get('source_file') == rel:
-                        if ref in parent_child_refs:
-                            parent_manages_as_child = True
+                        if ref_info.get('destroyed_line') is not None:
+                            parent_calls_destroy = True
                             break
+            if parent_calls_destroy:
+                break
+
+        # Check if any parent added this child as a widget child or effect
+        # (auto-cleanup by actor lifecycle)
+        parent_manages_as_child = False
+        for parent_rel in parent_of.get(rel, set()):
+            if parent_rel in file_scans:
+                parent_child_refs = file_scans[parent_rel].get('child_refs', set())
+                if parent_rel in ownership:
+                    for ref, ref_info in ownership[parent_rel].items():
+                        if ref_info.get('source_file') == rel:
+                            if ref in parent_child_refs:
+                                parent_manages_as_child = True
+                                break
+            if parent_manages_as_child:
+                break
 
         # Case 1: Module creates resources but has no cleanup method
         if not has_cleanup_method:
@@ -559,16 +571,23 @@ def detect_orphans(file_scans, ownership):
                 })
             continue
 
-        # Case 2: Module has cleanup method but parent never calls it
+        # Case 2: Module has cleanup method but parent never calls it.
+        # Only flag creates with stored_as (trackable refs) — consistent with
+        # Case 3 which also skips untracked resources (stored_as=None).
         if not parent_calls_destroy:
+            case2_orphans = []
             for c in creates:
-                orphans.append({
+                if not c.get('stored_as'):
+                    continue  # Can't track — skip to avoid FP on delegated cleanup
+                case2_orphans.append({
                     'file': rel,
                     'line': c['line'],
                     'type': c['type'],
                     'pattern': c['pattern'],
                     'reason': f"parent does not call cleanup method on {rel}",
                 })
+            if case2_orphans:
+                orphans.extend(case2_orphans)
             continue
 
         # Refs that are added as widget children (auto-cleanup by parent widget)
@@ -578,9 +597,11 @@ def detect_orphans(file_scans, ownership):
         # releasing references even when the resource auto-cleans itself
         nulled_refs = set()
         content = scan['content']
-        for method_name in ('destroy', 'disable', '_destroy', 'onDestroy',
-                             'disconnect_all', 'cleanup', '_cleanup',
-                             'close', 'shutdown', 'dispose', 'release'):
+        extra = scan.get('extra_destroy_methods', set())
+        base_methods = ('destroy', 'disable', '_destroy', 'onDestroy',
+                        'disconnect_all', 'cleanup', '_cleanup',
+                        'close', 'shutdown', 'dispose', 'release')
+        for method_name in base_methods + tuple(extra):
             mb = find_method_body(content, method_name)
             if mb:
                 _, _, body = mb

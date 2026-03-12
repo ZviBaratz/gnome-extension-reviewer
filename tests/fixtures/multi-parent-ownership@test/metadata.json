@@ -1,0 +1,7 @@
+{
+    "uuid": "multi-parent-ownership@test",
+    "name": "Test Multi Parent Ownership",
+    "description": "Test child with multiple parents where one calls cleanup",
+    "shell-version": ["48"],
+    "url": "https://example.com"
+}
