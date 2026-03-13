@@ -25,17 +25,17 @@ findings:
     notes: "45-50 exceeds max 4 allowed"
   # FAILs — False Positives
   - id: "R-SLOP-16::GLib.file_get_contents"
-    classification: fp
-    notes: "Rule claims API doesn't exist in GJS, but it does — valid GI binding for g_file_get_contents()"
+    classification: resolved
+    notes: "Rule claims API doesn't exist in GJS, but it does — valid GI binding for g_file_get_contents(). Superseded: rule message updated; reclassified as tp advisory for synchronous blocking."
   - id: "R-VER46-01::add_actor runtime-guarded"
-    classification: fp
-    notes: "Code has if (obj.add_actor) guard — runtime feature detection. Fixed: guard-pattern."
+    classification: resolved
+    notes: "Code has if (obj.add_actor) guard — runtime feature detection. Fixed: guard-pattern. Finding no longer emitted."
   - id: "R-VER46-02::remove_actor runtime-guarded"
-    classification: fp
-    notes: "Same runtime guard pattern as add_actor. Fixed: guard-pattern."
+    classification: resolved
+    notes: "Same runtime guard pattern as add_actor. Fixed: guard-pattern. Finding no longer emitted."
   - id: "init/shell-modification::non-Extension constructors"
-    classification: fp
-    notes: "3 FPs — GLib.Error, Gio.Cancellable in constructors of runtime-only classes. Fixed: scoped to extension.js."
+    classification: resolved
+    notes: "3 FPs — GLib.Error, Gio.Cancellable in constructors of runtime-only classes. Fixed: scoped to extension.js. Finding no longer emitted."
   # WARNs — True Positives
   - id: "R-SEC-06::run_dispose"
     classification: tp
@@ -69,23 +69,23 @@ findings:
     notes: "File I/O not disclosed in metadata"
   # WARNs — False Positives
   - id: "R-SLOP-13::this instanceof in factory"
-    classification: fp
-    notes: "3 FPs — methods in MenuItemFactory bound to different shellItem types via connectSmart. Fixed: guard-pattern."
+    classification: resolved
+    notes: "3 FPs — methods in MenuItemFactory bound to different shellItem types via connectSmart. Fixed: guard-pattern. Finding no longer emitted."
   - id: "R-SLOP-35::Object.freeze enum"
-    classification: fp
-    notes: "3 FPs — standard JS enum pattern (SNICategory, SNIStatus, SNIconType). Fixed: guard-pattern."
+    classification: resolved
+    notes: "3 FPs — standard JS enum pattern (SNICategory, SNIStatus, SNIconType). Fixed: guard-pattern. Finding no longer emitted."
   - id: "R-SLOP-38::domain-specific identifiers"
     classification: resolved
     notes: "4 FPs — brightnessContrastEffect and similar are standard Clutter API names. Fixed: threshold raised."
   - id: "R-QUAL-31::_onDestroy signal handler"
-    classification: fp
-    notes: "7 FPs — _onDestroy is PanelMenu.Button signal handler convention. Fixed: guard-pattern."
+    classification: resolved
+    notes: "7 FPs — _onDestroy is PanelMenu.Button signal handler convention. Fixed: guard-pattern. Superseded by borderline entry with 3 remaining instances."
   - id: "lifecycle/connectObject-migration::connectSmart equivalent"
-    classification: fp
-    notes: "6 FPs — connectSmart provides equivalent auto-cleanup. Fixed: recognized in check-lifecycle.py."
+    classification: resolved
+    notes: "6 FPs — connectSmart provides equivalent auto-cleanup. Fixed: recognized in check-lifecycle.py. Finding no longer emitted."
   - id: "lifecycle/signal-balance::connectSmart not counted"
-    classification: fp
-    notes: "66 connects vs 18 disconnects — doesn't account for connectSmart auto-disconnect. Fixed."
+    classification: resolved
+    notes: "66 connects vs 18 disconnects — doesn't account for connectSmart auto-disconnect. Fixed. Finding no longer emitted."
   # WARNs — Mixed
   - id: "quality/constructor-resources::runtime-only constructors"
     classification: borderline

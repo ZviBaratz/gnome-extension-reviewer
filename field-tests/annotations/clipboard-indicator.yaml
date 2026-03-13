@@ -3,23 +3,23 @@
 findings:
   # FAILs — Fixed False Positives
   - id: "R-WEB-01::setTimeout"
-    classification: fp
-    notes: "GJS added native setTimeout in GNOME 45. Rule was unconditionally blocking. Fixed: max-version 44."
+    classification: resolved
+    notes: "GJS added native setTimeout in GNOME 45. Rule was unconditionally blocking. Fixed: max-version 44. Now SKIP for 45+ extensions."
   - id: "R-WEB-02::setInterval"
-    classification: fp
-    notes: "Same as R-WEB-01. Fixed: max-version 44."
+    classification: resolved
+    notes: "Same as R-WEB-01. Fixed: max-version 44. Now SKIP for 45+ extensions."
   - id: "R-WEB-10::clearTimeout"
-    classification: fp
-    notes: "Same as R-WEB-01. Fixed: max-version 44."
+    classification: resolved
+    notes: "Same as R-WEB-01. Fixed: max-version 44. Now SKIP for 45+ extensions."
   - id: "R-WEB-11::clearInterval"
-    classification: fp
-    notes: "Same as R-WEB-01. Fixed: max-version 44."
+    classification: resolved
+    notes: "Same as R-WEB-01. Fixed: max-version 44. Now SKIP for 45+ extensions."
   - id: "license::LICENSE.rst not recognized"
-    classification: fp
-    notes: "License check only recognized LICENSE/COPYING, not .rst/.md/.txt variants. Fixed."
+    classification: resolved
+    notes: "License check only recognized LICENSE/COPYING, not .rst/.md/.txt variants. Fixed. Finding no longer emitted."
   - id: "metadata/uuid-matches-dir::cloned repo"
-    classification: fp
-    notes: "FAIL for cloned repos where directory != UUID. Fixed: downgraded to WARN."
+    classification: resolved
+    notes: "FAIL for cloned repos where directory != UUID. Fixed: downgraded to WARN. Superseded by expected WARN entry."
   # FAILs — True Positives
   - id: "css/shell-class-override::.popup-menu-item"
     classification: tp

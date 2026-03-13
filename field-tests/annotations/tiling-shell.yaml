@@ -89,8 +89,8 @@ findings:
     classification: borderline
     notes: "manage_pr.sh is a dev tool, not part of extension runtime"
   - id: "R-LOG-03::print()/printerr() should not be used in production; use console.debug()"
-    classification: fp
-    notes: "monitorDescription.js is a standalone GJS script — print() is correct for stdout output"
+    classification: resolved
+    notes: "monitorDescription.js is a standalone GJS script in resources/ — print() is correct for stdout output. Fixed: R-LOG-03 now has exclude-dirs: [resources]. Finding no longer emitted."
   - id: "R-SLOP-03::version field is deprecated; EGO manages versions for GNOME 45+"
     classification: tp
     notes: "Version field in resources/metadata.json — standard advisory"

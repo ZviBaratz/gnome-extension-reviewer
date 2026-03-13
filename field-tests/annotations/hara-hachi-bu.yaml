@@ -4,32 +4,32 @@
 # All findings below were false positives that were subsequently fixed.
 findings:
   - id: "R-SEC-07::St.Clipboard match"
-    classification: fp
-    notes: "F-001: R-SEC-07 fired even when disclosure was present; quality/clipboard-disclosure is a strict superset. Rule removed."
+    classification: resolved
+    notes: "F-001: R-SEC-07 fired even when disclosure was present; quality/clipboard-disclosure is a strict superset. Rule removed. Finding no longer emitted."
   - id: "quality/gettext-pattern::use this.gettext()"
-    classification: fp
-    notes: "F-003: Fix message inaccurate — this.gettext() can't be used at module scope. Updated message text."
+    classification: resolved
+    notes: "F-003: Fix message inaccurate — this.gettext() can't be used at module scope. Updated message text. Finding no longer emitted."
   - id: "R-SEC-20::pkexec per-file"
-    classification: fp
-    notes: "F-004: Matched pkexec in all JS/shell files including string literals and comments. Only 1 of 5 files actually invoked pkexec."
+    classification: resolved
+    notes: "F-004: Per-file matching reduced but still matches pkexec in string literals/comments. Superseded by exact-ID annotations (tp). Finding no longer a false positive."
   - id: "quality/private-api::WARN count inflation"
-    classification: fp
-    notes: "F-005: Each location emitted a separate WARN line (up to 6 for one check). Consolidated to single WARN."
+    classification: resolved
+    notes: "F-005: Consolidated to single WARN but still lists multiple locations in detail. Superseded by exact-ID annotations (tp). Finding no longer a false positive."
   - id: "quality/module-state::only recognizes null reset"
-    classification: fp
-    notes: "F-006: Variables reset to 0, false, Promise.resolve() were not recognized as cleanup."
+    classification: resolved
+    notes: "F-006: Variables reset to 0, false, Promise.resolve() were not recognized as cleanup. Fixed: non-null reset values now recognized. Finding no longer emitted."
   - id: "R-PREFS-04b::widgets with no Adwaita equivalent"
-    classification: fp
-    notes: "F-007: Gtk.ListBox with boxed-list CSS, Gtk.ScrolledWindow for constrained height have no Adw replacement."
+    classification: resolved
+    notes: "F-007: Gtk.ListBox with boxed-list CSS, Gtk.ScrolledWindow for constrained height have no Adw replacement. Fixed: R-PREFS-04b now only flags widgets with Adw equivalents. Finding no longer emitted."
   - id: "quality/gettext-pattern::lib modules"
-    classification: fp
-    notes: "F-008: GLib.dgettext() is correct for library modules that can't access Extension base class."
+    classification: resolved
+    notes: "F-008: GLib.dgettext() is correct for library modules that can't access Extension base class. Fixed: gettext check now recognizes GLib.dgettext. Finding no longer emitted."
   - id: "quality/logging-volume::fixed threshold"
-    classification: fp
-    notes: "F-009: Fixed count threshold didn't scale with code size. ~1 log per 84 lines is reasonable density."
+    classification: resolved
+    notes: "F-009: Fixed count threshold didn't scale with code size. ~1 log per 84 lines is reasonable density. Fixed: density-based threshold. Finding no longer emitted."
   - id: "async/missing-cancellable::callback cancellation"
-    classification: fp
-    notes: "F-010: Check didn't recognize functions with isCancelled callback parameters providing equivalent cancellation."
+    classification: resolved
+    notes: "F-010: Check didn't recognize functions with isCancelled callback parameters providing equivalent cancellation. Fixed: callback cancellation pattern recognized. Finding no longer emitted."
   # Current remaining WARNs (all correct/expected)
   - id: "polkit-files::2 polkit files present"
     classification: tp

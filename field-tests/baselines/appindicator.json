@@ -1,16 +1,16 @@
 {
   "name": "appindicator",
   "uuid": "appindicatorsupport@rgcjonas.gmail.com",
-  "timestamp": "2026-03-10T22:10:59.527492+00:00",
-  "ego_lint_version": "a441201",
+  "timestamp": "2026-03-12T10:58:10.872002+00:00",
+  "ego_lint_version": "1a58b06",
   "ego_approved": true,
   "exit_code": 1,
   "counts": {
     "pass": 189,
     "fail": 6,
-    "warn": 60,
+    "warn": 59,
     "skip": 14,
-    "total": 269
+    "total": 268
   },
   "metrics": {
     "js_files": 17,
@@ -169,13 +169,6 @@
       "check": "R-SEC-06",
       "detail": "statusNotifierWatcher.js:281: GObject.run_dispose() should not be used unless absolutely necessary",
       "fix": "Remove run_dispose() call. If genuinely needed, add a comment explaining why."
-    },
-    {
-      "id": "R-LOG-03::print()/printerr() should not be used in production; use console.debug()",
-      "status": "WARN",
-      "check": "R-LOG-03",
-      "detail": "appIndicator.js:1231: print()/printerr() should not be used in production; use console.debug()",
-      "fix": "Replace print()/printerr() with console.debug() or console.error()."
     },
     {
       "id": "R-LOG-03::indicator-test-tool/testTool.js: print()/printerr() should not be used in production; use console.debug()",

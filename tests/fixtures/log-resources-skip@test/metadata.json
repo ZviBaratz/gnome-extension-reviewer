@@ -1,0 +1,7 @@
+{
+  "uuid": "log-resources-skip@test",
+  "name": "Log Resources Skip Test",
+  "description": "Test that R-LOG-03 skips files in resources/",
+  "shell-version": ["47"],
+  "url": "https://example.com"
+}

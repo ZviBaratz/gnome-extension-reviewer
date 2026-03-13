@@ -24,6 +24,7 @@ echo "=== catch-on-sync ==="
 run_lint "catch-on-sync@test"
 assert_exit_code "exits with 0 (advisory only)" 0
 assert_output_contains "warns on .catch() on non-async method" "\[WARN\].*async/catch-on-sync"
+assert_output_not_contains "no warn for Promise-returning method" "catch-on-sync.*_loadData"
 echo ""
 
 # --- clipboard-network ---

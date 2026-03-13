@@ -25,17 +25,17 @@ findings:
     notes: "extension.js:55 — Main.sessionMode.hasOverview in Extension constructor"
   # FAILs — False Positives
   - id: "R-DEPR-06::Tweener in comments"
-    classification: fp
-    notes: "utils.js — pattern matches Tweener in comments about migration from Tweener to Clutter. 2 instances."
+    classification: resolved
+    notes: "utils.js — pattern matches Tweener in comments about migration from Tweener to Clutter. 2 instances. Fixed: skip-comments. Finding no longer emitted."
   - id: "R-DEPR-05::commented-out code"
-    classification: fp
-    notes: "prefs.js:151 — commented-out line of old ExtensionUtils code"
+    classification: tp
+    notes: "desktopIconsIntegration.js:60,68,69 — actual import * as ExtensionUtils statements (GNOME 45+ target), not comments. Reclassified: originally thought commented-out, but these are real deprecated imports."
   - id: "R-VER48-02::PACKAGE_VERSION guard not recognized"
     classification: resolved
     notes: "Guard pattern already matches Config.PACKAGE_VERSION — resolved by replacement-pattern (PR #84) + guard-window increase to 10. Reclassified #122."
   - id: "init/shell-modification::constructor in enable() chain"
-    classification: fp
-    notes: "4 FPs — taskbar.js signal handlers and desktopIconsIntegration.js constructor, all called from enable()"
+    classification: tp
+    notes: "taskbar.js:46 and extension.js:55 — real module-scope Shell access (const SearchController = Main.overview.searchController) and Extension constructor Shell access. Reclassified: PR #140 fixed constructor scoping but these are different findings (module-scope assignments, not enable() chain)."
   # WARNs — True Positives
   - id: "lifecycle/prototype-override::extensive prototype patching"
     classification: tp

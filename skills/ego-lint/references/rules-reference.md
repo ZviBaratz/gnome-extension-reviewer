@@ -222,8 +222,8 @@ Rules for logging practices in GNOME Shell extensions.
 - **Rule**: Extension code should not use `print()` or `printerr()` for logging.
 - **Rationale**: `print()` writes directly to stdout, which is not captured by the journal in typical GNOME Shell setups. It is a sign of leftover debug code.
 - **Fix**: Replace with `console.debug()` or remove entirely.
-- **Note**: Uses `skip-comments` — does not flag `print()`/`printerr()` inside `//` or `/* */` comments
-- **Tested by**: `tests/fixtures/logging-patterns@test/`, `tests/fixtures/log-comment-skip@test/`
+- **Note**: Uses `skip-comments` — does not flag `print()`/`printerr()` inside `//` or `/* */` comments. Files in `resources/` are excluded (standalone scripts, compiled output).
+- **Tested by**: `tests/fixtures/logging-patterns@test/`, `tests/fixtures/log-comment-skip@test/`, `tests/fixtures/log-resources-skip@test/`
 
 ### R-LOG-04: console.debug() is acceptable for operational messages
 - **Severity**: info
