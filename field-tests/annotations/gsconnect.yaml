@@ -300,8 +300,8 @@ findings:
     classification: tp
     notes: "No cancellation mechanism in disable() — async operations may outlive extension lifecycle"
   - id: "async/catch-on-sync::.catch() on non-async GetMimetypes() — verify method returns a Promise"
-    classification: fp
-    notes: "GetMimetypes() returns a Promise via new Promise() wrapper — not async-declared but does return a Promise"
+    classification: resolved
+    notes: "GetMimetypes() returns a Promise via new Promise() wrapper — not async-declared but does return a Promise. Fixed: check-async.py now detects Promise-returning method bodies. Finding no longer emitted."
   - id: "resource-tracking/destroy-not-called::shell/tooltip.js — parent does not call cleanup method on shell/tooltip.js"
     classification: tp
     notes: "11 tooltip instances created without parent calling cleanup — potential resource leak"

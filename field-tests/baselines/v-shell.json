@@ -1,16 +1,16 @@
 {
   "name": "v-shell",
   "uuid": "vertical-workspaces@G-dH.github.com",
-  "timestamp": "2026-03-10T22:10:53.756082+00:00",
-  "ego_lint_version": "a441201",
+  "timestamp": "2026-03-12T10:58:07.321624+00:00",
+  "ego_lint_version": "1a58b06",
   "ego_approved": true,
   "exit_code": 1,
   "counts": {
-    "pass": 190,
+    "pass": 191,
     "fail": 1,
-    "warn": 90,
+    "warn": 79,
     "skip": 17,
-    "total": 298
+    "total": 288
   },
   "metrics": {
     "js_files": 28,
@@ -142,62 +142,6 @@
       "check": "R-SLOP-03",
       "detail": "metadata.json:23: version field is deprecated; EGO manages versions for GNOME 45+",
       "fix": "Remove the version field from metadata.json; EGO manages versions automatically."
-    },
-    {
-      "id": "R-SLOP-38::Over-long identifier (>25 chars) is an AI verbosity indicator",
-      "status": "WARN",
-      "check": "R-SLOP-38",
-      "detail": "prefs.js:280: Over-long identifier (>25 chars) is an AI verbosity indicator",
-      "fix": "Shorten parameter names to be concise but clear (e.g., currentBatteryThresholdValue \u2192 threshold)"
-    },
-    {
-      "id": "R-SLOP-38::Over-long identifier (>25 chars) is an AI verbosity indicator",
-      "status": "WARN",
-      "check": "R-SLOP-38",
-      "detail": "prefs.js:298: Over-long identifier (>25 chars) is an AI verbosity indicator",
-      "fix": "Shorten parameter names to be concise but clear (e.g., currentBatteryThresholdValue \u2192 threshold)"
-    },
-    {
-      "id": "R-SLOP-38::Over-long identifier (>25 chars) is an AI verbosity indicator",
-      "status": "WARN",
-      "check": "R-SLOP-38",
-      "detail": "prefs.js:587: Over-long identifier (>25 chars) is an AI verbosity indicator",
-      "fix": "Shorten parameter names to be concise but clear (e.g., currentBatteryThresholdValue \u2192 threshold)"
-    },
-    {
-      "id": "R-SLOP-38::Over-long identifier (>25 chars) is an AI verbosity indicator",
-      "status": "WARN",
-      "check": "R-SLOP-38",
-      "detail": "prefs.js:1006: Over-long identifier (>25 chars) is an AI verbosity indicator",
-      "fix": "Shorten parameter names to be concise but clear (e.g., currentBatteryThresholdValue \u2192 threshold)"
-    },
-    {
-      "id": "R-SLOP-38::Over-long identifier (>25 chars) is an AI verbosity indicator",
-      "status": "WARN",
-      "check": "R-SLOP-38",
-      "detail": "prefs.js:1025: Over-long identifier (>25 chars) is an AI verbosity indicator",
-      "fix": "Shorten parameter names to be concise but clear (e.g., currentBatteryThresholdValue \u2192 threshold)"
-    },
-    {
-      "id": "R-SLOP-38::Over-long identifier (>25 chars) is an AI verbosity indicator",
-      "status": "WARN",
-      "check": "R-SLOP-38",
-      "detail": "prefs.js:1987: Over-long identifier (>25 chars) is an AI verbosity indicator",
-      "fix": "Shorten parameter names to be concise but clear (e.g., currentBatteryThresholdValue \u2192 threshold)"
-    },
-    {
-      "id": "R-SLOP-38::Over-long identifier (>25 chars) is an AI verbosity indicator",
-      "status": "WARN",
-      "check": "R-SLOP-38",
-      "detail": "lib/workspacesView.js:225: Over-long identifier (>25 chars) is an AI verbosity indicator",
-      "fix": "Shorten parameter names to be concise but clear (e.g., currentBatteryThresholdValue \u2192 threshold)"
-    },
-    {
-      "id": "R-SLOP-38::Over-long identifier (>25 chars) is an AI verbosity indicator",
-      "status": "WARN",
-      "check": "R-SLOP-38",
-      "detail": "lib/dash.js:875: Over-long identifier (>25 chars) is an AI verbosity indicator",
-      "fix": "Shorten parameter names to be concise but clear (e.g., currentBatteryThresholdValue \u2192 threshold)"
     },
     {
       "id": "R-SLOP-44::Non-idiomatic GLib C-binding \u2014 use GLib.Source.remove()",
@@ -359,27 +303,6 @@
       "check": "R-SLOP-44",
       "detail": "lib/appDisplay.js:1636: Non-idiomatic GLib C-binding \u2014 use GLib.Source.remove()",
       "fix": "GLib.source_remove(id) \u2192 GLib.Source.remove(id). The function works but GLib.Source.remove() is the idiomatic GJS form."
-    },
-    {
-      "id": "R-QUAL-31::_onDestroy() should be renamed to destroy() with super.destroy() at the end",
-      "status": "WARN",
-      "check": "R-QUAL-31",
-      "detail": "lib/windowPreview.js:742: _onDestroy() should be renamed to destroy() with super.destroy() at the end",
-      "fix": "Rename to destroy() { /* cleanup */; super.destroy(); }"
-    },
-    {
-      "id": "R-QUAL-31::_onDestroy() should be renamed to destroy() with super.destroy() at the end",
-      "status": "WARN",
-      "check": "R-QUAL-31",
-      "detail": "lib/windowPreview.js:881: _onDestroy() should be renamed to destroy() with super.destroy() at the end",
-      "fix": "Rename to destroy() { /* cleanup */; super.destroy(); }"
-    },
-    {
-      "id": "R-QUAL-31::_onDestroy() should be renamed to destroy() with super.destroy() at the end",
-      "status": "WARN",
-      "check": "R-QUAL-31",
-      "detail": "lib/workspaceSwitcherPopup.js:232: _onDestroy() should be renamed to destroy() with super.destroy() at the end",
-      "fix": "Rename to destroy() { /* cleanup */; super.destroy(); }"
     },
     {
       "id": "R-QUAL-31::_onDestroy() should be renamed to destroy() with super.destroy() at the end",

@@ -225,6 +225,27 @@ def check_catch_on_sync(ext_dir, js_files):
         for m in method_def_re.finditer(clean):
             methods[m.group('name')] = m.group('async') is not None
 
+        # Detect non-async methods that return Promises
+        promise_return_re = re.compile(
+            r'return\s+(?:new\s+Promise\s*\(|Promise\.\w+\s*\()')
+        for m in method_def_re.finditer(clean):
+            name = m.group('name')
+            if methods.get(name):
+                continue  # already async
+            # Extract method body via brace counting
+            start = m.end()
+            depth = 1
+            pos = start
+            while pos < len(clean) and depth > 0:
+                if clean[pos] == '{':
+                    depth += 1
+                elif clean[pos] == '}':
+                    depth -= 1
+                pos += 1
+            body = clean[start:pos - 1]
+            if promise_return_re.search(body):
+                methods[name] = True
+
         # Find .catch()/.then() call sites on this._method()
         for lineno, line in enumerate(lines, 1):
             for m in call_site_re.finditer(line):

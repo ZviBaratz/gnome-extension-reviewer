@@ -449,6 +449,7 @@
   message: "print()/printerr() should not be used in production; use console.debug()"
   category: logging
   fix: "Replace print()/printerr() with console.debug() or console.error()."
+  exclude-dirs: ["resources"]
 
 # --- GSettings (advisory) ---
 # Common GSettings API misuse: wrong bind flag enum, missing settings cleanup.

@@ -200,6 +200,13 @@ assert_exit_code "exits with 0 (no warnings)" 0
 assert_output_not_contains "no R-LOG-03 on block comment" "\[WARN\].*R-LOG-03"
 echo ""
 
+# --- log-resources-skip ---
+echo "=== log-resources-skip ==="
+run_lint "log-resources-skip@test"
+assert_exit_code "exits with 0" 0
+assert_output_not_contains "no R-LOG-03 in resources/" "\[WARN\].*R-LOG-03"
+echo ""
+
 # --- destroyed-density ---
 echo "=== destroyed-density ==="
 run_lint "destroyed-density@test"
