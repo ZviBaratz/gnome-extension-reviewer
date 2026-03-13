@@ -209,6 +209,8 @@ def check_catch_on_sync(ext_dir, js_files):
         r'(?P<async>async\s+)?(?P<name>\w+)\s*\([^)]*\)\s*\{')
     call_site_re = re.compile(
         r'this\.(?P<name>_?\w+)\(\)\.(?:catch|then)\s*\(')
+    promise_return_re = re.compile(
+        r'return\s+(?:new\s+Promise\s*\(|Promise\.\w+\s*\()')
 
     findings = []
 
@@ -226,8 +228,6 @@ def check_catch_on_sync(ext_dir, js_files):
             methods[m.group('name')] = m.group('async') is not None
 
         # Detect non-async methods that return Promises
-        promise_return_re = re.compile(
-            r'return\s+(?:new\s+Promise\s*\(|Promise\.\w+\s*\()')
         for m in method_def_re.finditer(clean):
             name = m.group('name')
             if methods.get(name):
