@@ -24,3 +24,29 @@ class DaemonService extends GObject.Object {
         this._id = settings.connect('changed', () => {});
     }
 }
+
+// R-LOG-02 should NOT fire for log() in service/
+log('daemon started');
+
+// R-LOG-03 should NOT fire for print() in service/
+print('daemon output');
+
+// R-SLOP-43 should NOT fire for underscore exports in service/
+export function _internalHelper() {}
+
+// R-QUAL-32 should NOT fire for version specifiers in service/
+import GLib2 from 'gi://GLib?version=2.0';
+
+// R-QUAL-34 should NOT fire for sync enumerate in service/
+const iter = dir.enumerate_children('standard::*', Gio.FileQueryInfoFlags.NONE, null);
+
+// R-QUAL-35 should NOT fire for sync D-Bus in service/
+const reply = proxy.call_sync('Method', null, 0, -1, null);
+
+// quality/module-state should NOT fire for module vars in service/
+let daemonState = null;
+
+// lifecycle/untracked-timeout should NOT fire in service/
+GLib.timeout_add(GLib.PRIORITY_DEFAULT, 1000, () => {
+    return GLib.SOURCE_REMOVE;
+});

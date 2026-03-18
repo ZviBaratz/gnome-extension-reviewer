@@ -171,6 +171,10 @@ def check_untracked_timeouts(ext_dir):
     if not js_files:
         return
 
+    # Skip service/ directory (different lifecycle — no enable/disable)
+    js_files = [f for f in js_files
+                if '/service/' not in f.replace(os.sep, '/')]
+
     untracked = []
     for filepath in js_files:
         rel = os.path.relpath(filepath, ext_dir)
@@ -253,6 +257,10 @@ def check_timeout_return_value(ext_dir):
     js_files = find_js_files(ext_dir, exclude_prefs=True)
     if not js_files:
         return
+
+    # Skip service/ directory (different lifecycle)
+    js_files = [f for f in js_files
+                if '/service/' not in f.replace(os.sep, '/')]
 
     missing = []
     for filepath in js_files:
