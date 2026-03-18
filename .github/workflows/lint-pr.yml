@@ -36,6 +36,7 @@ jobs:
             ego-simulate
             ego-submit
             ego-field-test
+            main
           requireScope: false
           subjectPattern: ^[a-z].+$
           subjectPatternError: |
