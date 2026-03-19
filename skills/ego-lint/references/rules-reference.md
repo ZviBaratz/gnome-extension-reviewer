@@ -941,6 +941,7 @@ Heuristic rules that detect code patterns commonly seen in AI-generated or over-
 - **Rule**: Extension code should avoid declaring mutable variables (`let` or `var`) at module scope (outside any class or function).
 - **Rationale**: Module-level mutable state persists across enable/disable cycles, leading to subtle bugs. GNOME Shell extensions should keep all mutable state inside the `Extension` class instance, which is created fresh on each enable cycle.
 - **Fix**: Move mutable state into the Extension class as instance properties. Use `const` for module-level declarations that are truly constant (imports, enums, configuration).
+- **Scope exclusion**: Files in `service/` are excluded (daemon processes have different lifecycle — no enable/disable).
 
 ### R-QUAL-05: Empty catch blocks
 - **Severity**: advisory
@@ -1187,6 +1188,7 @@ disable() {
 - **Rule**: `timeout_add` or `idle_add` call whose return value is not stored.
 - **Rationale**: Without the source ID, the timeout cannot be removed in disable(), causing callbacks after extension teardown.
 - **Fix**: Store the return value: `this._timeoutId = GLib.timeout_add(...)` and call `GLib.Source.remove(this._timeoutId)` in disable().
+- **Scope exclusion**: Files in `service/` are excluded (daemon processes have different lifecycle — no enable/disable).
 - **Tested by**: `tests/fixtures/lifecycle-basic@test/`
 
 #### Example
@@ -1280,6 +1282,7 @@ export default class MyExtension extends Extension {
 - **Rule**: Callbacks passed to `GLib.timeout_add()` or `GLib.idle_add()` should explicitly return `GLib.SOURCE_REMOVE` or `GLib.SOURCE_CONTINUE`.
 - **Rationale**: If a timeout callback does not return `GLib.SOURCE_REMOVE` (or `false`), the default return value of `undefined` is falsy and the timeout is removed — but this is implicit and confusing. If the intent is to repeat, forgetting `SOURCE_CONTINUE` silently breaks the timer. Explicit return values make the intent clear and are expected by EGO reviewers.
 - **Fix**: Add `return GLib.SOURCE_REMOVE;` for one-shot timeouts or `return GLib.SOURCE_CONTINUE;` for repeating timeouts at the end of the callback.
+- **Scope exclusion**: Files in `service/` are excluded (daemon processes have different lifecycle — no enable/disable).
 
 ### R-LIFE-07: D-Bus proxy without signal disconnect
 - **Severity**: advisory
