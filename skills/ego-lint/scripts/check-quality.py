@@ -176,10 +176,15 @@ def check_module_state(ext_dir, js_files):
     Suppressed when the variable is reset to null elsewhere in the file
     (developer manages cleanup).
     """
+    # Service daemon dirs have different lifecycle (no enable/disable)
+    non_lifecycle_dirs = {'service'}
     found = []
 
     for filepath in js_files:
         rel = os.path.relpath(filepath, ext_dir)
+        rel_parts = rel.replace(os.sep, '/').split('/')
+        if any(part in non_lifecycle_dirs for part in rel_parts):
+            continue
         with open(filepath, encoding='utf-8', errors='replace') as f:
             content = f.read()
         lines = content.splitlines()
@@ -815,11 +820,18 @@ def check_repeated_settings(ext_dir, js_files):
     seen_schemas = set()
     distinct_schema_count = 0
 
+    # Service daemon dirs can't use Extension.getSettings()
+    non_lifecycle_dirs = {'service'}
+
     for filepath in js_files:
         # Exclude prefs.js — multiple getSettings there is normal
         if os.path.basename(filepath) == 'prefs.js':
             continue
         rel = os.path.relpath(filepath, ext_dir)
+        # Skip service daemon directories (different lifecycle)
+        rel_parts = rel.replace(os.sep, '/').split('/')
+        if any(part in non_lifecycle_dirs for part in rel_parts):
+            continue
         with open(filepath, encoding='utf-8', errors='replace') as f:
             for lineno, line in enumerate(f, 1):
                 stripped = line.lstrip()

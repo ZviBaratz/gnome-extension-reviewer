@@ -45,8 +45,8 @@ findings:
     classification: resolved
     notes: "52 hits — same as above. Fixed: provenance post-filter. Finding no longer emitted."
   - id: "R-SLOP-24::new Gio.Settings in service/"
-    classification: borderline
-    notes: "20 hits — many in service/ daemon where Extension class is unavailable"
+    classification: resolved
+    notes: "20→8 hits — service/ excluded from R-SLOP-24 via exclude-dirs. Remaining hits in extension code are TP."
   - id: "quality/constructor-resources::service/ui widgets"
     classification: borderline
     notes: "28 hits — many in service/ui/ (daemon GTK widgets, not extension lifecycle)"
@@ -63,8 +63,8 @@ findings:
     classification: tp
     notes: "6 instances — needs justification comments"
   - id: "R-QUAL-32::unnecessary version specifier"
-    classification: borderline
-    notes: "7 hits — version specifiers correct for standalone daemon scripts"
+    classification: resolved
+    notes: "7→0 hits — service/ excluded from R-QUAL-32 via exclude-dirs. Finding no longer emitted."
   # Resolved in 03-08 — service/ directory exempted (PR #88)
   - id: "lifecycle/prototype-override::service/ exempted"
     classification: resolved
@@ -154,21 +154,23 @@ findings:
   - id: "R-SEC-03::Use HTTPS instead of HTTP for network requests"
     classification: borderline
     notes: "3 of 4 hits are HTTP URLs in comments (reference links); 1 is legitimate protocol scheme fallback in code"
+  # Resolved by service/ exclusion (2026-03-18)
   - id: "R-SLOP-24::new Gio.Settings() is incorrect in GNOME 45+; use this.getSettings() from Extension base class"
-    classification: borderline
-    notes: "Many in service/ daemon where Extension base class is unavailable"
+    classification: resolved
+    notes: "Service/ findings excluded. Remaining 8 hits in extension code are TP (already counted in R-SLOP-24 annotation above)."
   - id: "R-SLOP-43::Underscore-prefixed export — private convention conflicts with public export"
-    classification: borderline
-    notes: "Exports in service/ code (_getDeviceType, _configureSocket) — internal API naming convention for daemon"
+    classification: resolved
+    notes: "2→0 service/ hits — excluded via exclude-dirs. Finding no longer emitted."
   - id: "R-QUAL-32::Unnecessary ?version= in gi:// import — this library does not require a version specifier"
-    classification: borderline
-    notes: "Version specifiers correct for standalone daemon scripts that need explicit versioning"
+    classification: resolved
+    notes: "7→0 service/ hits — excluded via exclude-dirs. Finding no longer emitted."
   - id: "quality/module-state::Module-level mutable state at service/nativeMessagingHost.js, service/backends/lan.js — ensure reset in both enable() and disable()"
-    classification: borderline
-    notes: "Both files in service/ daemon context — module state less relevant outside shell extension lifecycle"
+    classification: resolved
+    notes: "2→0 service/ hits — excluded from check_module_state(). Finding no longer emitted."
   - id: "quality/repeated-settings::20 getSettings()/Gio.Settings instances across extension files (extension.js, extension.js, shell/input.js, utils/setup.js, service/daemon.js) — store a single instance and pass via dependency injection"
-    classification: borderline
-    notes: "Includes service/ daemon files where Extension.getSettings() is unavailable — count inflated by daemon context"
+    classification: resolved
+    notes: "20→8 instances — service/ excluded from count. Superseded by updated 8-instance finding."
+  # Remaining borderlines (service/ exclusion doesn't apply)
   - id: "resource-tracking/orphan-gsettings::service/manager.js — this._settings created but not cleaned up in destroy()"
     classification: borderline
     notes: "service/manager.js is daemon code — GSettings cleanup less critical in standalone process"
@@ -178,6 +180,13 @@ findings:
   - id: "resource-tracking/ownership::64 files scanned, depth 2, 8 orphans detected"
     classification: borderline
     notes: "Orphan count includes service/ daemon files — reduced from 13 to 8 after destroy_\\w+ recognition + multi-parent ownership + Case 2 stored_as filter"
+  # New findings from service/ exclusion (2026-03-18) — updated detail strings
+  - id: "quality/repeated-settings::8 getSettings()/Gio.Settings instances across extension files (extension.js, extension.js, shell/input.js, utils/setup.js) — store a single instance and pass via dependency injection"
+    classification: tp
+    notes: "8 instances in extension code (service/ excluded) — valid advisory for reducing redundant settings access"
+  - id: "lifecycle/timeout-return-value::timeout_add/idle_add callback missing SOURCE_REMOVE/SOURCE_CONTINUE: shell/tooltip.js, shell/tooltip.js, service/ui/messaging.js"
+    classification: tp
+    notes: "Timer callbacks in shell/ should return SOURCE_REMOVE/SOURCE_CONTINUE — valid advisory"
 
   # FAIL findings — True Positives
   - id: "license::No LICENSE or COPYING file — should use GPL-compatible license"
