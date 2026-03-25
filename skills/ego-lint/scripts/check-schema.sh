@@ -8,6 +8,16 @@
 set -euo pipefail
 
 EXT_DIR="$(cd "${1:-.}" && pwd)"
+
+# Extract the schema id from a .gschema.xml file.
+# Uses a <schema>-specific grep to avoid picking up <enum id=> or other
+# elements that appear before <schema id=> in files with multiple top-level
+# elements (e.g. caffeine's schema has three <enum> elements first).
+extract_schema_id() {
+    local file="$1"
+    grep -P '<schema\b' "$file" | grep -oP 'id="[^"]*"' | head -1 | sed 's/id="//;s/"//'
+}
+
 METADATA="$EXT_DIR/metadata.json"
 # src/ layout fallback
 [[ ! -f "$METADATA" && -f "$EXT_DIR/src/metadata.json" ]] && METADATA="$EXT_DIR/src/metadata.json"
@@ -53,8 +63,8 @@ echo "PASS|schema/exists|Found ${#schema_files[@]} schema file(s)"
 # Validate schema IDs match metadata
 if [[ "$has_settings_schema" == true ]]; then
     for schema_file in "${schema_files[@]}"; do
-        # Extract schema id from XML
-        schema_id="$(grep -oP 'id="[^"]*"' "$schema_file" | head -1 | sed 's/id="//;s/"//')"
+        # Extract schema id from XML (use extract_schema_id to avoid matching <enum id=> etc.)
+        schema_id="$(extract_schema_id "$schema_file")"
         if [[ "$schema_id" == "$settings_schema" ]]; then
             echo "PASS|schema/id-matches|Schema ID '$schema_id' matches metadata.json settings-schema"
         else
@@ -65,7 +75,7 @@ fi
 
 # Validate schema filename convention: <schema-id>.gschema.xml
 for schema_file in "${schema_files[@]}"; do
-    schema_id="$(grep -oP 'id="[^"]*"' "$schema_file" | head -1 | sed 's/id="//;s/"//')"
+    schema_id="$(extract_schema_id "$schema_file")"
     if [[ -n "$schema_id" ]]; then
         expected_filename="${schema_id}.gschema.xml"
         actual_filename="$(basename "$schema_file")"
@@ -97,7 +107,7 @@ done
 
 # Check for GNOME trademark in schema IDs
 for schema_file in "${schema_files[@]}"; do
-    schema_id="$(grep -oP 'id="[^"]*"' "$schema_file" | head -1 | sed 's/id="//;s/"//')"
+    schema_id="$(extract_schema_id "$schema_file")"
     if [[ -n "$schema_id" ]]; then
         # Strip the standard prefix (case-insensitive), then check for 'gnome' in the extension-specific part
         lower_id="${schema_id,,}"
