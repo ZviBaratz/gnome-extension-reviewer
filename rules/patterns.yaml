@@ -643,10 +643,10 @@
 # LLMs frequently call methods that don't exist in GJS/GNOME Shell.
 
 - id: R-SLOP-08
-  pattern: "\\b(Meta\\.Screen|Meta\\.Cursor|Shell\\.ActionMode\\.ALL|Shell\\.WindowTracker\\.get_default\\(\\)\\.get_active_window)"
+  pattern: "\\b(Meta\\.Screen|Meta\\.Cursor|Shell\\.WindowTracker\\.get_default\\(\\)\\.get_active_window)"
   scope: ["*.js"]
   severity: advisory
-  message: "Likely hallucinated API — Meta.Screen, Meta.Cursor, Shell.ActionMode.ALL do not exist"
+  message: "Likely hallucinated API — Meta.Screen and Meta.Cursor do not exist"
   category: ai-slop
   fix: "Check the GJS API docs: https://gjs-docs.gnome.org. Use Meta.Display, global.display, etc."
 
@@ -708,14 +708,6 @@
   message: "Main.extensionManager.enable()/disable() is a hallucinated API — extensions cannot enable/disable themselves"
   category: ai-slop
   fix: "Remove the call. Extension lifecycle is managed by GNOME Shell, not by the extension itself."
-
-- id: R-SLOP-26
-  pattern: "\\bShell\\.ActionMode\\.ALL\\b"
-  scope: ["*.js"]
-  severity: advisory
-  message: "Shell.ActionMode.ALL does not exist; use Shell.ActionMode.NORMAL or combine specific modes"
-  category: ai-slop
-  fix: "Use Shell.ActionMode.NORMAL for most keybindings, or Shell.ActionMode.OVERVIEW | Shell.ActionMode.NORMAL for multi-mode"
 
 # --- Code quality (advisory/blocking) ---
 # Module-scope GObject construction, unnecessary patterns, code smell detection.
