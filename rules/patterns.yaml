@@ -854,7 +854,8 @@
   category: version-compat
   fix: "Replace .add_actor(child) with .add_child(child)"
   min-version: 46
-  guard-pattern: "\\bif\\s*\\(.*\\.add_actor\\b"
+  guard-pattern: "\\bif\\s*\\(.*\\.add_actor\\b|\\bShellVersion\\b"
+  guard-window: 5
   compat-downgrade: true
 
 - id: R-VER46-02
@@ -865,7 +866,8 @@
   category: version-compat
   fix: "Replace .remove_actor(child) with .remove_child(child)"
   min-version: 46
-  guard-pattern: "\\bif\\s*\\(.*\\.remove_actor\\b"
+  guard-pattern: "\\bif\\s*\\(.*\\.remove_actor\\b|\\bShellVersion\\b"
+  guard-window: 5
   compat-downgrade: true
 
 - id: R-VER46-03

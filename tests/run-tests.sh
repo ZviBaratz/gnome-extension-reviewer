@@ -474,6 +474,15 @@ assert_output_contains "fails on add_actor" "\[FAIL\].*R-VER46-01"
 assert_output_contains "fails on remove_actor" "\[FAIL\].*R-VER46-02"
 echo ""
 
+# --- version-guard-remove-actor ---
+echo "=== version-guard-remove-actor ==="
+run_lint "version-guard-remove-actor@test"
+assert_output_not_contains "no R-VER46-01 on ShellVersion-guarded add_actor" "\[FAIL\].*R-VER46-01"
+assert_output_not_contains "no R-VER46-01 warn on ShellVersion-guarded add_actor" "\[WARN\].*R-VER46-01"
+assert_output_not_contains "no R-VER46-02 on ShellVersion-guarded remove_actor" "\[FAIL\].*R-VER46-02"
+assert_output_not_contains "no R-VER46-02 warn on ShellVersion-guarded remove_actor" "\[WARN\].*R-VER46-02"
+echo ""
+
 # --- gnome47-compat ---
 echo "=== gnome47-compat ==="
 run_lint "gnome47-compat@test"

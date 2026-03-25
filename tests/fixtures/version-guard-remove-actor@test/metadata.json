@@ -1,0 +1,7 @@
+{
+    "uuid": "version-guard-remove-actor@test",
+    "name": "Version Guard Remove Actor Test",
+    "description": "Tests that add_actor/remove_actor inside ShellVersion else-branches are not flagged",
+    "shell-version": ["45", "46"],
+    "url": "https://github.com/test/version-guard-remove-actor"
+}
