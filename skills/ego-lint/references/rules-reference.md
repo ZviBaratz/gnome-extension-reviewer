@@ -214,7 +214,8 @@ Rules for logging practices in GNOME Shell extensions.
 - **Rule**: Extension code should not use the global `log()` function.
 - **Rationale**: The global `log()` function is a legacy GJS API. Modern extensions should use `console.debug()` or `console.error()` for structured logging.
 - **Fix**: Replace `log(msg)` with `console.debug(msg)`.
-- **Tested by**: `tests/fixtures/logging-patterns@test/`
+- **Note**: Files in `service/` are excluded (standalone daemon processes have different logging conventions).
+- **Tested by**: `tests/fixtures/logging-patterns@test/`, `tests/fixtures/service-daemon@test/`
 
 ### R-LOG-03: No print() for debugging
 - **Severity**: advisory
@@ -222,8 +223,8 @@ Rules for logging practices in GNOME Shell extensions.
 - **Rule**: Extension code should not use `print()` or `printerr()` for logging.
 - **Rationale**: `print()` writes directly to stdout, which is not captured by the journal in typical GNOME Shell setups. It is a sign of leftover debug code.
 - **Fix**: Replace with `console.debug()` or remove entirely.
-- **Note**: Uses `skip-comments` — does not flag `print()`/`printerr()` inside `//` or `/* */` comments. Files in `resources/` are excluded (standalone scripts, compiled output).
-- **Tested by**: `tests/fixtures/logging-patterns@test/`, `tests/fixtures/log-comment-skip@test/`, `tests/fixtures/log-resources-skip@test/`
+- **Note**: Uses `skip-comments` — does not flag `print()`/`printerr()` inside `//` or `/* */` comments. Files in `resources/` and `service/` are excluded (standalone scripts, compiled output, daemon processes).
+- **Tested by**: `tests/fixtures/logging-patterns@test/`, `tests/fixtures/log-comment-skip@test/`, `tests/fixtures/log-resources-skip@test/`, `tests/fixtures/service-daemon@test/`
 
 ### R-LOG-04: console.debug() is acceptable for operational messages
 - **Severity**: info
@@ -940,6 +941,7 @@ Heuristic rules that detect code patterns commonly seen in AI-generated or over-
 - **Rule**: Extension code should avoid declaring mutable variables (`let` or `var`) at module scope (outside any class or function).
 - **Rationale**: Module-level mutable state persists across enable/disable cycles, leading to subtle bugs. GNOME Shell extensions should keep all mutable state inside the `Extension` class instance, which is created fresh on each enable cycle.
 - **Fix**: Move mutable state into the Extension class as instance properties. Use `const` for module-level declarations that are truly constant (imports, enums, configuration).
+- **Scope exclusion**: Files in `service/` are excluded (daemon processes have different lifecycle — no enable/disable).
 
 ### R-QUAL-05: Empty catch blocks
 - **Severity**: advisory
@@ -1186,6 +1188,7 @@ disable() {
 - **Rule**: `timeout_add` or `idle_add` call whose return value is not stored.
 - **Rationale**: Without the source ID, the timeout cannot be removed in disable(), causing callbacks after extension teardown.
 - **Fix**: Store the return value: `this._timeoutId = GLib.timeout_add(...)` and call `GLib.Source.remove(this._timeoutId)` in disable().
+- **Scope exclusion**: Files in `service/` are excluded (daemon processes have different lifecycle — no enable/disable).
 - **Tested by**: `tests/fixtures/lifecycle-basic@test/`
 
 #### Example
@@ -1279,6 +1282,7 @@ export default class MyExtension extends Extension {
 - **Rule**: Callbacks passed to `GLib.timeout_add()` or `GLib.idle_add()` should explicitly return `GLib.SOURCE_REMOVE` or `GLib.SOURCE_CONTINUE`.
 - **Rationale**: If a timeout callback does not return `GLib.SOURCE_REMOVE` (or `false`), the default return value of `undefined` is falsy and the timeout is removed — but this is implicit and confusing. If the intent is to repeat, forgetting `SOURCE_CONTINUE` silently breaks the timer. Explicit return values make the intent clear and are expected by EGO reviewers.
 - **Fix**: Add `return GLib.SOURCE_REMOVE;` for one-shot timeouts or `return GLib.SOURCE_CONTINUE;` for repeating timeouts at the end of the callback.
+- **Scope exclusion**: Files in `service/` are excluded (daemon processes have different lifecycle — no enable/disable).
 
 ### R-LIFE-07: D-Bus proxy without signal disconnect
 - **Severity**: advisory
@@ -2514,7 +2518,8 @@ Rules for APIs removed or changed in specific GNOME Shell versions. These rules 
 - **Rule**: `export function _foo` / `export class _Bar` / `export const _baz` — underscore convention conflicts with export.
 - **Rationale**: In JavaScript, underscore-prefixed names conventionally indicate private/internal identifiers. Exporting them contradicts this convention and signals confusion about module boundaries. AI tools sometimes generate `export function _helper()` without considering the semantic conflict.
 - **Fix**: Either remove the underscore (it's exported, so it's public) or don't export it.
-- **Tested by**: `tests/fixtures/slop-underscore-export@test/`
+- **Note**: Files in `service/` are excluded (daemon internal APIs use underscore-prefixed exports as convention for cross-module private helpers).
+- **Tested by**: `tests/fixtures/slop-underscore-export@test/`, `tests/fixtures/service-daemon@test/`
 
 ---
 
@@ -2602,6 +2607,7 @@ Rules for APIs removed or changed in specific GNOME Shell versions. These rules 
 - **Rule**: `?version=` in gi:// imports for libraries that don't need it.
 - **Rationale**: Only Soup, Gtk, Gdk, and Adw require version specifiers. Adding versions to GLib, Gio, St, etc. is unnecessary and can cause breakage.
 - **Fix**: Remove `?version=` from the import.
+- **Note**: Files in `service/` are excluded (standalone daemon scripts require explicit version specifiers since they don't inherit the Shell's version context).
 
 ### R-QUAL-33: Gio._promisify() prototype mutation
 - **Severity**: advisory
@@ -2617,7 +2623,8 @@ Rules for APIs removed or changed in specific GNOME Shell versions. These rules 
 - **Rule**: `Gio.File.enumerate_children()` is synchronous and blocks the Shell main loop.
 - **Rationale**: `enumerate_children()` performs synchronous I/O on the calling thread — in GNOME Shell, that's the main loop. On slow filesystems or large directories, this freezes the entire desktop until the operation completes.
 - **Fix**: Use `file.enumerate_children_async(attributes, flags, priority, cancellable, callback)` instead.
-- **Tested by**: `tests/fixtures/sync-file-io@test/`
+- **Note**: Files in `service/` are excluded (daemon processes run in their own thread/process, not the compositor main loop).
+- **Tested by**: `tests/fixtures/sync-file-io@test/`, `tests/fixtures/service-daemon@test/`
 
 ### R-QUAL-35: Synchronous D-Bus call
 - **Severity**: advisory
@@ -2625,7 +2632,8 @@ Rules for APIs removed or changed in specific GNOME Shell versions. These rules 
 - **Rule**: `.call_sync()`, `.get_sync()`, `.set_sync()`, `.call_with_unix_fd_list_sync()` on D-Bus connections/proxies.
 - **Rationale**: Synchronous D-Bus calls block the compositor main loop, freezing the entire desktop until the remote service responds. This is especially dangerous for system bus calls to slow services (e.g., UPower, NetworkManager).
 - **Fix**: Use the async variant (`.call()`, `.get()`, `.set()`) with a callback or `Gio._promisify()`.
-- **Tested by**: `tests/fixtures/dbus-sync-call@test/`
+- **Note**: Files in `service/` are excluded (daemon processes run in their own thread/process, not the compositor main loop).
+- **Tested by**: `tests/fixtures/dbus-sync-call@test/`, `tests/fixtures/service-daemon@test/`
 
 ### R-QUAL-36: CRITICAL notification urgency
 - **Severity**: advisory

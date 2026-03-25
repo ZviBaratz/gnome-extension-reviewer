@@ -15,16 +15,16 @@ findings:
   - id: "R-VER47-01::Clutter.Color"
     classification: borderline
     notes: "appfolders.js has ternary runtime guard (Clutter.Color ? ... : Cogl.Color), but file crashes before reaching this code due to Tweener import"
-  # WARNs — False Positives
+  # WARNs — Resolved False Positives (fixed 2026-03-12)
   - id: "resource-tracking/destroy-not-called::disable() not recognized"
-    classification: fp
-    notes: "63 hits — components use .disable() not .destroy() as cleanup. Resource graph only recognizes destroy()."
+    classification: resolved
+    notes: "63→0 hits — fixed by multi-parent ownership + Case 2 stored_as=None filter (PR #143). Finding no longer emitted."
   - id: "quality/constructor-resources::pipeline instances"
-    classification: fp
-    notes: "17 hits — mostly FP, pipeline instances managed via parent lifecycle"
+    classification: resolved
+    notes: "17→1 hits — fixed by src/preferences path exclusion. Remaining hit (settings.js:304) is TP, annotated separately."
   - id: "resource-tracking/no-destroy-method::utility classes"
-    classification: fp
-    notes: "10 hits — utility classes use disconnect_all(), remove() instead"
+    classification: resolved
+    notes: "10→0 hits — fixed by destroy_\\w+ recognition + multi-parent ownership (PR #143). Finding no longer emitted."
   - id: "R-SLOP-38::descriptive identifier"
     classification: resolved
     notes: "dash_not_already_destroyed is descriptive, not AI verbosity. Fixed: guard-pattern."

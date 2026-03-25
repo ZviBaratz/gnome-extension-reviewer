@@ -1,20 +1,20 @@
 {
   "name": "hara-hachi-bu",
   "uuid": "hara-hachi-bu@ZviBaratz",
-  "timestamp": "2026-03-12T10:58:04.469683+00:00",
-  "ego_lint_version": "1a58b06",
+  "timestamp": "2026-03-18T20:53:08.594986+00:00",
+  "ego_lint_version": "e74c508",
   "ego_approved": false,
   "exit_code": 0,
   "counts": {
-    "pass": 209,
+    "pass": 226,
     "fail": 0,
     "warn": 9,
-    "skip": 23,
-    "total": 241
+    "skip": 7,
+    "total": 242
   },
   "metrics": {
     "js_files": 18,
-    "total_lines": 8898,
+    "total_lines": 8905,
     "largest_file": "prefs.js (1973)",
     "css_lines": 126,
     "schema_keys": 26
@@ -92,112 +92,16 @@
       "detail": "vertical property in constructor config deprecated in GNOME 48; use orientation: Clutter.Orientation.VERTICAL (available since GNOME 47; keep vertical for GNOME <=46 compat) in 1 file(s): lib/quickSettingsPanel.js"
     },
     {
-      "id": "R-VER49-01::Not applicable for declared shell-version(s)",
-      "status": "SKIP",
-      "check": "R-VER49-01",
-      "detail": "Not applicable for declared shell-version(s)"
-    },
-    {
-      "id": "R-VER49-02::Not applicable for declared shell-version(s)",
-      "status": "SKIP",
-      "check": "R-VER49-02",
-      "detail": "Not applicable for declared shell-version(s)"
-    },
-    {
-      "id": "R-VER49-03::Not applicable for declared shell-version(s)",
-      "status": "SKIP",
-      "check": "R-VER49-03",
-      "detail": "Not applicable for declared shell-version(s)"
-    },
-    {
-      "id": "R-VER49-04::Not applicable for declared shell-version(s)",
-      "status": "SKIP",
-      "check": "R-VER49-04",
-      "detail": "Not applicable for declared shell-version(s)"
-    },
-    {
-      "id": "R-VER49-05::Not applicable for declared shell-version(s)",
-      "status": "SKIP",
-      "check": "R-VER49-05",
-      "detail": "Not applicable for declared shell-version(s)"
-    },
-    {
-      "id": "R-VER49-06::Not applicable for declared shell-version(s)",
-      "status": "SKIP",
-      "check": "R-VER49-06",
-      "detail": "Not applicable for declared shell-version(s)"
-    },
-    {
-      "id": "R-VER49-07::Not applicable for declared shell-version(s)",
-      "status": "SKIP",
-      "check": "R-VER49-07",
-      "detail": "Not applicable for declared shell-version(s)"
-    },
-    {
-      "id": "R-VER49-08::Not applicable for declared shell-version(s)",
-      "status": "SKIP",
-      "check": "R-VER49-08",
-      "detail": "Not applicable for declared shell-version(s)"
-    },
-    {
-      "id": "R-VER49-09::Not applicable for declared shell-version(s)",
-      "status": "SKIP",
-      "check": "R-VER49-09",
-      "detail": "Not applicable for declared shell-version(s)"
-    },
-    {
-      "id": "R-VER49-10::Not applicable for declared shell-version(s)",
-      "status": "SKIP",
-      "check": "R-VER49-10",
-      "detail": "Not applicable for declared shell-version(s)"
-    },
-    {
-      "id": "R-VER49-11::Not applicable for declared shell-version(s)",
-      "status": "SKIP",
-      "check": "R-VER49-11",
-      "detail": "Not applicable for declared shell-version(s)"
-    },
-    {
-      "id": "R-VER50-01::Not applicable for declared shell-version(s)",
-      "status": "SKIP",
-      "check": "R-VER50-01",
-      "detail": "Not applicable for declared shell-version(s)"
-    },
-    {
-      "id": "R-VER50-02::Not applicable for declared shell-version(s)",
-      "status": "SKIP",
-      "check": "R-VER50-02",
-      "detail": "Not applicable for declared shell-version(s)"
-    },
-    {
-      "id": "R-VER50-03::Not applicable for declared shell-version(s)",
-      "status": "SKIP",
-      "check": "R-VER50-03",
-      "detail": "Not applicable for declared shell-version(s)"
-    },
-    {
-      "id": "R-VER50-04::Not applicable for declared shell-version(s)",
-      "status": "SKIP",
-      "check": "R-VER50-04",
-      "detail": "Not applicable for declared shell-version(s)"
-    },
-    {
-      "id": "R-VER50-05::Not applicable for declared shell-version(s)",
-      "status": "SKIP",
-      "check": "R-VER50-05",
-      "detail": "Not applicable for declared shell-version(s)"
-    },
-    {
       "id": "eslint::ESLint configuration error (exit code 2)",
       "status": "WARN",
       "check": "eslint",
       "detail": "ESLint configuration error (exit code 2)"
     },
     {
-      "id": "metadata/shell-version-current::shell-version does not include GNOME 49",
+      "id": "metadata/future-shell-version::shell-version '50' is newer than current stable (49)",
       "status": "WARN",
-      "check": "metadata/shell-version-current",
-      "detail": "shell-version does not include GNOME 49"
+      "check": "metadata/future-shell-version",
+      "detail": "shell-version '50' is newer than current stable (49)"
     },
     {
       "id": "schema-usage/unused-key::Dynamic key access detected \u2014 cannot verify statically",
@@ -215,7 +119,7 @@
       "id": "quality/private-api::lib/quickSettingsPanel.js, lib/quickSettingsPanel.js, lib/quickSettingsPanel.js, lib/quickSettingsPanel.js, lib/quickSettingsPanel.js (+6 more): quickSettings private API access \u2014 requires reviewer justification and version pinning",
       "status": "WARN",
       "check": "quality/private-api",
-      "detail": "lib/quickSettingsPanel.js:1379, lib/quickSettingsPanel.js:1388, lib/quickSettingsPanel.js:1390, lib/quickSettingsPanel.js:1391, lib/quickSettingsPanel.js:1457 (+6 more): quickSettings private API access \u2014 requires reviewer justification and version pinning"
+      "detail": "lib/quickSettingsPanel.js:1386, lib/quickSettingsPanel.js:1395, lib/quickSettingsPanel.js:1397, lib/quickSettingsPanel.js:1398, lib/quickSettingsPanel.js:1464 (+6 more): quickSettings private API access \u2014 requires reviewer justification and version pinning"
     }
   ]
 }
