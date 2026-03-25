@@ -1,16 +1,16 @@
 {
   "name": "gsconnect",
   "uuid": "gsconnect@andyholmes.github.io",
-  "timestamp": "2026-03-12T19:23:00.470878+00:00",
-  "ego_lint_version": "a7e0a2c",
+  "timestamp": "2026-03-18T20:53:13.926856+00:00",
+  "ego_lint_version": "e74c508",
   "ego_approved": true,
   "exit_code": 1,
   "counts": {
-    "pass": 174,
+    "pass": 182,
     "fail": 4,
-    "warn": 126,
+    "warn": 103,
     "skip": 17,
-    "total": 321
+    "total": 306
   },
   "metrics": {
     "js_files": 65,
@@ -157,34 +157,6 @@
       "check": "R-I18N-02",
       "detail": "preferences/service.js:445: String concatenation inside gettext _() breaks xgettext extraction",
       "fix": "Use _('Hello %s').format(name) instead of _('Hello ' + name)"
-    },
-    {
-      "id": "R-LOG-02::Legacy log() function; use console.debug() instead",
-      "status": "WARN",
-      "check": "R-LOG-02",
-      "detail": "service/components/atspi.js:232: Legacy log() function; use console.debug() instead",
-      "fix": "Replace log(...) with console.debug(...)."
-    },
-    {
-      "id": "R-LOG-03::print()/printerr() should not be used in production; use console.debug()",
-      "status": "WARN",
-      "check": "R-LOG-03",
-      "detail": "service/daemon.js:631: print()/printerr() should not be used in production; use console.debug()",
-      "fix": "Replace print()/printerr() with console.debug() or console.error()."
-    },
-    {
-      "id": "R-LOG-03::print()/printerr() should not be used in production; use console.debug()",
-      "status": "WARN",
-      "check": "R-LOG-03",
-      "detail": "service/daemon.js:633: print()/printerr() should not be used in production; use console.debug()",
-      "fix": "Replace print()/printerr() with console.debug() or console.error()."
-    },
-    {
-      "id": "R-LOG-03::print()/printerr() should not be used in production; use console.debug()",
-      "status": "WARN",
-      "check": "R-LOG-03",
-      "detail": "service/daemon.js:716: print()/printerr() should not be used in production; use console.debug()",
-      "fix": "Replace print()/printerr() with console.debug() or console.error()."
     },
     {
       "id": "R-SLOP-03::version field is deprecated; EGO manages versions for GNOME 45+",
@@ -346,20 +318,6 @@
       "check": "R-SLOP-40",
       "detail": "preferences/service.js:73: new Promise(resolve, reject) wrapper \u2014 consider Gio._promisify() for GIO async methods",
       "fix": "Use Gio._promisify() to promisify GIO async methods instead of manual Promise wrapping"
-    },
-    {
-      "id": "R-SLOP-43::Underscore-prefixed export \u2014 private convention conflicts with public export",
-      "status": "WARN",
-      "check": "R-SLOP-43",
-      "detail": "service/core.js:18: Underscore-prefixed export \u2014 private convention conflicts with public export",
-      "fix": "Either remove the underscore (it's exported, so it's public) or don't export it"
-    },
-    {
-      "id": "R-SLOP-43::Underscore-prefixed export \u2014 private convention conflicts with public export",
-      "status": "WARN",
-      "check": "R-SLOP-43",
-      "detail": "service/backends/lan.js:56: Underscore-prefixed export \u2014 private convention conflicts with public export",
-      "fix": "Either remove the underscore (it's exported, so it's public) or don't export it"
     },
     {
       "id": "R-SLOP-08::Likely hallucinated API \u2014 Meta.Screen, Meta.Cursor, Shell.ActionMode.ALL do not exist",
@@ -551,88 +509,11 @@
       "fix": "Rename to destroy() { /* cleanup */; super.destroy(); }"
     },
     {
-      "id": "R-QUAL-32::Unnecessary ?version= in gi:// import \u2014 this library does not require a version specifier",
-      "status": "WARN",
-      "check": "R-QUAL-32",
-      "detail": "service/daemon.js:9: Unnecessary ?version= in gi:// import \u2014 this library does not require a version specifier",
-      "fix": "Remove ?version= from the import; only Soup, Gtk, Gdk, and Adw require version specifiers"
-    },
-    {
-      "id": "R-QUAL-32::Unnecessary ?version= in gi:// import \u2014 this library does not require a version specifier",
-      "status": "WARN",
-      "check": "R-QUAL-32",
-      "detail": "service/daemon.js:10: Unnecessary ?version= in gi:// import \u2014 this library does not require a version specifier",
-      "fix": "Remove ?version= from the import; only Soup, Gtk, Gdk, and Adw require version specifiers"
-    },
-    {
-      "id": "R-QUAL-32::Unnecessary ?version= in gi:// import \u2014 this library does not require a version specifier",
-      "status": "WARN",
-      "check": "R-QUAL-32",
-      "detail": "service/daemon.js:11: Unnecessary ?version= in gi:// import \u2014 this library does not require a version specifier",
-      "fix": "Remove ?version= from the import; only Soup, Gtk, Gdk, and Adw require version specifiers"
-    },
-    {
-      "id": "R-QUAL-32::Unnecessary ?version= in gi:// import \u2014 this library does not require a version specifier",
-      "status": "WARN",
-      "check": "R-QUAL-32",
-      "detail": "service/daemon.js:13: Unnecessary ?version= in gi:// import \u2014 this library does not require a version specifier",
-      "fix": "Remove ?version= from the import; only Soup, Gtk, Gdk, and Adw require version specifiers"
-    },
-    {
-      "id": "R-QUAL-32::Unnecessary ?version= in gi:// import \u2014 this library does not require a version specifier",
-      "status": "WARN",
-      "check": "R-QUAL-32",
-      "detail": "service/nativeMessagingHost.js:7: Unnecessary ?version= in gi:// import \u2014 this library does not require a version specifier",
-      "fix": "Remove ?version= from the import; only Soup, Gtk, Gdk, and Adw require version specifiers"
-    },
-    {
-      "id": "R-QUAL-32::Unnecessary ?version= in gi:// import \u2014 this library does not require a version specifier",
-      "status": "WARN",
-      "check": "R-QUAL-32",
-      "detail": "service/nativeMessagingHost.js:8: Unnecessary ?version= in gi:// import \u2014 this library does not require a version specifier",
-      "fix": "Remove ?version= from the import; only Soup, Gtk, Gdk, and Adw require version specifiers"
-    },
-    {
-      "id": "R-QUAL-32::Unnecessary ?version= in gi:// import \u2014 this library does not require a version specifier",
-      "status": "WARN",
-      "check": "R-QUAL-32",
-      "detail": "service/nativeMessagingHost.js:9: Unnecessary ?version= in gi:// import \u2014 this library does not require a version specifier",
-      "fix": "Remove ?version= from the import; only Soup, Gtk, Gdk, and Adw require version specifiers"
-    },
-    {
       "id": "R-QUAL-33::Gio._promisify() permanently mutates shared GJS prototypes \u2014 document module-scope placement",
       "status": "WARN",
       "check": "R-QUAL-33",
       "detail": "Gio._promisify() permanently mutates shared GJS prototypes \u2014 document module-scope placement in 1 file(s): service/init.js",
       "fix": "Gio._promisify() is fine but cannot be undone on disable(); add a comment explaining the module-scope placement"
-    },
-    {
-      "id": "R-QUAL-34::enumerate_children() is synchronous \u2014 use enumerate_children_async() to avoid blocking the Shell main loop",
-      "status": "WARN",
-      "check": "R-QUAL-34",
-      "detail": "service/init.js:218: enumerate_children() is synchronous \u2014 use enumerate_children_async() to avoid blocking the Shell main loop",
-      "fix": "Use file.enumerate_children_async(attributes, flags, priority, cancellable, callback)"
-    },
-    {
-      "id": "R-QUAL-35::Synchronous D-Bus call blocks the compositor main loop \u2014 use async variant",
-      "status": "WARN",
-      "check": "R-QUAL-35",
-      "detail": "service/daemon.js:597: Synchronous D-Bus call blocks the compositor main loop \u2014 use async variant",
-      "fix": "Use .call() / .get() / .set() with async callback or Gio._promisify() instead of _sync()"
-    },
-    {
-      "id": "R-QUAL-35::Synchronous D-Bus call blocks the compositor main loop \u2014 use async variant",
-      "status": "WARN",
-      "check": "R-QUAL-35",
-      "detail": "service/daemon.js:611: Synchronous D-Bus call blocks the compositor main loop \u2014 use async variant",
-      "fix": "Use .call() / .get() / .set() with async callback or Gio._promisify() instead of _sync()"
-    },
-    {
-      "id": "R-QUAL-35::Synchronous D-Bus call blocks the compositor main loop \u2014 use async variant",
-      "status": "WARN",
-      "check": "R-QUAL-35",
-      "detail": "service/components/mpris.js:702: Synchronous D-Bus call blocks the compositor main loop \u2014 use async variant",
-      "fix": "Use .call() / .get() / .set() with async callback or Gio._promisify() instead of _sync()"
     },
     {
       "id": "R-VER48-04::St.Widget.vertical property deprecated in GNOME 48; use orientation: Clutter.Orientation.VERTICAL (available since GNOME 47; keep vertical for GNOME <=46 compat)",
@@ -719,12 +600,6 @@
       "detail": "shell/utils.js: 6:import Gtk from 'gi://Gtk';"
     },
     {
-      "id": "quality/module-state::Module-level mutable state at service/nativeMessagingHost.js, service/backends/lan.js \u2014 ensure reset in both enable() and disable()",
-      "status": "WARN",
-      "check": "quality/module-state",
-      "detail": "Module-level mutable state at service/nativeMessagingHost.js:14, service/backends/lan.js:14 \u2014 ensure reset in both enable() and disable()"
-    },
-    {
       "id": "quality/code-volume::20475 non-blank JS lines \u2014 large codebase; ensure all code is necessary and manually reviewed",
       "status": "WARN",
       "check": "quality/code-volume",
@@ -779,10 +654,10 @@
       "detail": "preferences/device.js:419: run_dispose() without explanatory comment \u2014 reviewers require justification"
     },
     {
-      "id": "quality/repeated-settings::20 getSettings()/Gio.Settings instances across extension files (extension.js, extension.js, shell/input.js, utils/setup.js, service/daemon.js) \u2014 store a single instance and pass via dependency injection",
+      "id": "quality/repeated-settings::8 getSettings()/Gio.Settings instances across extension files (extension.js, extension.js, shell/input.js, utils/setup.js, preferences/device.js) \u2014 store a single instance and pass via dependency injection",
       "status": "WARN",
       "check": "quality/repeated-settings",
-      "detail": "20 getSettings()/Gio.Settings instances across extension files (extension.js:56, extension.js:194, shell/input.js:13, utils/setup.js:141, service/daemon.js:88) \u2014 store a single instance and pass via dependency injection"
+      "detail": "8 getSettings()/Gio.Settings instances across extension files (extension.js:56, extension.js:194, shell/input.js:13, utils/setup.js:141, preferences/device.js:308) \u2014 store a single instance and pass via dependency injection"
     },
     {
       "id": "lifecycle/untracked-timeout::timer/idle return value not stored \u2014 cannot be removed in disable()",
@@ -791,40 +666,16 @@
       "detail": "shell/clipboard.js:116: timer/idle return value not stored \u2014 cannot be removed in disable()"
     },
     {
-      "id": "lifecycle/untracked-timeout::timer/idle return value not stored \u2014 cannot be removed in disable()",
-      "status": "WARN",
-      "check": "lifecycle/untracked-timeout",
-      "detail": "service/ui/messaging.js:650: timer/idle return value not stored \u2014 cannot be removed in disable()"
-    },
-    {
-      "id": "lifecycle/untracked-timeout::timer/idle return value not stored \u2014 cannot be removed in disable()",
-      "status": "WARN",
-      "check": "lifecycle/untracked-timeout",
-      "detail": "service/ui/mousepad.js:366: timer/idle return value not stored \u2014 cannot be removed in disable()"
-    },
-    {
-      "id": "lifecycle/untracked-timeout::timer/idle return value not stored \u2014 cannot be removed in disable()",
-      "status": "WARN",
-      "check": "lifecycle/untracked-timeout",
-      "detail": "service/components/sound.js:81: timer/idle return value not stored \u2014 cannot be removed in disable()"
-    },
-    {
-      "id": "lifecycle/untracked-timeout::timer/idle return value not stored \u2014 cannot be removed in disable()",
-      "status": "WARN",
-      "check": "lifecycle/untracked-timeout",
-      "detail": "service/components/sound.js:100: timer/idle return value not stored \u2014 cannot be removed in disable()"
-    },
-    {
       "id": "lifecycle/async-destroyed-guard::async/await used without _destroyed or _isDestroyed guard \u2014 extension may act on stale state after disable()",
       "status": "WARN",
       "check": "lifecycle/async-destroyed-guard",
       "detail": "async/await used without _destroyed or _isDestroyed guard \u2014 extension may act on stale state after disable()"
     },
     {
-      "id": "lifecycle/timeout-return-value::shell/tooltip.js, shell/tooltip.js, service/ui/messaging.js",
+      "id": "lifecycle/timeout-return-value::shell/tooltip.js, shell/tooltip.js",
       "status": "WARN",
       "check": "lifecycle/timeout-return-value",
-      "detail": "timeout_add/idle_add callback missing SOURCE_REMOVE/SOURCE_CONTINUE: shell/tooltip.js:256, shell/tooltip.js:277, service/ui/messaging.js:650"
+      "detail": "timeout_add/idle_add callback missing SOURCE_REMOVE/SOURCE_CONTINUE: shell/tooltip.js:256, shell/tooltip.js:277"
     },
     {
       "id": "lifecycle/prototype-override::GtkNotificationDaemon.prototype._ensureAppSource \u2014 direct prototype modification should be restored in disable()",
@@ -897,12 +748,6 @@
       "status": "WARN",
       "check": "async/disable-no-cancel",
       "detail": "Extension uses async but disable() has no .cancel(), .abort(), or _destroyed flag \u2014 async operations may outlive disable()"
-    },
-    {
-      "id": "async/catch-on-sync::.catch() on non-async GetMimetypes() \u2014 verify method returns a Promise",
-      "status": "WARN",
-      "check": "async/catch-on-sync",
-      "detail": "wl_clipboard.js:187: .catch() on non-async GetMimetypes() \u2014 verify method returns a Promise"
     },
     {
       "id": "init/shell-modification::Shell modification outside enable()",

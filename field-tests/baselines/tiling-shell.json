@@ -1,14 +1,14 @@
 {
   "name": "tiling-shell",
   "uuid": "tilingshell@ferrarodomenico.com",
-  "timestamp": "2026-03-12T10:58:05.182600+00:00",
-  "ego_lint_version": "1a58b06",
+  "timestamp": "2026-03-18T20:53:09.285144+00:00",
+  "ego_lint_version": "e74c508",
   "ego_approved": true,
   "exit_code": 1,
   "counts": {
-    "pass": 193,
+    "pass": 194,
     "fail": 2,
-    "warn": 7,
+    "warn": 6,
     "skip": 16,
     "total": 218
   },
@@ -86,13 +86,6 @@
       "status": "SKIP",
       "check": "accessibility/widget-role",
       "detail": "No UI-related imports found"
-    },
-    {
-      "id": "R-LOG-03::print()/printerr() should not be used in production; use console.debug()",
-      "status": "WARN",
-      "check": "R-LOG-03",
-      "detail": "resources/monitorDescription.js:14: print()/printerr() should not be used in production; use console.debug()",
-      "fix": "Replace print()/printerr() with console.debug() or console.error()."
     },
     {
       "id": "R-SLOP-03::version field is deprecated; EGO manages versions for GNOME 45+",

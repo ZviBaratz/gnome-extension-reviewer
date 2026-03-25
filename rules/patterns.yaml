@@ -440,6 +440,7 @@
   message: "Legacy log() function; use console.debug() instead"
   category: logging
   fix: "Replace log(...) with console.debug(...)."
+  exclude-dirs: ["service"]
 
 - id: R-LOG-03
   pattern: "\\b(print|printerr)\\s*\\("
@@ -449,7 +450,7 @@
   message: "print()/printerr() should not be used in production; use console.debug()"
   category: logging
   fix: "Replace print()/printerr() with console.debug() or console.error()."
-  exclude-dirs: ["resources"]
+  exclude-dirs: ["resources", "service"]
 
 # --- GSettings (advisory) ---
 # Common GSettings API misuse: wrong bind flag enum, missing settings cleanup.
@@ -636,6 +637,7 @@
   message: "Underscore-prefixed export — private convention conflicts with public export"
   category: ai-slop
   fix: "Either remove the underscore (it's exported, so it's public) or don't export it"
+  exclude-dirs: ["service"]
 
 # --- Hallucinated APIs (advisory/blocking) ---
 # LLMs frequently call methods that don't exist in GJS/GNOME Shell.
@@ -783,6 +785,7 @@
   message: "Unnecessary ?version= in gi:// import — this library does not require a version specifier"
   category: code-quality
   fix: "Remove ?version= from the import; only Soup, Gtk, Gdk, and Adw require version specifiers"
+  exclude-dirs: ["service"]
 
 - id: R-QUAL-33
   pattern: "Gio\\._promisify\\s*\\("
@@ -800,6 +803,7 @@
   message: "enumerate_children() is synchronous — use enumerate_children_async() to avoid blocking the Shell main loop"
   category: code-quality
   fix: "Use file.enumerate_children_async(attributes, flags, priority, cancellable, callback)"
+  exclude-dirs: ["service"]
 
 - id: R-QUAL-35
   pattern: "\\.(call_sync|get_sync|set_sync|call_with_unix_fd_list_sync)\\s*\\("
@@ -808,6 +812,7 @@
   message: "Synchronous D-Bus call blocks the compositor main loop — use async variant"
   category: code-quality
   fix: "Use .call() / .get() / .set() with async callback or Gio._promisify() instead of _sync()"
+  exclude-dirs: ["service"]
 
 - id: R-QUAL-36
   pattern: "\\.urgency\\s*=(?!=)\\s*.*Urgency\\.CRITICAL"

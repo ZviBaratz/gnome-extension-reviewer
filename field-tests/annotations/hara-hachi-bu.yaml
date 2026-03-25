@@ -50,8 +50,11 @@ findings:
     classification: tp
     notes: "Correct advisory, deduplicated to 1 per file"
   - id: "metadata/shell-version-current::GNOME 49 not in shell-version"
+    classification: resolved
+    notes: "Extension updated to include GNOME 49/50 — finding no longer emitted"
+  - id: "metadata/future-shell-version::shell-version '50' is newer than current stable (49)"
     classification: expected
-    notes: "Intentional — GNOME 49 not yet tested"
+    notes: "Extension declares GNOME 50 support ahead of release"
   - id: "quality/private-api::private API with justification"
     classification: tp
     notes: "Disclosed in metadata — correct advisory"
@@ -72,54 +75,55 @@ findings:
   - id: "R-DEPR-04-legacy::Not applicable for declared shell-version(s)"
     classification: expected
     notes: "Version-gated skip — not applicable for declared shell-version"
+  # R-VER49-* and R-VER50-* — resolved (extension now declares GNOME 49/50, checks apply and PASS)
   - id: "R-VER49-01::Not applicable for declared shell-version(s)"
-    classification: expected
-    notes: "Version-gated skip — extension does not target GNOME 49"
+    classification: resolved
+    notes: "Extension updated to target GNOME 49 — check now applies and passes"
   - id: "R-VER49-02::Not applicable for declared shell-version(s)"
-    classification: expected
-    notes: "Version-gated skip — extension does not target GNOME 49"
+    classification: resolved
+    notes: "Extension updated to target GNOME 49 — check now applies and passes"
   - id: "R-VER49-03::Not applicable for declared shell-version(s)"
-    classification: expected
-    notes: "Version-gated skip — extension does not target GNOME 49"
+    classification: resolved
+    notes: "Extension updated to target GNOME 49 — check now applies and passes"
   - id: "R-VER49-04::Not applicable for declared shell-version(s)"
-    classification: expected
-    notes: "Version-gated skip — extension does not target GNOME 49"
+    classification: resolved
+    notes: "Extension updated to target GNOME 49 — check now applies and passes"
   - id: "R-VER49-05::Not applicable for declared shell-version(s)"
-    classification: expected
-    notes: "Version-gated skip — extension does not target GNOME 49"
+    classification: resolved
+    notes: "Extension updated to target GNOME 49 — check now applies and passes"
   - id: "R-VER49-06::Not applicable for declared shell-version(s)"
-    classification: expected
-    notes: "Version-gated skip — extension does not target GNOME 49"
+    classification: resolved
+    notes: "Extension updated to target GNOME 49 — check now applies and passes"
   - id: "R-VER49-07::Not applicable for declared shell-version(s)"
-    classification: expected
-    notes: "Version-gated skip — extension does not target GNOME 49"
+    classification: resolved
+    notes: "Extension updated to target GNOME 49 — check now applies and passes"
   - id: "R-VER49-08::Not applicable for declared shell-version(s)"
-    classification: expected
-    notes: "Version-gated skip — extension does not target GNOME 49"
+    classification: resolved
+    notes: "Extension updated to target GNOME 49 — check now applies and passes"
   - id: "R-VER49-09::Not applicable for declared shell-version(s)"
-    classification: expected
-    notes: "Version-gated skip — extension does not target GNOME 49"
+    classification: resolved
+    notes: "Extension updated to target GNOME 49 — check now applies and passes"
   - id: "R-VER49-10::Not applicable for declared shell-version(s)"
-    classification: expected
-    notes: "Version-gated skip — extension does not target GNOME 49"
+    classification: resolved
+    notes: "Extension updated to target GNOME 49 — check now applies and passes"
   - id: "R-VER49-11::Not applicable for declared shell-version(s)"
-    classification: expected
-    notes: "Version-gated skip — extension does not target GNOME 49"
+    classification: resolved
+    notes: "Extension updated to target GNOME 49 — check now applies and passes"
   - id: "R-VER50-01::Not applicable for declared shell-version(s)"
-    classification: expected
-    notes: "Version-gated skip — extension does not target GNOME 50"
+    classification: resolved
+    notes: "Extension updated to target GNOME 50 — check now applies and passes"
   - id: "R-VER50-02::Not applicable for declared shell-version(s)"
-    classification: expected
-    notes: "Version-gated skip — extension does not target GNOME 50"
+    classification: resolved
+    notes: "Extension updated to target GNOME 50 — check now applies and passes"
   - id: "R-VER50-03::Not applicable for declared shell-version(s)"
-    classification: expected
-    notes: "Version-gated skip — extension does not target GNOME 50"
+    classification: resolved
+    notes: "Extension updated to target GNOME 50 — check now applies and passes"
   - id: "R-VER50-04::Not applicable for declared shell-version(s)"
-    classification: expected
-    notes: "Version-gated skip — extension does not target GNOME 50"
+    classification: resolved
+    notes: "Extension updated to target GNOME 50 — check now applies and passes"
   - id: "R-VER50-05::Not applicable for declared shell-version(s)"
-    classification: expected
-    notes: "Version-gated skip — extension does not target GNOME 50"
+    classification: resolved
+    notes: "Extension updated to target GNOME 50 — check now applies and passes"
   # SKIP findings — static analysis limitations
   - id: "schema-usage/unused-key::Dynamic key access detected — cannot verify statically"
     classification: expected
@@ -150,8 +154,8 @@ findings:
     classification: expected
     notes: "Optional tooling — ESLint config error is an environment issue"
   - id: "metadata/shell-version-current::shell-version does not include GNOME 49"
-    classification: expected
-    notes: "Intentional — GNOME 49 not yet tested"
+    classification: resolved
+    notes: "Extension updated to include GNOME 49 — finding no longer emitted"
   - id: "quality/private-api::lib/quickSettingsPanel.js, lib/quickSettingsPanel.js, lib/quickSettingsPanel.js, lib/quickSettingsPanel.js, lib/quickSettingsPanel.js (+6 more): quickSettings private API access — requires reviewer justification and version pinning"
     classification: tp
     notes: "Private API access is real — disclosed in metadata"
