@@ -66,6 +66,7 @@
   pattern: "\\bdocument\\."
   scope: ["*.js"]
   severity: blocking
+  skip-comments: true
   message: "DOM APIs (document.*) are not available in GJS"
   category: web-apis
   fix: "GJS has no DOM. Use GObject/Clutter/St/GTK widgets instead."
