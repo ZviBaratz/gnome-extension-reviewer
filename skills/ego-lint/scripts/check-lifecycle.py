@@ -42,6 +42,17 @@ import re
 import sys
 
 
+# Directories without enable()/disable() lifecycle
+_NON_LIFECYCLE_DIRS = frozenset({'service'})
+
+
+def _skip_non_lifecycle(filepath, ext_dir):
+    """Return True if filepath is inside a non-lifecycle directory."""
+    rel = os.path.relpath(filepath, ext_dir)
+    parts = rel.replace(os.sep, '/').split('/')
+    return any(p in _NON_LIFECYCLE_DIRS for p in parts)
+
+
 def result(status, check, detail):
     print(f"{status}|{check}|{detail}")
 
@@ -171,6 +182,8 @@ def check_untracked_timeouts(ext_dir):
     if not js_files:
         return
 
+    js_files = [f for f in js_files if not _skip_non_lifecycle(f, ext_dir)]
+
     untracked = []
     for filepath in js_files:
         rel = os.path.relpath(filepath, ext_dir)
@@ -253,6 +266,8 @@ def check_timeout_return_value(ext_dir):
     js_files = find_js_files(ext_dir, exclude_prefs=True)
     if not js_files:
         return
+
+    js_files = [f for f in js_files if not _skip_non_lifecycle(f, ext_dir)]
 
     missing = []
     for filepath in js_files:
@@ -1225,9 +1240,7 @@ def check_gsettings_signal_leak(ext_dir):
     if not js_files:
         return
 
-    # Skip service/ directory (different lifecycle)
-    js_files = [f for f in js_files
-                if '/service/' not in f.replace(os.sep, '/')]
+    js_files = [f for f in js_files if not _skip_non_lifecycle(f, ext_dir)]
     if not js_files:
         return
 
@@ -1317,9 +1330,7 @@ def check_dbus_signal_leak(ext_dir):
     if not js_files:
         return
 
-    # Skip service/ directory (different lifecycle)
-    js_files = [f for f in js_files
-                if '/service/' not in f.replace(os.sep, '/')]
+    js_files = [f for f in js_files if not _skip_non_lifecycle(f, ext_dir)]
     if not js_files:
         return
 
@@ -1428,8 +1439,7 @@ def check_module_scope_state(ext_dir):
     if not files:
         return
 
-    # Skip service/ directory (different lifecycle model)
-    files = [f for f in files if '/service/' not in f.replace(os.sep, '/')]
+    files = [f for f in files if not _skip_non_lifecycle(f, ext_dir)]
 
     MODULE_STATE_RE = re.compile(
         r'(?:const|let|var)\s+(\w+)\s*=\s*new\s+(Map|Set)\s*\(')
@@ -1496,8 +1506,7 @@ def check_module_scope_prototype(ext_dir):
     if not files:
         return
 
-    # Skip service/ directory (different lifecycle model)
-    files = [f for f in files if '/service/' not in f.replace(os.sep, '/')]
+    files = [f for f in files if not _skip_non_lifecycle(f, ext_dir)]
 
     PROTO_ASSIGN = re.compile(r'([\w.]+\.prototype\.\w+)\s*=(?!=)')
     PROTO_OBJ_ASSIGN = re.compile(
