@@ -205,9 +205,9 @@ resolve_ext_path() {
     local source_type source_path source_repo source_ref _src_line
     _src_line="$(echo "$ext_json" | json_extract "$name source" "
 s = json.load(sys.stdin).get('source', {})
-print(s.get('type',''), s.get('path',''), s.get('repo',''), s.get('ref', s.get('tag','')), sep='\t')
+print(s.get('type',''), s.get('path',''), s.get('repo',''), s.get('ref', s.get('tag','')), sep='|')
 ")"
-    IFS=$'\t' read -r source_type source_path source_repo source_ref <<< "$_src_line"
+    IFS='|' read -r source_type source_path source_repo source_ref <<< "$_src_line"
 
     RESOLVED_PATH=""
     case "$source_type" in
@@ -223,24 +223,41 @@ print(s.get('type',''), s.get('path',''), s.get('repo',''), s.get('ref', s.get('
 
             if [[ "$OPT_NO_FETCH" != true ]] && [[ ! -d "$RESOLVED_PATH" ]]; then
                 echo "  Fetching from github: $source_repo..."
-                clone_err="$(git clone --depth 1 "https://github.com/$source_repo.git" "$RESOLVED_PATH" 2>&1)" || {
-                    echo "  SKIP: failed to clone $source_repo"
-                    echo "  ${clone_err%%$'\n'*}" >&2
-                    return 1
-                }
-                if [[ -n "$source_ref" ]]; then
-                    fetch_err="$(git -C "$RESOLVED_PATH" fetch --depth 1 origin "$source_ref" 2>&1)" || {
-                        echo "  SKIP: failed to fetch ref $source_ref from $source_repo"
-                        echo "  ${fetch_err%%$'\n'*}" >&2
-                        rm -rf "$RESOLVED_PATH"
+                # Commit hash refs (40 hex chars) can't be fetched via shallow clone on GitHub.
+                # Use a partial clone (--filter=blob:none) which downloads the full commit graph
+                # without blobs, allowing checkout of any arbitrary commit hash.
+                if [[ -n "$source_ref" ]] && [[ "$source_ref" =~ ^[0-9a-f]{40}$ ]]; then
+                    clone_err="$(git clone --filter=blob:none "https://github.com/$source_repo.git" "$RESOLVED_PATH" 2>&1)" || {
+                        echo "  SKIP: failed to clone $source_repo"
+                        echo "  ${clone_err%%$'\n'*}" >&2
                         return 1
                     }
-                    checkout_err="$(git -C "$RESOLVED_PATH" checkout FETCH_HEAD 2>&1)" || {
+                    checkout_err="$(git -C "$RESOLVED_PATH" checkout "$source_ref" 2>&1)" || {
                         echo "  SKIP: failed to checkout ref $source_ref"
                         echo "  ${checkout_err%%$'\n'*}" >&2
                         rm -rf "$RESOLVED_PATH"
                         return 1
                     }
+                else
+                    clone_err="$(git clone --depth 1 "https://github.com/$source_repo.git" "$RESOLVED_PATH" 2>&1)" || {
+                        echo "  SKIP: failed to clone $source_repo"
+                        echo "  ${clone_err%%$'\n'*}" >&2
+                        return 1
+                    }
+                    if [[ -n "$source_ref" ]]; then
+                        fetch_err="$(git -C "$RESOLVED_PATH" fetch --depth 1 origin "$source_ref" 2>&1)" || {
+                            echo "  SKIP: failed to fetch ref $source_ref from $source_repo"
+                            echo "  ${fetch_err%%$'\n'*}" >&2
+                            rm -rf "$RESOLVED_PATH"
+                            return 1
+                        }
+                        checkout_err="$(git -C "$RESOLVED_PATH" checkout FETCH_HEAD 2>&1)" || {
+                            echo "  SKIP: failed to checkout ref $source_ref"
+                            echo "  ${checkout_err%%$'\n'*}" >&2
+                            rm -rf "$RESOLVED_PATH"
+                            return 1
+                        }
+                    fi
                 fi
             fi
             if [[ ! -d "$RESOLVED_PATH" ]]; then
