@@ -38,15 +38,48 @@ def is_suppressed(line, check_name, prev_line=''):
     return False
 
 
+_VENDORED_SIGNALS = re.compile(
+    r'(@license\b'
+    r'|@generated\b'
+    r'|@auto-generated\b'
+    r'|Credits:\s*https?://'
+    r'|Adapted from\s+https?://'
+    r')',
+    re.IGNORECASE,
+)
+_COMMENT_LINE = re.compile(r'^\s*(//|/?\*)')
+
+
+def _is_vendored_file(filepath, scan_lines=30):
+    """Return True if the file appears to be vendored/third-party code.
+
+    Reads the first *scan_lines* lines and looks for common attribution
+    patterns: @license, @generated, Credits:, Adapted from.
+    Only matches inside comment lines to avoid false positives.
+    """
+    try:
+        with open(filepath, encoding='utf-8', errors='replace') as f:
+            for i, line in enumerate(f):
+                if i >= scan_lines:
+                    break
+                if _COMMENT_LINE.match(line) and _VENDORED_SIGNALS.search(line):
+                    return True
+    except OSError:
+        pass
+    return False
+
+
 def find_js_files(ext_dir):
-    """Find all JS files in extension directory, excluding node_modules."""
+    """Find all JS files in extension directory, excluding node_modules and vendored files."""
     skip_dirs = {'node_modules', '.git', '__pycache__'}
     files = []
     for root, dirs, filenames in os.walk(ext_dir):
         dirs[:] = [d for d in dirs if d not in skip_dirs]
         for name in filenames:
             if name.endswith('.js'):
-                files.append(os.path.join(root, name))
+                filepath = os.path.join(root, name)
+                if not _is_vendored_file(filepath):
+                    files.append(filepath)
     return files
 
 

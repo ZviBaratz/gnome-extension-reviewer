@@ -252,6 +252,56 @@ def validate_rules(rules_file):
         return 0
 
 
+# Patterns that signal a file is vendored/third-party code (checked in first 30 lines).
+# Each pattern is matched against comment lines (lines starting with // or * or /*)
+_VENDORED_SIGNALS = re.compile(
+    r'(@license\b'
+    r'|@generated\b'
+    r'|@auto-generated\b'
+    r'|Credits:\s*https?://'
+    r'|Adapted from\s+https?://'
+    r')',
+    re.IGNORECASE,
+)
+_COMMENT_LINE = re.compile(r'^\s*(//|/?\*)')
+
+
+def _is_vendored_file(filepath, scan_lines=30):
+    """Return True if the file appears to be vendored/third-party code.
+
+    Reads the first *scan_lines* lines and looks for common attribution
+    patterns that indicate the file was copied from an external source:
+    @license, @generated, Credits:, Adapted from.  Only matches inside
+    comment lines to avoid false positives in code strings.
+    """
+    try:
+        with open(filepath, encoding='utf-8', errors='replace') as f:
+            for i, line in enumerate(f):
+                if i >= scan_lines:
+                    break
+                if _COMMENT_LINE.match(line) and _VENDORED_SIGNALS.search(line):
+                    return True
+    except OSError:
+        pass
+    return False
+
+
+def _discover_vendored_files(ext_dir):
+    """Scan all JS files in ext_dir and return a set of relative paths that
+    appear to be vendored third-party code."""
+    vendored = set()
+    skip_dirs = ('node_modules', '.git', '__pycache__')
+    for filepath in glob.glob(os.path.join(ext_dir, '**', '*.js'), recursive=True):
+        if not os.path.isfile(filepath):
+            continue
+        rel = os.path.relpath(filepath, ext_dir)
+        if any(part in skip_dirs for part in rel.split(os.sep)):
+            continue
+        if _is_vendored_file(filepath):
+            vendored.add(rel.replace(os.sep, '/'))
+    return vendored
+
+
 def main():
     # Handle --validate mode
     if len(sys.argv) >= 3 and sys.argv[1] == '--validate':
@@ -272,6 +322,13 @@ def main():
     shell_versions = _get_shell_versions(ext_dir)
     min_shell = min(shell_versions) if shell_versions else None
     is_compiled_ts = os.environ.get('EGO_LINT_COMPILED_TS') == '1'
+
+    # Pre-scan: identify vendored files once and reuse across all rules
+    vendored_files = _discover_vendored_files(ext_dir)
+    if vendored_files:
+        files_list = ', '.join(sorted(vendored_files))
+        print(f"SKIP|vendored-file-exclusion|{len(vendored_files)} file(s) auto-detected as "
+              f"vendored (third-party attribution header); excluded from pattern rules: {files_list}")
 
     for rule in rules:
         rid = rule.get('id', '?')
@@ -307,6 +364,15 @@ def main():
         found = False
         dedup_files = set()  # For deduplicate mode
         exclude_dirs = set(rule.get('exclude-dirs', []))
+        # exclude-files: list of glob patterns (relative to ext_dir) for per-rule exclusions
+        exclude_files_patterns = rule.get('exclude-files', [])
+        if isinstance(exclude_files_patterns, str):
+            exclude_files_patterns = [exclude_files_patterns]
+        # Expand exclude-files globs once per rule
+        exclude_files_set = set()
+        for efpat in exclude_files_patterns:
+            for match in glob.glob(os.path.join(ext_dir, efpat), recursive=True):
+                exclude_files_set.add(os.path.realpath(match))
 
         try:
             compiled = re.compile(pattern)
@@ -345,6 +411,13 @@ def main():
                     rel_parts = rel.replace(os.sep, '/').split('/')
                     if rel_parts[0] in exclude_dirs:
                         continue
+                # Skip auto-detected vendored files
+                rel_posix = rel.replace(os.sep, '/')
+                if rel_posix in vendored_files:
+                    continue
+                # Skip per-rule excluded files
+                if exclude_files_set and os.path.realpath(filepath) in exclude_files_set:
+                    continue
                 seen.add(filepath)
                 try:
                     with open(filepath, encoding='utf-8', errors='replace') as f:
