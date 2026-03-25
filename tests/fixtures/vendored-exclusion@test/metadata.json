@@ -1,0 +1,7 @@
+{
+    "uuid": "vendored-exclusion@test",
+    "name": "Vendored File Exclusion Test",
+    "description": "Tests that vendored/third-party files are excluded from pattern rules",
+    "shell-version": ["45"],
+    "url": "https://example.com"
+}
