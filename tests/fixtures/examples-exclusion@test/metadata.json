@@ -1,0 +1,7 @@
+{
+    "uuid": "examples-exclusion@test",
+    "name": "Examples Directory Exclusion Test",
+    "description": "Tests that examples/ directory files skip pattern rule checks",
+    "shell-version": ["47"],
+    "url": "https://example.com"
+}
