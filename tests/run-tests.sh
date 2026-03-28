@@ -466,6 +466,15 @@ assert_exit_code "exits with 1 (has failures)" 1
 assert_output_contains "fails on schema filename" "\[FAIL\].*schema/filename-convention"
 echo ""
 
+# --- multi-schema (sub-schema appears before main schema in XML) ---
+echo "=== multi-schema ==="
+run_lint "multi-schema@test"
+assert_output_not_contains "no schema/id-matches FAIL for multi-schema XML" "\[FAIL\].*schema/id-matches"
+assert_output_not_contains "no schema/filename-convention FAIL for multi-schema XML" "\[FAIL\].*schema/filename-convention"
+assert_output_contains "id-matches passes for multi-schema XML" "\[PASS\].*schema/id-matches"
+assert_output_contains "filename-convention passes for multi-schema XML" "\[PASS\].*schema/filename-convention"
+echo ""
+
 # --- gnome46-compat ---
 echo "=== gnome46-compat ==="
 run_lint "gnome46-compat@test"

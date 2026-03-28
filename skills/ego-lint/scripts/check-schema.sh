@@ -9,13 +9,27 @@ set -euo pipefail
 
 EXT_DIR="$(cd "${1:-.}" && pwd)"
 
-# Extract the schema id from a .gschema.xml file.
-# Uses a <schema>-specific grep to avoid picking up <enum id=> or other
-# elements that appear before <schema id=> in files with multiple top-level
-# elements (e.g. caffeine's schema has three <enum> elements first).
+# Extract ALL schema ids from a .gschema.xml file.
+# Filters to <schema\b lines to avoid matching <enum id=> or other elements.
+extract_all_schema_ids() {
+    local file="$1"
+    grep -P '<schema\b' "$file" | grep -oP 'id="[^"]*"' | sed 's/id="//;s/"//'
+}
+
+# Extract the first schema id from a .gschema.xml file.
+# For single-schema files this is the only schema. For multi-schema files
+# (e.g. a main schema + .keybindings sub-schema), prefer using
+# extract_all_schema_ids() + targeted matching instead.
 extract_schema_id() {
     local file="$1"
-    grep -P '<schema\b' "$file" | grep -oP 'id="[^"]*"' | head -1 | sed 's/id="//;s/"//'
+    extract_all_schema_ids "$file" | head -1
+}
+
+# Return true (0) if a specific schema ID exists anywhere in a .gschema.xml file.
+schema_id_in_file() {
+    local file="$1"
+    local target_id="$2"
+    extract_all_schema_ids "$file" | grep -qxF "$target_id"
 }
 
 METADATA="$EXT_DIR/metadata.json"
@@ -63,24 +77,33 @@ echo "PASS|schema/exists|Found ${#schema_files[@]} schema file(s)"
 # Validate schema IDs match metadata
 if [[ "$has_settings_schema" == true ]]; then
     for schema_file in "${schema_files[@]}"; do
-        # Extract schema id from XML (use extract_schema_id to avoid matching <enum id=> etc.)
-        schema_id="$(extract_schema_id "$schema_file")"
-        if [[ "$schema_id" == "$settings_schema" ]]; then
-            echo "PASS|schema/id-matches|Schema ID '$schema_id' matches metadata.json settings-schema"
+        # Check whether settings-schema appears as ANY <schema id=> in the file.
+        # Multi-schema XML (e.g. main schema + .keybindings sub-schema) must not
+        # fail just because a sub-schema appears first.
+        if schema_id_in_file "$schema_file" "$settings_schema"; then
+            echo "PASS|schema/id-matches|Schema ID '$settings_schema' found in $(basename "$schema_file")"
         else
-            echo "FAIL|schema/id-matches|Schema ID '$schema_id' does not match metadata.json settings-schema '$settings_schema'"
+            all_ids="$(extract_all_schema_ids "$schema_file" | paste -sd ' ')"
+            echo "FAIL|schema/id-matches|settings-schema '$settings_schema' not found in $(basename "$schema_file") (found: ${all_ids})"
         fi
     done
 fi
 
-# Validate schema filename convention: <schema-id>.gschema.xml
+# Validate schema filename convention: <settings-schema>.gschema.xml
+# When settings-schema is defined in metadata.json, the file MUST be named
+# after that ID (the primary schema). For extensions without settings-schema,
+# fall back to the first schema ID found in the file.
 for schema_file in "${schema_files[@]}"; do
-    schema_id="$(extract_schema_id "$schema_file")"
-    if [[ -n "$schema_id" ]]; then
-        expected_filename="${schema_id}.gschema.xml"
+    if [[ "$has_settings_schema" == true ]]; then
+        ref_id="$settings_schema"
+    else
+        ref_id="$(extract_schema_id "$schema_file")"
+    fi
+    if [[ -n "$ref_id" ]]; then
+        expected_filename="${ref_id}.gschema.xml"
         actual_filename="$(basename "$schema_file")"
         if [[ "$actual_filename" == "$expected_filename" ]]; then
-            echo "PASS|schema/filename-convention|Schema filename matches ID: $actual_filename"
+            echo "PASS|schema/filename-convention|Schema filename matches settings-schema: $actual_filename"
         else
             echo "FAIL|schema/filename-convention|Schema filename '$actual_filename' MUST be '$expected_filename'"
         fi

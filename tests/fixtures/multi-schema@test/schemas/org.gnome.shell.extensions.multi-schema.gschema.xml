@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schemalist>
+  <!-- Sub-schema appears FIRST — this is what caused the PaperWM FP -->
+  <schema id="org.gnome.shell.extensions.multi-schema.keybindings"
+          path="/org/gnome/shell/extensions/multi-schema/keybindings/">
+    <key name="move-left" type="as">
+      <default>["&lt;Super&gt;Left"]</default>
+      <summary>Move left keybinding</summary>
+    </key>
+  </schema>
+  <!-- Main schema appears SECOND — must match settings-schema in metadata.json -->
+  <schema id="org.gnome.shell.extensions.multi-schema"
+          path="/org/gnome/shell/extensions/multi-schema/">
+    <key name="enable-feature" type="b">
+      <default>true</default>
+      <summary>Enable feature</summary>
+    </key>
+  </schema>
+</schemalist>
