@@ -644,12 +644,12 @@
 # LLMs frequently call methods that don't exist in GJS/GNOME Shell.
 
 - id: R-SLOP-08
-  pattern: "\\b(Meta\\.Screen|Meta\\.Cursor|Shell\\.WindowTracker\\.get_default\\(\\)\\.get_active_window)"
+  pattern: "\\b(Meta\\.Screen|Shell\\.WindowTracker\\.get_default\\(\\)\\.get_active_window)"
   scope: ["*.js"]
   severity: advisory
-  message: "Likely hallucinated API — Meta.Screen and Meta.Cursor do not exist"
+  message: "Likely hallucinated API — Meta.Screen does not exist; use Meta.Display or global.display"
   category: ai-slop
-  fix: "Check the GJS API docs: https://gjs-docs.gnome.org. Use Meta.Display, global.display, etc."
+  fix: "Check the GJS API docs: https://gjs-docs.gnome.org. Use Meta.Display, global.display.get_monitor_geometry() etc."
 
 - id: R-SLOP-09
   pattern: "\\bSt\\.(Button|Label|Widget)\\.(set_label|set_text|set_icon_name)\\s*\\("
