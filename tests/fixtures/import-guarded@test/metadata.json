@@ -1,0 +1,8 @@
+{
+  "name": "Import Guarded Test",
+  "description": "Extension using importInShellOnly/importInPrefsOnly guard pattern",
+  "uuid": "import-guarded@test",
+  "version": 1,
+  "shell-version": ["45", "46", "47", "48", "49", "50"],
+  "url": "https://example.com"
+}
