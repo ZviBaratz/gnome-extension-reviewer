@@ -181,12 +181,12 @@ findings:
     classification: borderline
     notes: "Orphan count includes service/ daemon files — reduced from 13 to 8 after destroy_\\w+ recognition + multi-parent ownership + Case 2 stored_as filter"
   # New findings from service/ exclusion (2026-03-18) — updated detail strings
-  - id: "quality/repeated-settings::8 getSettings()/Gio.Settings instances across extension files (extension.js, extension.js, shell/input.js, utils/setup.js) — store a single instance and pass via dependency injection"
+  - id: "quality/repeated-settings::8 getSettings()/Gio.Settings instances across extension files (extension.js, extension.js, shell/input.js, utils/setup.js, preferences/device.js) — store a single instance and pass via dependency injection"
     classification: tp
     notes: "8 instances in extension code (service/ excluded) — valid advisory for reducing redundant settings access"
-  - id: "lifecycle/timeout-return-value::timeout_add/idle_add callback missing SOURCE_REMOVE/SOURCE_CONTINUE: shell/tooltip.js, shell/tooltip.js, service/ui/messaging.js"
+  - id: "lifecycle/timeout-return-value::shell/tooltip.js, shell/tooltip.js"
     classification: tp
-    notes: "Timer callbacks in shell/ should return SOURCE_REMOVE/SOURCE_CONTINUE — valid advisory"
+    notes: "Timer callbacks in shell/ should return SOURCE_REMOVE/SOURCE_CONTINUE — valid advisory (service/ excluded)"
 
   # FAIL findings — True Positives
   - id: "license::No LICENSE or COPYING file — should use GPL-compatible license"
@@ -282,8 +282,8 @@ findings:
     classification: tp
     notes: "Async operations without destroyed guard — may act on stale state after disable()"
   - id: "lifecycle/timeout-return-value::shell/tooltip.js, shell/tooltip.js, service/ui/messaging.js"
-    classification: tp
-    notes: "Timer return values not consistently tracked for cleanup"
+    classification: resolved
+    notes: "Superseded by updated finding without service/ — see lifecycle/timeout-return-value::shell/tooltip.js, shell/tooltip.js"
   - id: "lifecycle/prototype-override::GtkNotificationDaemon.prototype._ensureAppSource — direct prototype modification should be restored in disable()"
     classification: tp
     notes: "Prototype modification of GtkNotificationDaemon — must be restored in disable()"
