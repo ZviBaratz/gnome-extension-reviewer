@@ -153,6 +153,7 @@
   skip-comments: true
   min-version: 45
   compat-downgrade: true
+  guard-pattern: "^\\s*export\\s+\\*\\s+as\\s+\\w"
 
 - id: R-DEPR-06
   pattern: "\\bTweener\\b"

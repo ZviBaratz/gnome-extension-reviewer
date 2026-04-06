@@ -137,6 +137,12 @@ assert_output_contains "fails on Tweener" "\[FAIL\].*R-DEPR-06"
 assert_output_contains "fails on legacy imports" "\[FAIL\].*R-DEPR-04"
 echo ""
 
+# --- depr05-reexport (R-DEPR-05 guard: export * as re-export should not fire) ---
+echo "=== depr05-reexport ==="
+run_lint "depr05-reexport@test"
+assert_output_not_contains "R-DEPR-05 not fired on export * as re-export" "\[FAIL\].*R-DEPR-05"
+echo ""
+
 # --- non-standard-metadata ---
 echo "=== non-standard-metadata ==="
 run_lint "non-standard-metadata"

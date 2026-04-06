@@ -1,0 +1,7 @@
+{
+    "uuid": "depr05-reexport@test",
+    "name": "DEPR-05 Re-export Test",
+    "description": "Tests that export * as ExtensionUtils re-export does not fire R-DEPR-05",
+    "shell-version": ["48"],
+    "url": "https://example.com"
+}
