@@ -1,0 +1,8 @@
+{
+    "uuid": "multi-schema@test",
+    "name": "Multi-Schema Test",
+    "description": "Tests that schema/id-matches passes when settings-schema appears after a sub-schema (e.g. .keybindings) in gschema.xml",
+    "shell-version": ["48"],
+    "settings-schema": "org.gnome.shell.extensions.multi-schema",
+    "url": "https://github.com/test/multi-schema"
+}
