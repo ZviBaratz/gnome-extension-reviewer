@@ -81,7 +81,9 @@ for f in "${runtime_files[@]}"; do
         rel_path="${f#"$EXT_DIR/"}"
         echo "FAIL|imports/no-gtk-in-extension|$rel_path: $match"
         violations=$((violations + 1))
-    done < <(grep -nE "$gtk_pattern" "$f" 2>/dev/null | grep -vE "gi://GdkPixbuf" || true)
+    done < <(grep -nE "$gtk_pattern" "$f" 2>/dev/null \
+        | grep -vE "gi://GdkPixbuf" \
+        | grep -E "(from\s+['\"]|import\s*\()" || true)
 done
 
 # ---------------------------------------------------------------------------
@@ -146,14 +148,17 @@ if [[ -f "$EXT_DIR/prefs.js" ]]; then
         done < <(get_local_imports "$current")
     done
 
-    # Check prefs-reachable modules (excluding prefs.js itself) for Shell imports
+    # Check prefs-reachable modules (excluding prefs.js itself) for Shell imports.
+    # Only flag actual import statements (from '...' or import('...')) — not gi:// strings
+    # passed as arguments to guard functions like importInShellOnly('gi://Clutter').
     for f in "${!prefs_visited[@]}"; do
         [[ "$f" == "$EXT_DIR/prefs.js" ]] && continue
         rel_path="${f#"$EXT_DIR/"}"
         while IFS= read -r match; do
             echo "FAIL|imports/shared-module-shell|$rel_path: Shell runtime import in module reachable from prefs.js: $match"
             violations=$((violations + 1))
-        done < <(grep -nE "$shell_pattern" "$f" 2>/dev/null || true)
+        done < <(grep -nE "$shell_pattern" "$f" 2>/dev/null \
+            | grep -E "(from\s+['\"]|import\s*\()" || true)
     done
 fi
 
