@@ -290,7 +290,7 @@ def _discover_vendored_files(ext_dir):
     """Scan all JS files in ext_dir and return a set of relative paths that
     appear to be vendored third-party code."""
     vendored = set()
-    skip_dirs = ('node_modules', '.git', '__pycache__')
+    skip_dirs = ('node_modules', '.git', '__pycache__', 'examples')
     for filepath in glob.glob(os.path.join(ext_dir, '**', '*.js'), recursive=True):
         if not os.path.isfile(filepath):
             continue
@@ -398,7 +398,7 @@ def main():
             matches += glob.glob(os.path.join(ext_dir, scope))
             # Deduplicate and skip non-extension directories
             seen = set()
-            skip_dirs = ('node_modules', '.git', '__pycache__')
+            skip_dirs = ('node_modules', '.git', '__pycache__', 'examples')
             for filepath in matches:
                 if filepath in seen or not os.path.isfile(filepath):
                     continue
