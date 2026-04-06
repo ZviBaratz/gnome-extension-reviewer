@@ -414,7 +414,7 @@ def check_constructor_resources(ext_dir, js_files):
     """
     bad_patterns = [
         (r'this\.getSettings\s*\(', 'this.getSettings()'),
-        (r'\.connect\s*\(', '.connect()'),
+        (r'\bthis(?:\.\w+)*\.connect\s*\(', '.connect()'),
         (r'timeout_add', 'GLib.timeout_add()'),
         (r'new\s+Gio\.DBusProxy', 'new Gio.DBusProxy()'),
     ]

@@ -1,0 +1,9 @@
+{
+  "uuid": "constructor-inner-object@test",
+  "name": "constructor-inner-object-test",
+  "description": "Tests constructor-resources skips inner/callback object connects",
+  "shell-version": [
+    "47"
+  ],
+  "url": "https://example.com"
+}
