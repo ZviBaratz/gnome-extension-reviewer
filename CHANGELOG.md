@@ -1,5 +1,16 @@
 # Changelog
 
+## [0.1.2](https://github.com/ZviBaratz/gnome-extension-reviewer/compare/v0.1.1...v0.1.2) (2026-04-06)
+
+
+### Bug Fixes
+
+* **ego-lint:** auto-exclude examples/ directory from pattern rules ([#158](https://github.com/ZviBaratz/gnome-extension-reviewer/issues/158)) ([ee8575e](https://github.com/ZviBaratz/gnome-extension-reviewer/commit/ee8575e0dc804145c2cf708d91ca36eae5746fa8))
+* **ego-lint:** check ALL schema IDs for settings-schema match ([#154](https://github.com/ZviBaratz/gnome-extension-reviewer/issues/154)) ([d77061f](https://github.com/ZviBaratz/gnome-extension-reviewer/commit/d77061f3785165a2f52c2f67ddd52e4b34dd74bd))
+* **ego-lint:** don't flag gi:// strings passed to importInShellOnly/importInPrefsOnly ([#162](https://github.com/ZviBaratz/gnome-extension-reviewer/issues/162)) ([c1f8858](https://github.com/ZviBaratz/gnome-extension-reviewer/commit/c1f88581991bf39ae99a4992e5c5445b726fa66f))
+* **ego-lint:** remove Meta.Cursor from R-SLOP-08 hallucinated API pattern ([#156](https://github.com/ZviBaratz/gnome-extension-reviewer/issues/156)) ([d0687b4](https://github.com/ZviBaratz/gnome-extension-reviewer/commit/d0687b4de079dd1321a7b9dd9909816c1882d8de)), closes [#155](https://github.com/ZviBaratz/gnome-extension-reviewer/issues/155)
+* **ego-lint:** skip R-DEPR-05 for export * as re-export declarations ([#164](https://github.com/ZviBaratz/gnome-extension-reviewer/issues/164)) ([05dc2e7](https://github.com/ZviBaratz/gnome-extension-reviewer/commit/05dc2e74f999105691e4b65e2074dc5bce2957b4))
+
 ## [0.1.1](https://github.com/ZviBaratz/gnome-extension-reviewer/compare/v0.1.0...v0.1.1) (2026-03-25)
 
 
