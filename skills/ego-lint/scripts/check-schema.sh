@@ -74,27 +74,42 @@ fi
 
 echo "PASS|schema/exists|Found ${#schema_files[@]} schema file(s)"
 
-# Validate schema IDs match metadata
+# Validate schema IDs match metadata.
+# Extensions may have supplementary schemas (e.g. profile schemas, keybinding
+# schemas) whose IDs legitimately differ from the primary settings-schema.
+# Require that AT LEAST ONE schema file contains the settings-schema ID.
+# Supplementary files that don't contain it get SKIP (not FAIL).
 if [[ "$has_settings_schema" == true ]]; then
+    primary_schema_file=""
     for schema_file in "${schema_files[@]}"; do
         # Check whether settings-schema appears as ANY <schema id=> in the file.
         # Multi-schema XML (e.g. main schema + .keybindings sub-schema) must not
         # fail just because a sub-schema appears first.
         if schema_id_in_file "$schema_file" "$settings_schema"; then
             echo "PASS|schema/id-matches|Schema ID '$settings_schema' found in $(basename "$schema_file")"
+            primary_schema_file="$schema_file"
         else
             all_ids="$(extract_all_schema_ids "$schema_file" | paste -sd ' ')"
-            echo "FAIL|schema/id-matches|settings-schema '$settings_schema' not found in $(basename "$schema_file") (found: ${all_ids})"
+            echo "SKIP|schema/id-matches|Supplementary schema $(basename "$schema_file") has different ID (found: ${all_ids}) — OK for profile/keybinding schemas"
         fi
     done
+    if [[ -z "$primary_schema_file" ]]; then
+        echo "FAIL|schema/id-matches|settings-schema '$settings_schema' not found in any .gschema.xml file"
+    fi
 fi
 
 # Validate schema filename convention: <settings-schema>.gschema.xml
-# When settings-schema is defined in metadata.json, the file MUST be named
-# after that ID (the primary schema). For extensions without settings-schema,
-# fall back to the first schema ID found in the file.
+# When settings-schema is defined in metadata.json, only the PRIMARY schema
+# file (the one containing the settings-schema ID) must follow the naming
+# convention. Supplementary schemas (profile, keybinding, etc.) may use
+# different names. For extensions without settings-schema, apply to all files.
 for schema_file in "${schema_files[@]}"; do
     if [[ "$has_settings_schema" == true ]]; then
+        # Only enforce filename convention on the primary schema file.
+        if ! schema_id_in_file "$schema_file" "$settings_schema"; then
+            echo "SKIP|schema/filename-convention|Supplementary schema $(basename "$schema_file") — filename convention not required"
+            continue
+        fi
         ref_id="$settings_schema"
     else
         ref_id="$(extract_schema_id "$schema_file")"
