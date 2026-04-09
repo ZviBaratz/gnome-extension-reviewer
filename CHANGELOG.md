@@ -1,5 +1,14 @@
 # Changelog
 
+## [0.1.3](https://github.com/ZviBaratz/gnome-extension-reviewer/compare/v0.1.2...v0.1.3) (2026-04-09)
+
+
+### Bug Fixes
+
+* **ego-field-test:** correct gsconnect annotations after service/ exclusion ([#166](https://github.com/ZviBaratz/gnome-extension-reviewer/issues/166)) ([4669f64](https://github.com/ZviBaratz/gnome-extension-reviewer/commit/4669f64cf79a45d2e0488ff8f4f1ba253f495b8a))
+* **ego-lint:** exclude tests/ dir from R-SEC-04 sudo check ([#171](https://github.com/ZviBaratz/gnome-extension-reviewer/issues/171)) ([882a746](https://github.com/ZviBaratz/gnome-extension-reviewer/commit/882a74619abb2f78e7eb7bbbae048c3525e19f28)), closes [#170](https://github.com/ZviBaratz/gnome-extension-reviewer/issues/170)
+* **ego-lint:** skip supplementary schemas in id-matches and filename checks ([#169](https://github.com/ZviBaratz/gnome-extension-reviewer/issues/169)) ([db288a5](https://github.com/ZviBaratz/gnome-extension-reviewer/commit/db288a51fd40e0600e351a86742ab65a64585acc)), closes [#168](https://github.com/ZviBaratz/gnome-extension-reviewer/issues/168)
+
 ## [0.1.2](https://github.com/ZviBaratz/gnome-extension-reviewer/compare/v0.1.1...v0.1.2) (2026-04-06)
 
 
