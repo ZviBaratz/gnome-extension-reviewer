@@ -426,7 +426,7 @@
   fix: "Use _('Found %d items').format(count) instead of _(`Found ${count} items`)"
 
 - id: R-I18N-02
-  pattern: "_\\([^)]*['\"]\\s*\\+"
+  pattern: "_\\([^)]*['\"]\\s*\\+(?!\\s*['\"])"
   scope: ["*.js"]
   severity: advisory
   message: "String concatenation inside gettext _() breaks xgettext extraction"

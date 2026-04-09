@@ -1,0 +1,7 @@
+{
+    "uuid": "gettext-concat-literal@test",
+    "name": "Gettext Concat Literal Test",
+    "description": "Tests that R-I18N-02 does NOT fire on compile-time string literal concatenation",
+    "shell-version": ["46"],
+    "url": "https://example.com"
+}
