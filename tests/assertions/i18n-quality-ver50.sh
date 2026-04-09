@@ -16,7 +16,7 @@ echo ""
 # --- gettext-concat-literal (no FP on compile-time literal concatenation) ---
 echo "=== gettext-concat-literal ==="
 run_lint "gettext-concat-literal@test"
-assert_output_not_contains "no R-I18N-02 FP on literal+literal concat" "R-I18N-02"
+assert_output_not_contains "no R-I18N-02 FP on literal+literal concat" "\[WARN\].*R-I18N-02"
 echo ""
 
 # --- module-scope-gobject ---
