@@ -203,10 +203,10 @@ def main():
         if isinstance(sv, list):
             result("PASS", "metadata/shell-version-array", "shell-version is an array")
 
-            if "49" in sv:
-                result("PASS", "metadata/shell-version-current", "shell-version includes current GNOME 49")
+            if "50" in sv:
+                result("PASS", "metadata/shell-version-current", "shell-version includes current GNOME 50")
             else:
-                result("WARN", "metadata/shell-version-current", "shell-version does not include GNOME 49")
+                result("WARN", "metadata/shell-version-current", "shell-version does not include GNOME 50")
         else:
             result("FAIL", "metadata/shell-version-array", f"shell-version must be an array, got {type(sv).__name__}")
 
@@ -315,7 +315,7 @@ def check_gnome_trademark(meta):
                "No GNOME trademark violations in metadata")
 
 
-CURRENT_STABLE = 49
+CURRENT_STABLE = 50
 
 
 def check_url_field(meta):
