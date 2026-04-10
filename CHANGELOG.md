@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.1.5](https://github.com/ZviBaratz/gnome-extension-reviewer/compare/v0.1.4...v0.1.5) (2026-04-10)
+
+
+### Bug Fixes
+
+* add skip-comments to R-DEPR-04, R-SEC-04, R-SEC-12 ([#177](https://github.com/ZviBaratz/gnome-extension-reviewer/issues/177)) ([2f670e4](https://github.com/ZviBaratz/gnome-extension-reviewer/commit/2f670e4e79a01a17e84a9aef124cb18809a48029)), closes [#174](https://github.com/ZviBaratz/gnome-extension-reviewer/issues/174)
+* update CURRENT_STABLE to GNOME 50 ([#176](https://github.com/ZviBaratz/gnome-extension-reviewer/issues/176)) ([6132eaf](https://github.com/ZviBaratz/gnome-extension-reviewer/commit/6132eaf17370a5781df2240f0c3c1fd63307757b))
+
 ## [0.1.4](https://github.com/ZviBaratz/gnome-extension-reviewer/compare/v0.1.3...v0.1.4) (2026-04-10)
 
 
