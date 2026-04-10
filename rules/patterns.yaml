@@ -133,6 +133,7 @@
   fix: "Replace 'const X = imports.ui.main' with 'import * as Main from \"resource:///org/gnome/shell/ui/main.js\"'."
   min-version: 45
   compat-downgrade: true
+  skip-comments: true
 
 - id: R-DEPR-04-legacy
   pattern: "\\bimports\\.(ui|gi|misc)\\."
@@ -257,6 +258,7 @@
   category: security
   fix: "Replace sudo with pkexec and provide a polkit action file, or use a udev rule for hardware access."
   exclude-dirs: ["tests", "test"]
+  skip-comments: true
 
 - id: R-SEC-05
   pattern: "Subprocess.*'/bin/sh'.*'-c'"
@@ -384,6 +386,7 @@
   message: "Automatic system package installation is banned; extensions must not install packages without explicit user action"
   category: security
   fix: "Remove automatic package installation. Document manual installation steps for required system packages."
+  skip-comments: true
 
 # --- Prefs.js GTK3 widget detection (blocking/advisory) ---
 # GTK3 widgets with direct Adwaita replacements should use the Adw equivalent.
