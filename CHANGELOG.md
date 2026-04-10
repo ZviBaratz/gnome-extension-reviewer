@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.1.4](https://github.com/ZviBaratz/gnome-extension-reviewer/compare/v0.1.3...v0.1.4) (2026-04-10)
+
+
+### Bug Fixes
+
+* **ego-lint:** skip R-I18N-02 when both gettext concat operands are string literals ([#172](https://github.com/ZviBaratz/gnome-extension-reviewer/issues/172)) ([920ee19](https://github.com/ZviBaratz/gnome-extension-reviewer/commit/920ee19f0fc29816435c4c479821b00f052cd93c))
+
 ## [0.1.3](https://github.com/ZviBaratz/gnome-extension-reviewer/compare/v0.1.2...v0.1.3) (2026-04-09)
 
 
