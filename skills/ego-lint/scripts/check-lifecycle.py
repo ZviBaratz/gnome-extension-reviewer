@@ -1288,6 +1288,11 @@ def check_gsettings_signal_leak(ext_dir):
             if re.search(r'\.push\s*\(\s*$', prev_stripped):
                 prev_stripped = stripped
                 continue
+            # Skip if connect() result stored as 'id' property in an object literal
+            # e.g. arr.push({ settings, id: settings.connect('changed::...', ...) })
+            if re.search(r'\bid\s*:\s*\S+\.connect\s*\(', stripped):
+                prev_stripped = stripped
+                continue
             # Skip if inside array literal (IDs collected into array)
             if in_array_literal:
                 prev_stripped = stripped
