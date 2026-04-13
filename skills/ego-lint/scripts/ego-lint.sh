@@ -325,6 +325,7 @@ fi
 # console.debug, console.warn, console.error are OK.
 
 console_log_hits=""
+console_log_guarded_hits=""
 if compgen -G "$EXT_DIR/*.js" > /dev/null 2>&1 || \
    compgen -G "$EXT_DIR/lib/**/*.js" > /dev/null 2>&1; then
 
@@ -341,7 +342,9 @@ if compgen -G "$EXT_DIR/*.js" > /dev/null 2>&1 || \
 
     for f in "${js_files[@]}"; do
         # Match console.log( but skip lines that are comments (// or *)
-        while IFS= read -r line; do
+        while IFS= read -r match; do
+            lineno="${match%%:*}"
+            line="${match#*:}"
             # Strip leading whitespace for comment detection
             stripped="${line#"${line%%[![:space:]]*}"}"
             # Skip single-line comments
@@ -349,7 +352,16 @@ if compgen -G "$EXT_DIR/*.js" > /dev/null 2>&1 || \
             # Skip block comment continuation lines
             [[ "$stripped" == \** ]] && continue
             rel_path="${f#"$EXT_DIR/"}"
-            console_log_hits+="  $rel_path: $stripped"$'\n'
+            # Check if guarded by a build-type debug condition within 3 preceding lines
+            start=$((lineno - 3))
+            [[ $start -lt 1 ]] && start=1
+            guard=$(sed -n "${start},$((lineno - 1))p" "$f" \
+                | grep -iE "build-type['\"]?\s*[=!]=\s*['\"]debug['\"]" || true)
+            if [[ -n "$guard" ]]; then
+                console_log_guarded_hits+="  $rel_path: $stripped"$'\n'
+            else
+                console_log_hits+="  $rel_path: $stripped"$'\n'
+            fi
         done < <(grep -n 'console\.log(' "$f" 2>/dev/null || true)
     done
 fi
@@ -358,6 +370,10 @@ if [[ -n "$console_log_hits" ]]; then
     # Count number of hits
     hit_count=$(echo -n "$console_log_hits" | grep -c '.' || true)
     print_result "FAIL" "no-console-log" "Found $hit_count console.log() call(s)"
+elif [[ -n "$console_log_guarded_hits" ]]; then
+    # All console.log calls are inside build-type debug guards — dead code in production
+    hit_count=$(echo -n "$console_log_guarded_hits" | grep -c '.' || true)
+    print_result "WARN" "no-console-log" "Found $hit_count console.log() call(s) inside build-type debug guard (dead code in release builds)"
 else
     print_result "PASS" "no-console-log" "No console.log() calls found"
 fi
