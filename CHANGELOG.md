@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.1.6](https://github.com/ZviBaratz/gnome-extension-reviewer/compare/v0.1.5...v0.1.6) (2026-04-13)
+
+
+### Bug Fixes
+
+* **ego-lint:** downgrade no-console-log to WARN when guarded by build-type debug condition ([#182](https://github.com/ZviBaratz/gnome-extension-reviewer/issues/182)) ([e0a141b](https://github.com/ZviBaratz/gnome-extension-reviewer/commit/e0a141b76b31e68a1232be684251cc47eba45e99)), closes [#180](https://github.com/ZviBaratz/gnome-extension-reviewer/issues/180)
+* **ego-lint:** gsettings-signal-leak FP on object-in-array cleanup pattern ([#181](https://github.com/ZviBaratz/gnome-extension-reviewer/issues/181)) ([58e6b96](https://github.com/ZviBaratz/gnome-extension-reviewer/commit/58e6b96d9e624e1e2adca53aa6113415ac563009)), closes [#179](https://github.com/ZviBaratz/gnome-extension-reviewer/issues/179)
+
 ## [0.1.5](https://github.com/ZviBaratz/gnome-extension-reviewer/compare/v0.1.4...v0.1.5) (2026-04-10)
 
 
