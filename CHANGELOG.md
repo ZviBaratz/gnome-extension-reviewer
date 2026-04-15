@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.1.8](https://github.com/ZviBaratz/gnome-extension-reviewer/compare/v0.1.7...v0.1.8) (2026-04-15)
+
+
+### Bug Fixes
+
+* **ego-lint:** expand JS file scan to all subdirectories ([#186](https://github.com/ZviBaratz/gnome-extension-reviewer/issues/186)) ([6f10682](https://github.com/ZviBaratz/gnome-extension-reviewer/commit/6f106829ebf229d88a0fb8e58675e1f278f7ca84))
+
 ## [0.1.7](https://github.com/ZviBaratz/gnome-extension-reviewer/compare/v0.1.6...v0.1.7) (2026-04-15)
 
 
