@@ -326,21 +326,16 @@ fi
 
 console_log_hits=""
 console_log_guarded_hits=""
-if compgen -G "$EXT_DIR/*.js" > /dev/null 2>&1 || \
-   compgen -G "$EXT_DIR/lib/**/*.js" > /dev/null 2>&1; then
+# Collect all JS files under EXT_DIR, respecting standard exclusions
+_console_js_files=()
+while IFS= read -r -d '' f; do
+    _console_js_files+=("$f")
+done < <(find "$EXT_DIR" -name '*.js' \
+    -not -path '*/node_modules/*' -not -path '*/.git/*' -print0 2>/dev/null)
 
-    # Build file list
-    js_files=()
-    for f in "$EXT_DIR"/*.js; do
-        [[ -f "$f" ]] && js_files+=("$f")
-    done
-    if [[ -d "$EXT_DIR/lib" ]]; then
-        while IFS= read -r -d '' f; do
-            js_files+=("$f")
-        done < <(find "$EXT_DIR/lib" -name '*.js' -print0 2>/dev/null)
-    fi
+if [[ ${#_console_js_files[@]} -gt 0 ]]; then
 
-    for f in "${js_files[@]}"; do
+    for f in "${_console_js_files[@]}"; do
         # Match console.log( but skip lines that are comments (// or *)
         while IFS= read -r match; do
             lineno="${match%%:*}"
@@ -383,25 +378,21 @@ fi
 # ---------------------------------------------------------------------------
 
 deprecated_hits=""
-if compgen -G "$EXT_DIR/*.js" > /dev/null 2>&1 || \
-   compgen -G "$EXT_DIR/lib/**/*.js" > /dev/null 2>&1; then
+# Collect all JS files under EXT_DIR, respecting standard exclusions
+_depr_js_files=()
+while IFS= read -r -d '' f; do
+    _depr_js_files+=("$f")
+done < <(find "$EXT_DIR" -name '*.js' \
+    -not -path '*/node_modules/*' -not -path '*/.git/*' -print0 2>/dev/null)
 
-    js_files=()
-    for f in "$EXT_DIR"/*.js; do
-        [[ -f "$f" ]] && js_files+=("$f")
-    done
-    if [[ -d "$EXT_DIR/lib" ]]; then
-        while IFS= read -r -d '' f; do
-            js_files+=("$f")
-        done < <(find "$EXT_DIR/lib" -name '*.js' -print0 2>/dev/null)
-    fi
+if [[ ${#_depr_js_files[@]} -gt 0 ]]; then
 
     # Match both ESM and legacy import patterns for deprecated modules
     # ESM: import ... from 'mainloop' / 'bytearray' / 'lang'
     # Legacy: const X = imports.misc.mainloop / imports.lang / imports.byteArray
     deprecated_pattern="(from ['\"]mainloop['\"]|from ['\"]bytearray['\"]|from ['\"]lang['\"]|imports\.misc\.mainloop|imports\.lang|imports\.byteArray|from ['\"]ByteArray['\"]|from ['\"]Lang['\"]|from ['\"]Mainloop['\"])"
 
-    for f in "${js_files[@]}"; do
+    for f in "${_depr_js_files[@]}"; do
         while IFS= read -r match; do
             rel_path="${f#"$EXT_DIR/"}"
             deprecated_hits+="  $rel_path: $match"$'\n'
