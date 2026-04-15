@@ -756,7 +756,7 @@ compute_metrics() {
 
     # Count schema keys
     local schema_file=""
-    schema_file=$(find "$EXT_DIR" -name '*.gschema.xml' -not -path '*/node_modules/*' -not -path '*/.git/*' 2>/dev/null | head -1)
+    schema_file=$(find "$EXT_DIR" -name '*.gschema.xml' -not -path '*/node_modules/*' -not -path '*/.git/*' 2>/dev/null | head -1 || true)
     if [[ -n "$schema_file" ]]; then
         schema_keys=$(grep -c '<key ' "$schema_file" 2>/dev/null || echo 0)
     fi

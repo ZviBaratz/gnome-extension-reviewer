@@ -499,6 +499,7 @@ class TestReadFile(unittest.TestCase):
             read_file('/nonexistent/path.txt', required=True)
         self.assertEqual(ctx.exception.code, 1)
 
+    @unittest.skipIf(os.getuid() == 0, "Running as root — chmod 000 does not prevent reads")
     def test_permission_error_exits_when_required(self):
         path = self._write_temp("content")
         os.chmod(path, 0o000)
