@@ -44,8 +44,10 @@ if command -v zipinfo > /dev/null 2>&1; then
     zip_contents="$(zipinfo -1 "$zip_file" 2>/dev/null)" || true
 elif command -v unzip > /dev/null 2>&1; then
     zip_contents="$(unzip -l "$zip_file" 2>/dev/null | awk 'NR>3 && /^ / {print $NF}')" || true
+elif command -v python3 > /dev/null 2>&1; then
+    zip_contents="$(python3 -c "import zipfile, sys; [print(n) for n in zipfile.ZipFile(sys.argv[1]).namelist()]" "$zip_file" 2>/dev/null)" || true
 else
-    echo "SKIP|package/contents|Neither zipinfo nor unzip available"
+    echo "SKIP|package/contents|Neither zipinfo, unzip, nor python3 available"
     exit 0
 fi
 
@@ -204,6 +206,8 @@ if echo "$zip_contents" | grep -qE "\.gschema\.xml$"; then
         zip_metadata=""
         if command -v unzip > /dev/null 2>&1; then
             zip_metadata="$(unzip -p "$zip_file" metadata.json 2>/dev/null)" || true
+        elif command -v python3 > /dev/null 2>&1; then
+            zip_metadata="$(python3 -c "import zipfile, sys; print(zipfile.ZipFile(sys.argv[1]).read('metadata.json').decode())" "$zip_file" 2>/dev/null)" || true
         fi
 
         has_45_plus=false
