@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.1.7](https://github.com/ZviBaratz/gnome-extension-reviewer/compare/v0.1.6...v0.1.7) (2026-04-15)
+
+
+### Bug Fixes
+
+* **ego-lint:** resolve 8 independent test failures unrelated to init/shell-modification ([#184](https://github.com/ZviBaratz/gnome-extension-reviewer/issues/184)) ([39000d2](https://github.com/ZviBaratz/gnome-extension-reviewer/commit/39000d2164194943207463b7487a7c23b678e51d))
+
 ## [0.1.6](https://github.com/ZviBaratz/gnome-extension-reviewer/compare/v0.1.5...v0.1.6) (2026-04-13)
 
 
