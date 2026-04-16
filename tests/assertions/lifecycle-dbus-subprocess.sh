@@ -30,7 +30,13 @@ echo ""
 echo "=== resource-path-case ==="
 run_lint "resource-path-case@test"
 assert_exit_code "exits with 1 (has failures)" 1
-assert_output_contains "fails on wrong resource path case in prefs.js" "\[FAIL\].*imports/resource-path-case"
+assert_output_contains "fails on mixed-case resource path in prefs.js" "\[FAIL\].*imports/resource-path-case"
+echo ""
+
+# --- prefs-standard-esm-import (no FP on standard framework import) ---
+echo "=== prefs-standard-esm-import ==="
+run_lint "prefs-standard-esm-import@test"
+assert_output_not_contains "no FP on standard prefs.js ESM import" "\[FAIL\].*imports/resource-path-case"
 echo ""
 
 # --- legacy-imports-pre45 ---

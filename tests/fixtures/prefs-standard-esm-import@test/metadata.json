@@ -1,0 +1,7 @@
+{
+    "uuid": "prefs-standard-esm-import@test",
+    "name": "Prefs Standard ESM Import Test",
+    "description": "Verifies standard resource:///org/gnome/shell/extensions/prefs.js import is not flagged",
+    "version": 1,
+    "shell-version": ["45", "46", "47", "48"]
+}

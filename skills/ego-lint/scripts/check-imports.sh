@@ -102,15 +102,19 @@ fi
 
 # ---------------------------------------------------------------------------
 # Check resource path case: prefs uses /Shell/Extensions/, extension uses /shell/
+# Standard framework imports (resource:///org/gnome/shell/extensions/prefs.js,
+# resource:///org/gnome/shell/extensions/extension.js) are allowed everywhere.
+# Only flag the mixed-case typo: /shell/Extensions/ (lowercase s, capital E).
 # ---------------------------------------------------------------------------
 
-# prefs.js must NOT use resource:///org/gnome/shell/ (lowercase 's') — that's the extension context
+# prefs.js must NOT use resource:///org/gnome/shell/Extensions/ (mixed case) —
+# standard framework imports like resource:///org/gnome/shell/extensions/prefs.js are fine.
 if [[ -f "$EXT_DIR/prefs.js" ]]; then
     while IFS= read -r match; do
         echo "FAIL|imports/resource-path-case|prefs.js: wrong resource path case — use resource:///org/gnome/Shell/Extensions/ (capitalized Shell)"
         violations=$((violations + 1))
         break  # Report once
-    done < <(grep -nE 'resource:///org/gnome/shell/' "$EXT_DIR/prefs.js" 2>/dev/null || true)
+    done < <(grep -nE 'resource:///org/gnome/shell/Extensions/' "$EXT_DIR/prefs.js" 2>/dev/null || true)
 fi
 
 # extension.js must NOT use resource:///org/gnome/Shell/Extensions/ — that's the prefs context

@@ -1,8 +1,6 @@
 import Adw from 'gi://Adw';
-// Standard framework import — valid, must NOT be flagged
+// Standard ESM framework import — this must NOT trigger imports/resource-path-case
 import {ExtensionPreferences} from 'resource:///org/gnome/shell/extensions/prefs.js';
-// Bug: mixed-case resource path — lowercase 's', capital 'E' is the typo being tested
-import SomeUtil from 'resource:///org/gnome/shell/Extensions/resource-path-case@test/util.js';
 
 export default class TestPrefs extends ExtensionPreferences {
     fillPreferencesWindow(window) {
