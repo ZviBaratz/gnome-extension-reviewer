@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.1.9](https://github.com/ZviBaratz/gnome-extension-reviewer/compare/v0.1.8...v0.1.9) (2026-04-17)
+
+
+### Bug Fixes
+
+* **ego-lint:** narrow resource-path-case FP on standard prefs.js ESM import ([#189](https://github.com/ZviBaratz/gnome-extension-reviewer/issues/189)) ([1e4ddbc](https://github.com/ZviBaratz/gnome-extension-reviewer/commit/1e4ddbc7d5fa9fe1d63e2e9f48fbf057a4008e9b))
+
 ## [0.1.8](https://github.com/ZviBaratz/gnome-extension-reviewer/compare/v0.1.7...v0.1.8) (2026-04-15)
 
 
