@@ -240,7 +240,7 @@ done < <(find "$EXT_DIR" -name '*.js' -not -path '*/node_modules/*' -not -path '
 
 if [[ "$COMPILED_TS" == true ]]; then
     export EGO_LINT_COMPILED_TS=1
-    print_result "WARN" "compiled-typescript" "Extension appears compiled from TypeScript — some lint checks adjusted"
+    print_result "WARN" "compiled-typescript" "Extension appears compiled from TypeScript — some lint checks adjusted; lifecycle checks have reduced accuracy for bundled output (manually verify enable()/disable() cleanup)"
 else
     print_result "PASS" "compiled-typescript" "No transpiler artifacts detected"
 fi
