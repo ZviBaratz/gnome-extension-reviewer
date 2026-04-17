@@ -6,7 +6,10 @@ export default class SignalCallbackExtension extends Extension {
     constructor(metadata) {
         super(metadata);
 
-        // VIOLATION: Shell global accessed directly in constructor
+        // VIOLATION (FAIL): Shell global mutated directly in constructor
+        Main.sessionMode.currentMode = 'test';
+
+        // ADVISORY (WARN): Shell global read in constructor — reference, not mutation
         this._hasOverview = Main.sessionMode.hasOverview;
 
         // OK: Shell global inside signal callback — deferred, not executed

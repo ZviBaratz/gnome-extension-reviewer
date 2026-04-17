@@ -1,0 +1,7 @@
+{
+    "uuid": "init-shell-connect@test",
+    "name": "Init Shell Connect Test",
+    "description": "Module-scope signal connection on Shell global — should be WARN not FAIL",
+    "shell-version": ["48"],
+    "url": "https://github.com/test/init-shell-connect"
+}

@@ -1,0 +1,7 @@
+{
+    "uuid": "init-shell-read-this@test",
+    "name": "Init Shell Read This Test",
+    "description": "Constructor stores Shell global reference via this.x — should be WARN not FAIL",
+    "shell-version": ["48"],
+    "url": "https://github.com/test/init-shell-read-this"
+}

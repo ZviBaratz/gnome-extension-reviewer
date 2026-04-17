@@ -1,0 +1,7 @@
+{
+    "uuid": "init-shell-mutation@test",
+    "name": "Init Shell Mutation Test",
+    "description": "Module-scope Shell global mutation — must remain FAIL",
+    "shell-version": ["48"],
+    "url": "https://github.com/test/init-shell-mutation"
+}
