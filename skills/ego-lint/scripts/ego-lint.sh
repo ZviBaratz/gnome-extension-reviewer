@@ -364,7 +364,7 @@ fi
 if [[ -n "$console_log_hits" ]]; then
     # Count number of hits
     hit_count=$(echo -n "$console_log_hits" | grep -c '.' || true)
-    print_result "FAIL" "no-console-log" "Found $hit_count console.log() call(s)"
+    print_result "FAIL" "no-console-log" "Found $hit_count console.log() call(s)|fix: Replace with console.debug() — it is silenced by default and enabled via G_MESSAGES_DEBUG, so no custom debug toggle is needed"
 elif [[ -n "$console_log_guarded_hits" ]]; then
     # All console.log calls are inside build-type debug guards — dead code in production
     hit_count=$(echo -n "$console_log_guarded_hits" | grep -c '.' || true)
