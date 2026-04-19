@@ -1,7 +1,10 @@
 import {Extension} from 'resource:///org/gnome/shell/extensions/extension.js';
 import * as Main from 'resource:///org/gnome/shell/ui/main.js';
 
-// TRUE VIOLATION: module-scope Shell global access
+// TRUE VIOLATION (FAIL): module-scope Shell global mutation
+Main.panel.someProperty = true;
+
+// ADVISORY (WARN): module-scope Shell global read — reference, not mutation
 const primaryIdx = Main.layoutManager.primaryIndex;
 
 // OK: arrow function definition is lazy (body not executed at module scope)

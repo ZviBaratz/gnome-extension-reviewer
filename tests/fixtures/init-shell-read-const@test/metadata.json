@@ -1,0 +1,7 @@
+{
+    "uuid": "init-shell-read-const@test",
+    "name": "Init Shell Read Const Test",
+    "description": "Module-scope const binding of Shell global — should be WARN not FAIL",
+    "shell-version": ["48"],
+    "url": "https://github.com/test/init-shell-read-const"
+}

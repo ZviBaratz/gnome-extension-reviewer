@@ -219,6 +219,46 @@ def extract_constructor_lines(content_lines, class_range=None):
 # violations.
 SIGNAL_CONNECT = re.compile(r'\.connect(?:Object)?\s*\(')
 
+# Shell global READ patterns — storing a reference or connecting a signal on
+# a Shell global is NOT a mutation.  Downgrade these to WARN.
+#
+# Covers:
+#   const X = Main.panel.statusArea.quickSettings  (const/let/var binding)
+#   this._panel = Main.panel                        (instance property store)
+#   Main.panel.connect('destroy', cb)               (signal connection)
+#
+# Does NOT cover actual mutations (property assignment on the global),
+# which must remain FAIL.
+SHELL_GLOBAL_READ = re.compile(
+    r'(?:(?:const|let|var)\s+\w+)'      # variable binding
+    r'|(?:this\.\w+\s*=)'               # instance property store
+    r'|\bMain\.\w+\.connect(?:Object)?\s*\('  # signal connection on Shell global
+)
+
+# Shell global MUTATION patterns — property assignment on a Shell global
+# (or nested object) is a real init-time violation and must remain FAIL.
+SHELL_GLOBAL_MUTATION = re.compile(
+    r'\bMain\.\w+\.\w+\s*=[^=]'        # Main.panel.x = value
+    r'|\bMain\.\w+\.\w+\.\w+\s*=[^=]'  # Main.panel.a.b = value
+)
+
+
+def _classify_shell_global(line):
+    """Return 'FAIL' for Shell global mutations, 'WARN' for reads/references.
+
+    Reads (storing a reference, connecting a signal) are genuinely
+    problematic — Shell globals may not be initialized yet — but are much
+    less severe than actual mutations of Shell state.  They are common in
+    EGO-accepted extensions, so WARN is the appropriate severity.
+    """
+    stripped = line.strip()
+    if SHELL_GLOBAL_MUTATION.search(stripped):
+        return 'FAIL'
+    if SHELL_GLOBAL_READ.search(stripped):
+        return 'WARN'
+    # Default: FAIL (conservative — covers method calls like addToStatusArea)
+    return 'FAIL'
+
 
 def filter_signal_callbacks(ctor_lines):
     """Remove lines inside signal callback bodies from constructor lines.
@@ -260,6 +300,8 @@ def check_init_modifications(ext_dir):
                "No init-time Shell modifications detected")
         return
 
+    # violations: list of (severity, location) tuples
+    # severity is 'FAIL' for mutations, 'WARN' for read-only references
     violations = []
 
     for filepath in js_files:
@@ -280,7 +322,8 @@ def check_init_modifications(ext_dir):
                 # is not executed at module scope
                 if ARROW_FN_DEF.search(line):
                     continue
-                violations.append(f"{rel}:{lineno}")
+                severity = _classify_shell_global(line)
+                violations.append((severity, f"{rel}:{lineno}"))
             elif GOBJECT_CONSTRUCTORS.search(line):
                 # Arrow function definitions are lazy — not executed at
                 # module scope
@@ -289,7 +332,7 @@ def check_init_modifications(ext_dir):
                 # GObject.registerClass() returns a class, not an instance
                 if not REGISTER_CLASS.search(line) and \
                         not VALUE_TYPES.search(line):
-                    violations.append(f"{rel}:{lineno}")
+                    violations.append(('FAIL', f"{rel}:{lineno}"))
 
         # Check constructor() lines
         # Helper class constructors are runtime-only (only run when
@@ -303,14 +346,17 @@ def check_init_modifications(ext_dir):
                 if is_skip_line(line):
                     continue
                 if SHELL_GLOBALS.search(line):
-                    violations.append(f"{rel}:{lineno}")
+                    severity = _classify_shell_global(line)
+                    violations.append((severity, f"{rel}:{lineno}"))
                 elif GOBJECT_CONSTRUCTORS.search(line):
-                    violations.append(f"{rel}:{lineno}")
+                    violations.append(('FAIL', f"{rel}:{lineno}"))
 
     if violations:
-        for loc in violations:
-            result("FAIL", "init/shell-modification",
-                   f"{loc}: Shell modification outside enable()")
+        for severity, loc in violations:
+            label = ('Shell modification'
+                     if severity == 'FAIL' else 'Shell global read')
+            result(severity, "init/shell-modification",
+                   f"{loc}: {label} outside enable()")
     else:
         result("PASS", "init/shell-modification",
                "No init-time Shell modifications detected")

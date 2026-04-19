@@ -245,20 +245,54 @@ echo ""
 echo "=== init-time-safety ==="
 run_lint "init-time-safety@test"
 assert_exit_code "exits with 1 (has module-scope violation)" 1
-assert_output_contains "fails on module-scope Main access" "\[FAIL\].*init/shell-modification"
+assert_output_contains "fails on module-scope Shell mutation" "\[FAIL\].*init/shell-modification.*extension.js:5"
+assert_output_contains "warns on module-scope Shell read" "\[WARN\].*init/shell-modification.*extension.js:8"
 assert_output_not_contains "no FP on helper constructor" "init/shell-modification.*helper.js"
-assert_output_not_contains "no FP on arrow function definition" "init/shell-modification.*extension.js:8"
-assert_output_not_contains "no FP on async arrow function" "init/shell-modification.*extension.js:11"
-assert_output_not_contains "no FP on arrow GObject constructor" "init/shell-modification.*extension.js:14"
+assert_output_not_contains "no FP on arrow function definition" "init/shell-modification.*extension.js:11"
+assert_output_not_contains "no FP on async arrow function" "init/shell-modification.*extension.js:14"
+assert_output_not_contains "no FP on arrow GObject constructor" "init/shell-modification.*extension.js:17"
 echo ""
 
 # --- init-constructor-signal ---
 echo "=== init-constructor-signal ==="
 run_lint "init-constructor-signal@test"
 assert_exit_code "exits with 1 (has constructor violation)" 1
-assert_output_contains "flags direct Shell global in constructor" "\[FAIL\].*init/shell-modification.*extension.js:10"
-assert_output_not_contains "no FP on .connect() callback body" "init/shell-modification.*extension.js:1[5-7]"
-assert_output_not_contains "no FP on .connectObject() callback body" "init/shell-modification.*extension.js:2[1-4]"
+assert_output_contains "fails on Shell mutation in constructor" "\[FAIL\].*init/shell-modification.*extension.js:10"
+assert_output_contains "warns on Shell read in constructor" "\[WARN\].*init/shell-modification.*extension.js:13"
+assert_output_not_contains "no FP on .connect() callback body" "init/shell-modification.*extension.js:1[7-9]"
+assert_output_not_contains "no FP on .connectObject() callback body" "init/shell-modification.*extension.js:2[3-6]"
+echo ""
+
+# --- init-shell-read-const (WARN downgrade) ---
+echo "=== init-shell-read-const ==="
+run_lint "init-shell-read-const@test"
+assert_exit_code "exits with 0 (WARN only, not FAIL)" 0
+assert_output_contains "warns on module-scope const Shell read" "\[WARN\].*init/shell-modification.*extension.js:6"
+assert_output_not_contains "no FAIL on const Shell read" "\[FAIL\].*init/shell-modification"
+echo ""
+
+# --- init-shell-read-this (WARN downgrade) ---
+echo "=== init-shell-read-this ==="
+run_lint "init-shell-read-this@test"
+assert_exit_code "exits with 0 (WARN only, not FAIL)" 0
+assert_output_contains "warns on this.x Shell read in constructor" "\[WARN\].*init/shell-modification.*extension.js:11"
+assert_output_not_contains "no FAIL on this.x Shell read" "\[FAIL\].*init/shell-modification"
+echo ""
+
+# --- init-shell-connect (WARN downgrade) ---
+echo "=== init-shell-connect ==="
+run_lint "init-shell-connect@test"
+assert_exit_code "exits with 0 (WARN only, not FAIL)" 0
+assert_output_contains "warns on module-scope Shell global signal connect" "\[WARN\].*init/shell-modification.*extension.js:7"
+assert_output_not_contains "no FAIL on Shell global signal connect" "\[FAIL\].*init/shell-modification"
+echo ""
+
+# --- init-shell-mutation (regression guard: FAIL preserved) ---
+echo "=== init-shell-mutation ==="
+run_lint "init-shell-mutation@test"
+assert_exit_code "exits with 1 (FAIL on mutation)" 1
+assert_output_contains "fails on module-scope Shell mutation" "\[FAIL\].*init/shell-modification.*extension.js:6"
+assert_output_not_contains "no false WARN on Shell mutation" "\[WARN\].*init/shell-modification"
 echo ""
 
 # --- lifecycle-imbalance ---
