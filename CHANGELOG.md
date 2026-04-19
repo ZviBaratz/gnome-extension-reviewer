@@ -1,5 +1,19 @@
 # Changelog
 
+## [0.1.10](https://github.com/ZviBaratz/gnome-extension-reviewer/compare/v0.1.9...v0.1.10) (2026-04-19)
+
+
+### Bug Fixes
+
+* **ego-lint:** add fix suggestion to no-console-log FAIL ([#193](https://github.com/ZviBaratz/gnome-extension-reviewer/issues/193)) ([1c77791](https://github.com/ZviBaratz/gnome-extension-reviewer/commit/1c7779147cdcaab1422e377a4e66935e66a1faee))
+* **ego-lint:** downgrade Shell global reads to WARN in check-init ([#191](https://github.com/ZviBaratz/gnome-extension-reviewer/issues/191)) ([bea8d38](https://github.com/ZviBaratz/gnome-extension-reviewer/commit/bea8d384766bb99f28a2d2a37dc0b6d05a55050d))
+* **ego-lint:** exempt Gio.SubprocessLauncher from module-scope init check ([#195](https://github.com/ZviBaratz/gnome-extension-reviewer/issues/195)) ([15380d3](https://github.com/ZviBaratz/gnome-extension-reviewer/commit/15380d3f6a85d144571ec29eb67e806ad9b13d3f))
+
+
+### Documentation
+
+* **ego-lint:** add lifecycle accuracy warning to compiled-typescript output ([#192](https://github.com/ZviBaratz/gnome-extension-reviewer/issues/192)) ([f127e89](https://github.com/ZviBaratz/gnome-extension-reviewer/commit/f127e899a92506b39ea8dc9191fbcb5f7bb93e85))
+
 ## [0.1.9](https://github.com/ZviBaratz/gnome-extension-reviewer/compare/v0.1.8...v0.1.9) (2026-04-17)
 
 
