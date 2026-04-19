@@ -1,0 +1,7 @@
+{
+    "uuid": "gio-subprocesslauncher-init@test",
+    "name": "Gio SubprocessLauncher Init Test",
+    "description": "Tests that new Gio.SubprocessLauncher() at module scope does not trigger init/shell-modification",
+    "shell-version": ["48"],
+    "url": "https://github.com/test/gio-subprocesslauncher-init"
+}
