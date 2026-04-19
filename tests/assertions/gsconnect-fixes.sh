@@ -21,3 +21,10 @@ run_lint "glib-bytes-init@test"
 assert_exit_code "exits with 0 (GLib.Bytes at module scope OK)" 0
 assert_output_contains "no init-time modification" "\[PASS\].*init/shell-modification"
 echo ""
+
+# --- gio-subprocesslauncher-init (Gio.SubprocessLauncher at module scope is a config container) ---
+echo "=== gio-subprocesslauncher-init ==="
+run_lint "gio-subprocesslauncher-init@test"
+assert_exit_code "exits with 0 (Gio.SubprocessLauncher at module scope OK)" 0
+assert_output_contains "no init-time modification" "\[PASS\].*init/shell-modification"
+echo ""

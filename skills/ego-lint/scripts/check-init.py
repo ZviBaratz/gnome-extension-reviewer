@@ -88,10 +88,12 @@ GOBJECT_CONSTRUCTORS = re.compile(
 # it's class registration (type definition), not resource allocation.
 REGISTER_CLASS = re.compile(r'\bGObject\.registerClass\s*\(')
 
-# Value types / data containers that don't hold system resources
+# Value types / data containers that don't hold system resources.
+# Gio.SubprocessLauncher is a configuration container (no open fds/connections)
+# created before launch(); see GLib docs — no cleanup needed.
 VALUE_TYPES = re.compile(
     r'\bnew\s+(?:GLib\.(?:Bytes|Variant|DateTime|TimeZone|Regex|Uri)'
-    r'|Cogl\.Color|Clutter\.Color)\b'
+    r'|Cogl\.Color|Clutter\.Color|Gio\.SubprocessLauncher)\b'
 )
 
 # Extension class identification for scoping constructor checks.
