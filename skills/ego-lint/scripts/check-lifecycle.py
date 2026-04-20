@@ -93,6 +93,31 @@ def strip_comments(content):
     return content
 
 
+def _resolve_local_parent_content(ext_dir, content):
+    """If extension.js extends a namespace from a local import, return that file's content.
+
+    Handles the pattern: import * as F from './foo.js' + export default class extends F.Bar
+    Returns stripped content of the parent file, or None if not resolved.
+    """
+    # Find 'export default class extends NAMESPACE.Something'
+    m = re.search(r'export\s+default\s+class\b[^{]*\bextends\s+(\w+)\.', content)
+    if not m:
+        return None
+    namespace = m.group(1)
+    # Find 'import * as NAMESPACE from './local.js''
+    imp = re.search(
+        rf"import\s+\*\s+as\s+{re.escape(namespace)}\s+from\s+['\"](\./[^'\"]+)['\"]",
+        content,
+    )
+    if not imp:
+        return None
+    local_path = imp.group(1).lstrip('./')
+    parent_js = os.path.join(ext_dir, local_path)
+    if not os.path.isfile(parent_js):
+        return None
+    return strip_comments(read_file(parent_js))
+
+
 def check_enable_disable(ext_dir):
     """R-LIFE-03: extension.js must define enable() and disable()."""
     ext_js = os.path.join(ext_dir, 'extension.js')
@@ -103,6 +128,15 @@ def check_enable_disable(ext_dir):
 
     has_enable = bool(re.search(r'\benable\s*\(', content))
     has_disable = bool(re.search(r'\bdisable\s*\(', content))
+
+    # If methods are missing, check whether they live in a local parent class file.
+    if not (has_enable and has_disable):
+        parent = _resolve_local_parent_content(ext_dir, content)
+        if parent:
+            if not has_enable and re.search(r'\benable\s*\(', parent):
+                has_enable = True
+            if not has_disable and re.search(r'\bdisable\s*\(', parent):
+                has_disable = True
 
     if not has_enable:
         result("FAIL", "lifecycle/enable-method", "extension.js missing enable() method")
