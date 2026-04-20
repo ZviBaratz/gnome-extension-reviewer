@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.1.13](https://github.com/ZviBaratz/gnome-extension-reviewer/compare/v0.1.12...v0.1.13) (2026-04-20)
+
+
+### Bug Fixes
+
+* **ego-lint:** scan local parent class for enable/disable and prefs methods ([#200](https://github.com/ZviBaratz/gnome-extension-reviewer/issues/200)) ([dd43cc9](https://github.com/ZviBaratz/gnome-extension-reviewer/commit/dd43cc98a9137dbe741333356803d5cc712ff78e))
+
 ## [0.1.12](https://github.com/ZviBaratz/gnome-extension-reviewer/compare/v0.1.11...v0.1.12) (2026-04-20)
 
 
