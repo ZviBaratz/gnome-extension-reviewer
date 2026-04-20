@@ -58,6 +58,15 @@ def parse_schema_keys(schema_files):
     return keys
 
 
+_GSETTINGS_GETTERS = (
+    r'get_(?:boolean|default_value|double|enum|flags|int64|int|mapped'
+    r'|string|strv|uint64|uint|user_value|value)'
+)
+_GSETTINGS_SETTERS = (
+    r'set_(?:boolean|double|enum|flags|int64|int|string|strv|uint64|uint|value)'
+)
+
+
 def find_key_references(js_files):
     """Scan JS files for GSettings key name references.
 
@@ -78,21 +87,27 @@ def find_key_references(js_files):
         set_uint('key-name', ...)
         bind('key-name', ...)
         connect('changed::key-name', ...)
+
+    Note: only GSettings methods are matched — GTK Builder get_object() and
+    GObject set_property() are intentionally excluded.
     """
     keys = set()
     has_dynamic = False
 
-    # Match get_*/set_*/bind with string literal key
+    # Match known GSettings get_*/set_*/bind with string literal key.
+    # Deliberately excludes non-GSettings methods like get_object() and
+    # set_property() to avoid false positives on GTK Builder widget IDs.
     accessor_re = re.compile(
-        r'\.(get_\w+|set_\w+|bind)\s*\(\s*["\']([a-z][a-z0-9-]*)["\']'
+        rf'\.({_GSETTINGS_GETTERS}|{_GSETTINGS_SETTERS}|bind)'
+        r'\s*\(\s*["\']([a-z][a-z0-9-]*)["\']'
     )
     # Match connect('changed::key-name', ...)
     changed_re = re.compile(
         r"\.connect\s*\(\s*['\"]changed::([a-z][a-z0-9-]*)['\"]"
     )
-    # Detect dynamic key access (variable or template literal)
+    # Detect dynamic GSettings key access (variable or template literal)
     dynamic_re = re.compile(
-        r'\.(get_\w+|set_\w+|bind)\s*\(\s*(`[^`]*`|\w+\s*[+,)])'
+        rf'\.({_GSETTINGS_GETTERS}|{_GSETTINGS_SETTERS}|bind)\s*\(\s*(`[^`]*`|\w+\s*[+,)])'
     )
 
     for path in js_files:
