@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.1.14](https://github.com/ZviBaratz/gnome-extension-reviewer/compare/v0.1.13...v0.1.14) (2026-04-20)
+
+
+### Bug Fixes
+
+* **ego-lint:** narrow schema-usage accessor regex to GSettings methods only ([#202](https://github.com/ZviBaratz/gnome-extension-reviewer/issues/202)) ([ebe0267](https://github.com/ZviBaratz/gnome-extension-reviewer/commit/ebe0267fe0e763b54be1736eae0140143d0d2715)), closes [#203](https://github.com/ZviBaratz/gnome-extension-reviewer/issues/203)
+
 ## [0.1.13](https://github.com/ZviBaratz/gnome-extension-reviewer/compare/v0.1.12...v0.1.13) (2026-04-20)
 
 
