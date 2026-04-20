@@ -1,0 +1,7 @@
+{
+    "uuid": "init-anon-extension-class@test",
+    "name": "Init Anonymous Extension Class Test",
+    "description": "Tests that helper class constructors are not flagged when extension uses anonymous class syntax",
+    "shell-version": ["48"],
+    "url": "https://github.com/test/init-anon-extension-class"
+}
