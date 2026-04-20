@@ -70,6 +70,13 @@ ARROW_FN_DEF = re.compile(
     r'\s*=>'                              # arrow
 )
 
+# Function default parameters: `new X()` inside a function signature's
+# parameter list is evaluated at call-time, not module-load-time.
+# Matches: function foo(a, b = new Soup.Session()) { ... }
+FUNC_PARAM_DEFAULT = re.compile(
+    r'(?:async\s+)?function\s*\w*\s*\([^{]*=\s*new\s+\w'
+)
+
 
 # Shell globals that should only be accessed inside enable()/disable()
 SHELL_GLOBALS = re.compile(
@@ -337,6 +344,9 @@ def check_init_modifications(ext_dir):
                 # Arrow function definitions are lazy — not executed at
                 # module scope
                 if ARROW_FN_DEF.search(line):
+                    continue
+                # Function default parameters are call-time, not module-load-time
+                if FUNC_PARAM_DEFAULT.search(line):
                     continue
                 # GObject.registerClass() returns a class, not an instance
                 if not REGISTER_CLASS.search(line) and \

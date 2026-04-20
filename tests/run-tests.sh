@@ -302,6 +302,14 @@ assert_exit_code "exits with 0 (no violations in helper constructor)" 0
 assert_output_not_contains "no FP on helper constructor with anon extension class" "\[FAIL\].*init/shell-modification|\[WARN\].*init/shell-modification"
 echo ""
 
+# --- func-default-param-init (FP guard: new X() in function default params) ---
+echo "=== func-default-param-init ==="
+run_lint "func-default-param-init@test"
+assert_exit_code "exits with 0 (no violations — default params are call-time)" 0
+assert_output_not_contains "no FP on Soup.Session() in function default param" "\[FAIL\].*init/shell-modification"
+assert_output_not_contains "no FP on Gio.Cancellable() in function default param" "\[FAIL\].*init/shell-modification"
+echo ""
+
 # --- lifecycle-imbalance ---
 echo "=== lifecycle-imbalance ==="
 run_lint "lifecycle-imbalance@test"
