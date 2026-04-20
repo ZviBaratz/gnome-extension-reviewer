@@ -1,0 +1,7 @@
+{
+    "uuid": "prefs-parent-class-method@test",
+    "name": "Prefs Parent Class Method Test",
+    "description": "Tests that fillPreferencesWindow defined in a local parent class does not produce a false positive FAIL",
+    "shell-version": ["48"],
+    "url": "https://github.com/test/prefs-parent-class"
+}

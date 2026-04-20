@@ -1,0 +1,7 @@
+{
+    "uuid": "lifecycle-parent-class-enable-disable@test",
+    "name": "Lifecycle Parent Class Enable Disable Test",
+    "description": "Tests that enable/disable defined in a local parent class do not produce false positive FAILs",
+    "shell-version": ["48"],
+    "url": "https://github.com/test/lifecycle-parent-class"
+}
