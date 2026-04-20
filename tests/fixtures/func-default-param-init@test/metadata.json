@@ -1,0 +1,7 @@
+{
+    "uuid": "func-default-param-init@test",
+    "name": "Function Default Parameter Init Test",
+    "description": "Tests that new X() inside function default parameters does not trigger init/shell-modification",
+    "shell-version": ["48"],
+    "url": "https://github.com/test/func-default-param-init"
+}
