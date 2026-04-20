@@ -295,6 +295,13 @@ assert_output_contains "fails on module-scope Shell mutation" "\[FAIL\].*init/sh
 assert_output_not_contains "no false WARN on Shell mutation" "\[WARN\].*init/shell-modification"
 echo ""
 
+# --- init-anon-extension-class (FP guard: anon class boundary detection) ---
+echo "=== init-anon-extension-class ==="
+run_lint "init-anon-extension-class@test"
+assert_exit_code "exits with 0 (no violations in helper constructor)" 0
+assert_output_not_contains "no FP on helper constructor with anon extension class" "\[FAIL\].*init/shell-modification|\[WARN\].*init/shell-modification"
+echo ""
+
 # --- lifecycle-imbalance ---
 echo "=== lifecycle-imbalance ==="
 run_lint "lifecycle-imbalance@test"

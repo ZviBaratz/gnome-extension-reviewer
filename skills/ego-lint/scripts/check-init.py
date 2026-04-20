@@ -99,8 +99,14 @@ VALUE_TYPES = re.compile(
 # Extension class identification for scoping constructor checks.
 # Only the Extension class constructor runs at instantiation time —
 # helper class constructors only run when called from enable().
+# Named: class Foo extends Bar.Extension {
 EXTENSION_CLASS_DEF = re.compile(
     r'class\s+\w+\s+extends\s+(?:\w+\.)*Extension\s*\{'
+)
+# Anonymous: export default class extends Bar.Extension {
+# Used in modern GNOME 45+ extensions (e.g. tuberry-style bundles)
+ANON_EXTENSION_CLASS_DEF = re.compile(
+    r'export\s+default\s+class\s+extends\s+(?:\w+\.)*\w+\s*\{'
 )
 # Fallback: export default class without extends
 DEFAULT_EXPORT_CLASS_DEF = re.compile(
@@ -135,6 +141,7 @@ def find_extension_class_range(content_lines):
     """
     for lineno, line in enumerate(content_lines, 1):
         if EXTENSION_CLASS_DEF.search(line) or \
+                ANON_EXTENSION_CLASS_DEF.search(line) or \
                 DEFAULT_EXPORT_CLASS_DEF.search(line):
             depth = line.count('{') - line.count('}')
             if depth <= 0 and '{' in line:
