@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.1.11](https://github.com/ZviBaratz/gnome-extension-reviewer/compare/v0.1.10...v0.1.11) (2026-04-20)
+
+
+### Bug Fixes
+
+* **ego-lint:** detect anonymous extension class syntax in init check ([#196](https://github.com/ZviBaratz/gnome-extension-reviewer/issues/196)) ([2cd6927](https://github.com/ZviBaratz/gnome-extension-reviewer/commit/2cd692781d61e9f4ece81a07d64bd02e4ca902cc))
+
 ## [0.1.10](https://github.com/ZviBaratz/gnome-extension-reviewer/compare/v0.1.9...v0.1.10) (2026-04-19)
 
 
