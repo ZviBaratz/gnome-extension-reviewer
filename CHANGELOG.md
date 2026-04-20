@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.1.12](https://github.com/ZviBaratz/gnome-extension-reviewer/compare/v0.1.11...v0.1.12) (2026-04-20)
+
+
+### Bug Fixes
+
+* **ego-lint:** skip new X() in function default parameters ([#198](https://github.com/ZviBaratz/gnome-extension-reviewer/issues/198)) ([4a98c15](https://github.com/ZviBaratz/gnome-extension-reviewer/commit/4a98c158f5ac3106d4965958c28e7f09e509b602))
+
 ## [0.1.11](https://github.com/ZviBaratz/gnome-extension-reviewer/compare/v0.1.10...v0.1.11) (2026-04-20)
 
 
