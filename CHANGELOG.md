@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.1.16](https://github.com/ZviBaratz/gnome-extension-reviewer/compare/v0.1.15...v0.1.16) (2026-04-21)
+
+
+### Bug Fixes
+
+* **ego-lint:** add 'downloaded from' keyword to vendored-file detection ([d18c975](https://github.com/ZviBaratz/gnome-extension-reviewer/commit/d18c97574c1b021a06c63acb91e2a10f24d7f9c2))
+
 ## [0.1.15](https://github.com/ZviBaratz/gnome-extension-reviewer/compare/v0.1.14...v0.1.15) (2026-04-21)
 
 
