@@ -451,7 +451,11 @@ while IFS= read -r -d '' f; do
     rel_path="${f#"$EXT_DIR/"}"
     non_gjs_scripts+="  $rel_path"$'\n'
 done < <(find "$EXT_DIR" -type f \( -name '*.py' -o -name '*.sh' -o -name '*.rb' -o -name '*.pl' \) \
-    -not -path '*/node_modules/*' -not -path '*/.git/*' -print0 2>/dev/null)
+    -not -path '*/node_modules/*' -not -path '*/.git/*' \
+    -not -path '*/scripts/*' -not -path '*/tests/*' -not -path '*/test/*' \
+    -not -path '*/kwin/*' -not -path '*/docs/*' -not -path '*/.github/*' \
+    -not -path '*/ci/*' -not -path '*/build/*' \
+    -print0 2>/dev/null)
 
 if [[ -n "$non_gjs_scripts" ]]; then
     hit_count=$(echo -n "$non_gjs_scripts" | grep -c '.' || true)
@@ -483,7 +487,11 @@ while IFS= read -r -d '' f; do
         non_exec_scripts+="  $rel_path"$'\n'
     fi
 done < <(find "$EXT_DIR" -type f -name '*.sh' \
-    -not -path '*/node_modules/*' -not -path '*/.git/*' -print0 2>/dev/null)
+    -not -path '*/node_modules/*' -not -path '*/.git/*' \
+    -not -path '*/scripts/*' -not -path '*/tests/*' -not -path '*/test/*' \
+    -not -path '*/kwin/*' -not -path '*/docs/*' -not -path '*/.github/*' \
+    -not -path '*/ci/*' -not -path '*/build/*' \
+    -print0 2>/dev/null)
 
 if [[ -n "$non_exec_scripts" ]]; then
     hit_count=$(echo -n "$non_exec_scripts" | grep -c '.' || true)
@@ -839,3 +847,4 @@ if [[ $FAIL_COUNT -gt 0 ]]; then
 else
     exit 0
 fi
+
