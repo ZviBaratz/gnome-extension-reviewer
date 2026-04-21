@@ -88,7 +88,7 @@
   fix: "Use GSettings (this.getSettings()) for persistent key-value storage."
 
 - id: R-WEB-09
-  pattern: "\\brequire\\s*\\("
+  pattern: "(?<!\\.)\\brequire\\s*\\("
   scope: ["*.js"]
   severity: blocking
   message: "require() is Node.js; use ESM imports (import ... from ...)"

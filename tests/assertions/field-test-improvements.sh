@@ -101,3 +101,10 @@ assert_exit_code "exits with 0 (advisory only)" 0
 assert_output_contains "warns on always-true instanceof in class method" "\[WARN\].*R-SLOP-13"
 assert_output_not_contains "R-SLOP-13 suppressed for variable-assigned instanceof" "\[WARN\].*R-SLOP-13.*extension\.js:6"
 echo ""
+
+# --- gi-require-fp (R-WEB-09 false positive on Gi.require()) ---
+echo "=== gi-require-fp ==="
+run_lint "gi-require-fp@test"
+assert_exit_code "exits with 0 (no failures from Gi.require)" 0
+assert_output_not_contains "Gi.require() does not trigger R-WEB-09" "\[FAIL\].*R-WEB-09"
+echo ""

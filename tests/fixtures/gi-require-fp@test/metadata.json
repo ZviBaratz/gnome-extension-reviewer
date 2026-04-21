@@ -1,0 +1,7 @@
+{
+    "uuid": "gi-require-fp@test",
+    "name": "Gi.require FP Test",
+    "description": "Tests that Gi.require() does not trigger R-WEB-09",
+    "shell-version": ["47", "48"],
+    "url": "https://example.com"
+}
