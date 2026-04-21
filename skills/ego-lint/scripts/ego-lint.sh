@@ -452,9 +452,9 @@ while IFS= read -r -d '' f; do
     non_gjs_scripts+="  $rel_path"$'\n'
 done < <(find "$EXT_DIR" -type f \( -name '*.py' -o -name '*.sh' -o -name '*.rb' -o -name '*.pl' \) \
     -not -path '*/node_modules/*' -not -path '*/.git/*' \
-    -not -path '*/scripts/*' -not -path '*/tests/*' -not -path '*/test/*' \
-    -not -path '*/kwin/*' -not -path '*/docs/*' -not -path '*/.github/*' \
-    -not -path '*/ci/*' -not -path '*/build/*' \
+    -not -path "$EXT_DIR/scripts/*" -not -path "$EXT_DIR/tests/*" -not -path "$EXT_DIR/test/*" \
+    -not -path "$EXT_DIR/kwin/*" -not -path "$EXT_DIR/docs/*" -not -path "$EXT_DIR/.github/*" \
+    -not -path "$EXT_DIR/ci/*" -not -path "$EXT_DIR/build/*" \
     -print0 2>/dev/null)
 
 if [[ -n "$non_gjs_scripts" ]]; then
@@ -488,9 +488,9 @@ while IFS= read -r -d '' f; do
     fi
 done < <(find "$EXT_DIR" -type f -name '*.sh' \
     -not -path '*/node_modules/*' -not -path '*/.git/*' \
-    -not -path '*/scripts/*' -not -path '*/tests/*' -not -path '*/test/*' \
-    -not -path '*/kwin/*' -not -path '*/docs/*' -not -path '*/.github/*' \
-    -not -path '*/ci/*' -not -path '*/build/*' \
+    -not -path "$EXT_DIR/scripts/*" -not -path "$EXT_DIR/tests/*" -not -path "$EXT_DIR/test/*" \
+    -not -path "$EXT_DIR/kwin/*" -not -path "$EXT_DIR/docs/*" -not -path "$EXT_DIR/.github/*" \
+    -not -path "$EXT_DIR/ci/*" -not -path "$EXT_DIR/build/*" \
     -print0 2>/dev/null)
 
 if [[ -n "$non_exec_scripts" ]]; then
