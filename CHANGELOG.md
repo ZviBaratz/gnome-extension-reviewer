@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.1.15](https://github.com/ZviBaratz/gnome-extension-reviewer/compare/v0.1.14...v0.1.15) (2026-04-21)
+
+
+### Bug Fixes
+
+* **ego-lint:** exclude dev directories from non-gjs-scripts and script-permissions ([#206](https://github.com/ZviBaratz/gnome-extension-reviewer/issues/206)) ([6192f48](https://github.com/ZviBaratz/gnome-extension-reviewer/commit/6192f4857d7812cc1de3185fd076843f36419658))
+
 ## [0.1.14](https://github.com/ZviBaratz/gnome-extension-reviewer/compare/v0.1.13...v0.1.14) (2026-04-20)
 
 
