@@ -260,6 +260,8 @@ _VENDORED_SIGNALS = re.compile(
     r'|@auto-generated\b'
     r'|Credits:\s*https?://'
     r'|Adapted from\s+https?://'
+    r'|[Ww]as downloaded from\s+https?://'
+    r'|[Dd]ownloaded from\s+https?://'
     r')',
     re.IGNORECASE,
 )
