@@ -241,6 +241,19 @@ def check_module_state(ext_dir, js_files):
                     )
                     if reset_re.search(content):
                         continue  # Variable is cleaned up
+                    # Carve out: conditional import pattern
+                    # let X; try { X = await import('gi://...') } catch {}
+                    # These are init-only compat imports, not mutable app state.
+                    import_assign_re = re.compile(
+                        rf'\b{re.escape(var_name)}\s*=\s*'
+                        r'(?:\(?\s*await\s+import\s*\(|import\s*\()'
+                    )
+                    if import_assign_re.search(content):
+                        # Verify no non-import assignments exist
+                        stripped = import_assign_re.sub('', content)
+                        other_assign_re = re.compile(rf'\b{re.escape(var_name)}\s*=[^=]')
+                        if not other_assign_re.search(stripped):
+                            continue  # All assignments are from import() — skip
                     found.append(f"{rel}:{i + 1}")
 
     if found:
