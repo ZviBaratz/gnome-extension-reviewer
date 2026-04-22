@@ -64,7 +64,7 @@ findings:
     notes: "Scripts are build/dev tools (build.sh, update-pot.sh) — not shipped with installed extension"
 
   # WARN findings — True Positives
-  - id: "R-SLOP-03::version field is deprecated; EGO manages versions for GNOME 45+"
+  - id: "metadata/deprecated-version::version field is ignored by EGO for GNOME 45+; remove it (EGO manages versions automatically)"
     classification: tp
     notes: "metadata.json contains version:36 — deprecated for GNOME 45+"
   - id: "R-QUAL-36::CRITICAL notification urgency bypasses Do Not Disturb — reserved for system alerts, not extension notifications"

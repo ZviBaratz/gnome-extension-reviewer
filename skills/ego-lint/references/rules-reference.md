@@ -887,13 +887,6 @@ _getActiveWorkspace() {
 }
 ```
 
-### R-SLOP-03: Deprecated version field in metadata
-- **Severity**: advisory
-- **Checked by**: apply-patterns.py
-- **Rule**: `metadata.json` should not contain a numeric `version` field.
-- **Rationale**: The `version` field in `metadata.json` is deprecated. EGO manages versioning automatically. Including it is harmless but signals unfamiliarity with current EGO practices, often because an AI template included it.
-- **Fix**: Remove the `"version"` key from `metadata.json`. EGO assigns version numbers on upload.
-
 ### R-SLOP-05: Non-standard homepage field
 - **Severity**: advisory
 - **Checked by**: apply-patterns.py

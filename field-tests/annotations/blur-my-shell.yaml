@@ -41,7 +41,7 @@ findings:
   - id: "R-SLOP-16::GLib.file_get_contents synchronous"
     classification: tp
     notes: "Synchronous file read advisory"
-  - id: "R-SLOP-03::version field deprecated"
+  - id: "metadata/deprecated-version::version field is ignored by EGO for GNOME 45+; remove it (EGO manages versions automatically)"
     classification: tp
     notes: "Deprecated for GNOME 45+"
   - id: "R-SEC-09::Main.extensionManager access"
@@ -173,7 +173,7 @@ findings:
   - id: "R-I18N-01::Template literal inside gettext _() breaks xgettext string extraction"
     classification: tp
     notes: "4 instances — template literals break xgettext extraction"
-  - id: "R-SLOP-03::version field is deprecated; EGO manages versions for GNOME 45+"
+  - id: "metadata/deprecated-version::version field is ignored by EGO for GNOME 45+; remove it (EGO manages versions automatically)"
     classification: tp
     notes: "Version field deprecated for GNOME 45+"
   - id: "R-SLOP-16::GLib.file_get_contents() is synchronous and blocks the main loop; prefer Gio.File.load_contents() or load_contents_async()"

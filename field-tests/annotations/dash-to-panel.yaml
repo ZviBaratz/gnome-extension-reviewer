@@ -201,7 +201,7 @@ findings:
   - id: "R-PREFS-04c::GTK layout widget in prefs.js — verify no Adw equivalent for this specific use case"
     classification: tp
     notes: "Correct advisory — GTK layout widgets in prefs"
-  - id: "R-SLOP-03::version field is deprecated; EGO manages versions for GNOME 45+"
+  - id: "metadata/deprecated-version::version field is ignored by EGO for GNOME 45+; remove it (EGO manages versions automatically)"
     classification: tp
     notes: "metadata.json has version: 9999 — deprecated for GNOME 45+"
   - id: "R-SLOP-40::new Promise(resolve, reject) wrapper — consider Gio._promisify() for GIO async methods"

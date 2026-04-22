@@ -224,7 +224,7 @@ findings:
   - id: "R-LOG-03::print()/printerr() should not be used in production; use console.debug()"
     classification: tp
     notes: "3 instances of print()/printerr() — valid advisory for production code"
-  - id: "R-SLOP-03::version field is deprecated; EGO manages versions for GNOME 45+"
+  - id: "metadata/deprecated-version::version field is ignored by EGO for GNOME 45+; remove it (EGO manages versions automatically)"
     classification: tp
     notes: "metadata.json contains version:71 — deprecated for GNOME 45+"
   - id: "R-SLOP-40::new Promise(resolve, reject) wrapper — consider Gio._promisify() for GIO async methods"

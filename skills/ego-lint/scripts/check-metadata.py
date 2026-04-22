@@ -251,7 +251,7 @@ def main():
     # --- Deprecated version field ---
     if "version" in meta:
         result("WARN", "metadata/deprecated-version",
-               "version field is ignored by EGO for GNOME 45+; consider removing")
+               "version field is ignored by EGO for GNOME 45+; remove it (EGO manages versions automatically)")
 
     # --- Missing gettext-domain with locale/ ---
     locale_dir = os.path.join(ext_dir, 'locale')
