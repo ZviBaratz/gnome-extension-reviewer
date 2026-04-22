@@ -1,0 +1,8 @@
+{
+  "name": "TypeScript Extension",
+  "description": "A GNOME extension written in TypeScript",
+  "uuid": "typescript-source-repo@test",
+  "version-name": "1.0.0",
+  "url": "https://github.com/example/typescript-extension",
+  "shell-version": ["47", "48"]
+}

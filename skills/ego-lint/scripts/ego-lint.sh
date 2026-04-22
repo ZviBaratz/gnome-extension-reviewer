@@ -273,7 +273,18 @@ elif [[ -f "$EXT_DIR/src/extension.js" ]]; then
         print_result "FAIL" "file-structure/metadata.json" "metadata.json is missing"
     fi
 else
-    print_result "FAIL" "file-structure/extension.js" "extension.js is missing"
+    # Detect unbuilt TypeScript source repos: .ts files present but no compiled .js
+    _ts_source=false
+    if compgen -G "$EXT_DIR/src/*.ts" > /dev/null 2>&1 || \
+       compgen -G "$EXT_DIR/*.ts" > /dev/null 2>&1; then
+        _ts_source=true
+    fi
+
+    if [[ "$_ts_source" == true ]]; then
+        print_result "FAIL" "file-structure/extension.js" "extension.js is missing — TypeScript source detected; build the extension first (e.g. 'make' or 'npm run build') before running ego-lint|fix: Compile TypeScript source to extension.js before running ego-lint"
+    else
+        print_result "FAIL" "file-structure/extension.js" "extension.js is missing"
+    fi
     if [[ -f "$EXT_DIR/metadata.json" ]]; then
         print_result "PASS" "file-structure/metadata.json" "metadata.json exists"
     elif [[ -f "$EXT_DIR/src/metadata.json" ]]; then
