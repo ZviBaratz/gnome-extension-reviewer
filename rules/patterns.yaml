@@ -257,7 +257,7 @@
   message: "sudo is prohibited in GNOME extensions; use pkexec with a polkit policy for privileged operations"
   category: security
   fix: "Replace sudo with pkexec and provide a polkit action file, or use a udev rule for hardware access."
-  exclude-dirs: ["tests", "test"]
+  exclude-dirs: ["tests", "test", "scripts", "docs", ".github", "ci", "build"]
   skip-comments: true
 
 - id: R-SEC-05

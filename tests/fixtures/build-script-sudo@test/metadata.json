@@ -1,0 +1,7 @@
+{
+  "name": "Build Script Sudo Test",
+  "description": "Fixture: sudo in build scripts should not be flagged",
+  "uuid": "build-script-sudo@test",
+  "shell-version": ["46", "47"],
+  "url": "https://example.com"
+}
