@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.1.17](https://github.com/ZviBaratz/gnome-extension-reviewer/compare/v0.1.16...v0.1.17) (2026-04-22)
+
+
+### Bug Fixes
+
+* **ego-lint:** remove R-SLOP-03 duplicate of metadata/deprecated-version ([#212](https://github.com/ZviBaratz/gnome-extension-reviewer/issues/212)) ([8d6ae7b](https://github.com/ZviBaratz/gnome-extension-reviewer/commit/8d6ae7b0abc6e7f5c8b3514d95093d59f2a89f84))
+* **ego-lint:** suppress quality/module-state FP for conditional import pattern ([#211](https://github.com/ZviBaratz/gnome-extension-reviewer/issues/211)) ([1626214](https://github.com/ZviBaratz/gnome-extension-reviewer/commit/16262141e6c3d75ef03ba15cca583355e67df0c6))
+
 ## [0.1.16](https://github.com/ZviBaratz/gnome-extension-reviewer/compare/v0.1.15...v0.1.16) (2026-04-21)
 
 
