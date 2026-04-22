@@ -172,6 +172,13 @@ assert_output_contains "warns on empty catch" "\[WARN\].*quality/empty-catch"
 assert_output_contains "warns on JSDoc" "\[WARN\].*R-SLOP-01"
 echo ""
 
+# --- module-scope-conditional-import (carve-out: conditional import pattern is not mutable state) ---
+echo "=== module-scope-conditional-import ==="
+run_lint "module-scope-conditional-import@test"
+assert_exit_code "exits with 0 (no issues)" 0
+assert_output_not_contains "no quality/module-state warn for conditional import" "\[WARN\].*quality/module-state"
+echo ""
+
 # --- provenance-jsdoc (provenance post-filter suppresses R-SLOP-01/02) ---
 echo "=== provenance-jsdoc ==="
 run_lint "provenance-jsdoc@test"

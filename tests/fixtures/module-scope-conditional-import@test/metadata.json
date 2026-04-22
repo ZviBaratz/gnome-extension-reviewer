@@ -1,0 +1,7 @@
+{
+    "uuid": "module-scope-conditional-import@test",
+    "name": "Module Scope Conditional Import Test",
+    "description": "Test fixture: conditional import pattern at module scope should not warn",
+    "shell-version": ["45", "46", "47", "48", "49", "50"],
+    "url": "https://example.com"
+}
