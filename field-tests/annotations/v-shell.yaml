@@ -124,7 +124,7 @@ findings:
   - id: "R-LOG-02::Legacy log() function; use console.debug() instead"
     classification: tp
     notes: "Legacy log() should use console.debug()"
-  - id: "R-SLOP-03::version field is deprecated; EGO manages versions for GNOME 45+"
+  - id: "metadata/deprecated-version::version field is ignored by EGO for GNOME 45+; remove it (EGO manages versions automatically)"
     classification: tp
     notes: "Version field deprecated for GNOME 45+"
   - id: "R-SLOP-44::Non-idiomatic GLib C-binding — use GLib.Source.remove()"

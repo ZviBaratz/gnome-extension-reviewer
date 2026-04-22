@@ -488,14 +488,6 @@
   category: ai-slop
   fix: "Remove @returns {Type} annotations; GNOME extensions don't use TypeScript-style JSDoc."
 
-- id: R-SLOP-03
-  pattern: "\"version\":\\s*\\d"
-  scope: ["metadata.json"]
-  severity: advisory
-  message: "version field is deprecated; EGO manages versions for GNOME 45+"
-  category: ai-slop
-  fix: "Remove the version field from metadata.json; EGO manages versions automatically."
-
 - id: R-SLOP-05
   pattern: "\"homepage\""
   scope: ["metadata.json"]
