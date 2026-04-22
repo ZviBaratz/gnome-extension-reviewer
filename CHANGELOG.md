@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.1.18](https://github.com/ZviBaratz/gnome-extension-reviewer/compare/v0.1.17...v0.1.18) (2026-04-22)
+
+
+### Features
+
+* **ego-lint:** detect TypeScript source repos with helpful build hint ([#214](https://github.com/ZviBaratz/gnome-extension-reviewer/issues/214)) ([83f757e](https://github.com/ZviBaratz/gnome-extension-reviewer/commit/83f757e685d5c93ee857e548de8d226c642bde88))
+
+
+### Bug Fixes
+
+* **ego-lint:** exclude build script dirs from R-SEC-04 sudo check ([#216](https://github.com/ZviBaratz/gnome-extension-reviewer/issues/216)) ([15470b5](https://github.com/ZviBaratz/gnome-extension-reviewer/commit/15470b52d0dc35611aaac35f19166377c1b9ce53)), closes [#215](https://github.com/ZviBaratz/gnome-extension-reviewer/issues/215)
+
 ## [0.1.17](https://github.com/ZviBaratz/gnome-extension-reviewer/compare/v0.1.16...v0.1.17) (2026-04-22)
 
 
