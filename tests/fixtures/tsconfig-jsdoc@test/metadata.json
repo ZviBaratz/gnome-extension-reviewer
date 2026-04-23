@@ -1,0 +1,8 @@
+{
+  "uuid": "tsconfig-jsdoc@test",
+  "name": "TypeScript JSDoc Test",
+  "description": "Test fixture for tsconfig.json JSDoc suppression",
+  "shell-version": ["46"],
+  "version": 1,
+  "url": "https://example.com"
+}

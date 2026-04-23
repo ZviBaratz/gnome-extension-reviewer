@@ -479,6 +479,8 @@
   message: "TypeScript-style JSDoc (@param {Type}) is unusual in GNOME extensions"
   category: ai-slop
   fix: "Remove @param {Type} annotations; GNOME extensions don't use TypeScript-style JSDoc."
+  skip-if-compiled: true
+  skip-if-tsconfig: true
 
 - id: R-SLOP-02
   pattern: "@returns\\s*\\{\\w+\\}"
@@ -487,6 +489,8 @@
   message: "TypeScript-style JSDoc (@returns {Type}) is unusual in GNOME extensions"
   category: ai-slop
   fix: "Remove @returns {Type} annotations; GNOME extensions don't use TypeScript-style JSDoc."
+  skip-if-compiled: true
+  skip-if-tsconfig: true
 
 - id: R-SLOP-05
   pattern: "\"homepage\""

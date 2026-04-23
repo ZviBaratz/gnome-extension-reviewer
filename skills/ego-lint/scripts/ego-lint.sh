@@ -245,6 +245,13 @@ else
     print_result "PASS" "compiled-typescript" "No transpiler artifacts detected"
 fi
 
+# TypeScript project detection (tsconfig.json at root or src/)
+# Built TS extensions emit @param {Type} / @returns {Type} annotations from tsc;
+# flagging them as AI slop is noise for maintainers who chose TypeScript.
+if [[ -f "$EXT_DIR/tsconfig.json" || -f "$EXT_DIR/src/tsconfig.json" ]]; then
+    export EGO_LINT_HAS_TSCONFIG=1
+fi
+
 # ---------------------------------------------------------------------------
 # File structure checks
 # ---------------------------------------------------------------------------

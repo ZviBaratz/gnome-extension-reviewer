@@ -324,6 +324,7 @@ def main():
     shell_versions = _get_shell_versions(ext_dir)
     min_shell = min(shell_versions) if shell_versions else None
     is_compiled_ts = os.environ.get('EGO_LINT_COMPILED_TS') == '1'
+    has_tsconfig = os.environ.get('EGO_LINT_HAS_TSCONFIG') == '1'
 
     # Pre-scan: identify vendored files once and reuse across all rules
     vendored_files = _discover_vendored_files(ext_dir)
@@ -348,6 +349,11 @@ def main():
         # Compiled TypeScript gating: skip rules that flag transpiler artifacts
         if is_compiled_ts and rule.get('skip-if-compiled', '') == 'true':
             print(f"SKIP|{rid}|Not applicable for compiled TypeScript")
+            continue
+
+        # TypeScript project gating: skip rules that produce noise on tsc-compiled output
+        if has_tsconfig and rule.get('skip-if-tsconfig', '') == 'true':
+            print(f"SKIP|{rid}|Not applicable for TypeScript project (tsconfig.json found)")
             continue
 
         if isinstance(scopes, str):
