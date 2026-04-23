@@ -703,6 +703,11 @@ run_subscript "$SCRIPT_DIR/check-package.sh"
 # (R-SLOP-01/02) are intentional documentation, not AI slop signals. Score 3
 # means strong hand-written indicators (domain vocabulary, nontrivial algorithms).
 # AI-generated code typically scores 1-2. Suppress JSDoc warnings post-hoc.
+#
+# Second path: when tsconfig.json is present at the extension root, the JS
+# output was compiled from TypeScript. tsc preserves @param {Type} annotations
+# verbatim from source, so they are a natural artifact of the TS toolchain —
+# not AI slop. Suppress R-SLOP-01/02 in this case too.
 # Future: move provenance awareness into apply-patterns.py for inline gating.
 
 provenance_score=0
@@ -718,6 +723,13 @@ if [[ "$provenance_score" -ge 3 && "$deferred_count" -gt 0 ]]; then
     WARN_COUNT=$((WARN_COUNT - deferred_count))
     print_result "PASS" "provenance/jsdoc-suppressed" \
         "Suppressed $deferred_count JSDoc warnings (R-SLOP-01/02) — provenance score $provenance_score indicates hand-written code"
+elif [[ -f "$EXT_DIR/tsconfig.json" && "$deferred_count" -gt 0 ]]; then
+    # Suppress deferred R-SLOP-01/02 WARNs for TypeScript-compiled extensions.
+    # tsc preserves JSDoc type annotations from TS source; flagging them is noise
+    # for extension authors who chose TypeScript (e.g. Forge, Pop Shell with tsc).
+    WARN_COUNT=$((WARN_COUNT - deferred_count))
+    print_result "PASS" "tsconfig/jsdoc-suppressed" \
+        "Suppressed $deferred_count JSDoc warnings (R-SLOP-01/02) — tsconfig.json detected, TypeScript-compiled output"
 else
     # Flush deferred entries (low provenance or no deferred entries)
     for entry in "${DEFERRED_SLOP_JSDOC[@]}"; do

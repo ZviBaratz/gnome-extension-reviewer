@@ -1,0 +1,7 @@
+{
+    "uuid": "tsconfig-jsdoc@test",
+    "name": "TSConfig JSDoc Test",
+    "description": "Tests that R-SLOP-01/02 JSDoc warnings are suppressed when tsconfig.json is present",
+    "shell-version": ["48"],
+    "url": "https://example.com"
+}
