@@ -3,5 +3,5 @@
   "name": "SPDX JSDoc Test",
   "description": "Test fixture: SPDX-licensed plain JS with JSDoc type annotations",
   "shell-version": ["46"],
-  "version": 1
+  "url": "https://github.com/ZviBaratz/gnome-extension-reviewer"
 }
