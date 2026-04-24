@@ -1,0 +1,3 @@
+SPDX-License-Identifier: GPL-3.0-or-later
+
+(License text omitted for fixture brevity — see the tests/fixtures/valid-extension@test LICENSE for the full GPL-3.0 notice. This fixture only exercises the SPDX provenance path.)

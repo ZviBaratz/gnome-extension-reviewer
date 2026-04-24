@@ -51,6 +51,26 @@ _VENDORED_SIGNALS = re.compile(
 )
 _COMMENT_LINE = re.compile(r'^\s*(//|/?\*)')
 
+_SPDX_HEADER = re.compile(r'SPDX-License-Identifier:\s*[\w\-.+]+', re.IGNORECASE)
+
+
+def _has_spdx_header(filepath, scan_lines=20):
+    """Return True if the file has an SPDX-License-Identifier in its top comment block.
+
+    SPDX headers must appear inside a comment line in the first *scan_lines* lines
+    to count — SPDX tokens in string literals or embedded data are ignored.
+    """
+    try:
+        with open(filepath, encoding='utf-8', errors='replace') as f:
+            for i, line in enumerate(f):
+                if i >= scan_lines:
+                    break
+                if _COMMENT_LINE.match(line) and _SPDX_HEADER.search(line):
+                    return True
+    except OSError:
+        pass
+    return False
+
 
 def _is_vendored_file(filepath, scan_lines=30):
     """Return True if the file appears to be vendored/third-party code.
@@ -972,26 +992,38 @@ def check_code_provenance(ext_dir, js_files):
                 else:
                     naming_styles['camel'] += 1
 
+    # Signals are weighted, not counted. SPDX-headers-project-wide requires
+    # project hygiene tooling (reuse-tool, pre-commit lint, CI check) that
+    # AI-drafted code almost never sustains across every file — weight 2.
+    # Other signals are individually weaker (LLMs produce consistent naming
+    # by default, domain vocabulary leaks from prompts) — weight 1.
     signals = []
     if domain_vocab >= 5:
-        signals.append(f"domain-vocabulary({domain_vocab})")
+        signals.append((f"domain-vocabulary({domain_vocab})", 1))
     if nontrivial_algo >= 3:
-        signals.append(f"nontrivial-algorithms({nontrivial_algo})")
+        signals.append((f"nontrivial-algorithms({nontrivial_algo})", 1))
     if debug_comments >= 2:
-        signals.append(f"debug-comments({debug_comments})")
+        signals.append((f"debug-comments({debug_comments})", 1))
 
     total_names = naming_styles['camel'] + naming_styles['snake']
     if total_names >= 10:
         dominant = max(naming_styles.values())
         if dominant / total_names > 0.9:
-            signals.append("consistent-naming-style")
+            signals.append(("consistent-naming-style", 1))
 
-    score = len(signals)
+    # SPDX header ratio across non-vendored JS files. Suppress for single-file
+    # projects where "project-wide" is not meaningful.
     file_count = len(js_files)
+    spdx_count = sum(1 for fp in js_files if _has_spdx_header(fp))
+    if file_count >= 2 and spdx_count / file_count >= 0.8:
+        signals.append((f"spdx-headers-project-wide({spdx_count}/{file_count})", 2))
+
+    score = sum(w for _, w in signals)
+    signal_names = [name for name, _ in signals]
 
     detail_parts = [f"provenance-score={score}"]
-    if signals:
-        detail_parts.append(f"signals=[{', '.join(signals)}]")
+    if signal_names:
+        detail_parts.append(f"signals=[{', '.join(signal_names)}]")
     detail_parts.append(f"files={file_count}")
 
     if score >= 3:

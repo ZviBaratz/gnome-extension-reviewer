@@ -1,0 +1,7 @@
+{
+    "uuid": "spdx-provenance@test",
+    "name": "SPDX Provenance Test",
+    "description": "Tests weighted provenance scoring with project-wide SPDX headers (issue #223)",
+    "shell-version": ["48"],
+    "url": "https://example.com"
+}

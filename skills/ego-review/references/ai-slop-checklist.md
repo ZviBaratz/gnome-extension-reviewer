@@ -1044,17 +1044,30 @@ Large extensions naturally trigger more items due to volume. Raise thresholds:
 
 ### Provenance Score
 
-ego-lint's `quality/code-provenance` check reports a provenance score on a 0-5
-scale based on hand-written code indicators:
+ego-lint's `quality/code-provenance` check reports a weighted provenance score
+based on hand-written code indicators. Each signal contributes the following
+weight when it fires:
 
-| Score | Meaning | Signals |
-|-------|---------|---------|
-| 0 | No indicators | No domain vocabulary, no algorithms, inconsistent style |
-| 1 | Minimal | Some domain terms or basic patterns |
-| 2 | Moderate | Domain vocabulary OR nontrivial algorithms present |
-| 3 | Strong | Domain vocabulary AND algorithms, consistent naming |
-| 4 | Very strong | Rich domain vocabulary, complex algorithms, cohesive style |
-| 5 | Unmistakable | Extensive domain expertise, novel implementations, unique idioms |
+| Signal | Weight | What it detects |
+|--------|--------|-----------------|
+| `spdx-headers-project-wide` | 2 | ≥80% of non-vendored JS files carry an `SPDX-License-Identifier` in their top comment block |
+| `domain-vocabulary` | 1 | ≥5 occurrences of hardware / DBus / platform vocabulary |
+| `nontrivial-algorithms` | 1 | ≥3 bitwise ops / Math calls / non-trivial loops |
+| `debug-comments` | 1 | ≥2 workaround/bug/upstream-reference comments |
+| `consistent-naming-style` | 1 | ≥10 `this._member` references with >90% dominant style |
+
+Score interpretation:
+
+| Score | Meaning |
+|-------|---------|
+| 0 | No indicators |
+| 1-2 | Some / moderate indicators |
+| 3+ | Strong hand-written indicators (triggers R-SLOP-01/02 suppression and +2 BLOCKING credit) |
+
+SPDX headers project-wide effectively require project hygiene tooling
+(`reuse-tool`, pre-commit lint, CI check) that AI-drafted code almost never
+sustains across every file, hence the weight-2 treatment. Other signals are
+individually weaker and stay at weight 1.
 
 ### Provenance adjustment
 
