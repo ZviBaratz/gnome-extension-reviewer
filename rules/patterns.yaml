@@ -481,6 +481,7 @@
   fix: "Remove @param {Type} annotations; GNOME extensions don't use TypeScript-style JSDoc."
   skip-if-compiled: true
   skip-if-tsconfig: true
+  skip-if-spdx: true
 
 - id: R-SLOP-02
   pattern: "@returns\\s*\\{\\w+\\}"
@@ -491,6 +492,7 @@
   fix: "Remove @returns {Type} annotations; GNOME extensions don't use TypeScript-style JSDoc."
   skip-if-compiled: true
   skip-if-tsconfig: true
+  skip-if-spdx: true
 
 - id: R-SLOP-05
   pattern: "\"homepage\""

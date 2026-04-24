@@ -252,6 +252,22 @@ if [[ -f "$EXT_DIR/tsconfig.json" || -f "$EXT_DIR/src/tsconfig.json" ]]; then
     export EGO_LINT_HAS_TSCONFIG=1
 fi
 
+# SPDX license header detection
+# Hand-authored projects with deliberate licensing use SPDX per-file headers.
+# AI-generated code almost never includes SPDX-FileCopyrightText / SPDX-License-Identifier.
+# Threshold: >= 70% of JS files have SPDX headers → suppress R-SLOP-01/02 (intentional JSDoc).
+_spdx_js_total=0
+_spdx_count=0
+while IFS= read -r -d '' _f; do
+    _spdx_js_total=$((_spdx_js_total + 1))
+    if head -n 10 "$_f" 2>/dev/null | grep -qE 'SPDX-(License-Identifier|FileCopyrightText)'; then
+        _spdx_count=$((_spdx_count + 1))
+    fi
+done < <(find "$EXT_DIR" -name "*.js" -not -path "*/node_modules/*" -print0 2>/dev/null)
+if [[ $_spdx_js_total -gt 0 && $((_spdx_count * 100 / _spdx_js_total)) -ge 70 ]]; then
+    export EGO_LINT_HAS_SPDX=1
+fi
+
 # ---------------------------------------------------------------------------
 # File structure checks
 # ---------------------------------------------------------------------------

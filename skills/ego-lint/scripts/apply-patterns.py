@@ -325,6 +325,7 @@ def main():
     min_shell = min(shell_versions) if shell_versions else None
     is_compiled_ts = os.environ.get('EGO_LINT_COMPILED_TS') == '1'
     has_tsconfig = os.environ.get('EGO_LINT_HAS_TSCONFIG') == '1'
+    has_spdx = os.environ.get('EGO_LINT_HAS_SPDX') == '1'
 
     # Pre-scan: identify vendored files once and reuse across all rules
     vendored_files = _discover_vendored_files(ext_dir)
@@ -354,6 +355,11 @@ def main():
         # TypeScript project gating: skip rules that produce noise on tsc-compiled output
         if has_tsconfig and rule.get('skip-if-tsconfig', '') == 'true':
             print(f"SKIP|{rid}|Not applicable for TypeScript project (tsconfig.json found)")
+            continue
+
+        # SPDX license header gating: skip rules that misfire on well-documented plain JS
+        if has_spdx and rule.get('skip-if-spdx', '') == 'true':
+            print(f"SKIP|{rid}|Not applicable for SPDX-licensed project (per-file SPDX headers found)")
             continue
 
         if isinstance(scopes, str):
