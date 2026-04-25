@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.1.19](https://github.com/ZviBaratz/gnome-extension-reviewer/compare/v0.1.18...v0.1.19) (2026-04-25)
+
+
+### Bug Fixes
+
+* **ego-lint:** suppress R-SLOP-01/02 for SPDX-licensed plain JS ([#228](https://github.com/ZviBaratz/gnome-extension-reviewer/issues/228)) ([3fb2558](https://github.com/ZviBaratz/gnome-extension-reviewer/commit/3fb2558cdb867985d4579a3a1beef2f9976d2b2a))
+* **ego-lint:** suppress R-SLOP-01/02 JSDoc warnings for TypeScript projects ([#219](https://github.com/ZviBaratz/gnome-extension-reviewer/issues/219)) ([5af940e](https://github.com/ZviBaratz/gnome-extension-reviewer/commit/5af940e8b0f4d37aeb218dbb2b0071fb90bf53fd))
+
 ## [0.1.18](https://github.com/ZviBaratz/gnome-extension-reviewer/compare/v0.1.17...v0.1.18) (2026-04-22)
 
 
