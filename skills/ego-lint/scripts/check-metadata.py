@@ -442,7 +442,7 @@ def check_gettext_domain_consistency(meta, ext_dir):
     if not domain:
         return
 
-    skip_dirs = {'node_modules', '.git', '__pycache__'}
+    skip_dirs = {'node_modules', '.git', '__pycache__', 'kwin'}
     mismatches = []
 
     for root, dirs, files in os.walk(ext_dir):

@@ -32,7 +32,7 @@ def find_schema_files(ext_dir):
 
 def find_js_files(ext_dir):
     """Find JS files."""
-    skip_dirs = {'node_modules', '.git', '__pycache__'}
+    skip_dirs = {'node_modules', '.git', '__pycache__', 'kwin'}
     files = []
     for root, dirs, filenames in os.walk(ext_dir):
         dirs[:] = [d for d in dirs if d not in skip_dirs]
