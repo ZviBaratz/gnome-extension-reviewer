@@ -231,6 +231,9 @@ def main():
     elif uuid:
         result("PASS", "metadata/uuid-at-sign", "UUID contains @")
 
+    # Detect EGO-packaged archives (SweetTooth injected _generated key)
+    is_ego_download = "_generated" in meta
+
     # --- Non-standard fields ---
     STANDARD_FIELDS = {
         "uuid", "name", "description", "shell-version",
@@ -242,16 +245,27 @@ def main():
     non_standard = [k for k in meta if k not in STANDARD_FIELDS]
     if non_standard:
         for field in non_standard:
-            result("WARN", "metadata/non-standard-field",
-                   f"'{field}' is not a standard metadata field")
+            if field == "_generated" and is_ego_download:
+                # Injected by EGO's SweetTooth packager — not the extension author's field
+                result("PASS", "metadata/non-standard-field",
+                       "'_generated' suppressed: EGO packaging artifact (SweetTooth injected)")
+            else:
+                result("WARN", "metadata/non-standard-field",
+                       f"'{field}' is not a standard metadata field")
     else:
         result("PASS", "metadata/non-standard-field",
                "No non-standard metadata fields")
 
     # --- Deprecated version field ---
     if "version" in meta:
-        result("WARN", "metadata/deprecated-version",
-               "version field is ignored by EGO for GNOME 45+; remove it (EGO manages versions automatically)")
+        if is_ego_download:
+            result("WARN", "metadata/deprecated-version",
+                   "version field is ignored by EGO for GNOME 45+ "
+                   "(EGO packaging artifact — SweetTooth re-injects this field; "
+                   "check your source repo and remove version if present)")
+        else:
+            result("WARN", "metadata/deprecated-version",
+                   "version field is ignored by EGO for GNOME 45+; remove it (EGO manages versions automatically)")
 
     # --- Missing gettext-domain with locale/ ---
     locale_dir = os.path.join(ext_dir, 'locale')

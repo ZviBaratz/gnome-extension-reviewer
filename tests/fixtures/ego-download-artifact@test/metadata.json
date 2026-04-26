@@ -1,0 +1,9 @@
+{
+    "uuid": "ego-download-artifact@test",
+    "name": "EGO Download Artifact Test",
+    "description": "Tests suppression of EGO packaging artifacts",
+    "shell-version": ["48", "49", "50"],
+    "url": "https://github.com/example/test",
+    "version": 42,
+    "_generated": "extensions.gnome.org"
+}
