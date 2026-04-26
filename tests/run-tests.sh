@@ -152,6 +152,13 @@ assert_output_contains "warns on non-standard fields" "\[WARN\].*metadata/non-st
 assert_output_contains "warns on deprecated version" "\[WARN\].*metadata/deprecated-version"
 echo ""
 
+# --- ego-download-artifact ---
+echo "=== ego-download-artifact@test ==="
+run_lint "ego-download-artifact@test"
+assert_output_contains "suppresses _generated field as EGO artifact" "\[PASS\].*metadata/non-standard-field.*_generated.*suppressed"
+assert_output_contains "warns on deprecated-version as EGO artifact" "\[WARN\].*metadata/deprecated-version.*EGO packaging artifact"
+echo ""
+
 # --- bad-package ---
 echo "=== bad-package ==="
 run_lint "bad-package"
