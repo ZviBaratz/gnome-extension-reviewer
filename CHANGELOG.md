@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.1.20](https://github.com/ZviBaratz/gnome-extension-reviewer/compare/v0.1.19...v0.1.20) (2026-04-26)
+
+
+### Bug Fixes
+
+* **ego-lint:** suppress EGO download artifacts in metadata checks ([#230](https://github.com/ZviBaratz/gnome-extension-reviewer/issues/230)) ([04e9d98](https://github.com/ZviBaratz/gnome-extension-reviewer/commit/04e9d98a451805fc3f7d87ef43fa6d6c89197b1c))
+
 ## [0.1.19](https://github.com/ZviBaratz/gnome-extension-reviewer/compare/v0.1.18...v0.1.19) (2026-04-25)
 
 
