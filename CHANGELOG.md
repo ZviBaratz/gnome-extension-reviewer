@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.1.21](https://github.com/ZviBaratz/gnome-extension-reviewer/compare/v0.1.20...v0.1.21) (2026-04-27)
+
+
+### Bug Fixes
+
+* skip kwin/ subdirectory in JS file traversal (fixes [#232](https://github.com/ZviBaratz/gnome-extension-reviewer/issues/232)) ([#233](https://github.com/ZviBaratz/gnome-extension-reviewer/issues/233)) ([45cfb56](https://github.com/ZviBaratz/gnome-extension-reviewer/commit/45cfb56c724d678f538f26665cd09907abe15e29))
+
 ## [0.1.20](https://github.com/ZviBaratz/gnome-extension-reviewer/compare/v0.1.19...v0.1.20) (2026-04-26)
 
 
