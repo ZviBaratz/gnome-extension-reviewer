@@ -21,7 +21,7 @@ def result(status, check, detail):
 
 def find_js_files(ext_dir, exclude_prefs=True):
     """Find JS files, optionally excluding prefs.js."""
-    skip_dirs = {'node_modules', '.git', '__pycache__'}
+    skip_dirs = {'node_modules', '.git', '__pycache__', 'kwin'}
     files = []
     for root, dirs, filenames in os.walk(ext_dir):
         dirs[:] = [d for d in dirs if d not in skip_dirs]
