@@ -94,7 +94,22 @@ if [[ "$has_settings_schema" == true ]]; then
         fi
     done
     if [[ -z "$primary_schema_file" ]]; then
-        echo "FAIL|schema/id-matches|settings-schema '$settings_schema' not found in any .gschema.xml file"
+        # Check for namespace-prefix pattern: settings-schema used as a prefix
+        # (e.g. metadata says "org.foo.bar" but gschema defines "org.foo.bar.state").
+        # This is valid — the extension builds sub-schema paths by appending suffixes.
+        prefix_match=""
+        for schema_file in "${schema_files[@]}"; do
+            if extract_all_schema_ids "$schema_file" | grep -q "^${settings_schema}\."; then
+                prefix_match="$schema_file"
+                break
+            fi
+        done
+        if [[ -n "$prefix_match" ]]; then
+            echo "PASS|schema/id-matches|settings-schema '$settings_schema' used as namespace prefix — sub-schemas found in $(basename "$prefix_match")"
+            primary_schema_file="$prefix_match"
+        else
+            echo "FAIL|schema/id-matches|settings-schema '$settings_schema' not found in any .gschema.xml file"
+        fi
     fi
 fi
 
