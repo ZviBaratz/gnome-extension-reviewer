@@ -196,6 +196,14 @@ assert_output_not_contains "no R-SLOP-02 WARNs after suppression" "\[WARN\].*R-S
 assert_output_contains "provenance score >= 3" "provenance-score=4"
 echo ""
 
+# --- tsconfig-jsdoc (skip-if-tsconfig suppresses R-SLOP-01/02 via patterns.yaml) ---
+echo "=== tsconfig-jsdoc ==="
+run_lint "tsconfig-jsdoc@test"
+assert_exit_code "exits with 0 (no issues)" 0
+assert_output_not_contains "no R-SLOP-01 WARNs (tsconfig suppression)" "\[WARN\].*R-SLOP-01"
+assert_output_not_contains "no R-SLOP-02 WARNs (tsconfig suppression)" "\[WARN\].*R-SLOP-02"
+echo ""
+
 # --- security-patterns ---
 echo "=== security-patterns ==="
 run_lint "security-patterns@test"
