@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.1.23](https://github.com/ZviBaratz/gnome-extension-reviewer/compare/v0.1.22...v0.1.23) (2026-04-28)
+
+
+### Bug Fixes
+
+* **ego-lint:** accept settings-schema as namespace prefix in schema/id-matches ([#238](https://github.com/ZviBaratz/gnome-extension-reviewer/issues/238)) ([4548439](https://github.com/ZviBaratz/gnome-extension-reviewer/commit/4548439303cb752f66dd284c7a62be64320229d1))
+
 ## [0.1.22](https://github.com/ZviBaratz/gnome-extension-reviewer/compare/v0.1.21...v0.1.22) (2026-04-28)
 
 
