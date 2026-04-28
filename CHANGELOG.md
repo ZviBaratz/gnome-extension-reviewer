@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.1.22](https://github.com/ZviBaratz/gnome-extension-reviewer/compare/v0.1.21...v0.1.22) (2026-04-28)
+
+
+### Tests
+
+* add tsconfig-jsdoc suppression assertions for tsconfig-jsdoc@test fixture ([#236](https://github.com/ZviBaratz/gnome-extension-reviewer/issues/236)) ([a46a46f](https://github.com/ZviBaratz/gnome-extension-reviewer/commit/a46a46fd1ca2c930c3e3ec4e343b14affffbc357))
+
 ## [0.1.21](https://github.com/ZviBaratz/gnome-extension-reviewer/compare/v0.1.20...v0.1.21) (2026-04-27)
 
 
