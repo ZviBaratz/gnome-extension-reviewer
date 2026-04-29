@@ -381,11 +381,11 @@ if [[ ${#_console_js_files[@]} -gt 0 ]]; then
             # Skip block comment continuation lines
             [[ "$stripped" == \** ]] && continue
             rel_path="${f#"$EXT_DIR/"}"
-            # Check if guarded by a build-type debug condition within 3 preceding lines
+            # Check if guarded by a build-type or runtime settings DEBUG condition
             start=$((lineno - 3))
             [[ $start -lt 1 ]] && start=1
             guard=$(sed -n "${start},$((lineno - 1))p" "$f" \
-                | grep -iE "build-type['\"]?\s*[=!]=\s*['\"]debug['\"]" || true)
+                | grep -iE "build-type['\"]?\s*[=!]=\s*['\"]debug['\"]|this[._]_?settings[._]DEBUG\b|if\s*\(\s*this[._]_?debug\b" || true)
             if [[ -n "$guard" ]]; then
                 console_log_guarded_hits+="  $rel_path: $stripped"$'\n'
             else
@@ -400,9 +400,9 @@ if [[ -n "$console_log_hits" ]]; then
     hit_count=$(echo -n "$console_log_hits" | grep -c '.' || true)
     print_result "FAIL" "no-console-log" "Found $hit_count console.log() call(s)|fix: Replace with console.debug() — it is silenced by default and enabled via G_MESSAGES_DEBUG, so no custom debug toggle is needed"
 elif [[ -n "$console_log_guarded_hits" ]]; then
-    # All console.log calls are inside build-type debug guards — dead code in production
+    # All console.log calls are behind a debug guard — guarded in production
     hit_count=$(echo -n "$console_log_guarded_hits" | grep -c '.' || true)
-    print_result "WARN" "no-console-log" "Found $hit_count console.log() call(s) inside build-type debug guard (dead code in release builds)"
+    print_result "WARN" "no-console-log" "Found $hit_count console.log() call(s) behind a debug guard — prefer console.debug() with G_MESSAGES_DEBUG instead"
 else
     print_result "PASS" "no-console-log" "No console.log() calls found"
 fi
