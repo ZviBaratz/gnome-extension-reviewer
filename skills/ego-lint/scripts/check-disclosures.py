@@ -43,7 +43,7 @@ CAPABILITY_CHECKS = [
     {
         'name': 'network',
         'code_patterns': [
-            r'Soup\.Session', r'Soup\.Message', r'Soup\.URI', r'GLib\.Uri',
+            r'Soup\.Session', r'Soup\.Message', r'Soup\.URI', r'GLib\.Uri\b',  # word boundary prevents GLib.UriFlags from matching
         ],
         'disclosure_keywords': [
             'network', 'internet', 'http', 'api', 'server',
