@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.1.24](https://github.com/ZviBaratz/gnome-extension-reviewer/compare/v0.1.23...v0.1.24) (2026-04-29)
+
+
+### Bug Fixes
+
+* **ego-lint:** recognize runtime settings.DEBUG guard in no-console-log check ([#244](https://github.com/ZviBaratz/gnome-extension-reviewer/issues/244)) ([6ff3c5e](https://github.com/ZviBaratz/gnome-extension-reviewer/commit/6ff3c5eb98bf59ced911ea6a26ffee502ae604c1))
+* **ego-lint:** use word boundary in GLib.Uri network pattern to prevent GLib.UriFlags FP ([#241](https://github.com/ZviBaratz/gnome-extension-reviewer/issues/241)) ([6135331](https://github.com/ZviBaratz/gnome-extension-reviewer/commit/61353315f7c364604d39babd63ae91b4472529c0))
+
 ## [0.1.23](https://github.com/ZviBaratz/gnome-extension-reviewer/compare/v0.1.22...v0.1.23) (2026-04-28)
 
 
