@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.1.27](https://github.com/ZviBaratz/gnome-extension-reviewer/compare/v0.1.26...v0.1.27) (2026-04-30)
+
+
+### Bug Fixes
+
+* **ego-lint:** clarify why debug guard is redundant in no-console-log warn ([#250](https://github.com/ZviBaratz/gnome-extension-reviewer/issues/250)) ([88a5d88](https://github.com/ZviBaratz/gnome-extension-reviewer/commit/88a5d885f640285b23cab5cc43f7f3797940735b))
+
 ## [0.1.26](https://github.com/ZviBaratz/gnome-extension-reviewer/compare/v0.1.25...v0.1.26) (2026-04-30)
 
 
