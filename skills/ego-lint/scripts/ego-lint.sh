@@ -385,7 +385,7 @@ if [[ ${#_console_js_files[@]} -gt 0 ]]; then
             start=$((lineno - 3))
             [[ $start -lt 1 ]] && start=1
             guard=$(sed -n "${start},$((lineno - 1))p" "$f" \
-                | grep -iE "build-type['\"]?\s*[=!]=\s*['\"]debug['\"]|this[._]_?settings[._]DEBUG\b|if\s*\(\s*this[._]_?debug\b" || true)
+                | grep -iE "build-type['\"]?\]?\s*[=!]==?\s*['\"]debug['\"]|this[._]_?settings[._]DEBUG\b|if\s*\(\s*this[._]_?debug\b" || true)
             if [[ -n "$guard" ]]; then
                 console_log_guarded_hits+="  $rel_path: $stripped"$'\n'
             else
