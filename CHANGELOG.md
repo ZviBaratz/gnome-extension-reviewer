@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.1.26](https://github.com/ZviBaratz/gnome-extension-reviewer/compare/v0.1.25...v0.1.26) (2026-04-30)
+
+
+### Bug Fixes
+
+* **ego-lint:** extend metadata build-type guard to handle bracket notation ([#248](https://github.com/ZviBaratz/gnome-extension-reviewer/issues/248)) ([3e53ef8](https://github.com/ZviBaratz/gnome-extension-reviewer/commit/3e53ef871e71d89e70e26716ea317f33b982980b)), closes [#247](https://github.com/ZviBaratz/gnome-extension-reviewer/issues/247)
+
 ## [0.1.25](https://github.com/ZviBaratz/gnome-extension-reviewer/compare/v0.1.24...v0.1.25) (2026-04-30)
 
 
