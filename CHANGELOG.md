@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.1.25](https://github.com/ZviBaratz/gnome-extension-reviewer/compare/v0.1.24...v0.1.25) (2026-04-30)
+
+
+### Bug Fixes
+
+* **ego-lint:** add guard-pattern to R-VER46-03 for cairo_set_source_color existence check ([#245](https://github.com/ZviBaratz/gnome-extension-reviewer/issues/245)) ([3fcb688](https://github.com/ZviBaratz/gnome-extension-reviewer/commit/3fcb6886bac776c716f29dbfde3de3053ec5da6f))
+
 ## [0.1.24](https://github.com/ZviBaratz/gnome-extension-reviewer/compare/v0.1.23...v0.1.24) (2026-04-29)
 
 
