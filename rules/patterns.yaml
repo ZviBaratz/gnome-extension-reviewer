@@ -881,6 +881,7 @@
   category: version-compat
   fix: "Use cr.setSourceColor(color) instead"
   min-version: 46
+  guard-pattern: "\\bif\\s*\\(\\s*Clutter\\.cairo_set_source_color\\b|\\bShellVersion\\b"
   compat-downgrade: true
 
 - id: R-VER46-04
