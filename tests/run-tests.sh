@@ -109,6 +109,14 @@ assert_exit_code "exits with 1 (has failures)" 1
 assert_output_contains "fails on console.log" "\[FAIL\].*no-console-log"
 echo ""
 
+# --- console-log-metadata-guard ---
+echo "=== console-log-metadata-guard@test ==="
+run_lint "console-log-metadata-guard@test"
+assert_exit_code "exits with 0 (guarded, no hard failure)" 0
+assert_output_contains "warns on guarded console.log" "\[WARN\].*no-console-log"
+assert_output_not_contains "no FAIL on metadata-guarded console.log" "\[FAIL\].*no-console-log"
+echo ""
+
 # --- deprecated-modules ---
 echo "=== deprecated-modules ==="
 run_lint "deprecated-modules"

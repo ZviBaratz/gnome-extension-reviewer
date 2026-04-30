@@ -1,0 +1,7 @@
+{
+    "uuid": "console-log-metadata-guard@test",
+    "name": "Console Log Metadata Guard Test",
+    "description": "Extension with console.log guarded by metadata build-type check",
+    "shell-version": ["46", "47", "48"],
+    "url": "https://github.com/test/console-log-metadata-guard"
+}
