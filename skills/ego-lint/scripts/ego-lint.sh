@@ -402,7 +402,7 @@ if [[ -n "$console_log_hits" ]]; then
 elif [[ -n "$console_log_guarded_hits" ]]; then
     # All console.log calls are behind a debug guard — guarded in production
     hit_count=$(echo -n "$console_log_guarded_hits" | grep -c '.' || true)
-    print_result "WARN" "no-console-log" "Found $hit_count console.log() call(s) behind a debug guard — console.debug() is silenced by default and enabled via G_MESSAGES_DEBUG, making the custom guard redundant"
+    print_result "WARN" "no-console-log" "Found $hit_count console.log() call(s) behind a debug guard — console.debug() is silenced by default and enabled via G_MESSAGES_DEBUG, making the custom guard redundant|fix: Replace with console.debug() and remove the custom debug toggle"
 else
     print_result "PASS" "no-console-log" "No console.log() calls found"
 fi
