@@ -131,7 +131,7 @@ assert_exit_code "exits with 1 (has failures)" 1
 assert_output_contains "fails on setTimeout" "\[FAIL\].*R-WEB-01"
 assert_output_contains "fails on XMLHttpRequest" "\[FAIL\].*R-WEB-04"
 assert_output_contains "fails on document.*" "\[FAIL\].*R-WEB-06"
-assert_output_count "R-WEB-06 fires exactly once (JSDoc comment skipped)" "\[FAIL\].*R-WEB-06" 1
+assert_output_count "R-WEB-06 fires exactly once (JSDoc skipped, local var guarded)" "\[FAIL\].*R-WEB-06" 1
 assert_output_contains "fails on clearTimeout" "\[FAIL\].*R-WEB-10"
 assert_output_contains "fails on clearInterval" "\[FAIL\].*R-WEB-11"
 echo ""
