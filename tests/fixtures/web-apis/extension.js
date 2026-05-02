@@ -15,3 +15,10 @@ export default class WebApisExtension extends Extension {
 
     disable() {}
 }
+
+async function fetchLinkPreview(url) {
+    const document = await parseMetadata(url); // local var — must NOT trigger R-WEB-06
+    const title = document.title;              // local var access — must NOT trigger R-WEB-06
+    const desc = document.description;        // local var access — must NOT trigger R-WEB-06
+    return { title, desc };
+}
