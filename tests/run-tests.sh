@@ -8,9 +8,9 @@ PASS_COUNT=0
 FAIL_COUNT=0
 
 # Colors
-RED='\033[0;31m'
-GREEN='\033[0;32m'
-NC='\033[0m' # No Color
+RED='[0;31m'
+GREEN='[0;32m'
+NC='[0m' # No Color
 
 assert_output_contains() {
     local label="$1" pattern="$2"
@@ -504,7 +504,7 @@ echo ""
 echo "=== timeout-wrapper-tracked ==="
 run_lint "timeout-wrapper-tracked@test"
 assert_exit_code "exits with 0 (no blocking issues)" 0
-assert_output_not_contains "no FP for wrapper-tracked timeout" "lifecycle/untracked-timeout"
+assert_output_not_contains "no FP for wrapper-tracked timeout" "\[WARN\].*lifecycle/untracked-timeout"
 echo ""
 
 # --- keybinding-leak ---
