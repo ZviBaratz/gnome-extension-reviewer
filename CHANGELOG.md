@@ -1,5 +1,14 @@
 # Changelog
 
+## [0.1.28](https://github.com/ZviBaratz/gnome-extension-reviewer/compare/v0.1.27...v0.1.28) (2026-05-02)
+
+
+### Bug Fixes
+
+* **ego-lint:** add fix suggestion to no-console-log WARN for guarded calls ([#252](https://github.com/ZviBaratz/gnome-extension-reviewer/issues/252)) ([cb15d1b](https://github.com/ZviBaratz/gnome-extension-reviewer/commit/cb15d1bd9c8ddd63bec81d9af1291e2d4457a2c0))
+* **ego-lint:** suppress lifecycle/untracked-timeout FP for wrapper-tracked timeouts ([#256](https://github.com/ZviBaratz/gnome-extension-reviewer/issues/256)) ([34a0538](https://github.com/ZviBaratz/gnome-extension-reviewer/commit/34a053856ac7b21c2d849dbd54ac00556bb02868))
+* **ego-lint:** suppress R-WEB-06 when local variable shadows document global ([#254](https://github.com/ZviBaratz/gnome-extension-reviewer/issues/254)) ([0ffe0ea](https://github.com/ZviBaratz/gnome-extension-reviewer/commit/0ffe0ea3fa2335bdf244ff6f89c6340153d4ed34))
+
 ## [0.1.27](https://github.com/ZviBaratz/gnome-extension-reviewer/compare/v0.1.26...v0.1.27) (2026-04-30)
 
 
