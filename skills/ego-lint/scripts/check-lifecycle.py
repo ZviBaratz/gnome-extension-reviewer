@@ -221,16 +221,22 @@ def check_untracked_timeouts(ext_dir):
     untracked = []
     for filepath in js_files:
         rel = os.path.relpath(filepath, ext_dir)
+        prev_stripped = ""
         for lineno, line in enumerate(read_file(filepath).splitlines(), 1):
             stripped = line.strip()
             # Skip comments
             if stripped.startswith('//') or stripped.startswith('*'):
+                prev_stripped = stripped
                 continue
             # Match timeout_add, idle_add, setTimeout, or setInterval calls
             if re.search(r'(timeout_add|idle_add|setTimeout|setInterval)\s*\(', stripped):
-                # Check if the return value is assigned
+                # Check if the return value is assigned or returned on this line
                 if not re.search(r'(=|return)\s*.*(timeout_add|idle_add|setTimeout|setInterval)', stripped):
-                    untracked.append(f"{rel}:{lineno}")
+                    # Also skip if this call is an argument to a function on the previous line
+                    # e.g., return this.register(\n  GLib.timeout_add(...))
+                    if not prev_stripped.rstrip().endswith('('):
+                        untracked.append(f"{rel}:{lineno}")
+            prev_stripped = stripped
 
     if untracked:
         for loc in untracked:

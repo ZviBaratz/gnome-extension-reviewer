@@ -1,0 +1,7 @@
+{
+    "uuid": "timeout-wrapper-tracked@test",
+    "name": "Timeout Wrapper Tracked Test",
+    "description": "Tests that GLib.timeout_add passed to a wrapper function is not flagged as untracked",
+    "shell-version": ["48"],
+    "url": "https://github.com/test/timeout-wrapper-tracked"
+}

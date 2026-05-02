@@ -500,6 +500,13 @@ assert_exit_code "exits with 0 (warnings only)" 0
 assert_output_contains "warns on missing timeout return" "\[WARN\].*lifecycle/timeout-return-value"
 echo ""
 
+# --- timeout-wrapper-tracked ---
+echo "=== timeout-wrapper-tracked ==="
+run_lint "timeout-wrapper-tracked@test"
+assert_exit_code "exits with 0 (no blocking issues)" 0
+assert_output_not_contains "no FP for wrapper-tracked timeout" "lifecycle/untracked-timeout"
+echo ""
+
 # --- keybinding-leak ---
 echo "=== keybinding-leak ==="
 run_lint "keybinding-leak@test"
