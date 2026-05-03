@@ -71,9 +71,35 @@ def _is_vendored_file(filepath, scan_lines=30):
     return False
 
 
+def _discover_subprocess_dirs(ext_dir):
+    """Return top-level dir names that contain GJS subprocess entry points (#!/usr/bin/env gjs)."""
+    subprocess_dirs = set()
+    base_skip = {'node_modules', '.git', '__pycache__'}
+    for root, dirs, filenames in os.walk(ext_dir):
+        dirs[:] = [d for d in dirs if d not in base_skip]
+        rel_root = os.path.relpath(root, ext_dir)
+        parts = rel_root.split(os.sep)
+        top_dir = None if parts[0] == '.' else parts[0]
+        for name in filenames:
+            if not name.endswith('.js') or top_dir is None:
+                continue
+            filepath = os.path.join(root, name)
+            try:
+                with open(filepath, encoding='utf-8', errors='replace') as f:
+                    for i, line in enumerate(f):
+                        if i >= 2:
+                            break
+                        if line.startswith('#!') and 'gjs' in line:
+                            subprocess_dirs.add(top_dir)
+            except OSError:
+                pass
+    return subprocess_dirs
+
+
 def find_js_files(ext_dir):
     """Find all JS files in extension directory, excluding node_modules and vendored files."""
     skip_dirs = {'node_modules', '.git', '__pycache__', 'kwin'}
+    skip_dirs |= _discover_subprocess_dirs(ext_dir)
     files = []
     for root, dirs, filenames in os.walk(ext_dir):
         dirs[:] = [d for d in dirs if d not in skip_dirs]
