@@ -269,6 +269,36 @@ if [[ $_spdx_js_total -gt 0 && $((_spdx_count * 100 / _spdx_js_total)) -ge 70 ]]
 fi
 
 # ---------------------------------------------------------------------------
+# Subprocess directory detection
+# ---------------------------------------------------------------------------
+# Top-level dirs containing a GJS subprocess entry point (#!/usr/bin/env gjs)
+# run outside GNOME Shell and must not be checked for Shell-specific patterns.
+# Mirrors the _discover_subprocess_dirs() logic in the Python checks.
+
+_SUBPROCESS_DIRS=()
+while IFS= read -r -d '' f; do
+    rel="${f#"$EXT_DIR/"}"
+    top_dir="${rel%%/*}"
+    [[ "$top_dir" == "$rel" ]] && continue  # root-level file, no subdir
+    if head -n 2 "$f" 2>/dev/null | grep -q '#!/usr/bin/env.*gjs'; then
+        _SUBPROCESS_DIRS+=("$EXT_DIR/$top_dir")
+    fi
+done < <(find "$EXT_DIR" -name '*.js' \
+    -not -path '*/node_modules/*' -not -path '*/.git/*' -print0 2>/dev/null)
+
+# Build find exclusion args for use in per-check file discovery
+_SUBPROCESS_EXCL=()
+for _sd in "${_SUBPROCESS_DIRS[@]}"; do
+    _SUBPROCESS_EXCL+=("-not" "-path" "${_sd}/*")
+done
+
+if [[ ${#_SUBPROCESS_DIRS[@]} -gt 0 ]]; then
+    _sd_names=()
+    for _sd in "${_SUBPROCESS_DIRS[@]}"; do _sd_names+=("$(basename "$_sd")/"); done
+    print_result "SKIP" "subprocess-dir-exclusion" "Detected GJS subprocess dir(s): ${_sd_names[*]} — excluded from Shell extension checks"
+fi
+
+# ---------------------------------------------------------------------------
 # File structure checks
 # ---------------------------------------------------------------------------
 
@@ -360,12 +390,14 @@ fi
 
 console_log_hits=""
 console_log_guarded_hits=""
-# Collect all JS files under EXT_DIR, respecting standard exclusions
+# Collect all JS files under EXT_DIR, respecting standard exclusions.
+# Subprocess dirs are excluded — they run outside the Shell extension lifecycle.
 _console_js_files=()
 while IFS= read -r -d '' f; do
     _console_js_files+=("$f")
 done < <(find "$EXT_DIR" -name '*.js' \
-    -not -path '*/node_modules/*' -not -path '*/.git/*' -print0 2>/dev/null)
+    -not -path '*/node_modules/*' -not -path '*/.git/*' \
+    "${_SUBPROCESS_EXCL[@]}" -print0 2>/dev/null)
 
 if [[ ${#_console_js_files[@]} -gt 0 ]]; then
 

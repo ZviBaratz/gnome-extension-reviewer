@@ -18,6 +18,8 @@ assert_output_not_contains "no R-DEPR-09 from subprocess dir" "\[WARN\].*R-DEPR-
 assert_output_not_contains "no gsettings-signal-leak from subprocess dir" "\[FAIL\].*gsettings-signal-leak.*app"
 # Quality checks must not fire on subprocess files
 assert_output_not_contains "no quality checks from subprocess dir" "\[FAIL\].*quality/.*app"
+# console.log() in subprocess must not produce no-console-log FAILs
+assert_output_not_contains "no no-console-log FAIL from subprocess dir" "\[FAIL\].*no-console-log"
 # SKIP notice must be emitted
 assert_output_contains "subprocess-dir-exclusion SKIP emitted" "\[SKIP\].*subprocess-dir-exclusion"
 echo ""
