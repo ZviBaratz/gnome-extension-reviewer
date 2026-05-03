@@ -12,4 +12,6 @@ var _connId = _settings.connect('changed', () => {});
 function init() {
     Gtk.init(null);
     mainWindow = new Gtk.Window({title: 'Desktop Icons'});
+    console.log('subprocess started');
+    console.log('window created');
 }
