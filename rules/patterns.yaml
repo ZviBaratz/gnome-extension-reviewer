@@ -1007,9 +1007,10 @@
   severity: blocking
   message: "Shell.SnippetHook removed in GNOME 48"
   category: version-compat
-  fix: "Shell.SnippetHook was removed without replacement in GNOME 48"
+  fix: "Replace Shell.SnippetHook with Cogl.SnippetHook (moved in GNOME 48)"
   min-version: 48
   compat-downgrade: true
+  guard-pattern: "Cogl\\.SnippetHook\\s*\\?"
 
 - id: R-VER48-06
   pattern: "\\.get_key_focus\\s*\\("

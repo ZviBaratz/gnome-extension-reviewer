@@ -715,6 +715,7 @@ echo ""
 echo "=== gnome48-extras ==="
 run_lint "gnome48-extras@test"
 assert_output_contains "Should detect Shell.SnippetHook" "\[FAIL\].*R-VER48-05"
+assert_output_not_contains "Should not flag Cogl.SnippetHook ternary guard" "Cogl\.SnippetHook \? Cogl\.SnippetHook"
 assert_output_contains "Should detect get_key_focus" "\[WARN\].*R-VER48-06"
 assert_exit_code "exits with 1 (has failures)" 1
 echo ""
