@@ -1,0 +1,7 @@
+{
+    "uuid": "subprocess-dir-exclusion@test",
+    "name": "Subprocess Directory Exclusion Test",
+    "description": "Tests that GJS subprocess directories are excluded from pattern rules",
+    "shell-version": ["46", "47", "48", "49", "50"],
+    "url": "https://example.com"
+}

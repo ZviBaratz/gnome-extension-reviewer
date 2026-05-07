@@ -304,6 +304,41 @@ def _discover_vendored_files(ext_dir):
     return vendored
 
 
+def _is_subprocess_entry(filepath, scan_lines=2):
+    """Return True if the file is a standalone GJS subprocess (has #!/usr/bin/env gjs shebang)."""
+    try:
+        with open(filepath, encoding='utf-8', errors='replace') as f:
+            for i, line in enumerate(f):
+                if i >= scan_lines:
+                    break
+                if line.startswith('#!') and 'gjs' in line:
+                    return True
+    except OSError:
+        pass
+    return False
+
+
+def _discover_subprocess_dirs(ext_dir):
+    """Return a set of top-level directory names that contain GJS subprocess entry points.
+
+    Extensions like DING bundle a standalone GJS process (with a #!/usr/bin/env gjs
+    shebang) in a subdirectory.  Those files intentionally use legacy CJS-style imports
+    and must not be linted as GNOME Shell extension code.
+    """
+    subprocess_dirs = set()
+    base_skip = ('node_modules', '.git', '__pycache__')
+    for filepath in glob.glob(os.path.join(ext_dir, '**', '*.js'), recursive=True):
+        if not os.path.isfile(filepath):
+            continue
+        rel = os.path.relpath(filepath, ext_dir)
+        parts = rel.split(os.sep)
+        if len(parts) < 2 or parts[0] in base_skip:
+            continue
+        if _is_subprocess_entry(filepath):
+            subprocess_dirs.add(parts[0])
+    return subprocess_dirs
+
+
 def main():
     # Handle --validate mode
     if len(sys.argv) >= 3 and sys.argv[1] == '--validate':
@@ -327,7 +362,13 @@ def main():
     has_tsconfig = os.environ.get('EGO_LINT_HAS_TSCONFIG') == '1'
     has_spdx = os.environ.get('EGO_LINT_HAS_SPDX') == '1'
 
-    # Pre-scan: identify vendored files once and reuse across all rules
+    # Pre-scan: identify subprocess directories and vendored files once, reuse across rules
+    subprocess_dirs = _discover_subprocess_dirs(ext_dir)
+    if subprocess_dirs:
+        dirs_list = ', '.join(sorted(subprocess_dirs))
+        print(f"SKIP|subprocess-dir-exclusion|{len(subprocess_dirs)} top-level dir(s) contain "
+              f"GJS subprocess entry points (#!/usr/bin/env gjs); excluded from pattern rules: {dirs_list}")
+
     vendored_files = _discover_vendored_files(ext_dir)
     if vendored_files:
         files_list = ', '.join(sorted(vendored_files))
@@ -420,9 +461,12 @@ def main():
                 rel = os.path.relpath(filepath, ext_dir)
                 if any(part in skip_dirs for part in rel.split(os.sep)):
                     continue
+                # Skip files in auto-detected GJS subprocess directories
+                rel_parts = rel.replace(os.sep, '/').split('/')
+                if subprocess_dirs and rel_parts[0] in subprocess_dirs:
+                    continue
                 # Skip files in excluded directories (e.g., service daemons)
                 if exclude_dirs:
-                    rel_parts = rel.replace(os.sep, '/').split('/')
                     if rel_parts[0] in exclude_dirs:
                         continue
                 # Skip auto-detected vendored files
