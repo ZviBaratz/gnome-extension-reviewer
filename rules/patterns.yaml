@@ -687,6 +687,7 @@
   message: "Non-idiomatic GLib C-binding — use GLib.Source.remove()"
   category: ai-slop
   fix: "GLib.source_remove(id) → GLib.Source.remove(id). The function works but GLib.Source.remove() is the idiomatic GJS form."
+  deduplicate: true
 
 - id: R-SLOP-16
   pattern: "\\bGLib\\.file_get_contents\\b"
