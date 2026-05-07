@@ -33,10 +33,12 @@ def strip_comments(content):
     return content
 
 
-def _resolve_local_parent_content(ext_dir, content):
+def _resolve_local_parent_content(prefs_dir, content):
     """If prefs.js extends a namespace from a local import, return that file's content.
 
     Handles: import * as UI from './ui.js' + export default class extends UI.Prefs
+    Resolves paths relative to prefs_dir (the directory containing prefs.js), so
+    src/ layout extensions (where prefs.js is at src/prefs.js) are handled correctly.
     Returns stripped content of the parent file, or None if not resolved.
     """
     m = re.search(r'export\s+default\s+class\b[^{]*\bextends\s+(\w+)\.', content)
@@ -50,7 +52,7 @@ def _resolve_local_parent_content(ext_dir, content):
     if not imp:
         return None
     local_path = imp.group(1).lstrip('./')
-    parent_js = os.path.join(ext_dir, local_path)
+    parent_js = os.path.join(prefs_dir, local_path)
     if not os.path.isfile(parent_js):
         return None
     with open(parent_js, encoding='utf-8', errors='replace') as f:
@@ -75,6 +77,7 @@ def main():
         raw_content = f.read()
 
     content = strip_comments(raw_content)
+    prefs_dir = os.path.dirname(prefs_path)
 
     # Dual prefs pattern check
     has_widget = bool(re.search(r'\bgetPreferencesWidget\b', content))
@@ -82,7 +85,7 @@ def main():
 
     # If neither method found in prefs.js, check a local parent class file.
     if not has_widget and not has_fill:
-        parent_content = _resolve_local_parent_content(ext_dir, content)
+        parent_content = _resolve_local_parent_content(prefs_dir, content)
         if parent_content:
             if re.search(r'\bfillPreferencesWindow\b', parent_content):
                 has_fill = True
