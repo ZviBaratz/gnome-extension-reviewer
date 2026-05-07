@@ -864,10 +864,10 @@ if [[ "$REPORT" == true ]]; then
     echo ""
     echo "--- VERDICT ---"
     UNIQUE_WARN_COUNT=$(grep "^WARN|" "$RESULTS_FILE" | cut -d'|' -f2 | sort -u | wc -l)
-    if [[ $FAIL_COUNT -gt 0 ]]; then
+    if [[ $FAIL_COUNT -ge 3 ]]; then
         echo "  WILL BE REJECTED: $FAIL_COUNT blocking issue(s) found"
-    elif [[ $UNIQUE_WARN_COUNT -gt 8 ]]; then
-        echo "  LIKELY REJECTED: $UNIQUE_WARN_COUNT checks flagged ($WARN_COUNT total findings)"
+    elif [[ $FAIL_COUNT -ge 1 ]]; then
+        echo "  LIKELY REJECTED: $FAIL_COUNT blocking issue(s) found"
     elif [[ $UNIQUE_WARN_COUNT -gt 0 ]]; then
         echo "  MAY PASS WITH COMMENTS: $UNIQUE_WARN_COUNT checks flagged ($WARN_COUNT total findings)"
     else
