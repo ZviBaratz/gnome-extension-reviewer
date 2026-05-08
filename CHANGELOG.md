@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.1.29](https://github.com/ZviBaratz/gnome-extension-reviewer/compare/v0.1.28...v0.1.29) (2026-05-07)
+
+
+### Bug Fixes
+
+* **ego-lint:** base verdict on FAIL count, not warning count ([#267](https://github.com/ZviBaratz/gnome-extension-reviewer/issues/267)) ([2ad601c](https://github.com/ZviBaratz/gnome-extension-reviewer/commit/2ad601c89ca6db9452977c8b2cdd724df8621969))
+* **ego-lint:** deduplicate R-SLOP-44 GLib.source_remove advisory ([#262](https://github.com/ZviBaratz/gnome-extension-reviewer/issues/262)) ([a62f39a](https://github.com/ZviBaratz/gnome-extension-reviewer/commit/a62f39a7b93fa1efff152cf31438be0616d509cf))
+* **ego-lint:** exclude GJS subprocess directories from pattern checks ([#259](https://github.com/ZviBaratz/gnome-extension-reviewer/issues/259)) ([4146246](https://github.com/ZviBaratz/gnome-extension-reviewer/commit/41462465ebe794719af95e71b6d1d557eb68812a))
+* **ego-lint:** extend subprocess dir exclusion to lifecycle/quality checks ([#269](https://github.com/ZviBaratz/gnome-extension-reviewer/issues/269)) ([ddad671](https://github.com/ZviBaratz/gnome-extension-reviewer/commit/ddad67156c2b62059968b4d4aed47d2850e57a52))
+* **ego-lint:** resolve parent prefs class relative to prefs.js dir ([#264](https://github.com/ZviBaratz/gnome-extension-reviewer/issues/264)) ([fe5fe88](https://github.com/ZviBaratz/gnome-extension-reviewer/commit/fe5fe88044bdaeaf1e0fc6348079c87432821c81)), closes [#263](https://github.com/ZviBaratz/gnome-extension-reviewer/issues/263)
+* **ego-lint:** suppress R-VER48-05 when Shell.SnippetHook in Cogl ternary guard ([#270](https://github.com/ZviBaratz/gnome-extension-reviewer/issues/270)) ([d5d77fd](https://github.com/ZviBaratz/gnome-extension-reviewer/commit/d5d77fdf99e0a82bde6ba7d088c33a2a938f8509))
+
 ## [0.1.28](https://github.com/ZviBaratz/gnome-extension-reviewer/compare/v0.1.27...v0.1.28) (2026-05-02)
 
 
