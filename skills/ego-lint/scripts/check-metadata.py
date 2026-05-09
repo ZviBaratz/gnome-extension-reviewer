@@ -231,8 +231,9 @@ def main():
     elif uuid:
         result("PASS", "metadata/uuid-at-sign", "UUID contains @")
 
-    # Detect EGO-packaged archives (SweetTooth injected _generated key)
-    is_ego_download = "_generated" in meta
+    # Detect EGO-packaged archives (SweetTooth injects _generated and _install_version)
+    SWEETTOOTH_FIELDS = {"_generated", "_install_version"}
+    is_ego_download = bool(meta.keys() & SWEETTOOTH_FIELDS)
 
     # --- Non-standard fields ---
     STANDARD_FIELDS = {
@@ -245,10 +246,10 @@ def main():
     non_standard = [k for k in meta if k not in STANDARD_FIELDS]
     if non_standard:
         for field in non_standard:
-            if field == "_generated" and is_ego_download:
+            if field in SWEETTOOTH_FIELDS and is_ego_download:
                 # Injected by EGO's SweetTooth packager — not the extension author's field
                 result("PASS", "metadata/non-standard-field",
-                       "'_generated' suppressed: EGO packaging artifact (SweetTooth injected)")
+                       f"'{field}' suppressed: EGO packaging artifact (SweetTooth injected)")
             else:
                 result("WARN", "metadata/non-standard-field",
                        f"'{field}' is not a standard metadata field")
