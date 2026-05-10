@@ -1,0 +1,7 @@
+{
+    "uuid": "lookup-self@test",
+    "name": "Self Lookup Test",
+    "description": "Tests that self-UUID lookupByUUID is not flagged",
+    "shell-version": ["48"],
+    "url": "https://example.com"
+}

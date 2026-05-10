@@ -748,6 +748,11 @@ if [[ -f "$SCRIPT_DIR/check-disclosures.py" ]]; then
     run_subscript "$SCRIPT_DIR/check-disclosures.py"
 fi
 
+# check-security.py (UUID-aware lookupByUUID cross-extension check)
+if [[ -f "$SCRIPT_DIR/check-security.py" ]]; then
+    run_subscript "$SCRIPT_DIR/check-security.py"
+fi
+
 # check-package.sh
 run_subscript "$SCRIPT_DIR/check-package.sh"
 
