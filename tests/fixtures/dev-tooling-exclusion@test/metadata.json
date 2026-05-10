@@ -1,0 +1,8 @@
+{
+  "uuid": "dev-tooling-exclusion@test",
+  "name": "Dev Tooling Exclusion Test",
+  "description": "Fixture for testing dev-tooling directory exclusion (gulp/, conf/).",
+  "version": "1",
+  "shell-version": ["46", "47", "48"],
+  "url": "https://example.com"
+}

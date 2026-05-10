@@ -304,6 +304,39 @@ def _discover_vendored_files(ext_dir):
     return vendored
 
 
+def _discover_dev_tool_dirs(ext_dir):
+    """Return a set of top-level directory names that are dev-tooling infrastructure.
+
+    These directories exist in source repos but are never shipped in an EGO package —
+    they contain Vagrant VM scripts, Gulp build tasks, and similar dev-only code.
+    Detection is trigger-file-based to avoid excluding legitimate extension subdirs
+    that happen to share common names (e.g. an extension with a real conf/ subdir).
+    """
+    dev_dirs = set()
+
+    # Vagrantfile at root → Vagrant-based dev setup; companion dirs are dev tooling
+    if os.path.isfile(os.path.join(ext_dir, 'Vagrantfile')):
+        for d in ('gulp', 'conf', 'vagrant'):
+            if os.path.isdir(os.path.join(ext_dir, d)):
+                dev_dirs.add(d)
+
+    # gulpfile.js / Gulpfile.js at root → gulp/ is a dev-task directory
+    for gulpfile in ('gulpfile.js', 'Gulpfile.js', 'gulpfile.mjs', 'Gulpfile.mjs'):
+        if os.path.isfile(os.path.join(ext_dir, gulpfile)):
+            if os.path.isdir(os.path.join(ext_dir, 'gulp')):
+                dev_dirs.add('gulp')
+            break
+
+    # Gruntfile.js at root → grunt/ is a dev-task directory
+    for gruntfile in ('Gruntfile.js', 'Gruntfile'):
+        if os.path.isfile(os.path.join(ext_dir, gruntfile)):
+            if os.path.isdir(os.path.join(ext_dir, 'grunt')):
+                dev_dirs.add('grunt')
+            break
+
+    return dev_dirs
+
+
 def _is_subprocess_entry(filepath, scan_lines=2):
     """Return True if the file is a standalone GJS subprocess (has #!/usr/bin/env gjs shebang)."""
     try:
@@ -362,7 +395,7 @@ def main():
     has_tsconfig = os.environ.get('EGO_LINT_HAS_TSCONFIG') == '1'
     has_spdx = os.environ.get('EGO_LINT_HAS_SPDX') == '1'
 
-    # Pre-scan: identify subprocess directories and vendored files once, reuse across rules
+    # Pre-scan: identify subprocess directories, vendored files, and dev-tool dirs once
     subprocess_dirs = _discover_subprocess_dirs(ext_dir)
     if subprocess_dirs:
         dirs_list = ', '.join(sorted(subprocess_dirs))
@@ -374,6 +407,12 @@ def main():
         files_list = ', '.join(sorted(vendored_files))
         print(f"SKIP|vendored-file-exclusion|{len(vendored_files)} file(s) auto-detected as "
               f"vendored (third-party attribution header); excluded from pattern rules: {files_list}")
+
+    dev_tool_dirs = _discover_dev_tool_dirs(ext_dir)
+    if dev_tool_dirs:
+        dirs_list = ', '.join(sorted(dev_tool_dirs))
+        print(f"SKIP|dev-tooling-dir-exclusion|{len(dev_tool_dirs)} top-level dir(s) detected as "
+              f"dev-tooling infrastructure (Vagrantfile/gulpfile trigger); excluded from pattern rules: {dirs_list}")
 
     for rule in rules:
         rid = rule.get('id', '?')
@@ -464,6 +503,9 @@ def main():
                 # Skip files in auto-detected GJS subprocess directories
                 rel_parts = rel.replace(os.sep, '/').split('/')
                 if subprocess_dirs and rel_parts[0] in subprocess_dirs:
+                    continue
+                # Skip files in auto-detected dev-tooling directories (Vagrant/Gulp infra)
+                if dev_tool_dirs and rel_parts[0] in dev_tool_dirs:
                     continue
                 # Skip files in excluded directories (e.g., service daemons)
                 if exclude_dirs:

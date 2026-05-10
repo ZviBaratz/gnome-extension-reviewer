@@ -521,6 +521,7 @@ done < <(find "$EXT_DIR" -type f \( -name '*.py' -o -name '*.sh' -o -name '*.rb'
     -not -path "$EXT_DIR/scripts/*" -not -path "$EXT_DIR/tests/*" -not -path "$EXT_DIR/test/*" \
     -not -path "$EXT_DIR/kwin/*" -not -path "$EXT_DIR/docs/*" -not -path "$EXT_DIR/.github/*" \
     -not -path "$EXT_DIR/ci/*" -not -path "$EXT_DIR/build/*" \
+    -not -path "$EXT_DIR/gulp/*" -not -path "$EXT_DIR/conf/*" -not -path "$EXT_DIR/grunt/*" \
     -print0 2>/dev/null)
 
 if [[ -n "$non_gjs_scripts" ]]; then
@@ -557,6 +558,7 @@ done < <(find "$EXT_DIR" -type f -name '*.sh' \
     -not -path "$EXT_DIR/scripts/*" -not -path "$EXT_DIR/tests/*" -not -path "$EXT_DIR/test/*" \
     -not -path "$EXT_DIR/kwin/*" -not -path "$EXT_DIR/docs/*" -not -path "$EXT_DIR/.github/*" \
     -not -path "$EXT_DIR/ci/*" -not -path "$EXT_DIR/build/*" \
+    -not -path "$EXT_DIR/gulp/*" -not -path "$EXT_DIR/conf/*" -not -path "$EXT_DIR/grunt/*" \
     -print0 2>/dev/null)
 
 if [[ -n "$non_exec_scripts" ]]; then

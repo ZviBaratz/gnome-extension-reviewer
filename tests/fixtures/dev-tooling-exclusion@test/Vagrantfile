@@ -1,0 +1,6 @@
+# Vagrant configuration for development VM
+# This file triggers dev-tooling dir detection in ego-lint
+Vagrant.configure("2") do |config|
+  config.vm.box = "ubuntu/focal64"
+  config.vm.provision "shell", path: "conf/init_vm.sh"
+end
