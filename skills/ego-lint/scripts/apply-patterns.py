@@ -305,36 +305,43 @@ def _discover_vendored_files(ext_dir):
 
 
 def _discover_dev_tool_dirs(ext_dir):
-    """Return a set of top-level directory names that are dev-tooling infrastructure.
+    """Return (dev_dirs, dev_trigger_files) for dev-tooling infrastructure at the root.
 
-    These directories exist in source repos but are never shipped in an EGO package —
-    they contain Vagrant VM scripts, Gulp build tasks, and similar dev-only code.
+    dev_dirs: set of top-level directory names that are dev-tooling (e.g. gulp/, conf/).
+    dev_trigger_files: set of root-level filenames that are themselves dev-tooling
+      artifacts (e.g. gulpfile.js, Vagrantfile) and must not be linted as GJS code.
+
+    These files/dirs exist in source repos but are never shipped in an EGO package.
     Detection is trigger-file-based to avoid excluding legitimate extension subdirs
     that happen to share common names (e.g. an extension with a real conf/ subdir).
     """
     dev_dirs = set()
+    dev_trigger_files = set()
 
     # Vagrantfile at root → Vagrant-based dev setup; companion dirs are dev tooling
     if os.path.isfile(os.path.join(ext_dir, 'Vagrantfile')):
+        dev_trigger_files.add('Vagrantfile')
         for d in ('gulp', 'conf', 'vagrant'):
             if os.path.isdir(os.path.join(ext_dir, d)):
                 dev_dirs.add(d)
 
-    # gulpfile.js / Gulpfile.js at root → gulp/ is a dev-task directory
+    # gulpfile.js / Gulpfile.js at root → trigger file + gulp/ is a dev-task directory
     for gulpfile in ('gulpfile.js', 'Gulpfile.js', 'gulpfile.mjs', 'Gulpfile.mjs'):
         if os.path.isfile(os.path.join(ext_dir, gulpfile)):
+            dev_trigger_files.add(gulpfile)
             if os.path.isdir(os.path.join(ext_dir, 'gulp')):
                 dev_dirs.add('gulp')
             break
 
-    # Gruntfile.js at root → grunt/ is a dev-task directory
+    # Gruntfile.js at root → trigger file + grunt/ is a dev-task directory
     for gruntfile in ('Gruntfile.js', 'Gruntfile'):
         if os.path.isfile(os.path.join(ext_dir, gruntfile)):
+            dev_trigger_files.add(gruntfile)
             if os.path.isdir(os.path.join(ext_dir, 'grunt')):
                 dev_dirs.add('grunt')
             break
 
-    return dev_dirs
+    return dev_dirs, dev_trigger_files
 
 
 def _is_subprocess_entry(filepath, scan_lines=2):
@@ -408,11 +415,15 @@ def main():
         print(f"SKIP|vendored-file-exclusion|{len(vendored_files)} file(s) auto-detected as "
               f"vendored (third-party attribution header); excluded from pattern rules: {files_list}")
 
-    dev_tool_dirs = _discover_dev_tool_dirs(ext_dir)
-    if dev_tool_dirs:
-        dirs_list = ', '.join(sorted(dev_tool_dirs))
-        print(f"SKIP|dev-tooling-dir-exclusion|{len(dev_tool_dirs)} top-level dir(s) detected as "
-              f"dev-tooling infrastructure (Vagrantfile/gulpfile trigger); excluded from pattern rules: {dirs_list}")
+    dev_tool_dirs, dev_tool_trigger_files = _discover_dev_tool_dirs(ext_dir)
+    if dev_tool_dirs or dev_tool_trigger_files:
+        parts = []
+        if dev_tool_dirs:
+            parts.append(f"dirs: {', '.join(sorted(dev_tool_dirs))}")
+        if dev_tool_trigger_files:
+            parts.append(f"trigger files: {', '.join(sorted(dev_tool_trigger_files))}")
+        print(f"SKIP|dev-tooling-dir-exclusion|dev-tooling infrastructure detected; excluded from pattern rules: "
+              f"{'; '.join(parts)}")
 
     for rule in rules:
         rid = rule.get('id', '?')
@@ -506,6 +517,9 @@ def main():
                     continue
                 # Skip files in auto-detected dev-tooling directories (Vagrant/Gulp infra)
                 if dev_tool_dirs and rel_parts[0] in dev_tool_dirs:
+                    continue
+                # Skip root-level dev-tooling trigger files (gulpfile.js, Gruntfile.js, Vagrantfile)
+                if dev_tool_trigger_files and len(rel_parts) == 1 and rel_parts[0] in dev_tool_trigger_files:
                     continue
                 # Skip files in excluded directories (e.g., service daemons)
                 if exclude_dirs:

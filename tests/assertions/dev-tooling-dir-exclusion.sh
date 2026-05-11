@@ -20,4 +20,7 @@ assert_output_not_contains "no non-gjs-scripts WARN" "\[WARN\].*non-gjs-scripts"
 assert_output_not_contains "no script-permissions WARN" "\[WARN\].*script-permissions"
 # SKIP notice must be emitted for dev-tooling dirs
 assert_output_contains "dev-tooling-dir-exclusion SKIP emitted" "\[SKIP\].*dev-tooling-dir-exclusion"
+# R-WEB-09 (require() Node.js) must not fire from root-level gulpfile.js
+assert_output_not_contains "no R-WEB-09 from gulpfile.js" "\[WARN\].*R-WEB-09.*gulpfile"
+assert_output_not_contains "no R-WEB-09 from gulpfile.js (FAIL)" "\[FAIL\].*R-WEB-09.*gulpfile"
 echo ""
