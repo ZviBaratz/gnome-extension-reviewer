@@ -1,0 +1,7 @@
+{
+    "uuid": "lookup-other@test",
+    "name": "Cross Extension Lookup Test",
+    "description": "Tests that cross-extension lookupByUUID is flagged",
+    "shell-version": ["48"],
+    "url": "https://example.com"
+}
