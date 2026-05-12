@@ -341,6 +341,11 @@ def _discover_dev_tool_dirs(ext_dir):
                 dev_dirs.add('grunt')
             break
 
+    # meson.build at root + installed-tests/ → Meson test infrastructure; never shipped in EGO
+    if (os.path.isfile(os.path.join(ext_dir, 'meson.build'))
+            and os.path.isdir(os.path.join(ext_dir, 'installed-tests'))):
+        dev_dirs.add('installed-tests')
+
     return dev_dirs, dev_trigger_files
 
 
