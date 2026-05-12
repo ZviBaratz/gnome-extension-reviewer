@@ -3,5 +3,6 @@
   "description": "Extension with Meson build system and installed-tests/ dir",
   "uuid": "meson-installed-tests@test",
   "version": 1,
+  "url": "https://github.com/test/meson-installed-tests",
   "shell-version": ["48", "49", "50"]
 }
