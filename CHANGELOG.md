@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.1.30](https://github.com/ZviBaratz/gnome-extension-reviewer/compare/v0.1.29...v0.1.30) (2026-05-14)
+
+
+### Bug Fixes
+
+* **ego-lint:** accept named default export syntax for R-FILE-07 and R-PREFS-02 ([#284](https://github.com/ZviBaratz/gnome-extension-reviewer/issues/284)) ([fb4a453](https://github.com/ZviBaratz/gnome-extension-reviewer/commit/fb4a4538f44f43ea952db72f934cc464e9a7ff9e))
+* **ego-lint:** exclude dev-tooling dirs (gulp/, conf/) from pattern and script checks ([#275](https://github.com/ZviBaratz/gnome-extension-reviewer/issues/275)) ([b6578b9](https://github.com/ZviBaratz/gnome-extension-reviewer/commit/b6578b9da6801220b93fb8c9d5db648318ee5e96))
+* **ego-lint:** exclude installed-tests/ when meson.build is present ([3eb0d04](https://github.com/ZviBaratz/gnome-extension-reviewer/commit/3eb0d04353ab47cea4de944cbe6bff32be07c1fa))
+* **ego-lint:** exclude root-level dev-tooling trigger files from pattern checks ([7d10d5c](https://github.com/ZviBaratz/gnome-extension-reviewer/commit/7d10d5cf69823cbbcd3378ddbc26f9014bc81e35)), closes [#277](https://github.com/ZviBaratz/gnome-extension-reviewer/issues/277)
+* **ego-lint:** exempt self-UUID lookupByUUID from extension interference check ([#274](https://github.com/ZviBaratz/gnome-extension-reviewer/issues/274)) ([38aa3a4](https://github.com/ZviBaratz/gnome-extension-reviewer/commit/38aa3a464d4ca910a7a53e81ca4900fec9968b43))
+* **ego-lint:** suppress _install_version as SweetTooth artifact ([#272](https://github.com/ZviBaratz/gnome-extension-reviewer/issues/272)) ([232b142](https://github.com/ZviBaratz/gnome-extension-reviewer/commit/232b1420a78c3001afe15dabf7d8c46d04f566d2))
+
 ## [0.1.29](https://github.com/ZviBaratz/gnome-extension-reviewer/compare/v0.1.28...v0.1.29) (2026-05-07)
 
 
