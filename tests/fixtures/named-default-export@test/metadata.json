@@ -1,0 +1,1 @@
+{"uuid": "named-default-export@test", "name": "Named Default Export Test", "description": "Tests that export { X as default } is accepted as a valid default export (R-FILE-07, R-PREFS-02)", "shell-version": ["45", "46", "47", "48"], "url": "https://github.com/test/named-default-export"}

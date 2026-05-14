@@ -43,7 +43,20 @@ def _resolve_local_parent_content(prefs_dir, content):
     """
     m = re.search(r'export\s+default\s+class\b[^{]*\bextends\s+(\w+)\.', content)
     if not m:
-        return None
+        # Also handle: export { MyClass as default }
+        named_export = re.search(r'\bexport\s*\{[^}]*\bas\s+default\b', content)
+        if not named_export:
+            return None
+        named_m = re.search(r'\bexport\s*\{\s*(\w+)\s+as\s+default\b', content)
+        if not named_m:
+            return None
+        class_name = named_m.group(1)
+        m = re.search(
+            rf'class\s+{re.escape(class_name)}\b[^{{]*\bextends\s+(\w+)\.',
+            content,
+        )
+        if not m:
+            return None
     namespace = m.group(1)
     imp = re.search(
         rf"import\s+\*\s+as\s+{re.escape(namespace)}\s+from\s+['\"](\./[^'\"]+)['\"]",
@@ -104,15 +117,19 @@ def main():
         result("FAIL", "prefs/missing-prefs-method",
                "prefs.js does not define fillPreferencesWindow() or getPreferencesWidget()")
 
-    # Default export check
-    if not re.search(r'\bexport\s+default\s+class\b', content):
+    # Default export check — accept both `export default class` and `export { X as default }`
+    has_default_export = bool(
+        re.search(r'\bexport\s+default\s+class\b', content)
+        or re.search(r'\bexport\s*\{[^}]*\bas\s+default\b', content)
+    )
+    if not has_default_export:
         result("WARN", "prefs/default-export",
                "prefs.js missing 'export default class' — required for GNOME 45+")
     else:
         result("PASS", "prefs/default-export", "prefs.js has default export class")
 
     # Check extends ExtensionPreferences
-    if re.search(r'\bexport\s+default\s+class\b', content):
+    if has_default_export:
         if not re.search(r'\bextends\s+ExtensionPreferences\b', content):
             result("WARN", "prefs/extends-base",
                    "prefs.js default class does not extend ExtensionPreferences — "
