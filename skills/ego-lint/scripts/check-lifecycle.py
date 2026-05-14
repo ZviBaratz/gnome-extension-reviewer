@@ -128,7 +128,22 @@ def _resolve_local_parent_content(ext_dir, content):
     # Find 'export default class extends NAMESPACE.Something'
     m = re.search(r'export\s+default\s+class\b[^{]*\bextends\s+(\w+)\.', content)
     if not m:
-        return None
+        # Also handle: export { MyClass as default }
+        # In this case find the class definition separately
+        named_export = re.search(r'\bexport\s*\{[^}]*\bas\s+default\b', content)
+        if not named_export:
+            return None
+        # Extract the exported name to find its class definition
+        named_m = re.search(r'\bexport\s*\{\s*(\w+)\s+as\s+default\b', content)
+        if not named_m:
+            return None
+        class_name = named_m.group(1)
+        m = re.search(
+            rf'class\s+{re.escape(class_name)}\b[^{{]*\bextends\s+(\w+)\.',
+            content,
+        )
+        if not m:
+            return None
     namespace = m.group(1)
     # Find 'import * as NAMESPACE from './local.js''
     imp = re.search(
@@ -179,7 +194,11 @@ def check_default_export(ext_dir):
         return
 
     content = strip_comments(read_file(ext_js))
-    if not re.search(r'\bexport\s+default\s+class\b', content):
+    has_default_export = bool(
+        re.search(r'\bexport\s+default\s+class\b', content)
+        or re.search(r'\bexport\s*\{[^}]*\bas\s+default\b', content)
+    )
+    if not has_default_export:
         result("WARN", "lifecycle/default-export",
                "extension.js missing 'export default class' — required for GNOME 45+")
     else:
