@@ -443,6 +443,13 @@ assert_exit_code "exits with 0 (advisory only)" 0
 assert_output_contains "warns on extensionManager" "\[WARN\].*R-SEC-09"
 echo ""
 
+# --- desktop-id-no-interference ---
+echo "=== desktop-id-no-interference ==="
+run_lint "desktop-id-no-interference@test"
+assert_exit_code "exits with 0 (no issues)" 0
+assert_output_not_contains "no R-SEC-09 on desktop file ID strings" "R-SEC-09"
+echo ""
+
 # --- var-declarations ---
 echo "=== var-declarations ==="
 run_lint "var-declarations@test"
