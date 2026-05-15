@@ -57,6 +57,10 @@ Patterns discovered across field tests — encode here so future rules avoid rep
 17. **Single long lines ≠ minification**: Compiled TypeScript may have one or two very long lines (keyboard constant chains, export lists) in otherwise readable files. The minified-js check now requires 3+ lines > 500 chars.
 18. **Compiled TypeScript (esbuild) generates systematic WARN noise**: `var` declarations from `__defProp`/`__publicField` helpers (R-DEPR-09), verbose parameter names (R-SLOP-38), and many small classes without `destroy()` methods (resource-tracking/no-destroy-method). These are build artifacts, not author issues.
 
+*Test mode differences:*
+
+19. **EGO ZIP and source checkout produce incomparable check and warning counts**: The same extension can yield 153 checks/5 WARNs via EGO ZIP versus 235 checks/22 WARNs via source checkout (observed: Apps Menu v74). Three causes: (a) source repos include `metadata.json.in` templates, multi-extension sub-directories, and locale/build artifacts; (b) directory-name checks always FP on source checkouts (lesson #2); (c) source `main` may differ from the packaged EGO release. **Always record test mode in the Pre-flight section; never compare raw numbers across modes.** EGO ZIP is the canonical mode for calibration against EGO reviewer expectations; source checkout is useful for early-development coverage at the cost of more noise.
+
 ## Other Artifacts
 
 - `false-positive-analysis-2026-02-27.md` — Detailed root-cause analysis for initial false positives (archived; see field-test-hara-hachi-bu.md F-001–F-005)

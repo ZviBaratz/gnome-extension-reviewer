@@ -8,6 +8,9 @@ Use this template when running the ego-submit pipeline against a real extension.
 
 - **Extension**: [name] ([UUID])
 - **Source**: [GitHub URL or local path]
+- **Test mode**: `EGO ZIP` | `source checkout`
+  - **EGO ZIP**: Downloaded from extensions.gnome.org (packaged release). Canonical test — matches exactly what EGO reviewers see. Fewer files, cleaner metadata, no build artifacts. Use for calibration against reviewer expectations.
+  - **Source checkout**: Cloned from the extension's Git repository. Exercises more surface area (templates, sub-dirs, build artifacts, locale files). Warning and check counts can be significantly higher — **do not compare raw numbers between the two modes**. Directory-name checks always produce FPs on source checkouts (see lesson #2 in README).
 - **GNOME versions**: [shell-version from metadata.json]
 - **File count**: [N JS files, total lines]
 - **License**: [type and filename]
