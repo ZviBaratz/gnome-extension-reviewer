@@ -2,9 +2,8 @@ import Gtk from 'gi://Gtk';
 import {Extension} from 'resource:///org/gnome/shell/extensions/extension.js';
 import {ExtensionPreferences} from 'resource:///org/gnome/shell/extensions/prefs.js';
 
-// Opens an external app via GDesktopAppInfo. The desktop file ID string
-// 'com.mattjakeman.ExtensionManager.desktop' contains 'ExtensionManager'
-// as part of a reverse-DNS identifier — it is NOT an extension API call.
+// Opens an external app via GDesktopAppInfo. The desktop file ID is a
+// reverse-DNS identifier ending in .desktop — not an extension API call.
 export default class TestExtension extends Extension {
     enable() {}
     disable() {}
