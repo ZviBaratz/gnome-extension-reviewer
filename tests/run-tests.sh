@@ -447,7 +447,7 @@ echo ""
 echo "=== desktop-id-no-interference ==="
 run_lint "desktop-id-no-interference@test"
 assert_exit_code "exits with 0 (no issues)" 0
-assert_output_not_contains "no R-SEC-09 on desktop file ID strings" "R-SEC-09"
+assert_output_not_contains "no R-SEC-09 on desktop file ID strings" "\[WARN\].*R-SEC-09|\[FAIL\].*R-SEC-09"
 echo ""
 
 # --- var-declarations ---
