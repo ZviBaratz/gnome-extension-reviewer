@@ -42,3 +42,11 @@ run_lint "gsettings-bind-flags@test"
 assert_exit_code "exits with 0 (advisory only)" 0
 assert_output_contains "warns on GObject.BindingFlags" "\[WARN\].*R-QUAL-23"
 echo ""
+
+# --- meta-alias-no-ver44 ---
+echo "=== meta-alias-no-ver44 ==="
+run_lint "meta-alias-no-ver44@test"
+assert_exit_code "exits with 0 (FP suppressed)" 0
+assert_output_not_contains "R-VER44-01 must not fire on GdkPixbuf alias" "\[FAIL\].*R-VER44-01"
+assert_output_not_contains "R-VER44-02 must not fire on GdkPixbuf alias" "\[FAIL\].*R-VER44-02"
+echo ""
