@@ -59,3 +59,9 @@ assert_output_not_contains "R-SLOP-24 suppressed for NOTIFICATIONS_SCHEMA consta
 assert_output_not_contains "R-SLOP-24 suppressed for shell.app-switcher" "\[WARN\].*R-SLOP-24.*app-switcher"
 assert_output_contains "R-SLOP-24 still fires for extension-owned schema" "\[WARN\].*R-SLOP-24"
 echo ""
+
+# --- dynamic-schema-id (R-SLOP-24 guard for variable schema_id) ---
+echo "=== dynamic-schema-id ==="
+run_lint "dynamic-schema-id@test"
+assert_output_not_contains "R-SLOP-24 suppressed for variable schema_id in loop" "\[WARN\].*R-SLOP-24"
+echo ""
