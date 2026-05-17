@@ -1,0 +1,7 @@
+{
+    "uuid": "dynamic-schema-id@test",
+    "name": "Dynamic Schema ID Test",
+    "description": "Tests R-SLOP-24 guard suppression when schema_id is a variable identifier (not a string literal)",
+    "shell-version": ["48"],
+    "url": "https://example.com"
+}

@@ -704,7 +704,7 @@
   message: "new Gio.Settings() is incorrect in GNOME 45+; use this.getSettings() from Extension base class"
   category: ai-slop
   fix: "Use this.getSettings() in Extension subclass or this.getSettings() in ExtensionPreferences"
-  guard-pattern: "schema.*org\\.gnome\\.(?!shell\\.extensions\\.)|['\"]desktop\\.|shell\\.app-switcher|(?:KEYBINDINGS|NOTIFICATIONS|DESKTOP|INTERFACE|WM|MUTTER|APP_SWITCHER)_SCHEMA"
+  guard-pattern: "schema.*org\\.gnome\\.(?!shell\\.extensions\\.)|['\"]desktop\\.|shell\\.app-switcher|(?:KEYBINDINGS|NOTIFICATIONS|DESKTOP|INTERFACE|WM|MUTTER|APP_SWITCHER)_SCHEMA|schema_id\\s*:\\s*[a-zA-Z_$]"
   guard-window-forward: 5
   exclude-dirs: ["service"]
 
