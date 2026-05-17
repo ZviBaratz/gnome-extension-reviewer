@@ -1,0 +1,7 @@
+{
+    "uuid": "meta-alias-no-ver44@test",
+    "name": "Meta Alias No R-VER44 Test",
+    "description": "GdkPixbuf aliased to Meta — R-VER44-01/02 should not fire",
+    "shell-version": ["45", "48"],
+    "url": "https://example.com"
+}

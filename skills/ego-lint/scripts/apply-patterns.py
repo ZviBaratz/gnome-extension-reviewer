@@ -349,6 +349,60 @@ def _discover_dev_tool_dirs(ext_dir):
     return dev_dirs, dev_trigger_files
 
 
+def _identifier_namespace_aliased(identifier, file_content):
+    """Return True if `identifier` is provably bound to a non-`identifier` GI namespace.
+
+    Detects patterns like:
+      const { GdkPixbuf: Meta } = imports.gi;   → Meta aliased to GdkPixbuf → True
+      import Meta from 'gi://Clutter';           → Meta aliased to Clutter → True
+      import Meta from 'gi://Meta';              → correct binding → False
+      const { Meta } = imports.gi;              → correct binding → False
+      (no binding found)                         → False (conservative)
+    """
+    # ESM: import Meta from 'gi://Something'
+    esm_re = re.compile(
+        r'^\s*import\s+(?:\*\s+as\s+)?' + re.escape(identifier) +
+        r'\s+from\s+[\'"]gi://(\w+)[\'"]',
+        re.MULTILINE,
+    )
+    m = esm_re.search(file_content)
+    if m:
+        bound_ns = m.group(1)
+        return bound_ns != identifier
+
+    # CJS destructuring: const { ..., Something: Meta, ... } = imports.gi
+    cjs_destr_re = re.compile(
+        r'(?:const|let|var)\s*\{[^}]+\}\s*=\s*imports\.gi\b'
+    )
+    for destr_m in cjs_destr_re.finditer(file_content):
+        block = destr_m.group(0)
+        # Aliasing: SomeThing: identifier  (bound to SomeThing, not identifier)
+        alias_re = re.compile(r'\b(\w+)\s*:\s*' + re.escape(identifier) + r'\b')
+        alias_m = alias_re.search(block)
+        if alias_m:
+            aliased_from = alias_m.group(1)
+            if aliased_from != identifier:
+                return True  # e.g. GdkPixbuf: Meta
+        # Unaliased: identifier appears directly → correct binding
+        unaliased_re = re.compile(
+            r'(?<![:\w])' + re.escape(identifier) + r'(?!\s*:)(?!\w)'
+        )
+        if unaliased_re.search(block):
+            return False  # const { Meta } = imports.gi → correct
+
+    # CJS direct: const Meta = imports.gi.SomeThing
+    direct_re = re.compile(
+        r'(?:const|let|var)\s+' + re.escape(identifier) +
+        r'\s*=\s*imports\.gi\.(\w+)'
+    )
+    m = direct_re.search(file_content)
+    if m:
+        bound_ns = m.group(1)
+        return bound_ns != identifier
+
+    return False  # conservative: no aliasing detected
+
+
 def _is_subprocess_entry(filepath, scan_lines=2):
     """Return True if the file is a standalone GJS subprocess (has #!/usr/bin/env gjs shebang)."""
     try:
@@ -547,6 +601,16 @@ def main():
                     replacement = rule.get('replacement-pattern', '')
                     if replacement and replacement in file_content:
                         continue
+
+                    # require-namespace: if set, check that the leading identifier
+                    # in the pattern is actually bound to the expected GI namespace.
+                    # Suppresses FPs where an unrelated module is aliased to the name.
+                    require_ns = rule.get('require-namespace', '')
+                    if require_ns:
+                        # Extract identifier: '\bMeta\.' → 'Meta'
+                        id_match = re.match(r'\\b(\w+)\\\.', pattern)
+                        if id_match and _identifier_namespace_aliased(id_match.group(1), file_content):
+                            continue
 
                     skip_comments = rule.get('skip-comments', '') == 'true'
                     in_block_comment = False

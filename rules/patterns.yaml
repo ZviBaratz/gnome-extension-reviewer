@@ -837,6 +837,7 @@
   fix: "Use global.compositor.get_laters().addLater(Meta.LaterType.BEFORE_REDRAW, callback)"
   min-version: 44
   replacement-pattern: "get_laters"
+  require-namespace: "Meta"
   compat-downgrade: true
 
 - id: R-VER44-02
@@ -850,6 +851,7 @@
   guard-pattern: "if\\s*\\(\\s*global\\.compositor\\s*\\)"
   guard-window: 7
   replacement-pattern: "get_laters"
+  require-namespace: "Meta"
   compat-downgrade: true
 
 - id: R-VER46-01
