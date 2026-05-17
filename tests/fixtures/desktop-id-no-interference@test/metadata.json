@@ -1,0 +1,1 @@
+{"uuid": "desktop-id-no-interference@test", "name": "Test", "description": "Test R-SEC-09 does not fire on desktop file ID strings", "shell-version": ["48"], "url": "https://github.com/test/desktop-id-no-interference"}
