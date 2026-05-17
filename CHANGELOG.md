@@ -1,5 +1,18 @@
 # Changelog
 
+## [0.1.31](https://github.com/ZviBaratz/gnome-extension-reviewer/compare/v0.1.30...v0.1.31) (2026-05-17)
+
+
+### Bug Fixes
+
+* **ego-lint:** exclude desktop file ID strings from R-SEC-09 pattern ([#286](https://github.com/ZviBaratz/gnome-extension-reviewer/issues/286)) ([84c7381](https://github.com/ZviBaratz/gnome-extension-reviewer/commit/84c73818406f5b44de383e1e3236162a012d383f))
+* **ego-lint:** suppress R-SLOP-24 when schema_id is a variable identifier ([#289](https://github.com/ZviBaratz/gnome-extension-reviewer/issues/289)) ([b1b31f4](https://github.com/ZviBaratz/gnome-extension-reviewer/commit/b1b31f4156d74499e020767a56ed30b483fa0938))
+
+
+### Documentation
+
+* **ego-field-test:** add test mode field to template and lesson [#19](https://github.com/ZviBaratz/gnome-extension-reviewer/issues/19) on EGO ZIP vs source divergence ([#285](https://github.com/ZviBaratz/gnome-extension-reviewer/issues/285)) ([7a19eab](https://github.com/ZviBaratz/gnome-extension-reviewer/commit/7a19eabe52952f6306a2754183bb2f1201829cca))
+
 ## [0.1.30](https://github.com/ZviBaratz/gnome-extension-reviewer/compare/v0.1.29...v0.1.30) (2026-05-14)
 
 
