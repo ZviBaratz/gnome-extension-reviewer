@@ -81,7 +81,7 @@ Extension: /path/to/my-extension@username
 | **Security** | Subprocess validation, pkexec targets, clipboard/network disclosure, `/tmp` writes, telemetry, curl/gsettings spawn |
 | **Deprecated** | Mainloop, Lang, ByteArray, ExtensionUtils, Tweener, legacy `imports.*` syntax |
 | **Web APIs** | setTimeout, setInterval, fetch, XMLHttpRequest, WebSocket, localStorage |
-| **Version Compat** | GNOME 44–50 migration rules (version-gated, only fire for declared shell-versions) |
+| **Version Compat** | GNOME 44–51 migration rules (version-gated, only fire for declared shell-versions) |
 | **CSS** | Unscoped class names, `!important` usage, GNOME Shell theme class overrides |
 | **Code Quality** | AI slop detection (try-catch density, impossible states, empty catches, obfuscation, code provenance scoring) |
 | **Package** | Forbidden files in zip, required files, compiled schemas for GNOME 45+ |
