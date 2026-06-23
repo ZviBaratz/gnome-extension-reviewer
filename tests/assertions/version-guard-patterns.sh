@@ -8,6 +8,12 @@ assert_output_not_contains "no FAIL for R-VER49-02 with fallback guard" "\[FAIL\
 assert_output_not_contains "no FAIL for R-VER47-01 with ternary guard" "\[FAIL\].*R-VER47-01"
 echo ""
 
+echo "=== version-guard-shellversion47 ==="
+run_lint "version-guard-shellversion47@test"
+assert_exit_code "exits with 0 (shellVersionIsAtLeast guard suppressed)" 0
+assert_output_not_contains "no WARN for R-VER47-01 in else-branch of shellVersionIsAtLeast(47)" "\[WARN\].*R-VER47-01"
+echo ""
+
 echo "=== version-guard-boolean ==="
 run_lint "version-guard-boolean@test"
 assert_exit_code "exits with 0 (all version guards suppressed)" 0
