@@ -1,0 +1,7 @@
+{
+    "uuid": "version-guard-shellversion47@test",
+    "name": "Version Guard shellVersionIsAtLeast 47 Test",
+    "description": "Tests R-VER47-01 suppression when Clutter.Color is in else-branch of shellVersionIsAtLeast(47) guard",
+    "shell-version": ["46", "47"],
+    "url": "https://example.com"
+}

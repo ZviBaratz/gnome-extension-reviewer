@@ -944,7 +944,9 @@
   category: version-compat
   fix: "Import Cogl from 'gi://Cogl' and use new Cogl.Color() instead"
   min-version: 47
-  guard-pattern: "Clutter\\.Color\\s*\\?"
+  skip-comments: true
+  guard-pattern: "Clutter\\.Color\\s*\\?|shellVersionIsAtLeast\\s*\\(\\s*47"
+  guard-window: 8
   compat-downgrade: true
 
 # --- GNOME 48 migration (version-gated) ---
